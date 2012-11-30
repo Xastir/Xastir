@@ -35,6 +35,30 @@ from the command-line should compile it:
 *) make
 
 
+HOWEVER (from Tom, edited slightly by Curt):
+---------------------------------------------------------------------
+Remember also that the *best* way to do multiple builds of an
+autoconfiscated code (and a qmake-ified code) is do do out-of-source
+builds, not in-source builds.  Doing so keeps the source tree
+unpolluted with build droppings.  Thus,
+
+  mkdir ~/builds/xastir-qt
+  cd ~/builds/xastir-qt
+  qmake ~/src/xastir/qt/xastir-qt.pro
+  make
+
+will build the qt stuff, and
+
+  mkdir ~/builds/xastir-motif
+  cd ~/builds/xastir-motif
+  ~/src/xastir/configure
+  make
+
+will build the normal build, and neither will interfere with the
+other.
+---------------------------------------------------------------------
+
+
 SPECIFIC NOTES:
 ---------------
 
