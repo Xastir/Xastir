@@ -90,9 +90,14 @@ Exited with code 0.
 Here's a Build->Run qmake (I must have something misconfigured in my project):
 --------------------------
 Starting: /usr/bin/qmake /home/src/we7u/xastir/xastir-qt/xastir-qt.pro -spec linux-g++-64 -r CONFIG+=debug QMLJSDEBUGGER_PATH=/usr/share/qtcreator/qml/qmljsdebugger 
-WARNING: Failure to find: ui_mainwindow.h
 Exited with code 0.
 
+
+<I'm pretty sure that Curt's notes below assume that there are
+left-over droppings from a previous qmake on another system.  None of
+those files are still in CVS, so they shouldn't be relevant: you
+should always need to do a qmake from a fresh check-out, and you are 
+highly advised to do an out-of-source build as noted above>
 
 LINUX:
 ------
