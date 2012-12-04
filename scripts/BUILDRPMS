@@ -53,8 +53,8 @@ echo
 echo "*******************************************"
 echo "***** Creating MINIMUM binary package *****"
 echo "*******************************************"
-(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -bb --clean xastir-2.0.2/xastir-min.spec)
-mv /usr/src/packages/RPMS/i586/xastir-2.0.2-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-2.0.2-min.i586.rpm
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -bb --clean xastir-2.0.4/xastir-min.spec)
+mv /usr/src/packages/RPMS/i586/xastir-2.0.4-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-2.0.4-min.i586.rpm
 #
 #
 # Build maximum system (all optional libraries included), binary and
@@ -64,8 +64,8 @@ echo
 echo "***************************************************************"
 echo "***** Creating MAXIMUM binary package plus source package *****"
 echo "***************************************************************"
-(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -ba --clean xastir-2.0.2/xastir.spec)
-mv /usr/src/packages/RPMS/i586/xastir-2.0.2-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-2.0.2-max.i586.rpm
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -ba --clean xastir-2.0.4/xastir.spec)
+mv /usr/src/packages/RPMS/i586/xastir-2.0.4-1.i586.rpm /usr/src/packages/RPMS/i586/xastir-2.0.4-max.i586.rpm
 
 
 
@@ -76,9 +76,9 @@ echo
 echo "**************************************************************"
 echo "***** Copying packages to Eskimo and setting permissions *****"
 echo "**************************************************************"
-su -c " cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-2.0.2-max.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-11.0/." archer
-su -c " cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-2.0.2-min.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-11.0/." archer
-su -c " cd /usr/bin;scp /usr/src/packages/SRPMS/xastir-2.0.2-1.src.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-11.0/." archer
-su -c " cd /usr/bin;ssh eskimo 'chmod 644 ftp/aprs/xastir/SUSE-RPM/SuSE-11.0/*.rpm'" archer
+su -c " cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-2.0.4-max.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-12.0/." archer
+su -c " cd /usr/bin;scp /usr/src/packages/RPMS/i586/xastir-2.0.4-min.i586.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-12.0/." archer
+su -c " cd /usr/bin;scp /usr/src/packages/SRPMS/xastir-2.0.4-1.src.rpm eskimo:ftp/aprs/xastir/SUSE-RPM/SuSE-12.0/." archer
+su -c " cd /usr/bin;ssh eskimo 'chmod 644 ftp/aprs/xastir/SUSE-RPM/SuSE-12.0/*.rpm'" archer
 
  
