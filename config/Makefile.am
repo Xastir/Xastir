@@ -111,7 +111,7 @@ EXTRA_DIST = \
 config_DATA = ${EXTRA_DIST}
 
 install-exec-hook:
-	rm -f \$(configdir)/nwsfz_ddmmyy.dbfawk
+	-rm -f $(DESTDIR)$(configdir)/nwsfz_ddmmyy.dbfawk
 
 language-ElmerFudd.sys: language-English.sys
 	$(top_srcdir)/scripts/langElmerFudd.pl -split >$@ <$(srcdir)/language-English.sys
