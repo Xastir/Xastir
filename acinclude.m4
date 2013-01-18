@@ -1012,7 +1012,7 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 # to specify the function call with the full prototype for it to be found.
         BDB_LIB_FOUND="none"
         AC_MSG_CHECKING([for a library containing db_create])
-        for dbname in db-5.3 db5.3 db-5.2 db5.2 db-5.1 db5.1 db-5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
+        for dbname in db-5.3 db5.3 db53 db-5.2 db5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
 	    AC_TRY_LINK(
