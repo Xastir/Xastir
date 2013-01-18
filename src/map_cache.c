@@ -216,7 +216,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
         dbp->err(dbp, mc_ret, "%s", mc_database_filename);
         db_strerror(mc_ret); 
     }
-#elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
+#else
 
     if ((mc_ret = dbp->open(dbp,
             NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
@@ -457,7 +457,7 @@ set_dangerous("map_cache_get:dbp->open 1");
     }
 clear_dangerous();
 
-#elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
+#else
 
 set_dangerous("map_cache_get:dbp->open 2");
     if ((mc_ret = dbp->open(dbp,
@@ -699,7 +699,7 @@ int map_cache_del( char * map_cache_url ){
         // db_strerror(mc_ret);
         return(1);
     }
-#elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
+#else
 	
     if ((mc_ret = dbp->open(dbp,
             NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
