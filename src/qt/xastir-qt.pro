@@ -11,9 +11,21 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    packetinterface.cpp \
+    netinterface.cpp \
+    interfacecontroldialog.cpp \
+    netinterfacepropertiesdialog.cpp \
+    interfacemanager.cpp
 
 HEADERS  += \
-    xastir.h
+    xastir.h \
+    packetinterface.h \
+    netinterface.h \
+    interfacecontroldialog.h \
+    netinterfacepropertiesdialog.h \
+    interfacemanager.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    interfacecontroldialog.ui \
+    netinterfacepropertiesdialog.ui

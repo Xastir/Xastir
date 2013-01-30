@@ -22,46 +22,51 @@
  * Look at the README for more information on the program.
  */
 
-#ifndef XASTIR_H
-#define XASTIR_H
+#ifndef NETINTERFACE_H
+#define NETINTERFACE_H
 
-#include <QMainWindow>
-#include <QtNetwork>
 #include "packetinterface.h"
-#include "interfacemanager.h"
-#include "interfacecontroldialog.h"
+#include <QtNetwork>
 
-namespace Ui {
-    class MainWindow;
-}
-
-class MainWindow : public QMainWindow {
+class NetInterface : public PacketInterface
+{
     Q_OBJECT
+
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    NetInterface(int);
+    void start(void);
+    void stop(void);
+    virtual QString deviceName();
+    virtual QString deviceDescription();
 
-public slots:
-    void interfaceControlAction();
-
-private slots:
-    void newInterface(PacketInterface*);
-    void newData(PacketInterface *, QString);
-    //void closeConnection();
-    //void statusChanged(PacketInterface::Device_Status newState);
+    QString getHostName(void);
+    void setHostName(QString);
+    QString getPortString(void);
+    void setPortString(QString);
+    QString getCallSign(void);
+    void setCallsign(QString);
+    QString getPasscode(void);
+    void setPasscode(QString newPasscode);
+    QString getFilter(void);
+    void setFilter(QString newFilter);
 
 
 protected:
-    void changeEvent(QEvent *e);
-
-private:
-    Ui::MainWindow *ui;
-    InterfaceControlDialog *interfaceControlDialog;
-
     QTcpSocket tcpSocket;
-    InterfaceManager interfaceManager;
-    QString packetDisplay;
-    int total_lines;
+    QString hostName;
+    QString portString;
+    QString callsign;  // Should this be in the base class??
+    QString passcode;
+    QString filter;
+
+private slots:
+    void connectToServer();
+    void connectionClosedByServer();
+    void error();
+    void nowConnected();
+    void closeConnection();
+    void incomingData();
+
 };
 
-#endif // XASTIR_H
+#endif // NETINTERFACE_H

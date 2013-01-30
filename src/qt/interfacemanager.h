@@ -22,46 +22,31 @@
  * Look at the README for more information on the program.
  */
 
-#ifndef XASTIR_H
-#define XASTIR_H
+#ifndef INTERFACEMANAGER_H
+#define INTERFACEMANAGER_H
 
-#include <QMainWindow>
-#include <QtNetwork>
+#include <QObject>
 #include "packetinterface.h"
-#include "interfacemanager.h"
-#include "interfacecontroldialog.h"
+#include "netinterface.h"
 
-namespace Ui {
-    class MainWindow;
-}
-
-class MainWindow : public QMainWindow {
+class InterfaceManager : public QObject
+{
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit InterfaceManager(QObject *parent = 0);
+    int numInterfaces() {return interfaces.count();}
+    PacketInterface* getInterface(int i) {return interfaces[i];}
+    NetInterface* getNewNetInterface() { return new NetInterface(interfaces.count()); }
+    void addNewInterface( PacketInterface *iface );
+
+
+signals:
+    void interfaceAdded(PacketInterface *newInterface);
 
 public slots:
-    void interfaceControlAction();
-
-private slots:
-    void newInterface(PacketInterface*);
-    void newData(PacketInterface *, QString);
-    //void closeConnection();
-    //void statusChanged(PacketInterface::Device_Status newState);
-
-
-protected:
-    void changeEvent(QEvent *e);
-
+    
 private:
-    Ui::MainWindow *ui;
-    InterfaceControlDialog *interfaceControlDialog;
-
-    QTcpSocket tcpSocket;
-    InterfaceManager interfaceManager;
-    QString packetDisplay;
-    int total_lines;
+    QList<PacketInterface*> interfaces;
 };
 
-#endif // XASTIR_H
+#endif // INTERFACEMANAGER_H

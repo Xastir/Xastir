@@ -1,22 +1,43 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+ * $Id$
+ *
+ * XASTIR, Amateur Station Tracking and Information Reporting
+ * Copyright (C) 1999,2000  Frank Giannandrea
+ * Copyright (C) 2000-2013  The Xastir Group
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Look at the README for more information on the program.
+ */
+
 #include "ui_mainwindow.h"
+#include "interfacecontroldialog.h"
 #include "xastir.h"
+#include <iostream>
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    ui->disconnectServerButton->setEnabled(false);
-
-    connect(ui->connectServerButton, SIGNAL(clicked()), this, SLOT(connectToServer()));
-    connect(ui->disconnectServerButton, SIGNAL(clicked()), this, SLOT(closeConnection()));
-
-    connect(&tcpSocket, SIGNAL(connected()), this, SLOT(nowConnected()));
-    connect(&tcpSocket, SIGNAL(disconnected()), this, SLOT(connectionClosedByServer()));
-    connect(&tcpSocket, SIGNAL(readyRead()), this, SLOT(updateList()));
-    connect(&tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
-
+    interfaceControlDialog = NULL;
+    connect(&interfaceManager, SIGNAL(interfaceAdded(PacketInterface*)), this, SLOT(newInterface(PacketInterface*)));
+ //   connect(&netInterface,SIGNAL(interfaceChangedState(PacketInterface::Device_Status)), this, SLOT(statusChanged(PacketInterface::Device_Status)));
+ //   connect(&netInterface,SIGNAL(packetReceived(PacketInterface *, QString)), this, SLOT(newData(PacketInterface *,QString)));
     total_lines = 0;
 }
 
@@ -37,78 +58,37 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-void MainWindow::nowConnected()
+void MainWindow::newInterface(PacketInterface *iface)
 {
-    ui->disconnectServerButton->setEnabled(true);
-    ui->connectServerButton->setEnabled(false);
+    connect(iface, SIGNAL(packetReceived(PacketInterface*,QString)), this, SLOT(newData(PacketInterface*,QString)));
 }
 
-void MainWindow::closeConnection()
+void MainWindow::newData (PacketInterface *device, QString data)
 {
-    tcpSocket.close();
-    ui->connectServerButton->setEnabled(true);
-    ui->disconnectServerButton->setEnabled(false);
-}
-
-void MainWindow::connectToServer ()
-{
-    QString host = ui->InternetHost->text();
-    QString portStr = ui->InternetPort->text();
-    int port = portStr.toInt();
-    tcpSocket.connectToHost(host, port);
-
-    // Send authentication and filter info to server.
-    // Note that the callsign is case-sensitive in javaAprsServer
-    QString callsign = ui->Callsign->text().toUpper();
-    QString passcode = ui->Passcode->text();
-    QString filter = ui->Filter->text();
-    QString loginStr;
-    if (filter.size() > 0) {
-        loginStr = "user " + callsign + " pass " + passcode + " vers XASTIR-QT 0.1 filter " + filter + "\r\n";
-    }
-    else {
-        loginStr = "user " + callsign + " pass " + passcode + " vers XASTIR-QT 0.1 \r\n";
-    }
-    tcpSocket.write( loginStr.toAscii().data() );
-
-    // Send a posit to the server
-    if (callsign.startsWith("WE7U")) {
-        tcpSocket.write( "WE7U>APX201:=/6<A5/VVOx   SCVSAR\r\n" );
-    }
-}
-
-void MainWindow::updateList ()
-{
-    QTextStream in(&tcpSocket);
-    int max_lines = 20;
+    int max_lines = 15;
     QString tmp;
 
-    forever {
-        if (!tcpSocket.canReadLine()) {
-            break;
-        }
-        packetDisplay.append(in.readLine() + "\n");
 
-        if (total_lines >= max_lines) {
-            int ii = packetDisplay.indexOf("\n");
-            // Chop first line
-            tmp = packetDisplay.right(packetDisplay.size() - (ii + 1));
-            packetDisplay = tmp;
-        }
-        else {
-            total_lines++;
-        }
-        ui->incomingPackets->setText(packetDisplay);
+    packetDisplay.append(device->deviceName() + "-> " + data + "\n");
+
+    if (total_lines >= max_lines) {
+        int ii = packetDisplay.indexOf("\n");
+        // Chop first line
+        tmp = packetDisplay.right(packetDisplay.size() - (ii + 1));
+        packetDisplay = tmp;
     }
+    else {
+        total_lines++;
+    }
+    ui->incomingPackets->setText(packetDisplay);
 }
 
-void MainWindow::connectionClosedByServer ()
+void MainWindow::interfaceControlAction()
 {
-    closeConnection();
-}
+    if( interfaceControlDialog == NULL) {
+        interfaceControlDialog = new InterfaceControlDialog(interfaceManager, this);
+    }
+    interfaceControlDialog->show();
+    interfaceControlDialog->raise();
 
-void MainWindow::error ()
-{
-    closeConnection();
 }
-

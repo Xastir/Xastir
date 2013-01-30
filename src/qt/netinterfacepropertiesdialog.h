@@ -22,46 +22,35 @@
  * Look at the README for more information on the program.
  */
 
-#ifndef XASTIR_H
-#define XASTIR_H
+#ifndef NETINTERFACEPROPERTIESDIALOG_H
+#define NETINTERFACEPROPERTIESDIALOG_H
 
-#include <QMainWindow>
-#include <QtNetwork>
-#include "packetinterface.h"
+#include <QDialog>
+#include "netinterface.h"
 #include "interfacemanager.h"
-#include "interfacecontroldialog.h"
 
 namespace Ui {
-    class MainWindow;
+class NetInterfacePropertiesDialog;
 }
 
-class MainWindow : public QMainWindow {
+class NetInterfacePropertiesDialog : public QDialog
+{
     Q_OBJECT
+    
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-
+    explicit NetInterfacePropertiesDialog(InterfaceManager& manager, NetInterface *interface, bool isItNew, QWidget *parent = 0);
+    ~NetInterfacePropertiesDialog();
+    
 public slots:
-    void interfaceControlAction();
-
-private slots:
-    void newInterface(PacketInterface*);
-    void newData(PacketInterface *, QString);
-    //void closeConnection();
-    //void statusChanged(PacketInterface::Device_Status newState);
-
-
-protected:
-    void changeEvent(QEvent *e);
+    void accept();
+    void reject();
 
 private:
-    Ui::MainWindow *ui;
-    InterfaceControlDialog *interfaceControlDialog;
+    Ui::NetInterfacePropertiesDialog *ui;
+    InterfaceManager& theManager;
+    NetInterface *theInterface;
+    bool newInterface;
 
-    QTcpSocket tcpSocket;
-    InterfaceManager interfaceManager;
-    QString packetDisplay;
-    int total_lines;
 };
 
-#endif // XASTIR_H
+#endif // NETINTERFACEPROPERTIESDIALOG_H
