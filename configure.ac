@@ -35,7 +35,10 @@ AM_INIT_AUTOMAKE
 AC_PREREQ(2.53)
 
 AC_CONFIG_SRCDIR([src/xastir.h])
-AM_CONFIG_HEADER(config.h)
+#AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
+
+
 
 echo ""
 echo "Configuring AC_PACKAGE_NAME AC_PACKAGE_VERSION"
