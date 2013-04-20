@@ -37,7 +37,7 @@ InterfaceControlDialog::InterfaceControlDialog(InterfaceManager& manager, QWidge
         PacketInterface *iface = theManager.getInterface(i);
         ui->listWidget->addItem( iface->deviceDescription());
         connect( iface, SIGNAL(interfaceChangedState(PacketInterface*,PacketInterface::Device_Status)),
-                 this, SLOT(interfaceStatusChanged(PacketInterface*,PacketInterface::Device_Status)));
+                 this, SLOT(interfaceStatusChanged(PacketInterface*)));
     }
     connect(&theManager,SIGNAL(interfaceAdded(PacketInterface *)), this, SLOT(managerAddedInterface(PacketInterface*)));
 
@@ -46,7 +46,7 @@ InterfaceControlDialog::InterfaceControlDialog(InterfaceManager& manager, QWidge
     connect(ui->propertiesButton, SIGNAL(clicked()), this, SLOT(preferencesAction()));
     connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stopAction()));
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startAction()));
-    connect(ui->listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(selectedRowChanged(int)));
+    connect(ui->listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(selectedRowChanged()));
 }
 
 InterfaceControlDialog::~InterfaceControlDialog()
@@ -95,7 +95,7 @@ void InterfaceControlDialog::preferencesAction()
     dialog->show();
 }
 
-void InterfaceControlDialog::selectedRowChanged(int row)
+void InterfaceControlDialog::selectedRowChanged()
 {
     updateButtonsState();
 }
@@ -104,11 +104,11 @@ void InterfaceControlDialog::managerAddedInterface(PacketInterface *newInterface
 {
     ui->listWidget->addItem(newInterface->deviceDescription());
     connect( newInterface, SIGNAL(interfaceChangedState(PacketInterface*,PacketInterface::Device_Status)),
-             this, SLOT(interfaceStatusChanged(PacketInterface*,PacketInterface::Device_Status)));
+             this, SLOT(interfaceStatusChanged(PacketInterface*)));
     updateButtonsState();
 }
 
-void InterfaceControlDialog::interfaceStatusChanged(PacketInterface *iface, PacketInterface::Device_Status state)
+void InterfaceControlDialog::interfaceStatusChanged(PacketInterface *iface)
 {
     PacketInterface *testIface;
     for( int i = 0; i < theManager.numInterfaces(); i++) {
@@ -127,7 +127,8 @@ void InterfaceControlDialog::updateButtonsState()
     if( (row>-1) && (row<theManager.numInterfaces())) {
         ui->deleteButton->setEnabled(true);
         ui->propertiesButton->setEnabled(true);
-        if(theManager.getInterface(row)->deviceStatus() == PacketInterface::DEVICE_UP) {
+        if((theManager.getInterface(row)->deviceStatus() == PacketInterface::DEVICE_UP) ||
+                (theManager.getInterface(row)->deviceStatus() == PacketInterface::DEVICE_STARTING)) {
             ui->startButton->setEnabled(false);
             ui->stopButton->setEnabled(true);
         } else {

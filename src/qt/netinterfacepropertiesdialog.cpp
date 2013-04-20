@@ -63,7 +63,7 @@ void NetInterfacePropertiesDialog::accept()
 
 void NetInterfacePropertiesDialog::reject()
 {
-    // XXX Need to figure out what to do with interface object. It might be new, unowned and unloved.
+    if(newInterface) delete theInterface;
     this->destroy();
 }
 

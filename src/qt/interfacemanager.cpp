@@ -22,6 +22,8 @@
  * Look at the README for more information on the program.
  */
 
+#include <QSettings>
+#include <QtGlobal>
 #include "interfacemanager.h"
 
 InterfaceManager::InterfaceManager(QObject *parent) :
@@ -34,3 +36,50 @@ void InterfaceManager::addNewInterface(PacketInterface *iface)
     interfaces.append(iface);
     interfaceAdded(iface);
 }
+
+void InterfaceManager::saveInterfaces()
+{
+    QSettings settings;
+    QPointer<PacketInterface> ptr;
+    int i = 0;
+
+    settings.beginGroup("DeviceInterfaces");
+    settings.remove(""); // Delete previous settings
+    foreach(ptr, interfaces) {
+        settings.beginGroup( "Interface" + QString::number(i++));
+        ptr->saveSettings(settings);
+        settings.endGroup();
+    }
+    settings.endGroup();
+}
+
+void InterfaceManager::restoreInterfaces()
+{
+    QSettings settings;
+    QString deviceType;
+    QString subgroup;
+    QPointer<PacketInterface> ptr;
+    int i = 0;
+
+    settings.beginGroup("DeviceInterfaces");
+    foreach(subgroup, settings.childGroups()) {
+        settings.beginGroup(subgroup);
+        deviceType = settings.value("interfaceClass").toString();
+        qDebug(deviceType.toAscii());
+        if(deviceType == "NetInterface")
+        {
+            ptr = new NetInterface(i++, this);
+        }
+        else
+        {
+            qWarning("Unknown Interface Type");
+            settings.endGroup();
+            break;
+        }
+
+        ptr->restoreFromSettings(settings);
+        addNewInterface(ptr);
+        settings.endGroup();
+    }
+}
+

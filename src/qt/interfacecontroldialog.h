@@ -47,9 +47,9 @@ public slots:
     void startAction();
     void stopAction();
     void preferencesAction();
-    void selectedRowChanged(int row);
+    void selectedRowChanged();
     void managerAddedInterface(PacketInterface *newInterface);
-    void interfaceStatusChanged(PacketInterface *iface, PacketInterface::Device_Status state);
+    void interfaceStatusChanged(PacketInterface *iface);
 
 private:
     Ui::InterfaceControlDialog *ui;

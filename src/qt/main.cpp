@@ -27,6 +27,9 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("Xastir Group");
+    QCoreApplication::setOrganizationDomain("xastir.org");
+    QCoreApplication::setApplicationName("Xastir QT");
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

@@ -39,11 +39,13 @@ MainWindow::MainWindow(QWidget *parent) :
  //   connect(&netInterface,SIGNAL(interfaceChangedState(PacketInterface::Device_Status)), this, SLOT(statusChanged(PacketInterface::Device_Status)));
  //   connect(&netInterface,SIGNAL(packetReceived(PacketInterface *, QString)), this, SLOT(newData(PacketInterface *,QString)));
     total_lines = 0;
+    interfaceManager.restoreInterfaces();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    interfaceManager.saveInterfaces();
 }
 
 void MainWindow::changeEvent(QEvent *e)

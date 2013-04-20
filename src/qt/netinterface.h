@@ -33,7 +33,7 @@ class NetInterface : public PacketInterface
     Q_OBJECT
 
 public:
-    NetInterface(int);
+    NetInterface(int iface = -1, QObject *parent = 0);
     void start(void);
     void stop(void);
     virtual QString deviceName();
@@ -52,6 +52,9 @@ public:
 
 
 protected:
+    virtual void saveSpecificSettings(QSettings& settings);
+    virtual void restoreSpecificSettings(QSettings& settings);
+
     QTcpSocket tcpSocket;
     QString hostName;
     QString portString;

@@ -26,6 +26,7 @@
 #define INTERFACEMANAGER_H
 
 #include <QObject>
+#include <QPointer>
 #include "packetinterface.h"
 #include "netinterface.h"
 
@@ -36,9 +37,10 @@ public:
     explicit InterfaceManager(QObject *parent = 0);
     int numInterfaces() {return interfaces.count();}
     PacketInterface* getInterface(int i) {return interfaces[i];}
-    NetInterface* getNewNetInterface() { return new NetInterface(interfaces.count()); }
+    NetInterface* getNewNetInterface() { return new NetInterface(interfaces.count(), this); }
     void addNewInterface( PacketInterface *iface );
-
+    void saveInterfaces();
+    void restoreInterfaces();
 
 signals:
     void interfaceAdded(PacketInterface *newInterface);
@@ -46,7 +48,7 @@ signals:
 public slots:
     
 private:
-    QList<PacketInterface*> interfaces;
+    QList<QPointer<PacketInterface> > interfaces;
 };
 
 #endif // INTERFACEMANAGER_H
