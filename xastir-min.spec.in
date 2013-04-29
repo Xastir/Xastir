@@ -53,7 +53,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_prefix}/share/xastir/config
 %{_prefix}/share/xastir/symbols
 %{_prefix}/share/man
-%{_prefix}/lib/xastir
+#%{_prefix}/lib/xastir
 
 # protect user-installed map and other files from being clobbered
 
@@ -63,6 +63,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %config %{_prefix}/share/xastir/fcc
 %config %{_prefix}/share/xastir/GNIS
 %config %{_prefix}/share/xastir/sounds
+%config %{_prefix}/share/xastir/scripts
 
 %changelog
 * Thu Jul 03 2003 Alan Crosswell <n2ygk@weca.org> 
