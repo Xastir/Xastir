@@ -209,7 +209,8 @@ CVS Instructions:
 
     Latest Qt status:  The File->Exit and Interface->Interface Control portions work,
     but none of the other menu options have been implemented.  It will display raw
-    packets as they come in.
+    packets as they come in but there are no maps, symbols, etc.  The networking is
+    both IPv4 and IPv6 compatible.
 
 
     There are many more CVS commands and options.  Many of them are more of
