@@ -183,6 +183,35 @@ CVS Instructions:
             /home/<user>/src/xastir99/xastir/
 
 
+    Checking out the Qt branch (for anonymous-CVS users):
+    -----------------------------------------------------
+    In a NEW area, so it doesn't overwrite your "regular" Xastir area, type the following.
+    Note that it will create a new subdirectory called "xastir":
+
+      $ cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
+      Logging in to :pserver:anonymous@xastir.cvs.sourceforge.net:2401/cvsroot/xastir
+      CVS password:  <ENTER>
+
+      $ cvs -z3 -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir checkout -r BRANCH_qt -P xastir
+
+      $ cd xastir
+
+      $ less README.qt      # New file, only available on the Qt branch.
+
+      $ cd src/qt
+
+      $ qmake xastir-qt.pro
+
+      $ make
+
+      $ ./xastir-qt
+
+
+    Latest Qt status:  The File->Exit and Interface->Interface Control portions work,
+    but none of the other menu options have been implemented.  It will display raw
+    packets as they come in.
+
+
     There are many more CVS commands and options.  Many of them are more of
     use to the developers.  Some of those are listed below.  The above should
     be enough for most people to keep their copies in sync with the latest CVS
