@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
- * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
@@ -65,7 +64,6 @@ void InterfaceManager::restoreInterfaces()
     foreach(subgroup, settings.childGroups()) {
         settings.beginGroup(subgroup);
         deviceType = settings.value("interfaceClass").toString();
-        qDebug(deviceType.toAscii());
         if(deviceType == "NetInterface")
         {
             ptr = new NetInterface(i++, this);

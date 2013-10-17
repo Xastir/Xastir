@@ -1694,8 +1694,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_Station</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stationSettingsAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>106</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>262</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>interfaceControlAction()</slot>
+  <slot>stationSettingsAction()</slot>
  </slots>
 </ui>

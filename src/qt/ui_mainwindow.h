@@ -1043,6 +1043,7 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(actionE_xit, SIGNAL(triggered()), MainWindow, SLOT(close()));
         QObject::connect(actionInterface_Control, SIGNAL(triggered()), MainWindow, SLOT(interfaceControlAction()));
+        QObject::connect(action_Station, SIGNAL(triggered()), MainWindow, SLOT(stationSettingsAction()));
 
         tabWidget->setCurrentIndex(0);
 

@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
- * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
@@ -25,6 +24,8 @@
 #include "ui_mainwindow.h"
 #include "interfacecontroldialog.h"
 #include "xastir.h"
+#include "symbols.h"
+#include "colors.h"
 #include <iostream>
 
 using namespace std;
@@ -35,17 +36,32 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     interfaceControlDialog = NULL;
+    stationConfigurationDialog = NULL;
+
     connect(&interfaceManager, SIGNAL(interfaceAdded(PacketInterface*)), this, SLOT(newInterface(PacketInterface*)));
  //   connect(&netInterface,SIGNAL(interfaceChangedState(PacketInterface::Device_Status)), this, SLOT(statusChanged(PacketInterface::Device_Status)));
  //   connect(&netInterface,SIGNAL(packetReceived(PacketInterface *, QString)), this, SLOT(newData(PacketInterface *,QString)));
     total_lines = 0;
     interfaceManager.restoreInterfaces();
+    QSettings settings;
+
+    settings.beginGroup("StationSettings");
+    stationSettings.restoreFromSettings(settings);
+    settings.endGroup();
+    initializeColors();
+    load_pixmap_symbol_file( ":/xastir/symbols.dat", 0);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     interfaceManager.saveInterfaces();
+    QSettings settings;
+
+    settings.beginGroup("StationSettings");
+    settings.remove(""); // Delete previous settings
+    stationSettings.saveSettings(settings);
+    settings.endGroup();
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -93,4 +109,11 @@ void MainWindow::interfaceControlAction()
     interfaceControlDialog->show();
     interfaceControlDialog->raise();
 
+}
+
+void MainWindow::stationSettingsAction()
+{
+    stationConfigurationDialog = new StationConfigurationDialog(&stationSettings, this);
+    stationConfigurationDialog->show();
+    stationConfigurationDialog->raise();
 }
