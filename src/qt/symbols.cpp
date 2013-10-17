@@ -19,7 +19,7 @@ Symbol::Symbol() : pix(20,20), pix_mask(20,20), pix_mask_old(20,20)
 
 void load_pixmap_symbol_file(char *filename, int reloading) {
     QFile *f;
-    char filen[500];
+//    char filen[500];
     char line[100];
     char table_char;
     char symbol_char;

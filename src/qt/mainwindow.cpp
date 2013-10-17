@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     stationSettings.restoreFromSettings(settings);
     settings.endGroup();
     initializeColors();
-    load_pixmap_symbol_file( ":/xastir/symbols.dat", 0);
+    load_pixmap_symbol_file( (char *)":/xastir/symbols.dat", 0);
 }
 
 MainWindow::~MainWindow()
