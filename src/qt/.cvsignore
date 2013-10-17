@@ -13,3 +13,4 @@ ui_stationconfigurationdialog.h
 ui_netinterfacepropertiesdialog.h
 ui_mainwindow.h
 ui_interfacecontroldialog.h
+qrc_xastir.cpp
