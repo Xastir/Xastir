@@ -50,6 +50,7 @@ void StationConfigurationDialog::disablePHBChanged(int state)
 
 void StationConfigurationDialog::symbolSettingsChanged(QString t)
 {
+    Q_UNUSED(t)
     char key[4];
     key[0] = ui->groupEdit->text()[0].cell();
     key[1] = ui->symbolEdit->text()[0].cell();
