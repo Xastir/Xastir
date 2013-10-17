@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/xastir">
+        <file alias="symbols.dat">resources/symbols.dat</file>
+    </qresource>
+</RCC>
