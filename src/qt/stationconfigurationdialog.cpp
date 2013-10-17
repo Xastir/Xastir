@@ -12,8 +12,8 @@ StationConfigurationDialog::StationConfigurationDialog(StationSettings *settings
 {
     ui->setupUi(this);
     connect(ui->disablePHGCheckbox,SIGNAL(stateChanged(int)),this,SLOT(disablePHBChanged(int)));
-    connect(ui->groupEdit, SIGNAL(textChanged(QString)), this, SLOT(symbolSettinngsChanged(QString)));
-    connect(ui->symbolEdit, SIGNAL(textChanged(QString)), this, SLOT(symbolSettinngsChanged(QString)));
+    connect(ui->groupEdit, SIGNAL(textChanged(QString)), this, SLOT(symbolSettingsChanged(QString)));
+    connect(ui->symbolEdit, SIGNAL(textChanged(QString)), this, SLOT(symbolSettingsChanged(QString)));
 
 
     ui->callsignEdit->setText(settings->callsign());
@@ -48,7 +48,7 @@ void StationConfigurationDialog::disablePHBChanged(int state)
     ui->directivityCombo->setEnabled(!state);
 }
 
-void StationConfigurationDialog::symbolSettinngsChanged(QString t)
+void StationConfigurationDialog::symbolSettingsChanged(QString t)
 {
     char key[4];
     key[0] = ui->groupEdit->text()[0].cell();

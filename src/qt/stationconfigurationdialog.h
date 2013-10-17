@@ -18,7 +18,7 @@ public:
 
 private slots:
     void disablePHBChanged(int state);
-    void symbolSettinngsChanged(QString t);
+    void symbolSettingsChanged(QString t);
     void accept();
 
 private:
