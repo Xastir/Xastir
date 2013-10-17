@@ -262,7 +262,7 @@ void read_symbol_from_file(QFile *f, char *pixels, char table_char) {
 //
 void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, int reloading) {
     int x,y,idx,old_next,color,last_color,last_gc2;
-    Symbol *symbolItem;
+    Symbol *symbolItem = NULL;
 
     // first time loading, -> create pixmap...
     // when reloading -> reuse already created pixmaps...
@@ -270,7 +270,7 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
         symbolItem = new Symbol;
     } else
     {
-        // XXX find the symbol and set the pointer to it
+//TODO XXX find the symbol and set the pointer to it
     }
 
     QPainter pixPaint(&(symbolItem->pix));
