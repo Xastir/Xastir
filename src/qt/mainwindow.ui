@@ -131,7 +131,7 @@
      <x>0</x>
      <y>0</y>
      <width>1036</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="maximumSize">
@@ -223,6 +223,9 @@
      <string>&amp;Map</string>
     </property>
     <widget class="QMenu" name="menuDraw_CAD_Objects">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -239,6 +242,9 @@
      <addaction name="actionEnable_CAD_area_size"/>
     </widget>
     <widget class="QMenu" name="menuConfigure">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -246,6 +252,9 @@
       <string>Configure</string>
      </property>
      <widget class="QMenu" name="menuBackground_Color">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="tearOffEnabled">
        <bool>true</bool>
       </property>
@@ -266,6 +275,9 @@
       <addaction name="actionFirebrick_Red"/>
      </widget>
      <widget class="QMenu" name="menuMap_Intensity">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="tearOffEnabled">
        <bool>true</bool>
       </property>
@@ -285,6 +297,9 @@
       <addaction name="action100"/>
      </widget>
      <widget class="QMenu" name="menuStation_Text_Style">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="tearOffEnabled">
        <bool>true</bool>
       </property>
@@ -296,6 +311,9 @@
       <addaction name="action_Text_on_Black"/>
      </widget>
      <widget class="QMenu" name="menuIcon_Outline_Style">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="tearOffEnabled">
        <bool>true</bool>
       </property>
@@ -352,6 +370,9 @@
      <string>&amp;Station</string>
     </property>
     <widget class="QMenu" name="menu_Export_All">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -361,6 +382,9 @@
      <addaction name="actionExport_to_KML_File"/>
     </widget>
     <widget class="QMenu" name="menuFilter_Data">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -387,6 +411,9 @@
      <addaction name="action_Select_Other_Objects_Items"/>
     </widget>
     <widget class="QMenu" name="menuFilter_Display">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -428,6 +455,9 @@
      <addaction name="actionDisplay_Last_Report_Age"/>
     </widget>
     <widget class="QMenu" name="menuConfigure_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="tearOffEnabled">
       <bool>true</bool>
      </property>
@@ -500,6 +530,9 @@
      <string>&amp;Help</string>
     </property>
     <widget class="QMenu" name="menu_EMERGENCY_BEACON_MODE_ENABLE">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>&amp;EMERGENCY BEACON MODE ENABLE</string>
      </property>
@@ -528,11 +561,17 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionPrint">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Print</string>
    </property>
   </action>
   <action name="actionOpen_Log_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Open Log File</string>
    </property>
@@ -540,6 +579,9 @@
   <action name="actionTNC_Logging">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;TNC Logging</string>
@@ -549,6 +591,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Net Logging</string>
    </property>
@@ -556,6 +601,9 @@
   <action name="actionIGate_Logging">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;IGate Logging</string>
@@ -565,6 +613,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Message Logging</string>
    </property>
@@ -572,6 +623,9 @@
   <action name="actionWX_Logging">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;WX Logging</string>
@@ -581,6 +635,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>WX &amp;Alert Logging</string>
    </property>
@@ -589,6 +646,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>PNG &amp;Snapshots</string>
    </property>
@@ -596,6 +656,9 @@
   <action name="actionKML_Snapshots">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;KML Snapshots</string>
@@ -607,111 +670,177 @@
    </property>
   </action>
   <action name="action_Incoming_Data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Incoming Data</string>
    </property>
   </action>
   <action name="actionMessage_Traffic">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Message &amp;Traffic</string>
    </property>
   </action>
   <action name="action_Bulletins">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Bulletins</string>
    </property>
   </action>
   <action name="action_Mobile_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Mobile Stations</string>
    </property>
   </action>
   <action name="action_All_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;All Stations</string>
    </property>
   </action>
   <action name="actionLocal_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Local &amp;Stations</string>
    </property>
   </action>
   <action name="action_Last_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Last Stations</string>
    </property>
   </action>
   <action name="actionObjects_Items">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Objects &amp;&amp; Items</string>
    </property>
   </action>
   <action name="actionOwn_Objects_Items">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Own Objects &amp;&amp; Items</string>
    </property>
   </action>
   <action name="actionCAD_Polygons">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>CAD Polygons</string>
    </property>
   </action>
   <action name="action_Weather_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Weather Stations</string>
    </property>
   </action>
   <action name="actionOwn_Weather_Data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Own Weather &amp;Data</string>
    </property>
   </action>
   <action name="actionW_eather_Alerts">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>W&amp;eather Alerts</string>
    </property>
   </action>
   <action name="actionGPS_Status">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>GPS Status</string>
    </property>
   </action>
   <action name="action_Uptime">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Uptime</string>
    </property>
   </action>
   <action name="actionALOHA_Statistics">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>ALOHA Statistics</string>
    </property>
   </action>
   <action name="action_Map_Chooser">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Map Chooser</string>
    </property>
   </action>
   <action name="actionMap_Display_Bookmarks">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Map Display &amp;Bookmarks</string>
    </property>
   </action>
   <action name="actionLocate_Map_Feature">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Locate Map &amp;Feature</string>
    </property>
   </action>
   <action name="actionFind_Address">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Find Address</string>
    </property>
   </action>
   <action name="actionCoordinate_Calculator">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Coordinate Calculator</string>
    </property>
   </action>
   <action name="actionCenter_Zoom">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Center &amp;&amp; Zoom</string>
    </property>
@@ -719,6 +848,9 @@
   <action name="actionDisable_Fast_Zoom_Pan_Home">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Disable Fast Zoom/Pan/Home</string>
@@ -728,6 +860,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Disable All Maps</string>
    </property>
@@ -735,6 +870,9 @@
   <action name="actionEnable_Auto_Maps">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable Auto Maps</string>
@@ -744,6 +882,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>- Disable Raster Maps</string>
    </property>
@@ -751,6 +892,9 @@
   <action name="actionEnable_Map_Grid">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable Map Grid</string>
@@ -760,6 +904,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable Map Border</string>
    </property>
@@ -767,6 +914,9 @@
   <action name="actionEnable_Map_Levels">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable Map Levels</string>
@@ -776,6 +926,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable Map Labels</string>
    </property>
@@ -783,6 +936,9 @@
   <action name="actionEnable_Area_Color_Fills">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable Area Color Fills</string>
@@ -792,66 +948,105 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable Weather Alerts</string>
    </property>
   </action>
   <action name="actionMouse_Pointer_Menu">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Mouse Pointer Menu</string>
    </property>
   </action>
   <action name="action_Find_Stations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Find Station</string>
    </property>
   </action>
   <action name="action_Track_Station">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Track Station</string>
    </property>
   </action>
   <action name="actionFetch_Find_u_Trail">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Fetch Find&amp;u Trail</string>
    </property>
   </action>
   <action name="action_Send_Message_To">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Send Message To</string>
    </property>
   </action>
   <action name="actionShow_Pending_Messages">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Show &amp;Pending Messages</string>
    </property>
   </action>
   <action name="action_Open_Group_Messages">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Open Group Messages</string>
    </property>
   </action>
   <action name="action_Clear_All_Outgoing_Messages">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Clear All Outgoing Messages</string>
    </property>
   </action>
   <action name="action_General_Stations_Query">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;General Stations Query</string>
    </property>
   </action>
   <action name="action_IGate_Stations_Query">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;IGate Stations Query</string>
    </property>
   </action>
   <action name="action_WX_Stations_Query">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;WX Stations Query</string>
    </property>
   </action>
   <action name="actionModify_Auto_Reply_Message">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Modify &amp;Auto Reply Message</string>
    </property>
@@ -859,6 +1054,9 @@
   <action name="actionEnable_Auto_Reply_Message">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable Auto Reply Message</string>
@@ -868,16 +1066,25 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Satellite Ack Mode</string>
    </property>
   </action>
   <action name="action_About">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;About</string>
    </property>
   </action>
   <action name="actionHelp_Index">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Help &amp;Index</string>
    </property>
@@ -891,6 +1098,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Disable Transmit: ALL</string>
    </property>
@@ -898,6 +1108,9 @@
   <action name="actionDisable_Transmit_My_Position">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Disable Transmit: My Position</string>
@@ -907,6 +1120,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Disable Transmit: Objects/Items</string>
    </property>
@@ -915,31 +1131,49 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable Server Ports</string>
    </property>
   </action>
   <action name="action_Transmit_Now">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Transmit Now!</string>
    </property>
   </action>
   <action name="action_Fetch_GPS_Track">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Fetch GPS Track</string>
    </property>
   </action>
   <action name="actionFetch_GPS_Routes">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Fetch GPS &amp;Routes</string>
    </property>
   </action>
   <action name="actionFetch_GPS_Waypoints">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Fetch GPS &amp;Waypoints</string>
    </property>
   </action>
   <action name="actionFetch_Garmin_RINO_Waypoints">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Fetch &amp;Garmin RINO Waypoints</string>
    </property>
@@ -947,6 +1181,9 @@
   <action name="action_EMERGENCY_BEACON_MODE">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>!!! EMERGENCY BEACON MODE !!!</string>
@@ -958,46 +1195,73 @@
    </property>
   </action>
   <action name="action_Defaults">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Defaults</string>
    </property>
   </action>
   <action name="action_Timing">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Timing</string>
    </property>
   </action>
   <action name="actionC_oordinate_System">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>C&amp;oordinate System</string>
    </property>
   </action>
   <action name="action_Audio_Alarms">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Audio Alarms</string>
    </property>
   </action>
   <action name="actionS_peech">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>S&amp;peech</string>
    </property>
   </action>
   <action name="actionSmart_Beaconing">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Smart Beaconing</string>
    </property>
   </action>
   <action name="actionFonts">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Fonts</string>
    </property>
   </action>
   <action name="actionTest">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Test</string>
    </property>
   </action>
   <action name="actionChange_Debug_Level">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Change &amp;Debug Level</string>
    </property>
@@ -1005,6 +1269,9 @@
   <action name="actionEnable_English_Units">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable English Units</string>
@@ -1014,26 +1281,41 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Dist/Bearing Status</string>
    </property>
   </action>
   <action name="actionSave_Config_Now">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save &amp;Config Now!</string>
    </property>
   </action>
   <action name="actionClose_Polygon">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Close Polygon</string>
    </property>
   </action>
   <action name="actionErase_CAD_Polygons">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Erase CAD Polygons</string>
    </property>
   </action>
   <action name="actionCAD_Polygons_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>CAD Polygons</string>
    </property>
@@ -1041,6 +1323,9 @@
   <action name="actionEnable_CAD_objects">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable CAD Objects</string>
@@ -1050,6 +1335,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable CAD Labels</string>
    </property>
@@ -1057,6 +1345,9 @@
   <action name="actionEnable_CAD_probability">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Enable CAD Probability</string>
@@ -1066,6 +1357,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable CAD Comments</string>
    </property>
@@ -1074,31 +1368,49 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Enable CAD Area Size</string>
    </property>
   </action>
   <action name="actionAdjust_Gamma_Correction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Adjust Gamma Correction</string>
    </property>
   </action>
   <action name="actionConfigure_Tigermap">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Configure Tigermap</string>
    </property>
   </action>
   <action name="actionConfigure_USGS_DRG">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Configure USGS DRG</string>
    </property>
   </action>
   <action name="actionRe_download_Maps_Not_from_cache">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Re-download Maps (Not from cache)</string>
    </property>
   </action>
   <action name="actionFlush_Entire_Map_Cache">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Flush Entire Map Cache!</string>
    </property>
@@ -1107,16 +1419,25 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Index New Maps on Startup</string>
    </property>
   </action>
   <action name="actionIndex_Add_New_Maps">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Index: Add &amp;New Maps</string>
    </property>
   </action>
   <action name="actionIndex_Reindex_ALL_Maps">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Index: &amp;Reindex ALL Maps!</string>
    </property>
@@ -1701,8 +2022,8 @@
    <slot>stationSettingsAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>106</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>517</x>
