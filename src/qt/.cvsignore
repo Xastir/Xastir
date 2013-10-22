@@ -1,5 +1,4 @@
 Makefile
-.deps
 xastir-qt
 moc_interfacecontroldialog.cpp
 moc_interfacemanager.cpp
