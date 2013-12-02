@@ -37,13 +37,23 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="w_15au13"  # NWSM Libraries: County Warning Area Boundaries
-FILE2="z_15au13"  # NWSM Libraries: Public Zone Boundaries
-FILE3="mz01oc13"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE1="w_03de13"  # NWSM Libraries: County Warning Area Boundaries
+#FILE1="w_05fe14"  # NWSM Libraries: County Warning Area Boundaries
+
+FILE2="z_03de13"  # NWSM Libraries: Public Zone Boundaries
+#FILE2="z_05fe14"  # NWSM Libraries: Public Zone Boundaries
+
+FILE3="mz03de13"  # NWSM Libraries: Coastal and Offshore Marine Zones
+
 FILE4="oz02ap13"  # NWSM Libraries: Coastal and Offshore Marine Zones
-FILE5="hz30mr09"  # NWSM Libraries: Coastal and Offshore Marine Zones
-FILE6="fz15au13"  # NWSM Libraries: Fire Weather Zone Boundaries
-FILE7="c_15au13"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+#FILE4="oz01ap14"  # NWSM Libraries: Coastal and Offshore Marine Zones
+
+FILE5="hz03de13"  # NWSM Libraries: Coastal and Offshore Marine Zones
+
+FILE6="fz03de13"  # NWSM Libraries: Fire Weather Zone Boundaries
+
+FILE7="c_03de13"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+#FILE7="c_05fe14"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
 
 
 
