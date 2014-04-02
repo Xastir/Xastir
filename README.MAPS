@@ -613,11 +613,15 @@ and tested.  CVS well be updated once the scripts are proven to work again. ****
        "./xastir -v 16 2>/tmp/log"
       Or, use "testdbfawk" which reads a .dbf file (or single field assignments
       on the command line).  For example:
-	testdbfawk -D . -d tgr36119lkA.dbf 2>&1|less
-	20 Columns,  42427 Records in file
-	sig: TLID:FNODE:TNODE:LENGTH:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC:FRADDL:TOADDL:FRADDR:TOADDR:ZIPL:ZIPR:CENSUS1:CENSUS2:CFCC1:CFCC2:SOURCE
-	DBF Signatures match!
-	name=Hancock Ave, key=80309984, symbol=, color=40, lanes=1, filled=0, pattern=1,display_level=96,label_level=16
+
+    cd /usr/local/share/xastir
+	testdbfawk -D config -d Counties/mz01ap14.dbf 2>&1 | less
+    8 Columns,  479 Records in file
+    sig: ID:WFO:GL_WFO:NAME:AJOIN0:AJOIN1:LON:LAT
+    DBF Signatures match!
+    name=Lake Okeechobee, key=AM_Z610, symbol=, color=8, lanes=2, filled=0, pattern=0, display_level=65536, font_size=2, label_level=512
+    label_color=20
+    ...
 
       testdbfawk takes the following command line syntax:
         testdbfawk --help
