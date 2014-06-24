@@ -35,8 +35,8 @@
 
 FILE1="gfe_public_weather"           # BOM Spatial: Public Warning Zone Boundaries
 FILE2="gfe_metro_areas"              # BOM Spatial: Metropolitan Warning Area Boundaries
-FILE3="gfe_coastal_waters"           # BOM Spatial: Coastal Forecast Marine Zones
-FILE4="gfe_coastal_waters_warnings"  # BOM Spatial: Coastal Warning Zones
+FILE3="gfe_coastal_water"           # BOM Spatial: Coastal Forecast Marine Zones
+FILE4="gfe_coastal_water_warning"  # BOM Spatial: Coastal Warning Zones
 FILE5="gfe_local_effects"            # BOM Spatial: Local Effects Areas
 FILE6="gfe_fire_weather"             # BOM Spatial: Fire Weather Zone Boundaries
 FILE7="LGA08aAust"                   # Local Government Area Boundaries
