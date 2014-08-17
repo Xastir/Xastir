@@ -641,6 +641,7 @@ if test "${use_graphicsmagick}" = "yes"; then
     MAGIC_BIN="/opt/lsb-tmp/bin/GraphicsMagick-config"
     CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`"
     CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`"
+    CFLAGS="$CFLAGS `${MAGIC_BIN} --cflags`"
     LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`"
     LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS"
     AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])

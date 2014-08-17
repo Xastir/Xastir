@@ -545,6 +545,7 @@ fi
 if test "${use_graphicsmagick}" = "yes"; then
   save_cppflags="$CPPFLAGS" 
   save_cxxflags="$CXXFLAGS" 
+  save_cflags="$CFLAGS" 
   save_libs="$LIBS" 
   save_ldflags="$LDFLAGS" 
   #
@@ -552,6 +553,7 @@ if test "${use_graphicsmagick}" = "yes"; then
   #
   CPPFLAGS="`${GMAGIC_BIN} --cppflags` $CPPFLAGS" 
   CXXFLAGS="`${GMAGIC_BIN} --cflags` $CXXFLAGS" 
+  CFLAGS="`${GMAGIC_BIN} --cflags` $CFLAGS" 
   LDFLAGS="`${GMAGIC_BIN} --ldflags` $LDFLAGS" 
   LIBS="${MAGIC_LIB_DIR} `${GMAGIC_BIN} --libs` $LIBS" 
   # 
@@ -571,6 +573,7 @@ if test "${use_graphicsmagick}" = "yes"; then
     #
     CPPFLAGS=$save_cppflags 
     CXXFLAGS=$save_cxxflags 
+    CFLAGS=$save_cflags 
     LIBS=$save_libs 
     LDFLAGS=$save_ldflags 
   fi
