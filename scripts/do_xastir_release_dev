@@ -17,7 +17,7 @@
 #   Admin
 #   Edit/Add File Releases
 #   Edit Releases (xastir-development)
-#   Edit This Release (xastir-2.0.5)
+#   Edit This Release (xastir-2.0.7)
 #
 
 
@@ -78,7 +78,7 @@ printf("\n*** Uploading $filename to SourceForge\n");
 # the SourceForge web pages to create a release sub-directory and
 # move the file into it using cut/paste:
 #`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/`;
-`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/xastir-development/xastir-2.0.5/`;
+`rsync -P -t -vv --progress -e ssh $filename we7u,xastir\@frs.sourceforge.net:/home/frs/project/x/xa/xastir/xastir-development/xastir-2.0.7/`;
 
 
 printf("\n*** Tagging repository using $file_prefix tag\n");
@@ -95,7 +95,7 @@ printf("\n*** Consider running the STABLE script to update that tag, if appropri
 
 
 sub Get_release {
-  printf("\nRelease number (i.e. 2.0.5)?\n");
+  printf("\nRelease number (i.e. 2.0.7)?\n");
   $release = <>;
   chomp($release);
 }
