@@ -39,8 +39,8 @@
 #
 FILE1="w_03de14"   # NWSM Libraries: County Warning Area Boundaries
 
-FILE2="z_03de14a"  # NWSM Libraries: Public Zone Boundaries
-#FILE2="z_04fe15"   # NWSM Libraries: Public Zone Boundaries
+FILE2="z_04fe15b"  # NWSM Libraries: Public Zone Boundaries
+#FILE2="z_07ap15"   # NWSM Libraries: Public Zone Boundaries
 
 FILE3="mz02de14a"  # NWSM Libraries: Coastal and Offshore Marine Zones
 
@@ -48,8 +48,8 @@ FILE4="oz01ap14b"  # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE5="hz04jn14"   # NWSM Libraries: Coastal and Offshore Marine Zones
 
-FILE6="fz03de14a"  # NWSM Libraries: Fire Weather Zone Boundaries
-#FILE6="fz04fe15"   # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz04fe15b"  # NWSM Libraries: Fire Weather Zone Boundaries
+#FILE6="fz07ap15"   # NWSM Libraries: Fire Weather Zone Boundaries
 
 FILE7="c_03de14"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
 
