@@ -417,7 +417,7 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
 
  if  test  $use_proj = "yes" 
  then
-   CONTSHP="shpcentrd shpproj shpdata shpwkb"
+   CONTSHP="shpcentrd$(EXEEXT) shpproj$(EXEEXT) shpdata$(EXEEXT) shpwkb$(EXEEXT)"
  fi
 fi
 AC_SUBST(SUBSHP)
