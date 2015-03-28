@@ -50,6 +50,7 @@ online_DATA=terraserver.geo terraserver-topo.geo \
         OSM_cloudmade_1.geo OSM_cloudmade_2.geo \
         OSM_cloudmade_5.geo OSM_cloudmade_998.geo \
         OSM_cloudmade_999.geo OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
+        OSM_tiled_fosm.geo \
         OSM_tiled_osmarender.geo OSM_tiled_skiing.geo \
         OSM_tiled_topOSM_0_relief.geo \
         OSM_tiled_topOSM_1_contour.geo  OSM_tiled_topOSM_2_features.geo
@@ -109,6 +110,12 @@ OSM_tiled_mapnik.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://tile.openstreetmap.org/!' \
 	    -e 's/-STYLE/-mapnik/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_fosm.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://map.fosm.org/default/!' \
+	    -e 's/-STYLE/-fosm/' \
 	    < $(top_srcdir)/OSM_template >$@
 
 OSM_tiled_osmarender.geo: OSM_template
