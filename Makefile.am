@@ -18,10 +18,9 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
         README.CYGWIN README.Getting-Started README.Contributing \
         README.MAPS README.win32 README.OSM_maps testdbfawk.1 \
-        DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 terraserver.geo \
-        terraserver-reflectivity.geo terraserver-urban.geo worldhi.map \
-        terraserver-topo.geo USRadar.geo CanadaTopo250k.geo \
-        CanadaTopo50k.geo TXRadar.geo WMSRadar.geo Davis LaCrosse \
+        DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \
+        worldhi.map \
+        Davis LaCrosse \
         OSM_template \
         CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png \
         COPYING COPYING.LIB.LESSTIF AUTHORS
@@ -44,7 +43,8 @@ map_DATA=worldhi.map CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-        OSM_tiled_fosm.geo 
+        OSM_tiled_fosm.geo OSM_tiled_mapquest.geo \
+	OSM_tiled_mapquest-aerial.geo 
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -91,6 +91,18 @@ OSM_tiled_fosm.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://map.fosm.org/default/!' \
 	    -e 's/-STYLE/-fosm/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_mapquest.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://otile3.mqcdn.com/tiles/1.0.0/osm/!' \
+	    -e 's/-STYLE/-mapquest/' \
+	    < $(top_srcdir)/OSM_template >$@
+
+OSM_tiled_mapquest-aerial.geo: OSM_template
+	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
+	    -e's!^#URL tileURL!URL http://otile3.mqcdn.com/tiles/1.0.0/sat/!' \
+	    -e 's/-STYLE/-mapquest-aerial/' \
 	    < $(top_srcdir)/OSM_template >$@
 
 ChangeLog::
