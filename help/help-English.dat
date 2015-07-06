@@ -2279,6 +2279,13 @@ set up communications with it when the program first starts.
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
+Selecting "Add Delay" will tell xastir to insert a one second delay
+between issuing the command to enter "Converse" mode and the actual
+data to be sent.  This options exists solely to deal with the
+Kantronics KAM TNC, which will often fail to enter converse mode if it
+receives data immediately after the converse command is given.  If you
+have a KAM, check this box, if not, leave it unchecked.
+
 The TNC Port is the Unix device that the TNC (or TNC and GPS) is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc.
 
