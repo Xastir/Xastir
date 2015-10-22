@@ -1412,7 +1412,10 @@ void load_data_or_default(void) {
 
     if (!get_string ("STATION_COMMENTS", my_comment, sizeof(my_comment))
             || my_comment[0] == '\0') {
-        xastir_snprintf (my_comment, sizeof(my_comment), "XASTIR-%s", XASTIR_SYSTEM);
+          // We used to put "XASTIR-Linux" (or similar) here...
+        //xastir_snprintf (my_comment, sizeof(my_comment), "XASTIR-%s", XASTIR_SYSTEM);
+        // Now we put the empty string.
+        xastir_snprintf (my_comment, sizeof(my_comment), "");
     }
     /* replacing defined MY_TRAIL_DIFF_COLOR from db.c, default 0 matches 
        default value of MY_TRAIL_DIFF_COLOR to show all mycall-ssids in 
