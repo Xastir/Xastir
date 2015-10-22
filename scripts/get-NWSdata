@@ -38,20 +38,23 @@
 # here if that start-date hasn't arrived yet!
 #
 FILE1="w_16ap15a"  # NWSM Libraries: County Warning Area Boundaries
+#FILE1="w_10nv15"  # NWSM Libraries: County Warning Area Boundaries
 
-FILE2="z_28my15"   # NWSM Libraries: Public Zone Boundaries
-#FILE2="z_01oc15"   # NWSM Libraries: Public Zone Boundaries
+FILE2="z_01oc15"   # NWSM Libraries: Public Zone Boundaries
+#FILE2="z_10nv15"   # NWSM Libraries: Public Zone Boundaries
 
-FILE3="mz02de14a"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz02de14b"  # NWSM Libraries: Coastal and Offshore Marine Zones
+#FILE3="mz10nv15"  # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE4="oz01ap14b"  # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE5="hz04jn14"   # NWSM Libraries: Coastal and Offshore Marine Zones
 
-FILE6="fz28my15"   # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz06au15"   # NWSM Libraries: Fire Weather Zone Boundaries
+#FILE6="fz10nv15"   # NWSM Libraries: Fire Weather Zone Boundaries
 
-FILE7="c_03de14a"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
-#FILE7="c_01oc15"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+FILE7="c_01oc15a"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+#FILE7="c_10nv15"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
 
 
 x=`dirname $0`
