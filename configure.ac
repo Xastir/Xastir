@@ -136,13 +136,24 @@ LIBS="$LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
 
 AC_SEARCH_LIBS(tan,math m)
 AC_CHECK_LIB([Xext], [XextAddDisplay])
-# It appears that XpGetDocumentData is not used
-# *anywhere* in Xastir, and the fact that this is being probed for has 
-# confused at least one user into thinking he needed to install the X Printing
-# Extension development headers when it was completely unnecessary.  But 
-# apparently  at least one linux system has a motif library that requires 
-# libXp and doesn't link it in dynamically --- so this needs to be enabled?
-AC_CHECK_LIB([Xp], [XpGetDocumentData]) 
+
+#***********************************
+# Check for libXp removed on 31 Oct 2015
+# This was in place for a very long time, but libxp is now deprecated and
+# has even been removed from some distros
+#
+# XpGetDocumentData is not used *anywhere* in Xastir, but some distros have
+# a Motif library that is linked against it.  This is supposed to be
+# taken care of by the shared library loader, not by explicit linking, but
+# as late as 2007 some distros had it linked wrong.  It appears as of 2015
+# that nobody still does that, and this check causes more harm than good.
+#
+# If the build of Xastir fails at link time looking for XpGetDocumentData,
+# then somebody *does* still do that incorrect shared library linking,
+# and y9ou'll need to re-enable this on your system
+#
+#AC_CHECK_LIB([Xp], [XpGetDocumentData])
+#************************************
 AC_CHECK_LIB([Xt], [XtDisplay]) 
 AC_CHECK_LIB([Xm], [XmTextFindString])
 
