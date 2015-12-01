@@ -1,6 +1,6 @@
 # $Id$
 #
-# Copyright (C) 2003-2013  The Xastir Group
+# Copyright (C) 2003-2015  The Xastir Group
 #
 # This dbfawk file is used to map arbitrary dbf data that accompanies
 # a shapefile into Xastir canoncical values of:
@@ -26,15 +26,14 @@
 # in the same format as the alert->title (e.g. WI_C037).
 #
 # This DBFAWK file matches the set of county shapefiles that was published
-# by NOAA in 2009, and differs from the earlier format.  Shapefiles from 2008
-# are matched by the file "nwsc_ddmmyy.dbfawk" instead.
+# by NOAA in 2015, which differs from earlier formats of these county
+# shapefiles.
 #
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
 # dbfinfo is the "signature" of the dbf file listing the column names in order.
 # dbfinfo should match the dbf file that we say this dbfawk file goes with.
-#dbfinfo="OBJECTID_1:STATE:CWA:COUNTYNAME:FIPS:TIME_ZONE:FE_AREA:LON:LAT:Shape_Leng:Shape_Area";
 dbfinfo="LON:LAT:STATE:CWA:COUNTYNAME:FIPS:TIME_ZONE:FE_AREA
 # dbffields is which of the above fields we actually want to look at.
 # Note that the order we list these is important since we are appending the
