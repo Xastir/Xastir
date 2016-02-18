@@ -4,6 +4,9 @@
 # parse packets containing lat/long, turn them into APRS-like packets, then use
 # "xastir_udp_client" to inject them into Xastir.
 #
+# Invoke it as:
+#   ./ads-b.pl <callsign> <passcode>
+#
 # I got the "dump1090" program from here originally:
 #       https://github.com/antirez/dump1090
 # but the author says the version here by another author is more feature-complete:
@@ -15,7 +18,7 @@
 #   "./dump1090 --net --aggressive"
 #
 # Then invoke this script in another xterm:
-#   "./ads-b.pl"
+#   "./ads-b.pl <callsign> <passcode>"
 #
 # It will receive packets from port 30003 of "dump1090", parse them, then inject
 # APRS packets into Xastir's UDP port (2023) if "Server Ports" are enabled in Xastir.
@@ -56,15 +59,24 @@ if 0;
 use IO::Socket;
 
 
-$xastir_user = "****";      # Callsign (in all CAPS) for Xastir injection & packet FROM
-$xastir_pass = 1234;        # Numeric password to go with above callsign
-
 $dump1090_host = "localhost"; # Server where dump1090 is running
 $dump1090_port = 30003;     # 30003 is dump1090 default port
 
 $xastir_host = "localhost"; # Server where Xastir is running
 $xastir_port = 2023;        # 2023 is Xastir default UDP port
 
+$xastir_user = shift;
+if ($xastir_user eq "") {
+  print "Please enter a callsign for Xastir injection\n";
+  die;
+}
+$xastir_user =~ tr/a-z/A-Z/;
+
+$xastir_pass = shift;
+if ($xastir_pass eq "") {
+  print "Please enter a passcode for Xastir injection\n";
+  die;
+}
 
 # Connect to the server using a tcp socket
 #
