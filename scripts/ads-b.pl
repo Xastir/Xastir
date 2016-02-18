@@ -41,6 +41,12 @@
 # If you're only interested in 978 MHz decoding, there's a way to start "dump1090" w/o a
 # device attached, then start "dump978" and connect it to "dump1090".
 #
+# For reference, using 468/frequency (MHz) to get length of 1/2 wave dipole in feet:
+#   1/2 wavelength on 1090 MHz: 5.15"
+#   1/2 wavelength on 978 MHz: 5.74"
+#   1/4 wavelength on 1090 MHz: 2.576" or 2  9/16"
+#   1/4 wavelength on 978 MHz: 2.87" or 2  7/8"
+#
 
 
 eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
