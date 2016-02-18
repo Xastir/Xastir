@@ -66,6 +66,7 @@ $xastir_host = "localhost"; # Server where Xastir is running
 $xastir_port = 2023;        # 2023 is Xastir default UDP port
 
 $xastir_user = shift;
+chomp $xastir_user;
 if ($xastir_user eq "") {
   print "Please enter a callsign for Xastir injection\n";
   die;
@@ -73,6 +74,7 @@ if ($xastir_user eq "") {
 $xastir_user =~ tr/a-z/A-Z/;
 
 $xastir_pass = shift;
+chomp $xastir_pass;
 if ($xastir_pass eq "") {
   print "Please enter a passcode for Xastir injection\n";
   die;
