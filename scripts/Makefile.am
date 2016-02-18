@@ -5,6 +5,7 @@
 
 scriptsdir=${pkgdatadir}/scripts
 dist_scripts_DATA = \
+    ads-b.pl \
     Coordinate.pm \
     coord-convert.pl \
     geopdf2gtiff.pl \
