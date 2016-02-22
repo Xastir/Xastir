@@ -114,9 +114,18 @@ while (<$socket>)
 
     if ( $fields[11] ne ""
          && $fields[11] ne 0 ) {
+
+      $old = "";
+      if (defined($altitude{$fields[4]})) {
+        $old = $altitude{$fields[4]};
+      }
+
       $altitude{$fields[4]} = sprintf("%06d", $fields[11]);
-      print "$fields[4]\t\t$fields[11]ft\n";
-      $newdata{$fields[4]}++;
+
+      if ($old ne $altitude{$fields[4]}) {
+        print "$fields[4]\t\t$fields[11]ft\n";
+        $newdata{$fields[4]}++;
+      }
     }
   }
 
@@ -125,15 +134,33 @@ while (<$socket>)
   if ( $fields[1] ==  4 || $fields[1] == 2 ) {
 
     if ( $fields[12] ne "" ) {
+
+      $old = "";
+      if (defined($groundspeed{$fields[4]})) {
+        $old = $groundspeed{$fields[4]};
+      }
+
       $groundspeed{$fields[4]} = $fields[12];
-      print "$fields[4]\t\t\t$fields[12]kn\n";
-      $newdata{$fields[4]}++;
+
+      if ($old ne $groundspeed{$fields[4]}) {
+        print "$fields[4]\t\t\t$fields[12]kn\n";
+        $newdata{$fields[4]}++;
+      }
     }
 
     if ( $fields[13] ne "" ) {
+
+      $old = "";
+      if (defined($track{$fields[4]})) {
+        $old = $track{$fields[4]};
+      }
+
       $track{$fields[4]} = $fields[13];
-      print "$fields[4]\t\t\t\t$fields[13]°\n";
-      $newdata{$fields[4]}++;
+
+      if ($old ne $track{$fields[4]}) {
+        print "$fields[4]\t\t\t\t$fields[13]°\n";
+        $newdata{$fields[4]}++;
+      }
     }
   }
 
@@ -142,6 +169,11 @@ while (<$socket>)
   if (  ( $fields[1] == 2 || $fields[1] == 3 )
        && $fields[14] ne ""
        && $fields[15] ne "" ) {
+
+    $oldlat = "";
+    if (defined($lat{$fields[4]})) {
+      $oldlat = $lat{$fields[4]};
+    }
 
     $lat = $fields[14] * 1.0;
     if ($lat >= 0.0) {
@@ -155,6 +187,11 @@ while (<$socket>)
     $latmins2 = $latmins * 60.0;
     $lat{$fields[4]} = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
+    $oldlon = "";
+    if (defined($lon{$fields[4]})) {
+      $oldlon = $lon{$fields[4]};
+    }
+
     $lon = $fields[15] * 1.0;
     if ($lon >= 0.0) {
       $EW = 'E';
@@ -167,8 +204,10 @@ while (<$socket>)
     $lonmins2 = $lonmins * 60.0;
     $lon{$fields[4]} = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
 
-    print "$fields[4]\t\t\t\t\t$lat{$fields[4]} / $lon{$fields[4]}\n";
-    $newdata{$fields[4]}++;
+    if ( ($oldlat ne $lat{$fields[4]}) || ($oldlon ne $lon{$fields[4]}) ) {
+      print "$fields[4]\t\t\t\t\t$lat{$fields[4]} / $lon{$fields[4]}\n";
+      $newdata{$fields[4]}++;
+    }
   }
 
 
@@ -176,10 +215,18 @@ while (<$socket>)
   if (    ($fields[0] eq "ID" || $fields[1] ==  1)
        && $fields[10] ne "????????"
        && $fields[10] ne "" ) {
- 
+
+    $old = "";
+    if (defined($tail{$fields[4]})) {
+      $old = $tail{$fields[4]}; 
+    }
+
     $tail{$fields[4]} = $fields[10];
-    print "$fields[4]\t\t\t\t\t$fields[10]\n";
-    $newdata{$fields[4]}++;
+
+    if ($old ne $tail{$fields[4]}) {
+      print "$fields[4]\t\t\t\t\t$fields[10]\n";
+      $newdata{$fields[4]}++;
+    }
   }
 
 
