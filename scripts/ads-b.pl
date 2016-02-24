@@ -45,9 +45,11 @@
 # device attached, then start "dump978" and connect it to "dump1090".
 #
 # For reference, using 468/frequency (MHz) to get length of 1/2 wave dipole in feet:
+#
 #   1/2 wavelength on 1090 MHz: 5.15"
-#   1/2 wavelength on 978 MHz: 5.74"
 #   1/4 wavelength on 1090 MHz: 2.576" or 2  9/16"
+#
+#   1/2 wavelength on 978 MHz: 5.74"
 #   1/4 wavelength on 978 MHz: 2.87" or 2  7/8"
 #
 
@@ -58,6 +60,13 @@ if 0;
 
 use IO::Socket;
 
+
+# These two used for position ambiguity. Set them to a truncated lat/long based on your
+# receive location, such as: "47  .  N" and "122  .  W" or ""475 .  N" and "1221 .  W",
+# (with spaces in place of numbers) depending on how big you want the abiguity rectangle
+# box to be.
+#$my_lat = "47  .  N";   # Formatted like:  "475 .  N". Spaces for position ambiguity.
+#$my_lon = "122  .  W";  # Formatted like: "1221 .  W". Spaces for position ambiguity.
 
 $dump1090_host = "localhost"; # Server where dump1090 is running
 $dump1090_port = 30003;     # 30003 is dump1090 default port
@@ -234,10 +243,27 @@ while (<$socket>)
   # new APRS string if we have enough data defined.
   #
   if ( defined($newdata{$fields[4]})
-       && $newdata{$fields[4]}
-       && defined($lat{$fields[4]})
-       && defined($lon{$fields[4]}) ) {
+       && $newdata{$fields[4]} ) {
 
+    # Auto-switch the symbol based on speed/altitude.
+    # Symbols:
+    #   Small airplane = /'
+    #       Helicopter = /X 
+    #   Large aircraft = /^
+    #         Aircraft = \^ (Not used in this script)
+    #
+    #  Cessna 150:  57 knots minimum.
+    # Twin Cessna: 215 knots maximum.
+    #  UH-1N Huey: 110 knots maximum.
+    # Landing speed Boeing 757: 126 knots.
+    #
+    # If <= 10000 feet and  1 -  56 knots: Helicopter
+    # If <= 20000 feet and 57 - 125 knots: Small aircraft
+    # If >  20000 feet                   : Large aircraft
+    # if                      > 126 knots: Large aircraft
+    #
+    $symbol = "'"; # Start with small aircraft symbol
+ 
     $newtrack = "000";
     if ( defined($track{$fields[4]}) ) {
       $newtrack = sprintf("%03d", $track{$fields[4]} );
@@ -246,6 +272,12 @@ while (<$socket>)
     $newspeed = "000";
     if ( defined ($groundspeed{$fields[4]}) ) {
       $newspeed = sprintf("%03d", $groundspeed{$fields[4]} );
+      if ( ($groundspeed{$fields[4]} > 0) && ($groundspeed{$fields[4]} < 57) ) {
+        $symbol = "X";  # Switch to helicopter symbol
+      }
+      if ($groundspeed{$fields[4]} > 126) {
+        $symbol = "^";  # Switch to large aircraft symbol
+      } 
     }
 
     $newtail = "";
@@ -256,23 +288,42 @@ while (<$socket>)
     $newalt = "";
     if ( defined($altitude{$fields[4]}) ) {
       $newalt = " /A=$altitude{$fields[4]}";
+
+      if ($altitude{$fields[4]} > 20000) {
+        $symbol = "^";  # Switch to large aircraft symbol
+      }
+      elsif ($symbol eq "^") {
+        # Do nothing, already switched to large aircraft due to speed
+      }
+      elsif ($symbol eq "X" && $altitude{$fields[4]} > 10000) {
+        $symbol = "'";  # Switch to small aircraft from helicopter
+      }
     }
 
-    $aprs="$xastir_user>APRS:)$fields[4]!$lat{$fields[4]}/$lon{$fields[4]}'$newtrack/$newspeed$newalt$newtail";
-    print "\t\t\t\t\t\t\t\t$aprs\n";
+    # Do we have a lat/lon?
+    if ( defined($lat{$fields[4]})
+         && defined($lon{$fields[4]}) ) {
+      # Yes, we have a lat/lon
+      $aprs="$xastir_user>APRS:)$fields[4]!$lat{$fields[4]}/$lon{$fields[4]}$symbol$newtrack/$newspeed$newalt$newtail";
+      print "\t\t\t\t\t\t\t\t$aprs\n";
 
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+    }
+    else {
+      # No, we have no lat/lon.
+      # Send out packet with position ambiguity since we don't know
+      # the lat/long, but it is definitely within receive range.
+#      $aprs="$xastir_user>APRS:)$fields[4]!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail";
+#      print "\t\t\t\t\t\t\t\t$aprs\n";
+
+      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+#      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+    }
 
     $newdata{$fields[4]} = 0;
   }
 
-  # Create Object or Item APRS packet
-  # Symbol:   Small airplane = /'
-  #           Helicopter = /X 
-  #           Large aircraft = /^
-  #           Aircraft = \^
-  #
   # Convert altitude to altitude above MSL instead of altitude from a reference barometric reading?
   # Info:  http://forums.flyer.co.uk/viewtopic.php?t=16375
   # How many millibar in 1 feet of air? The answer is 0.038640888 @ 0C (25.879232 ft/mb).
