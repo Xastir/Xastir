@@ -104,8 +104,16 @@ select((select(STDOUT), $| = 1)[0]);
 
 while (<$socket>)
 {
+
   # For testing:
+  #
   #$_ = "MSG,3,,,A0CF8D,,,,,,,28000,,,47.87670,-122.27269,,,0,0,0,0";
+  #$_ = "MSG,5,,,AD815E,,,,,,,575,,,,,,,,,,";
+  #$_ = "MSG,4,,,AAB812,,,,,,,,454,312,,,0,,0,0,0,0";
+  #$_ = "MSG,3,,,ABB2D5,,,,,,,40975,,,47.68648,-122.67834,,,0,0,0,0";   # Lat/long/altitude (ft)
+  #$_ = "MSG,1,,,A2CB32,,,,,,BOE181  ,,,,,,,,0,0,0,0";  # Tail number or flight number
+  #$_ = "MSG,4,,,A0F4F6,,,,,,,,175,152,,,-1152,,0,0,0,0";   # Ground speed (knots)/Track
+
 
   chomp;
 
@@ -113,8 +121,11 @@ while (<$socket>)
   # Sentences have either 10 or 22 fields.
   @fields = split(",");
 
-
+  $plane_id = $fields[4];
+  $print1 = $plane_id;
+ 
   # Parse altitude if MSG Type 2, 3, 5, 6, or 7, save in hash.
+  $print2 = "       ";
   if (    $fields[1] == 2
        || $fields[1] == 3
        || $fields[1] == 5
@@ -125,63 +136,66 @@ while (<$socket>)
          && $fields[11] ne 0 ) {
 
       $old = "";
-      if (defined($altitude{$fields[4]})) {
-        $old = $altitude{$fields[4]};
+      if (defined($altitude{$plane_id})) {
+        $old = $altitude{$plane_id};
       }
 
-      $altitude{$fields[4]} = sprintf("%06d", $fields[11]);
+      $altitude{$plane_id} = sprintf("%06d", $fields[11]);
 
-      if ($old ne $altitude{$fields[4]}) {
-        print "$fields[4]\t\t$fields[11]ft\n";
-        $newdata{$fields[4]}++;
+      if ($old ne $altitude{$plane_id}) {
+        $print2 = sprintf("%5sft", $fields[11]);
+        $newdata{$plane_id}++;
       }
     }
   }
 
 
   # Parse ground speed and track if MSG Type 2 or 4, save in hash.
+  $print3 = "     ";
+  $print4 = "    ";
   if ( $fields[1] ==  4 || $fields[1] == 2 ) {
 
     if ( $fields[12] ne "" ) {
 
       $old = "";
-      if (defined($groundspeed{$fields[4]})) {
-        $old = $groundspeed{$fields[4]};
+      if (defined($groundspeed{$plane_id})) {
+        $old = $groundspeed{$plane_id};
       }
 
-      $groundspeed{$fields[4]} = $fields[12];
+      $groundspeed{$plane_id} = $fields[12];
 
-      if ($old ne $groundspeed{$fields[4]}) {
-        print "$fields[4]\t\t\t$fields[12]kn\n";
-        $newdata{$fields[4]}++;
+      if ($old ne $groundspeed{$plane_id}) {
+        $print3 = sprintf("%3skn", $fields[12]);
+        $newdata{$plane_id}++;
       }
     }
 
     if ( $fields[13] ne "" ) {
 
       $old = "";
-      if (defined($track{$fields[4]})) {
-        $old = $track{$fields[4]};
+      if (defined($track{$plane_id})) {
+        $old = $track{$plane_id};
       }
 
-      $track{$fields[4]} = $fields[13];
+      $track{$plane_id} = $fields[13];
 
-      if ($old ne $track{$fields[4]}) {
-        print "$fields[4]\t\t\t\t$fields[13]°\n";
-        $newdata{$fields[4]}++;
+      if ($old ne $track{$plane_id}) {
+        $print4 = sprintf("%3s°", $fields[13]);
+        $newdata{$plane_id}++;
       }
     }
   }
 
 
   # Parse lat/long if MSG Type 2 or 3, save in hash.
+  $print5 = "\t\t\t";
   if (  ( $fields[1] == 2 || $fields[1] == 3 )
        && $fields[14] ne ""
        && $fields[15] ne "" ) {
 
     $oldlat = "";
-    if (defined($lat{$fields[4]})) {
-      $oldlat = $lat{$fields[4]};
+    if (defined($lat{$plane_id})) {
+      $oldlat = $lat{$plane_id};
     }
 
     $lat = $fields[14] * 1.0;
@@ -194,11 +208,11 @@ while (<$socket>)
     $latdeg = int($lat);
     $latmins = $lat - $latdeg;
     $latmins2 = $latmins * 60.0;
-    $lat{$fields[4]} = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
+    $lat{$plane_id} = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
     $oldlon = "";
-    if (defined($lon{$fields[4]})) {
-      $oldlon = $lon{$fields[4]};
+    if (defined($lon{$plane_id})) {
+      $oldlon = $lon{$plane_id};
     }
 
     $lon = $fields[15] * 1.0;
@@ -211,11 +225,11 @@ while (<$socket>)
     $londeg = int($lon);
     $lonmins = $lon - $londeg;
     $lonmins2 = $lonmins * 60.0;
-    $lon{$fields[4]} = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
+    $lon{$plane_id} = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
 
-    if ( ($oldlat ne $lat{$fields[4]}) || ($oldlon ne $lon{$fields[4]}) ) {
-      print "$fields[4]\t\t\t\t\t$lat{$fields[4]} / $lon{$fields[4]}\n";
-      $newdata{$fields[4]}++;
+    if ( ($oldlat ne $lat{$plane_id}) || ($oldlon ne $lon{$plane_id}) ) {
+      $print5 = sprintf("%8s,%9s", $lat{$plane_id},$lon{$plane_id});
+      $newdata{$plane_id}++;
     }
   }
 
@@ -226,15 +240,22 @@ while (<$socket>)
        && $fields[10] ne "" ) {
 
     $old = "";
-    if (defined($tail{$fields[4]})) {
-      $old = $tail{$fields[4]}; 
+    if (defined($tail{$plane_id})) {
+      $old = $tail{$plane_id}; 
     }
 
-    $tail{$fields[4]} = $fields[10];
+    $tail{$plane_id} = $fields[10];
 
-    if ($old ne $tail{$fields[4]}) {
-      print "$fields[4]\t\t\t\t\t$fields[10]\n";
-      $newdata{$fields[4]}++;
+    if ($old ne $tail{$plane_id}) {
+      $print6 = sprintf("Tactical=%-9s", $fields[10]);
+      $newdata{$plane_id}++;
+ 
+      # Assign tactical call = tail number or flight number
+      $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $fields[10];
+      print("$print1\t\t$print2  $print3  $print4  $print6  $aprs\n");
+ 
+      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
     }
   }
 
@@ -242,8 +263,8 @@ while (<$socket>)
   # Above we parsed some message that changed some of our data, send out the
   # new APRS string if we have enough data defined.
   #
-  if ( defined($newdata{$fields[4]})
-       && $newdata{$fields[4]} ) {
+  if ( defined($newdata{$plane_id})
+       && $newdata{$plane_id} ) {
 
     # Auto-switch the symbol based on speed/altitude.
     # Symbols:
@@ -265,47 +286,47 @@ while (<$socket>)
     $symbol = "'"; # Start with small aircraft symbol
  
     $newtrack = "000";
-    if ( defined($track{$fields[4]}) ) {
-      $newtrack = sprintf("%03d", $track{$fields[4]} );
+    if ( defined($track{$plane_id}) ) {
+      $newtrack = sprintf("%03d", $track{$plane_id} );
     }
 
     $newspeed = "000";
-    if ( defined ($groundspeed{$fields[4]}) ) {
-      $newspeed = sprintf("%03d", $groundspeed{$fields[4]} );
-      if ( ($groundspeed{$fields[4]} > 0) && ($groundspeed{$fields[4]} < 57) ) {
+    if ( defined ($groundspeed{$plane_id}) ) {
+      $newspeed = sprintf("%03d", $groundspeed{$plane_id} );
+      if ( ($groundspeed{$plane_id} > 0) && ($groundspeed{$plane_id} < 57) ) {
         $symbol = "X";  # Switch to helicopter symbol
       }
-      if ($groundspeed{$fields[4]} > 126) {
+      if ($groundspeed{$plane_id} > 126) {
         $symbol = "^";  # Switch to large aircraft symbol
       } 
     }
 
     $newtail = "";
-    if ( defined($tail{$fields[4]}) ) {
-      $newtail = " $tail{$fields[4]}";
+    if ( defined($tail{$plane_id}) ) {
+      $newtail = " $tail{$plane_id}";
     }
 
     $newalt = "";
-    if ( defined($altitude{$fields[4]}) ) {
-      $newalt = " /A=$altitude{$fields[4]}";
+    if ( defined($altitude{$plane_id}) ) {
+      $newalt = " /A=$altitude{$plane_id}";
 
-      if ($altitude{$fields[4]} > 20000) {
+      if ($altitude{$plane_id} > 20000) {
         $symbol = "^";  # Switch to large aircraft symbol
       }
       elsif ($symbol eq "^") {
         # Do nothing, already switched to large aircraft due to speed
       }
-      elsif ($symbol eq "X" && $altitude{$fields[4]} > 10000) {
+      elsif ($symbol eq "X" && $altitude{$plane_id} > 10000) {
         $symbol = "'";  # Switch to small aircraft from helicopter
       }
     }
 
     # Do we have a lat/lon?
-    if ( defined($lat{$fields[4]})
-         && defined($lon{$fields[4]}) ) {
+    if ( defined($lat{$plane_id})
+         && defined($lon{$plane_id}) ) {
       # Yes, we have a lat/lon
-      $aprs="$xastir_user>APRS:)$fields[4]!$lat{$fields[4]}/$lon{$fields[4]}$symbol$newtrack/$newspeed$newalt$newtail";
-      print "\t\t\t\t\t\t\t\t$aprs\n";
+      $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail";
+      print("$print1\t\t$print2  $print3  $print4  $print5  $aprs\n");
 
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
       system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
@@ -314,14 +335,16 @@ while (<$socket>)
       # No, we have no lat/lon.
       # Send out packet with position ambiguity since we don't know
       # the lat/long, but it is definitely within receive range.
-#      $aprs="$xastir_user>APRS:)$fields[4]!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail";
+#      $aprs="$xastir_user>APRS:)$plane_id!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail";
 #      print "\t\t\t\t\t\t\t\t$aprs\n";
 
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
 #      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+
+      print("$print1\t\t$print2  $print3  $print4\n");
     }
 
-    $newdata{$fields[4]} = 0;
+    $newdata{$plane_id} = 0;
   }
 
   # Convert altitude to altitude above MSL instead of altitude from a reference barometric reading?
