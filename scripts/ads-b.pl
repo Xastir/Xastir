@@ -26,8 +26,65 @@
 # A good addition for later: Timestamp of last update.
 # If too old when new message comes in, delete old data and start over.
 #
-# "dump1090" output format is here:
+#
+# Port 30001 is an input port (dump978 connects there and dumps data in).
+#
+# Port 30002 outputs in raw format, like:
+#   *8D451E8B99019699C00B0A81F36E;
+#   Every entry is separated by a simple newline (LF character, hex 0x0A).
+#   The "callsign" (6 digits of hex) in chunk #4 = ICAO (airframe identifier).
+#   Decoding the sentences:
+#     https://www.sussex.ac.uk/webteam/gateway/file.php?name=coote-proj.pdf&site=20]
+#     http://adsb-decode-guide.readthedocs.org/en/latest/
+#
+# Port 30003 outputs data is SBS1 (BaseStation) format, and is used by this script.
+#   Decoding the sentences:
 #   http://woodair.net/SBS/Article/Barebones42_Socket_Data.htm
+#   NOTE: I changed the numbers by -1 to fit Perl's "split()" command's field numbering.
+#     Field 0:
+#       Message type    (MSG, STA, ID, AIR, SEL or CLK)
+#     Field 1:
+#       Transmission Type   MSG sub types 1 to 8. Not used by other message types.
+#     Field 2:
+#       Session ID      Database Session record number
+#     Field 3:
+#       AircraftID      Database Aircraft record number
+#     Field 4:
+#       HexIdent    Aircraft Mode S hexadecimal code (What we use here... Unique identifier)
+#     Field 5:
+#       FlightID    Database Flight record number
+#     Field 6:
+#       Date message generated       As it says
+#     Field 7:
+#       Time message generated       As it says
+#     Field 8:
+#       Date message logged      As it says
+#     Field 9:
+#       Time message logged      As it says
+#     Field 10:
+#       Callsign    An eight digit flight ID - can be flight number or registration (or even nothing).
+#     Field 11:
+#       Altitude    Mode C altitude. Height relative to 1013.2mb (Flight Level). Not height AMSL..
+#     Field 12:
+#       GroundSpeed     Speed over ground (not indicated airspeed)
+#     Field 13:
+#       Track   Track of aircraft (not heading). Derived from the velocity E/W and velocity N/S
+#     Field 14:
+#       Latitude    North and East positive. South and West negative.
+#     Field 15:
+#       Longitude   North and East positive. South and West negative.
+#     Field 16:
+#       VerticalRate    64ft resolution
+#     Field 17:
+#       Squawk      Assigned Mode A squawk code.
+#     Field 18:
+#       Alert (Squawk change)   Flag to indicate squawk has changed.
+#     Field 19:
+#       Emergency   Flag to indicate emergency code has been set
+#     Field 20:
+#       SPI (Ident)     Flag to indicate transponder Ident has been activated.
+#     Field 21:
+#       IsOnGround      Flag to indicate ground squat switch is active
 #
 # Example packets to parse:
 # MSG,3,,,ABB2D5,,,,,,,40975,,,47.68648,-122.67834,,,0,0,0,0    # Lat/long/altitude (ft)
@@ -260,6 +317,43 @@ while (<$socket>)
   }
 
 
+  $squawk_txt = "";
+  if ( defined($fields[17]) && ($fields[17] ne "") ) {
+    $squawk = $fields[17];
+    $squawk_txt = sprintf(" SQUAWK=%s", $squawk); 
+  }
+
+
+  $emerg_txt = "";
+  $emergency = "0";
+  if ( defined($fields[19]) ) {
+    $emergency = $fields[19];
+  }
+  if ( $emergency eq "-1" ) {       # Emergency of some type
+    $emerg_txt = " EMERGENCY=";     # Keyword triggers Xastir's emergency mode!!!
+ 
+    # Check squawk code
+    if ($squawk eq "7500") {        # Unlawful Interference (hijacking)
+      $emerg_txt = $emerg_txt . "Hijacking";
+    }
+    if ($squawk eq "7600") {        # Communications failure/problems
+      $emerg_txt = $emerg_txt . "Comms_Failure";
+    }
+    if ($squawk eq "7700") {        # General Emergency
+      $emerg_txt = $emerg_txt . "General";
+    }
+  }
+
+
+  $onGroundTxt = "";
+  if ( defined($fields[21]) ) {
+    $onGround = $fields[21];
+    if ($onGround eq "-1") {
+      $onGroundTxt = " On_Ground";
+    }
+  }
+ 
+
   # Above we parsed some message that changed some of our data, send out the
   # new APRS string if we have enough data defined.
   #
@@ -325,7 +419,7 @@ while (<$socket>)
     if ( defined($lat{$plane_id})
          && defined($lon{$plane_id}) ) {
       # Yes, we have a lat/lon
-      $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail";
+      $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt";
       print("$print1\t\t$print2  $print3  $print4  $print5  $aprs\n");
 
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
@@ -341,7 +435,7 @@ while (<$socket>)
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
 #      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
 
-      print("$print1\t\t$print2  $print3  $print4\n");
+      print("$print1\t\t$print2  $print3  $print4$emerg_txt$squawk_txt$onGroundTxt\n");
     }
 
     $newdata{$plane_id} = 0;
