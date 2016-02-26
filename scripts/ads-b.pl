@@ -5,7 +5,7 @@
 # "xastir_udp_client" to inject them into Xastir.
 #
 # Invoke it as:
-#   ./ads-b.pl <callsign> <passcode>
+#   ./ads-b.pl <callsign-15> <passcode>
 #
 # I got the "dump1090" program from here originally:
 #       https://github.com/antirez/dump1090
@@ -13,18 +13,22 @@
 #       https://github.com/MalcolmRobb/dump1090
 #
 # Invoke the "dump1090" program like so:
-#   "./dump1090 --interactive --net --aggressive"
+#   "./dump1090 --interactive --net --aggressive --enable-agc"
 # or
-#   "./dump1090 --net --aggressive"
+#   "./dump1090 --net --aggressive --enable-agc"
 #
 # Then invoke this script in another xterm:
-#   "./ads-b.pl <callsign> <passcode>"
+#   "./ads-b.pl <callsign-15> <passcode>"
+#
+# NOTE: Do NOT use the same callsign as your Xastir instance, else it will
+# "adopt" those APRS Item packets as its own and retransmit them.
 #
 # It will receive packets from port 30003 of "dump1090", parse them, then inject
 # APRS packets into Xastir's UDP port (2023) if "Server Ports" are enabled in Xastir.
 #
 # A good addition for later: Timestamp of last update.
 # If too old when new message comes in, delete old data and start over.
+# This is useful when a plane exits and then re-enters my receive area.
 #
 #
 # Port 30001 is an input port (dump978 connects there and dumps data in).
@@ -40,7 +44,7 @@
 # Port 30003 outputs data is SBS1 (BaseStation) format, and is used by this script.
 #   Decoding the sentences:
 #   http://woodair.net/SBS/Article/Barebones42_Socket_Data.htm
-#   NOTE: I changed the numbers by -1 to fit Perl's "split()" command's field numbering.
+#   NOTE: I changed the numbers by -1 to fit Perl's "split()" command field numbering.
 #     Field 0:
 #       Message type    (MSG, STA, ID, AIR, SEL or CLK)
 #     Field 1:
@@ -86,6 +90,11 @@
 #     Field 21:
 #       IsOnGround      Flag to indicate ground squat switch is active
 #
+#
+# Squawk Codes:
+#   https://en.wikipedia.org/wiki/Transponder_%28aeronautics%29
+#
+#
 # Example packets to parse:
 # MSG,3,,,ABB2D5,,,,,,,40975,,,47.68648,-122.67834,,,0,0,0,0    # Lat/long/altitude (ft)
 # MSG,1,,,A2CB32,,,,,,BOE181  ,,,,,,,,0,0,0,0   # Tail number or flight number
@@ -94,7 +103,9 @@
 #
 # Note: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
 # invoke "dump1090" as above, then invoke "dump978" like this:
-#       rtl_sdr -f 978000000 -s 2083334 -g 48 -d 1 - | ./dump978 | ./uat2esnt | nc -q1 localhost 30001
+#
+#       rtl_sdr -f 978000000 -s 2083334 -g 0 -d 1 - | ./dump978 | ./uat2esnt | nc -q1 localhost 30001
+#
 # which will convert the 978 MHz packets into ADS-B ES packets and inject them into "dump1090"
 # for decoding. I haven't determined yet whether those packets will come out on "dump1090"'s
 # port 30003 (which this script uses). The above command also uses RTL device 1 instead of 0.
@@ -134,7 +145,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
 $xastir_user = shift;
 chomp $xastir_user;
 if ($xastir_user eq "") {
-  print "Please enter a callsign for Xastir injection\n";
+  print "Please enter a callsign for Xastir injection, but not Xastir's callsign/SSID!\n";
   die;
 }
 $xastir_user =~ tr/a-z/A-Z/;
