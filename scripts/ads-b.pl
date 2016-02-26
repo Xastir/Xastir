@@ -1,11 +1,19 @@
 #!/usr/bin/perl -W
 #
-# Convert "dump1090" telnet port output to Xastir UDP input.  This script will
+# Converts "dump1090" telnet port output to Xastir UDP input.  This script will
 # parse packets containing lat/long, turn them into APRS-like packets, then use
-# "xastir_udp_client" to inject them into Xastir.
+# "xastir_udp_client" to inject them into Xastir. Must have "dump1090" running,
+# and optionally "dump978" to dump packets into "dump1090" from the other
+# frequency/protocol for ADS-B.
 #
 # Invoke it as:
-#   ./ads-b.pl <callsign-15> <passcode>
+#   ./ads-b.pl planes <passcode>
+# or
+#   ./ads-b.pl p1anes <passcode>
+#
+# Injecting them from "planes" or "p1anes" assures that Xastir won't try to adopt
+# the APRS Item packets as its own and re-transmit them.
+#
 #
 # I got the "dump1090" program from here originally:
 #       https://github.com/antirez/dump1090
@@ -17,13 +25,30 @@
 # or
 #   "./dump1090 --net --aggressive --enable-agc"
 #
+#
+# Note: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
+# invoke "dump1090" as above, then invoke "dump978" like this:
+#
+#       rtl_sdr -f 978000000 -s 2083334 -g 0 -d 1 - | ./dump978 | ./uat2esnt | nc -q1 localhost 30001
+#
+# which will convert the 978 MHz packets into ADS-B ES packets and inject them into "dump1090"
+# for decoding. I haven't determined yet whether those packets will come out on "dump1090"'s
+# port 30003 (which this script uses). The above command also uses RTL device 1 instead of 0.
+# If you're only interested in 978 MHz decoding, there's a way to start "dump1090" w/o a
+# device attached, then start "dump978" and connect it to "dump1090".
+#
+#
 # Then invoke this script in another xterm:
-#   "./ads-b.pl <callsign-15> <passcode>"
+#   "./ads-b.pl planes <passcode>"
+#
 #
 # NOTE: Do NOT use the same callsign as your Xastir instance, else it will
-# "adopt" those APRS Item packets as its own and retransmit them.
+# "adopt" those APRS Item packets as its own and retransmit them. Code was
+# added to the script to prevent such operation, but using "planes" as the
+# callsign works great too!
 #
-# It will receive packets from port 30003 of "dump1090", parse them, then inject
+#
+# This script snags packets from port 30003 of "dump1090", parses them, then injects
 # APRS packets into Xastir's UDP port (2023) if "Server Ports" are enabled in Xastir.
 #
 # A good addition for later: Timestamp of last update.
@@ -95,23 +120,6 @@
 #   https://en.wikipedia.org/wiki/Transponder_%28aeronautics%29
 #
 #
-# Example packets to parse:
-# MSG,3,,,ABB2D5,,,,,,,40975,,,47.68648,-122.67834,,,0,0,0,0    # Lat/long/altitude (ft)
-# MSG,1,,,A2CB32,,,,,,BOE181  ,,,,,,,,0,0,0,0   # Tail number or flight number
-# MSG,4,,,A0F4F6,,,,,,,,175,152,,,-1152,,0,0,0,0    # Ground speed (knots)/Track
-#
-#
-# Note: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
-# invoke "dump1090" as above, then invoke "dump978" like this:
-#
-#       rtl_sdr -f 978000000 -s 2083334 -g 0 -d 1 - | ./dump978 | ./uat2esnt | nc -q1 localhost 30001
-#
-# which will convert the 978 MHz packets into ADS-B ES packets and inject them into "dump1090"
-# for decoding. I haven't determined yet whether those packets will come out on "dump1090"'s
-# port 30003 (which this script uses). The above command also uses RTL device 1 instead of 0.
-# If you're only interested in 978 MHz decoding, there's a way to start "dump1090" w/o a
-# device attached, then start "dump978" and connect it to "dump1090".
-#
 # For reference, using 468/frequency (MHz) to get length of 1/2 wave dipole in feet:
 #
 #   1/2 wavelength on 1090 MHz: 5.15"
@@ -136,6 +144,7 @@ use IO::Socket;
 #$my_lat = "47  .  N";   # Formatted like:  "475 .  N". Spaces for position ambiguity.
 #$my_lon = "122  .  W";  # Formatted like: "1221 .  W". Spaces for position ambiguity.
 
+$udp_client = "/usr/local/bin/xastir_udp_client";
 $dump1090_host = "localhost"; # Server where dump1090 is running
 $dump1090_port = 30003;     # 30003 is dump1090 default port
 
@@ -168,6 +177,45 @@ $socket = IO::Socket::INET->new(PeerAddr => $dump1090_host,
 
 # Flush output buffers often
 select((select(STDOUT), $| = 1)[0]);
+
+
+# Check Xastir's callsign/SSID to make sure we don't have a collision.  This
+# will prevent Xastir adopting the Items as its own and retransmitting them.
+#   xastir_udp_client localhost 2023 <callsign> <passcode> -identify
+#   Received: WE7U-13
+#
+$injection_call = $xastir_user;
+$injection_call =~ s/-\d+//;    # Get rid of dash and numbers
+
+$injection_ssid = $xastir_user;
+$injection_ssid =~ s/\w+//;     # Get rid of letters
+$injection_ssid =~ s/-//;       # Get rid of dash
+if ($injection_ssid eq "") { $injection_ssid = 0; }
+
+# Find out Callsign/SSID of Xastir instance
+$result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass -identify`;
+if ($result =~ m/NACK/) {
+  die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+}
+($remote_call, $remote_ssid) = split('-', $result);
+
+chomp($remote_call);
+$remote_call =~ s/Received:\s+//;
+
+chomp($remote_ssid);
+if ($remote_ssid eq "") { $remote_ssid = 0; }
+
+#print "$remote_call $remote_ssid $injection_call $injection_ssid\n";
+#if ($remote_call eq $injection_call) { print "Call matches\n"; }
+#if ($remote_ssid == $injection_ssid) { print "SSID matches\n"; }
+
+if (     ($remote_call eq $injection_call)
+     &&  ($remote_ssid == $injection_ssid) ) {
+    $remote_ssid++;
+    $remote_ssid%= 16;  # Increment by 1 mod 16
+    $xastir_user = "$remote_call-$remote_ssid";
+    print "Injection conflict. Corrected. New user = $xastir_user\n";
+}
 
 
 while (<$socket>)
@@ -320,10 +368,13 @@ while (<$socket>)
  
       # Assign tactical call = tail number or flight number
       $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $fields[10];
-      print("$print1\t\t$print2  $print3  $print4  $print6  $aprs\n");
+      print("$print1  $print2  $print3  $print4  $print6  $aprs\n");
  
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+      if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+      }
     }
   }
 
@@ -431,10 +482,13 @@ while (<$socket>)
          && defined($lon{$plane_id}) ) {
       # Yes, we have a lat/lon
       $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt";
-      print("$print1\t\t$print2  $print3  $print4  $print5  $aprs\n");
+      print("$print1  $print2  $print3  $print4  $print5  $aprs\n");
 
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+      if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+      }
     }
     else {
       # No, we have no lat/lon.
@@ -444,9 +498,12 @@ while (<$socket>)
 #      print "\t\t\t\t\t\t\t\t$aprs\n";
 
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-#      system("/usr/local/bin/xastir_udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\" ");
+#      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+#       if ($result =~ m/NACK/) {
+#         die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+#       }
 
-      print("$print1\t\t$print2  $print3  $print4$emerg_txt$squawk_txt$onGroundTxt\n");
+      print("$print1  $print2  $print3  $print4$emerg_txt$squawk_txt$onGroundTxt\n");
     }
 
     $newdata{$plane_id} = 0;
