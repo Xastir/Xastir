@@ -51,10 +51,6 @@
 # This script snags packets from port 30003 of "dump1090", parses them, then injects
 # APRS packets into Xastir's UDP port (2023) if "Server Ports" are enabled in Xastir.
 #
-# A good addition for later: Timestamp of last update.
-# If too old when new message comes in, delete old data and start over.
-# This is useful when a plane exits and then re-enters my receive area.
-#
 #
 # Port 30001 is an input port (dump978 connects there and dumps data in).
 #
@@ -151,6 +147,9 @@ $dump1090_port = 30003;     # 30003 is dump1090 default port
 $xastir_host = "localhost"; # Server where Xastir is running
 $xastir_port = 2023;        # 2023 is Xastir default UDP port
 
+$plane_TTL = 30;            # Seconds after which posits too old to create APRS packets
+
+
 $xastir_user = shift;
 chomp $xastir_user;
 if ($xastir_user eq "") {
@@ -237,8 +236,225 @@ while (<$socket>)
   # Sentences have either 10 or 22 fields.
   @fields = split(",");
 
+
   $plane_id = $fields[4];
   $print1 = $plane_id;
+  #
+  # Decode the country of registration via this webpage:
+  #   http://www.kloth.net/radio/icao24alloc.php
+  # Add it to the APRS comment field.  Remove the Tactical call
+  # from the comment field since it is redundant.
+  # Match on more specific first (longer string).
+  #
+  $registry = "Registry?";
+
+  # Convert $plane_id to binary string
+  $binary_plane_id = unpack ('B*', pack ('H*',$plane_id) );
+
+  # 14-bit addresses:
+  # -----------------
+  if ($binary_plane_id =~ m/^01010000000100/) { $registry = "Albania"; }
+  if ($binary_plane_id =~ m/^00001100101000/) { $registry = "Antigua and Barbuda"; }
+  if ($binary_plane_id =~ m/^01100000000000/) { $registry = "Armenia"; }
+  if ($binary_plane_id =~ m/^01100000000010/) { $registry = "Azerbaijan"; }
+  if ($binary_plane_id =~ m/^00001010101000/) { $registry = "Barbados"; }
+  if ($binary_plane_id =~ m/^01010001000000/) { $registry = "Belarus"; }
+  if ($binary_plane_id =~ m/^00001010101100/) { $registry = "Belize"; }
+  if ($binary_plane_id =~ m/^00001001010000/) { $registry = "Benin"; }
+  if ($binary_plane_id =~ m/^01101000000000/) { $registry = "Bhutan"; }
+  if ($binary_plane_id =~ m/^01010001001100/) { $registry = "Bosnia and Herzegovina"; }
+  if ($binary_plane_id =~ m/^00000011000000/) { $registry = "Botswana"; }
+  if ($binary_plane_id =~ m/^10001001010100/) { $registry = "Brunei Darussalam"; }
+  if ($binary_plane_id =~ m/^00001001011000/) { $registry = "Cape Verde"; }
+  if ($binary_plane_id =~ m/^00000011010100/) { $registry = "Comoros"; }
+  if ($binary_plane_id =~ m/^10010000000100/) { $registry = "Cook Islands"; }
+  if ($binary_plane_id =~ m/^01010000000111/) { $registry = "Croatia"; }
+  if ($binary_plane_id =~ m/^01001100100000/) { $registry = "Cyprus"; }
+  if ($binary_plane_id =~ m/^00001001100000/) { $registry = "Djibouti"; }
+  if ($binary_plane_id =~ m/^00100000001000/) { $registry = "Eritrea"; }
+  if ($binary_plane_id =~ m/^01010001000100/) { $registry = "Estonia"; }
+  if ($binary_plane_id =~ m/^01010001010000/) { $registry = "Georgia"; }
+  if ($binary_plane_id =~ m/^00001100110000/) { $registry = "Grenada"; }
+  if ($binary_plane_id =~ m/^00000100100000/) { $registry = "Guinea-Bissau"; }
+  if ($binary_plane_id =~ m/^01101000001100/) { $registry = "Kazakhstan"; }
+  if ($binary_plane_id =~ m/^11001000111000/) { $registry = "Kiribati"; }
+  if ($binary_plane_id =~ m/^01100000000100/) { $registry = "Kyrgyzstan"; }
+  if ($binary_plane_id =~ m/^01010000001011/) { $registry = "Latvia"; }
+  if ($binary_plane_id =~ m/^00000100101000/) { $registry = "Lesotho"; }
+  if ($binary_plane_id =~ m/^01010000001111/) { $registry = "Lithuania"; }
+  if ($binary_plane_id =~ m/^01001101000000/) { $registry = "Luxembourg"; }
+  if ($binary_plane_id =~ m/^00000101101000/) { $registry = "Maldives"; }
+  if ($binary_plane_id =~ m/^01001101001000/) { $registry = "Malta"; }
+  if ($binary_plane_id =~ m/^10010000000000/) { $registry = "Marshall Islands"; }
+  if ($binary_plane_id =~ m/^00000101111000/) { $registry = "Mauritania"; }
+  if ($binary_plane_id =~ m/^00000110000000/) { $registry = "Mauritius"; }
+  if ($binary_plane_id =~ m/^01101000000100/) { $registry = "Micronesia"; }   # Micronesia, Federated States of
+  if ($binary_plane_id =~ m/^01001101010000/) { $registry = "Monaco"; }
+  if ($binary_plane_id =~ m/^01101000001000/) { $registry = "Mongolia"; }
+  if ($binary_plane_id =~ m/^00100000000100/) { $registry = "Namibia"; }
+  if ($binary_plane_id =~ m/^11001000101000/) { $registry = "Nauru"; }
+  if ($binary_plane_id =~ m/^01110000110000/) { $registry = "Oman"; }
+  if ($binary_plane_id =~ m/^01101000010000/) { $registry = "Palau"; }
+  if ($binary_plane_id =~ m/^00000110101000/) { $registry = "Qatar"; }
+  if ($binary_plane_id =~ m/^01010000010011/) { $registry = "Rep. of Moldova"; }   # Republic of Moldova
+  if ($binary_plane_id =~ m/^11001000110000/) { $registry = "Saint Lucia"; }
+  if ($binary_plane_id =~ m/^00001011110000/) { $registry = "Saint Vincent and the Grenadines"; }
+  if ($binary_plane_id =~ m/^10010000001000/) { $registry = "Samoa"; }
+  if ($binary_plane_id =~ m/^01010000000000/) { $registry = "San Marino"; }
+  if ($binary_plane_id =~ m/^00001001111000/) { $registry = "Sao Tome and Principe"; }
+  if ($binary_plane_id =~ m/^00000111010000/) { $registry = "Seychelles"; }
+  if ($binary_plane_id =~ m/^00000111011000/) { $registry = "Sierra Leone"; }
+  if ($binary_plane_id =~ m/^01010000010111/) { $registry = "Slovakia"; }
+  if ($binary_plane_id =~ m/^01010000011011/) { $registry = "Slovenia"; }
+  if ($binary_plane_id =~ m/^10001001011100/) { $registry = "Solomon Islands"; }
+  if ($binary_plane_id =~ m/^00000111101000/) { $registry = "Swaziland"; }
+  if ($binary_plane_id =~ m/^01010001010100/) { $registry = "Tajikistan"; }
+  if ($binary_plane_id =~ m/^01010001001000/) { $registry = "Macedonia"; } # The former Yugoslav Republic of Macedonia
+  if ($binary_plane_id =~ m/^11001000110100/) { $registry = "Tonga"; }
+  if ($binary_plane_id =~ m/^01100000000110/) { $registry = "Turkmenistan"; }
+  if ($binary_plane_id =~ m/^01010000011111/) { $registry = "Uzbekistan"; }
+  if ($binary_plane_id =~ m/^11001001000000/) { $registry = "Vanuatu"; }
+  if ($binary_plane_id =~ m/^00000000010000/) { $registry = "Zimbabwe"; }
+  if ($binary_plane_id =~ m/^10001001100100/) { $registry = "ICAO"; }
+  if ($binary_plane_id =~ m/^11110000100100/) { $registry = "ICAO"; }
+  #
+  # 12-bit addresses:
+  # -----------------
+  if ($binary_plane_id =~ m/^011100000000/) { $registry = "Afghanistan"; }
+  if ($binary_plane_id =~ m/^000010010000/) { $registry = "Angola"; }
+  if ($binary_plane_id =~ m/^000010101000/) { $registry = "Bahamas"; }
+  if ($binary_plane_id =~ m/^100010010100/) { $registry = "Bahrain"; }
+  if ($binary_plane_id =~ m/^011100000010/) { $registry = "Bangladesh"; }
+  if ($binary_plane_id =~ m/^111010010100/) { $registry = "Bolivia"; }
+  if ($binary_plane_id =~ m/^000010011100/) { $registry = "Burkina Faso"; }
+  if ($binary_plane_id =~ m/^000000110010/) { $registry = "Burundi"; }
+  if ($binary_plane_id =~ m/^011100001110/) { $registry = "Cambodia"; }
+  if ($binary_plane_id =~ m/^000000110100/) { $registry = "Cameroon"; }
+  if ($binary_plane_id =~ m/^000001101100/) { $registry = "Central African Rep."; }    # Central African Republic
+  if ($binary_plane_id =~ m/^000010000100/) { $registry = "Chad"; }
+  if ($binary_plane_id =~ m/^111010000000/) { $registry = "Chile"; }
+  if ($binary_plane_id =~ m/^000010101100/) { $registry = "Colombia"; }
+  if ($binary_plane_id =~ m/^000000110110/) { $registry = "Congo"; }
+  if ($binary_plane_id =~ m/^000010101110/) { $registry = "Costa Rica"; }
+  if ($binary_plane_id =~ m/^000000111000/) { $registry = "Cote d Ivoire"; }
+  if ($binary_plane_id =~ m/^000010110000/) { $registry = "Cuba"; }
+  if ($binary_plane_id =~ m/^000010001100/) { $registry = "Dem. Rep. of the Congo"; }    # Democratic Republic of the Congo
+  if ($binary_plane_id =~ m/^000011000100/) { $registry = "Dominican Republic"; }
+  if ($binary_plane_id =~ m/^111010000100/) { $registry = "Ecuador"; }
+  if ($binary_plane_id =~ m/^000010110010/) { $registry = "El Salvador"; }
+  if ($binary_plane_id =~ m/^000001000010/) { $registry = "Equatorial Guinea"; }
+  if ($binary_plane_id =~ m/^000001000000/) { $registry = "Ethiopia"; }
+  if ($binary_plane_id =~ m/^110010001000/) { $registry = "Fiji"; }
+  if ($binary_plane_id =~ m/^000000111110/) { $registry = "Gabon"; }
+  if ($binary_plane_id =~ m/^000010011010/) { $registry = "Gambia"; }
+  if ($binary_plane_id =~ m/^000001000100/) { $registry = "Ghana"; }
+  if ($binary_plane_id =~ m/^000010110100/) { $registry = "Guatemala"; }
+  if ($binary_plane_id =~ m/^000001000110/) { $registry = "Guinea"; }
+  if ($binary_plane_id =~ m/^000010110110/) { $registry = "Guyana"; }
+  if ($binary_plane_id =~ m/^000010111000/) { $registry = "Haiti"; }
+  if ($binary_plane_id =~ m/^000010111010/) { $registry = "Honduras"; }
+  if ($binary_plane_id =~ m/^010011001100/) { $registry = "Iceland"; }
+  if ($binary_plane_id =~ m/^010011001010/) { $registry = "Ireland"; }
+  if ($binary_plane_id =~ m/^000010111110/) { $registry = "Jamaica"; }
+  if ($binary_plane_id =~ m/^000001001100/) { $registry = "Kenya"; }
+  if ($binary_plane_id =~ m/^011100000110/) { $registry = "Kuwait"; }
+  if ($binary_plane_id =~ m/^011100001000/) { $registry = "Lao People's Dem. Rep."; }    # Lao People's Democratic Republic
+  if ($binary_plane_id =~ m/^000001010000/) { $registry = "Liberia"; }
+  if ($binary_plane_id =~ m/^000001010100/) { $registry = "Madagascar"; }
+  if ($binary_plane_id =~ m/^000001011000/) { $registry = "Malawi"; }
+  if ($binary_plane_id =~ m/^000001011100/) { $registry = "Mali"; }
+  if ($binary_plane_id =~ m/^000000000110/) { $registry = "Mozambique"; }
+  if ($binary_plane_id =~ m/^011100000100/) { $registry = "Myanmar"; }
+  if ($binary_plane_id =~ m/^011100001010/) { $registry = "Nepal"; }
+  if ($binary_plane_id =~ m/^000011000000/) { $registry = "Nicaragua"; }
+  if ($binary_plane_id =~ m/^000001100010/) { $registry = "Niger"; }
+  if ($binary_plane_id =~ m/^000001100100/) { $registry = "Nigeria"; }
+  if ($binary_plane_id =~ m/^000011000010/) { $registry = "Panama"; }
+  if ($binary_plane_id =~ m/^100010011000/) { $registry = "Papua New Guinea"; }
+  if ($binary_plane_id =~ m/^111010001000/) { $registry = "Paraguay"; }
+  if ($binary_plane_id =~ m/^111010001100/) { $registry = "Peru"; }
+  if ($binary_plane_id =~ m/^000001101110/) { $registry = "Rwanda"; }
+  if ($binary_plane_id =~ m/^000001110000/) { $registry = "Senegal"; }
+  if ($binary_plane_id =~ m/^000001111000/) { $registry = "Somalia"; }
+  if ($binary_plane_id =~ m/^000001111100/) { $registry = "Sudan"; }
+  if ($binary_plane_id =~ m/^000011001000/) { $registry = "Suriname"; }
+  if ($binary_plane_id =~ m/^000010001000/) { $registry = "Togo"; }
+  if ($binary_plane_id =~ m/^000011000110/) { $registry = "Trinidad and Tobago"; }
+  if ($binary_plane_id =~ m/^000001101000/) { $registry = "Uganda"; }
+  if ($binary_plane_id =~ m/^100010010110/) { $registry = "United Arab Emirates"; }
+  if ($binary_plane_id =~ m/^000010000000/) { $registry = "United Rep. of Tanzania"; } # United Republic of Tanzania
+  if ($binary_plane_id =~ m/^111010010000/) { $registry = "Uruguay"; }
+  if ($binary_plane_id =~ m/^100010010000/) { $registry = "Yemen"; }
+  if ($binary_plane_id =~ m/^000010001010/) { $registry = "Zambia"; }
+  #
+  # 9-bit addresses:
+  # ----------------
+  if ($binary_plane_id =~ m/^000010100/) { $registry = "Algeria"; }
+  if ($binary_plane_id =~ m/^010001000/) { $registry = "Austria"; }
+  if ($binary_plane_id =~ m/^010001001/) { $registry = "Belgium"; }
+  if ($binary_plane_id =~ m/^010001010/) { $registry = "Bulgaria"; }
+  if ($binary_plane_id =~ m/^010010011/) { $registry = "Czech Rep."; } # Czech Republic
+  if ($binary_plane_id =~ m/^011100100/) { $registry = "Dem. People's Rep. of Korea"; }  # Democratic People's Republic of Korea
+  if ($binary_plane_id =~ m/^010001011/) { $registry = "Denmark"; }
+  if ($binary_plane_id =~ m/^000000010/) { $registry = "Egypt"; }
+  if ($binary_plane_id =~ m/^010001100/) { $registry = "Finland"; }
+  if ($binary_plane_id =~ m/^010001101/) { $registry = "Greece"; }
+  if ($binary_plane_id =~ m/^010001110/) { $registry = "Hungary"; }
+  if ($binary_plane_id =~ m/^100010100/) { $registry = "Indonesia"; }
+  if ($binary_plane_id =~ m/^011100110/) { $registry = "Iran"; }  # Iran, Islamic Republic of
+  if ($binary_plane_id =~ m/^011100101/) { $registry = "Iraq"; }
+  if ($binary_plane_id =~ m/^011100111/) { $registry = "Israel"; }
+  if ($binary_plane_id =~ m/^011101000/) { $registry = "Jordan"; }
+  if ($binary_plane_id =~ m/^011101001/) { $registry = "Lebanon"; }
+  if ($binary_plane_id =~ m/^000000011/) { $registry = "Libyan Arab Jamahiriya"; }
+  if ($binary_plane_id =~ m/^011101010/) { $registry = "Malaysia"; }
+  if ($binary_plane_id =~ m/^000011010/) { $registry = "Mexico"; }
+  if ($binary_plane_id =~ m/^000000100/) { $registry = "Morocco"; }
+  if ($binary_plane_id =~ m/^010010000/) { $registry = "Netherlands"; }    # Netherlands, Kingdom of the
+  if ($binary_plane_id =~ m/^110010000/) { $registry = "New Zealand"; }
+  if ($binary_plane_id =~ m/^010001111/) { $registry = "Norway"; }
+  if ($binary_plane_id =~ m/^011101100/) { $registry = "Pakistan"; }
+  if ($binary_plane_id =~ m/^011101011/) { $registry = "Phillipines"; }
+  if ($binary_plane_id =~ m/^010010001/) { $registry = "Poland"; }
+  if ($binary_plane_id =~ m/^010010010/) { $registry = "Portugal"; }
+  if ($binary_plane_id =~ m/^011100011/) { $registry = "Rep. of Korea"; }  # Republic of Korea
+  if ($binary_plane_id =~ m/^010010100/) { $registry = "Romania"; }
+  if ($binary_plane_id =~ m/^011100010/) { $registry = "Saudi Arabia"; }
+  if ($binary_plane_id =~ m/^011101101/) { $registry = "Singapore"; }
+  if ($binary_plane_id =~ m/^000000001/) { $registry = "South Africa"; }
+  if ($binary_plane_id =~ m/^011101110/) { $registry = "Sri Lanka"; }
+  if ($binary_plane_id =~ m/^010010101/) { $registry = "Sweden"; }
+  if ($binary_plane_id =~ m/^010010110/) { $registry = "Switzerland"; }
+  if ($binary_plane_id =~ m/^011101111/) { $registry = "Syrian Arab Rep."; }   # Syrian Arab Republic
+  if ($binary_plane_id =~ m/^100010000/) { $registry = "Thailand"; }
+  if ($binary_plane_id =~ m/^000000101/) { $registry = "Tunisia"; }
+  if ($binary_plane_id =~ m/^010010111/) { $registry = "Turkey"; }
+  if ($binary_plane_id =~ m/^010100001/) { $registry = "Ukraine"; }
+  if ($binary_plane_id =~ m/^000011011/) { $registry = "Venezuela"; }
+  if ($binary_plane_id =~ m/^100010001/) { $registry = "Viet Nam"; }
+  if ($binary_plane_id =~ m/^010011000/) { $registry = "Yugoslavia"; }
+  if ($binary_plane_id =~ m/^111100000/) { $registry = "ICAO"; }
+  #
+  # 6-bit addresses:
+  # ----------------
+  if ($binary_plane_id =~ m/^001100/) { $registry = "Italy"; }
+  if ($binary_plane_id =~ m/^001101/) { $registry = "Spain"; }
+  if ($binary_plane_id =~ m/^001110/) { $registry = "France"; }
+  if ($binary_plane_id =~ m/^001111/) { $registry = "Germany"; }
+  if ($binary_plane_id =~ m/^010000/) { $registry = "U.K."; }  # United Kingdom
+  if ($binary_plane_id =~ m/^011110/) { $registry = "China"; }
+  if ($binary_plane_id =~ m/^011111/) { $registry = "Australia"; }
+  if ($binary_plane_id =~ m/^100000/) { $registry = "India"; }
+  if ($binary_plane_id =~ m/^100001/) { $registry = "Japan"; }
+  if ($binary_plane_id =~ m/^110000/) { $registry = "Canada"; }
+  if ($binary_plane_id =~ m/^111000/) { $registry = "Argentina"; }
+  if ($binary_plane_id =~ m/^111001/) { $registry = "Brazil"; }
+  #
+  # 4-bit addresses:
+  # ----------------
+  if ($binary_plane_id =~ m/^1010/) { $registry = "U.S."; }        # United States
+  if ($binary_plane_id =~ m/^0001/) { $registry = "Russian Fed."; }  # Russian Federation
+
  
   # Parse altitude if MSG Type 2, 3, 5, 6, or 7, save in hash.
   $print2 = "       ";
@@ -256,6 +472,7 @@ while (<$socket>)
         $old = $altitude{$plane_id};
       }
 
+      # Save new altitude
       $altitude{$plane_id} = sprintf("%06d", $fields[11]);
 
       if ($old ne $altitude{$plane_id}) {
@@ -278,6 +495,7 @@ while (<$socket>)
         $old = $groundspeed{$plane_id};
       }
 
+      # Save new ground speed
       $groundspeed{$plane_id} = $fields[12];
 
       if ($old ne $groundspeed{$plane_id}) {
@@ -293,6 +511,7 @@ while (<$socket>)
         $old = $track{$plane_id};
       }
 
+      # Save new track
       $track{$plane_id} = $fields[13];
 
       if ($old ne $track{$plane_id}) {
@@ -324,6 +543,7 @@ while (<$socket>)
     $latdeg = int($lat);
     $latmins = $lat - $latdeg;
     $latmins2 = $latmins * 60.0;
+    # Save new latitude
     $lat{$plane_id} = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
     $oldlon = "";
@@ -341,11 +561,39 @@ while (<$socket>)
     $londeg = int($lon);
     $lonmins = $lon - $londeg;
     $lonmins2 = $lonmins * 60.0;
+    # Save new longitude
     $lon{$plane_id} = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
 
     if ( ($oldlat ne $lat{$plane_id}) || ($oldlon ne $lon{$plane_id}) ) {
       $print5 = sprintf("%8s,%9s", $lat{$plane_id},$lon{$plane_id});
+
+      # Save most recent posit time
+      $last_posit_time{$plane_id} = time();
+
       $newdata{$plane_id}++;
+
+      # Tactical callsign:
+      # Have new lat/lon. Check whether we have a tail number
+      # already defined, which tells us whether we've assigned
+      # a tactical callsign yet. If not, assign one that includes
+      # the plane_id and the country of registration.
+      if ( !defined($tail{$plane_id}) && ($registry ne "Registry?") ) {
+
+        # Assign tactical call = $plane_id + registry
+        # Max tactical call in Xastir is 57 chars (56 + terminator?)
+        #
+        $tac_call = $plane_id . " (" . $registry . ")";
+        $tac_call =~ s/\s+/ /g; # Change multiple spaces to one
+        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $tac_call;
+
+        print("$print1  $print2  $print3  $print4  $print6  $aprs\n");
+
+        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+          die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
+      }
     }
   }
 
@@ -360,14 +608,23 @@ while (<$socket>)
       $old = $tail{$plane_id}; 
     }
 
+    # Save new tail number or flight number, assign tactical call
     $tail{$plane_id} = $fields[10];
 
     if ($old ne $tail{$plane_id}) {
       $print6 = sprintf("Tactical=%-9s", $fields[10]);
       $newdata{$plane_id}++;
  
-      # Assign tactical call = tail number or flight number
-      $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $fields[10];
+      # Assign tactical call = tail number or flight number + registry (if defined)
+      # Max tactical call in Xastir is 57 chars (56 + terminator?)
+      #
+      $tac_call = $fields[10];
+      if ($registry ne "Registry?") {
+        $tac_call = $fields[10] . " (" . $registry . ")";
+        $tac_call =~ s/\s+/ /g; # Change multiple spaces to one
+      }
+      $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $tac_call;
+
       print("$print1  $print2  $print3  $print4  $print6  $aprs\n");
  
       # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
@@ -477,21 +734,50 @@ while (<$socket>)
       }
     }
 
-    # Do we have a lat/lon?
-    if ( defined($lat{$plane_id})
+    # Do we have a lat/lon and is it recent enough?
+    if (    defined($lat{$plane_id})
          && defined($lon{$plane_id}) ) {
-      # Yes, we have a lat/lon
-      $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt";
-      print("$print1  $print2  $print3  $print4  $print5  $aprs\n");
 
-      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-      if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+      $age = time() - $last_posit_time{$plane_id};
+      if ( $age > $plane_TTL ) {
+        #
+        # We have a lat/lon but it is too old
+        #
+        $print_age1 = sprintf("(%s%s)", $age, "s");
+#       $print_age2 = sprintf("%-16s", $print_age1);
+        $print_age2 = sprintf("%18s", $print_age1);
+#       print("$print1  $print2  $print3  $print4                      Lat/Lon old: No APRS packet generated\n");   # For testing
+        print("$print1  $print2  $print3  $print4  $print_age2\t\t\t\t\t\t\t\t    ($registry)\n");
+#       print("$print1  $print2  $print3  $print4  $emerg_txt$squawk_txt$onGroundTxt\n");
+ 
+      }
+      else {
+        #
+        # Yes, we have a lat/lon and it is recent enough
+        #
+        $aprs="$xastir_user>APRS:)$plane_id!$lat{$plane_id}/$lon{$plane_id}$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt ($registry)";
+        if (    $age > 0                    # Lat/lon is aging a bit
+             || $print5 eq "\t\t\t" ) {     # Didn't parse lat/lon this time
+          $print_age1 = sprintf("%s%s", $age, "s");
+#         $print_age2 = sprintf("%-18s", $print_age1);
+          $print_age2 = sprintf("%18s", $print_age1);
+          print("$print1  $print2  $print3  $print4  $print_age2  $aprs\n");
+        }
+        else {
+          print("$print1  $print2  $print3  $print4  $print5  $aprs\n");
+        }
+
+        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+          die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
       }
     }
     else {
-      # No, we have no lat/lon.
+      #
+      # No, we have no lat/lon, or it is too old
+      #
       # Send out packet with position ambiguity since we don't know
       # the lat/long, but it is definitely within receive range.
 #      $aprs="$xastir_user>APRS:)$plane_id!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail";
@@ -502,8 +788,11 @@ while (<$socket>)
 #       if ($result =~ m/NACK/) {
 #         die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
 #       }
-
-      print("$print1  $print2  $print3  $print4$emerg_txt$squawk_txt$onGroundTxt\n");
+      $print_age = sprintf("%18s", "-");
+#     print("$print1  $print2  $print3  $print4  $emerg_txt$squawk_txt$onGroundTxt\n");
+#     print("$print1  $print2  $print3  $print4  -$emerg_txt$squawk_txt$onGroundTxt\n");
+      print("$print1  $print2  $print3  $print4  $print_age$emerg_txt$squawk_txt$onGroundTxt\t\t\t\t\t\t\t\t    ($registry)\n");
+ 
     }
 
     $newdata{$plane_id} = 0;
