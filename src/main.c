@@ -12095,19 +12095,20 @@ fprintf(stderr,"main, initializing connections");
                         line[n-1] = '\0';
 
                         // Check for "TO_INET," prefix, then check
-                        // for "TO_RF," prefix.  Set appropriate
+                        // for "TO_RF," prefix. Set appropriate
                         // flags and remove the prefixes if found.
                         // x_spider.c will always put them in that
                         // order if both flags are present, so we
                         // don't need to check for the reverse
                         // order.
-
-                        // Check for "TO_INET," string
+                        // Note that this is NOT the "-to_inet" that xastir_udp_client
+                        // uses!!! See xspider.c for how that gets parsed/changed.
+                        // Set appropriate flags and remove the prefixes if found.
                         if (strncmp(line, "TO_INET,", 8) == 0) {
-//                            fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" prefix\n");
+                            fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" string\n");
                             line_offset += 8;
 //
-// "TO_INET" found.
+// "TO_INET," found.
 // This packet should be gated to the internet if and only if
 // igating is enabled.  This may happen automatically as-is, due to
 // the decode_ax25_line() call below.  Check whether that's true.
@@ -12116,13 +12117,39 @@ fprintf(stderr,"main, initializing connections");
 // it to decode_ax25_line() in order to stop this igating...
 //
                         }
+                        else {
+                            // The packet did NOT have "TO_INET," in the string.
+                            // Change the packet to add "NOGATE", to the path to
+                            // assure it doesn't get igated.
+                            // Find the first ':' in the string. Copy the
+                            // first part of the string to a new string, add ",NOGATE"
+                            // to the path, copy the 2nd part of the string after it.
+                            char path[100+1];
+                            char info[100+1];
+                            char *path0 = NULL;
+                            char *info0 = NULL;
+
+                            path0 = strtok(line,":");   // Pointer to start of path
+                            info0 = strtok(NULL,"");    // Pointer to information field
+
+                            xastir_snprintf(path, sizeof(path), "%s", path0);
+                            xastir_snprintf(info, sizeof(info), "%s", info0);
+                            //fprintf(stderr, "path: %s\n", path);
+                            //fprintf(stderr, "info: %s\n", info);
+                            //fprintf(stderr, "line: %s\n", line);
+                            xastir_snprintf(line, sizeof(line), "%s%s%s", path, ",NOGATE:", info);
+                            //fprintf(stderr, "line: %s\n", line);
+                        }
 
                         // Check for "TO_RF," string
+                        // Note that this is NOT the "-to_rf" that xastir_udp_client
+                        // uses!!! See xspider.c for how that gets parsed/changed.
+ 
                         if (strncmp((char *)(line+line_offset), "TO_RF,", 6) == 0) {
-//                            fprintf(stderr,"Xastir received UDP packet with \"TO_RF,\" prefix\n");
+                            fprintf(stderr,"Xastir received UDP packet with \"TO_RF,\" prefix\n");
                             line_offset += 6;
 //
-// "TO_RF" found.
+// "TO_RF," found.
 // This packet should be sent out the local RF ports.  If the
 // callsign matches Xastir's (without the SSID), then send it out
 // first-person format.  If it doesn't, send it out third-party
