@@ -315,8 +315,8 @@ while (<$socket>)
   elsif ($binary_plane_id =~ m/^01010000011111/) { $registry = "Uzbekistan"; }
   elsif ($binary_plane_id =~ m/^11001001000000/) { $registry = "Vanuatu"; }
   elsif ($binary_plane_id =~ m/^00000000010000/) { $registry = "Zimbabwe"; }
-  elsif ($binary_plane_id =~ m/^10001001100100/) { $registry = "ICAO"; }
-  elsif ($binary_plane_id =~ m/^11110000100100/) { $registry = "ICAO"; }
+  elsif ($binary_plane_id =~ m/^10001001100100/) { $registry = "ICAO Flight Safety"; }
+  elsif ($binary_plane_id =~ m/^11110000100100/) { $registry = "ICAO Flight Safety"; }
   #
   # 12-bit addresses:
   # -----------------
@@ -433,7 +433,7 @@ while (<$socket>)
   elsif ($binary_plane_id =~ m/^000011011/) { $registry = "Venezuela"; }
   elsif ($binary_plane_id =~ m/^100010001/) { $registry = "Viet Nam"; }
   elsif ($binary_plane_id =~ m/^010011000/) { $registry = "Yugoslavia"; }
-  elsif ($binary_plane_id =~ m/^111100000/) { $registry = "ICAO"; }
+  elsif ($binary_plane_id =~ m/^111100000/) { $registry = "ICAO Temp Address"; }
   #
   # 6-bit addresses:
   # ----------------
@@ -591,7 +591,7 @@ while (<$socket>)
       # Have new lat/lon. Check whether we have a tactical call
       # already defined. If not, assign one that includes
       # the plane_id and the country of registration.
-      if ( !defined($tactical{$plane_id}) && ($registry ne "Registry?") ) {
+      if ( !defined($tactical{$plane_id}) ) {
 
         # Assign tactical call = $plane_id + registry
         # Max tactical call in Xastir is 57 chars (56 + terminator?)
@@ -633,21 +633,19 @@ while (<$socket>)
       # Assign tactical call = tail number or flight number + registry (if defined)
       # Max tactical call in Xastir is 57 chars (56 + terminator?)
       #
-      if ( !defined($tactical{$plane_id}) ) {
-        $tactical{$plane_id} = $fields[10];
-        if ($registry ne "Registry?") {
-          $tactical{$plane_id} = $fields[10] . " (" . $registry . ")";
-          $tactical{$plane_id} =~ s/\s+/ /g; # Change multiple spaces to one
-        }
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $tactical{$plane_id};
+      $tactical{$plane_id} = $fields[10];
+      if ($registry ne "Registry?") {
+        $tactical{$plane_id} = $fields[10] . " (" . $registry . ")";
+        $tactical{$plane_id} =~ s/\s+/ /g; # Change multiple spaces to one
+      }
+      $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $tactical{$plane_id};
 
-        print("$print1  $print2  $print3  $print4  $print6  $aprs\n");
+      print("$print1  $print2  $print3  $print4  $print6  $aprs\n");
  
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
-          die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
-        }
+      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+      if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
       }
     }
   }
@@ -751,6 +749,24 @@ while (<$socket>)
       }
     }
 
+
+    # Count percentage of planes with lat/lon out of total planes that have altitude listed.
+    # This should show an approximate implementation percentage for ADS-B transponders.
+    $alt_planes = 0;
+    $lat_planes = 0;
+    $print_adsb_percentage = "";
+    foreach $key (keys %lat) {
+      $lat_planes++;
+    }
+    foreach $key (keys %altitude) {
+      $alt_planes++;
+    }
+    if ($alt_planes != 0) {
+      $adsb_percentage = ( ($lat_planes * 1.0) / $alt_planes) * 100.0;
+      $print_adsb_percentage = sprintf("ADS-B:%-1.1f%% ($lat_planes/$alt_planes)", $adsb_percentage);
+    }
+
+
     # Do we have a lat/lon and is it recent enough?
     if (    defined($lat{$plane_id})
          && defined($lon{$plane_id}) ) {
@@ -764,7 +780,7 @@ while (<$socket>)
 #       $print_age2 = sprintf("%-16s", $print_age1);
         $print_age2 = sprintf("%18s", $print_age1);
 #       print("$print1  $print2  $print3  $print4                      Lat/Lon old: No APRS packet generated\n");   # For testing
-        print("$print1  $print2  $print3  $print4  $print_age2\t\t\t\t\t\t\t\t    ($registry)\n");
+        print("$print1  $print2  $print3  $print4  $print_age2\t\t\t\t\t\t\t\t    ($registry)\t\t$print_adsb_percentage\n");
 #       print("$print1  $print2  $print3  $print4  $emerg_txt$squawk_txt$onGroundTxt\n");
  
       }
@@ -778,10 +794,10 @@ while (<$socket>)
           $print_age1 = sprintf("%s%s", $age, "s");
 #         $print_age2 = sprintf("%-18s", $print_age1);
           $print_age2 = sprintf("%18s", $print_age1);
-          print("$print1  $print2  $print3  $print4  $print_age2  $aprs\n");
+          print("$print1  $print2  $print3  $print4  $print_age2  $aprs\t\t$print_adsb_percentage\n");
         }
         else {
-          print("$print1  $print2  $print3  $print4  $print5  $aprs\n");
+          print("$print1  $print2  $print3  $print4  $print5  $aprs\t\t$print_adsb_percentage\n");
         }
 
         # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
@@ -808,12 +824,14 @@ while (<$socket>)
       $print_age = sprintf("%18s", "-");
 #     print("$print1  $print2  $print3  $print4  $emerg_txt$squawk_txt$onGroundTxt\n");
 #     print("$print1  $print2  $print3  $print4  -$emerg_txt$squawk_txt$onGroundTxt\n");
-      print("$print1  $print2  $print3  $print4  $print_age$emerg_txt$squawk_txt$onGroundTxt\t\t\t\t\t\t\t\t    ($registry)\n");
+      print("$print1  $print2  $print3  $print4  $print_age$emerg_txt$squawk_txt$onGroundTxt\t\t\t\t\t\t\t\t    ($registry)\t\t$print_adsb_percentage\n");
  
     }
 
+
     $newdata{$plane_id} = 0;
   }
+
 
   # Convert altitude to altitude above MSL instead of altitude from a reference barometric reading?
   # Info:  http://forums.flyer.co.uk/viewtopic.php?t=16375
@@ -829,6 +847,9 @@ while (<$socket>)
   # )AIDV#2!4903.50N/07201.75WA
   # ;LEADERVVV*092345z4903.50N/07201.75W>088/036
   # )A19E61!4903.50N/07201.75W' 356/426 /A=29275  # Example Small Airplane Object 
+
+
+# end of while loop
 }
 
 close($socket);
