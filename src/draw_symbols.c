@@ -388,9 +388,11 @@ void draw_WP_line(DataRow *p_station,
 // range is in miles
 // x_long/y_lat are in Xastir lat/lon units
 //
-void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
+void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where, int sec_heard) {
     double diameter;
     double a,b;
+
+    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
 
 
 // Prevents it from being drawn when the symbol is off-screen.
@@ -446,6 +448,7 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 
 //        }
 //    }
+   }
 }
 
 
@@ -1233,8 +1236,11 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     int i;
 
 
-// Ghost the wind barb if sec_heard is too long.
-// (TBD)
+    // Ghost the wind barb if sec_heard is too long.
+    if ( ((sec_old+sec_heard)<=sec_now()) && !Select_.old_data ) {
+        return;
+    }
+
 
 
 // What to do if my_speed is zero?  Blank out any wind barbs
@@ -1748,6 +1754,12 @@ void draw_area(long x_long, long y_lat, char type, char color,
     long left, top, right, bottom, xoff, yoff;
     int  c;
     XPoint points[4];
+
+
+    // Ghost the area object if sec_heard is too long.
+    if ( ((sec_old+sec_heard)<=sec_now()) && !Select_.old_data ) {
+        return;
+    }
 
 
 //    if ((x_long < 0) || (x_long > 129600000l) ||
@@ -2607,7 +2619,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             }
 
             length=(int)strlen(callsign_text);
-            if (length>0) {
+            if ( (!ghost || Select_.old_data) && length>0) {
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);

@@ -2991,17 +2991,20 @@ void display_station(Widget w, DataRow *p_station, int single) {
                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                          0.0020 * scale_y,
                          colors[0x0e],   // Yellow
-                         drawing_target);
+                         drawing_target,
+                         temp_sec_heard);
         draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                          0.0023 * scale_y,
                          colors[0x44],   // Red
-                         drawing_target);
+                         drawing_target,
+                         temp_sec_heard);
         draw_pod_circle( (ambiguity_flag) ? ambiguity_coord_lon : p_station->coord_lon,
                          (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                          0.0026 * scale_y,
                          colors[0x61],   // Blue
-                         drawing_target);
+                         drawing_target,
+                         temp_sec_heard);
     }
 
 
@@ -3030,7 +3033,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
                              (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                              atof(temp) * 1.15078, // nautical miles to miles
                              colors[0x44],   // Red
-                             drawing_target);
+                             drawing_target,
+                             temp_sec_heard);
         }
 
         xastir_snprintf(temp,
@@ -3043,7 +3047,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
                              (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                              atof(temp) * 1.15078, // nautical miles to miles
                              colors[0x0e],   // Yellow
-                             drawing_target);
+                             drawing_target,
+                             temp_sec_heard);
         }
 
         xastir_snprintf(temp,
@@ -3056,7 +3061,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
                              (ambiguity_flag) ? ambiguity_coord_lat : p_station->coord_lat,
                              atof(temp) * 1.15078, // nautical miles to miles
                              colors[0x0a],   // Green
-                             drawing_target);
+                             drawing_target,
+                             temp_sec_heard);
         }
     }
 
@@ -3172,7 +3178,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
                              p_station->coord_lat,
                              p_station->error_ellipse_radius / 100000.0 * 0.62137, // cm to mi
                              colors[0x0f],  // White
-                             drawing_target);
+                             drawing_target,
+                             temp_sec_heard);
 */
             draw_precision_rectangle( p_station->coord_lon,
                              p_station->coord_lat,
@@ -3350,7 +3357,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
             p_station->coord_lat,
             range,
             colors[0x44],
-            drawing_target);
+            drawing_target,
+            temp_sec_heard);
     }
 
     // Draw maximum proximity circle?
@@ -3362,7 +3370,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
             p_station->coord_lat,
             range,
             colors[0x44],
-            drawing_target);
+            drawing_target,
+            temp_sec_heard);
     }
 
 // DEBUG STUFF
@@ -11275,19 +11284,41 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
         }
 
         if (extract_probability_min(data, temp3, sizeof(temp3))) {
-            //fprintf(stderr,"extracted probability_min data: %s\n",temp3);
-            xastir_snprintf(p_station->probability_min,
-                sizeof(p_station->probability_min),
-                "%s",
-                temp3);
+            if (strncasecmp(temp3, "0.0", sizeof(temp3)) == 0) {
+                p_station->probability_min[0] = '\0';   // Clear it out
+            }
+            else if (strncasecmp(temp3, "0", sizeof(temp3)) == 0) {
+                p_station->probability_min[0] = '\0';   // Clear it out
+            }
+            else {
+                //fprintf(stderr,"extracted probability_min data: %s\n",temp3);
+              xastir_snprintf(p_station->probability_min,
+                  sizeof(p_station->probability_min),
+                  "%s",
+                  temp3);
+            }
+        }
+        else {
+            p_station->probability_min[0] = '\0';   // Clear it out
         }
  
         if (extract_probability_max(data, temp3, sizeof(temp3))) {
-            //fprintf(stderr,"extracted probability_max data: %s\n",temp3);
-            xastir_snprintf(p_station->probability_max,
-                sizeof(p_station->probability_max),
-                "%s",
-                temp3);
+            if (strncasecmp(temp3, "0.0", sizeof(temp3)) == 0) {
+                p_station->probability_max[0] = '\0';   // Clear it out
+            }
+            else if (strncasecmp(temp3, "0", sizeof(temp3)) == 0) {
+                p_station->probability_max[0] = '\0';   // Clear it out
+            }
+            else {
+                //fprintf(stderr,"extracted probability_max data: %s\n",temp3);
+                xastir_snprintf(p_station->probability_max,
+                    sizeof(p_station->probability_max),
+                    "%s",
+                    temp3);
+            }
+        }
+        else {
+            p_station->probability_max[0] = '\0';   // Clear it out
         }
     }
 }
