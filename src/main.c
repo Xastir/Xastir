@@ -11549,7 +11549,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 }
 
                 redraw_on_new_data = 0;
-                next_redraw = current_time+60; // redraw every minute
+                //next_redraw = current_time+60; // redraw every minute
+                next_redraw = current_time+1; // redraw every 1 second
                 last_redraw = current_time;
 
                 // This assures that we periodically check for expired alerts
