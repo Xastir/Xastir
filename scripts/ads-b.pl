@@ -1008,6 +1008,25 @@ while (<$socket>)
     $newtail = " $tail{$plane_id}";
   }
 
+  # Auto-switch the symbol based on speed/altitude.
+  # Symbols:
+  #   Small airplane = /'
+  #       Helicopter = /X 
+  #   Large aircraft = /^
+  #         Aircraft = \^ (Not used in this script)
+  #
+  #  Cessna 150:  57 knots minimum.
+  # Twin Cessna: 215 knots maximum.
+  #  UH-1N Huey: 110 knots maximum.
+  # Landing speed Boeing 757: 126 knots.
+  #
+  # If <= 10000 feet and  1 -  56 knots: Helicopter
+  # If <= 20000 feet and 57 - 125 knots: Small aircraft
+  # If >  20000 feet                   : Large aircraft
+  # if                      > 126 knots: Large aircraft
+  #
+  $symbol = "'"; # Start with small aircraft symbol
+ 
   $newalt = "";
   if ( defined($altitude{$plane_id}) ) {
     $newalt = " /A=$altitude{$plane_id}";
@@ -1030,26 +1049,6 @@ while (<$socket>)
   #
   if ( defined($newdata{$plane_id})
        && $newdata{$plane_id} ) {
-
-    # Auto-switch the symbol based on speed/altitude.
-    # Symbols:
-    #   Small airplane = /'
-    #       Helicopter = /X 
-    #   Large aircraft = /^
-    #         Aircraft = \^ (Not used in this script)
-    #
-    #  Cessna 150:  57 knots minimum.
-    # Twin Cessna: 215 knots maximum.
-    #  UH-1N Huey: 110 knots maximum.
-    # Landing speed Boeing 757: 126 knots.
-    #
-    # If <= 10000 feet and  1 -  56 knots: Helicopter
-    # If <= 20000 feet and 57 - 125 knots: Small aircraft
-    # If >  20000 feet                   : Large aircraft
-    # if                      > 126 knots: Large aircraft
-    #
-    $symbol = "'"; # Start with small aircraft symbol
- 
 
     # Count percentage of planes with lat/lon out of total planes that have altitude listed.
     # This should show an approximate implementation percentage for ADS-B transponders.
