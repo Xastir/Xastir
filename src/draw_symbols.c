@@ -49,7 +49,7 @@
 extern XmFontList fontlist1;    // Menu/System fontlist
 
 
-#define ANGLE_UPDOWN 30         /* prefer horizontal cars if less than 45 degrees */
+#define ANGLE_UPDOWN 45         /* prefer horizontal cars if less than 45 degrees */
 
 int symbols_loaded = 0;
 int symbols_cache[5] = {0,0,0,0,0};
@@ -2382,20 +2382,40 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, i
 
 
 
-/* calculate symbol orientation from course */
+// calculate symbol orientation from course
+// ' ' = left
+// 'd' = down
+// 'r' = right
+// 'u' = up
 char symbol_orient(char *course) {
     char orient;
     float mydir;
 
-    orient = ' ';
+    orient = ' '; // Default = left
     if (strlen(course)) {
         mydir = (float)atof(course);
         if (mydir > 0) {
-            if (mydir < (float)( 180+ANGLE_UPDOWN ) )
-                orient = 'd';
-            if (mydir < (float)( 180-ANGLE_UPDOWN ) )
+
+            while (mydir > 360.0) {
+                mydir = mydir - 360.0;
+            }
+
+            while (mydir < 0.0) {
+                mydir = mydir + 360.0;
+            }
+
+            if (mydir == 360.0) {
+                mydir = 0.0;
+            }
+
+            orient = 'u';                               // 000-045 = up
+            if ( mydir > (float)( 0+ANGLE_UPDOWN ) )    // 046-135 = right
                 orient = 'r';
-            if (mydir < (float)ANGLE_UPDOWN || mydir > (float)( 360-ANGLE_UPDOWN) )
+            if ( mydir > (float)( 90+ANGLE_UPDOWN ) )   // 136-225 = down
+                orient = 'd';
+            if ( mydir > (float)( 180+ANGLE_UPDOWN) )   // 226-314 = left
+                orient = ' ';
+            if ( mydir >= (float)(270+ANGLE_UPDOWN) )   // 315-360 = up
                 orient = 'u';
         }
     }
