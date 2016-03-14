@@ -987,6 +987,44 @@ while (<$socket>)
   }
  
 
+  $newtrack = "000";
+  if ( defined($track{$plane_id}) ) {
+    $newtrack = sprintf("%03d", $track{$plane_id} );
+  }
+
+  $newspeed = "000";
+  if ( defined ($groundspeed{$plane_id}) ) {
+    $newspeed = sprintf("%03d", $groundspeed{$plane_id} );
+    if ( ($groundspeed{$plane_id} > 0) && ($groundspeed{$plane_id} < 57) ) {
+      $symbol = "X";  # Switch to helicopter symbol
+    }
+    if ($groundspeed{$plane_id} > 126) {
+      $symbol = "^";  # Switch to large aircraft symbol
+    } 
+  }
+
+  $newtail = "";
+  if ( defined($tail{$plane_id}) ) {
+    $newtail = " $tail{$plane_id}";
+  }
+
+  $newalt = "";
+  if ( defined($altitude{$plane_id}) ) {
+    $newalt = " /A=$altitude{$plane_id}";
+
+    if ($altitude{$plane_id} > 20000) {
+      $symbol = "^";  # Switch to large aircraft symbol
+    }
+    elsif ($symbol eq "^") {
+      # Do nothing, already switched to large aircraft due to speed
+    }
+    elsif ($symbol eq "X" && $altitude{$plane_id} > 10000) {
+      $symbol = "'";  # Switch to small aircraft from helicopter
+    }
+  }
+
+
+
   # Above we parsed some message that changed some of our data, send out the
   # new APRS string if we have enough data defined.
   #
@@ -1012,42 +1050,6 @@ while (<$socket>)
     #
     $symbol = "'"; # Start with small aircraft symbol
  
-    $newtrack = "000";
-    if ( defined($track{$plane_id}) ) {
-      $newtrack = sprintf("%03d", $track{$plane_id} );
-    }
-
-    $newspeed = "000";
-    if ( defined ($groundspeed{$plane_id}) ) {
-      $newspeed = sprintf("%03d", $groundspeed{$plane_id} );
-      if ( ($groundspeed{$plane_id} > 0) && ($groundspeed{$plane_id} < 57) ) {
-        $symbol = "X";  # Switch to helicopter symbol
-      }
-      if ($groundspeed{$plane_id} > 126) {
-        $symbol = "^";  # Switch to large aircraft symbol
-      } 
-    }
-
-    $newtail = "";
-    if ( defined($tail{$plane_id}) ) {
-      $newtail = " $tail{$plane_id}";
-    }
-
-    $newalt = "";
-    if ( defined($altitude{$plane_id}) ) {
-      $newalt = " /A=$altitude{$plane_id}";
-
-      if ($altitude{$plane_id} > 20000) {
-        $symbol = "^";  # Switch to large aircraft symbol
-      }
-      elsif ($symbol eq "^") {
-        # Do nothing, already switched to large aircraft due to speed
-      }
-      elsif ($symbol eq "X" && $altitude{$plane_id} > 10000) {
-        $symbol = "'";  # Switch to small aircraft from helicopter
-      }
-    }
-
 
     # Count percentage of planes with lat/lon out of total planes that have altitude listed.
     # This should show an approximate implementation percentage for ADS-B transponders.
