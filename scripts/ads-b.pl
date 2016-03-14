@@ -27,6 +27,10 @@
 # or
 #   ./ads-b.pl p1anes <passcode>
 #
+# If you add " --circles" to the end you'll also get a red circle around plane
+# symbols at your current location which represent the area that a plane might
+# be min, if it's only reporting altitude and not lat/long.
+#
 # Injecting them from "planes" or "p1anes" assures that Xastir won't try to adopt
 # the APRS Item packets as its own and re-transmit them.
 #
@@ -204,6 +208,16 @@ if ($xastir_pass eq "") {
   print "Please enter a passcode for Xastir injection\n";
   die;
 }
+
+$enable_circles = 0;
+$circle_flag = shift;
+if (defined($circle_flag)) {
+  chomp $circle_flag;
+  if ( ($circle_flag ne "") && ($circle_flag eq "--circles") ) {
+    $enable_circles = 1;
+  }
+}
+
 
 # Connect to the server using a tcp socket
 #
@@ -1105,18 +1119,20 @@ while (<$socket>)
       $print_aprs = sprintf("%-96s", "$newtail$emerg_txt$squawk_txt$onGroundTxt ($registry)");
       print("$print1  $print2  $print3  $print4   $print_age$print_aprs  $print_adsb_percentage\n");
 
-      $radius = 10.0; # Set a default of 10 miles
-      if ( defined($altitude{$plane_id}) ) {
-        $radius = ( ( ($altitude{$plane_id} - $my_alt) / 1000 ) * 2 );  # 40k = 80 miles, 20k = 40 miles, 10k = 20 miles, 1k = 2 miles
-      }
-      $print_radius = sprintf("%2.1f", $radius);
-      $aprs="$xastir_user>APRS:)$plane_id!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt ($registry) [Pmin$print_radius,]";
-#     print "$aprs\n";
+      if ($enable_circles == 1) {
+        $radius = 10.0; # Set a default of 10 miles
+        if ( defined($altitude{$plane_id}) ) {
+          $radius = ( ( ($altitude{$plane_id} - $my_alt) / 1000 ) * 2 );  # 40k = 80 miles, 20k = 40 miles, 10k = 20 miles, 1k = 2 miles
+        }
+        $print_radius = sprintf("%2.1f", $radius);
+        $aprs="$xastir_user>APRS:)$plane_id!$my_lat/$my_lon$symbol$newtrack/$newspeed$newalt$newtail$emerg_txt$squawk_txt$onGroundTxt ($registry) [Pmin$print_radius,]";
+  #     print "$aprs\n";
 
-      # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-      $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-      if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+          die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
       }
     }
 
