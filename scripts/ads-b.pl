@@ -31,6 +31,11 @@
 # symbols at your current location which represent the area that a plane might
 # be min, if it's only reporting altitude and not lat/long.
 #
+# If you add " --logging" to the end, this script will save the APRS portion of
+# the output to a file called "~/.xastir/logs/planes.log". You can later suck
+# this file back in to see the planes move around the map in hyperspeed. Useful
+# for a quick demo.
+#
 # Injecting them from "planes" or "p1anes" assures that Xastir won't try to adopt
 # the APRS Item packets as its own and re-transmit them.
 #
@@ -193,6 +198,8 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
 
 $plane_TTL = 15;            # Secs after which posits too old to create APRS packets from
 
+$log_file = "~/.xastir/logs/planes.log";
+
 
 $xastir_user = shift;
 chomp $xastir_user;
@@ -210,11 +217,27 @@ if ($xastir_pass eq "") {
 }
 
 $enable_circles = 0;
-$circle_flag = shift;
-if (defined($circle_flag)) {
-  chomp $circle_flag;
-  if ( ($circle_flag ne "") && ($circle_flag eq "--circles") ) {
+$enable_logging = 0;
+
+$flag1 = shift;
+if (defined($flag1)) {
+  chomp $flag1;
+  if ( ($flag1 ne "") && ($flag1 eq "--circles") ) {
     $enable_circles = 1;
+  }
+  if ( ($flag1 ne "") && ($flag1 eq "--logging") ) {
+    $enable_logging = 1;
+  }
+}
+
+$flag2 = shift;
+if (defined($flag2)) {
+  chomp $flag2;
+  if ( ($flag2 ne "") && ($flag2 eq "--circles") ) {
+    $enable_circles = 1;
+  }
+  if ( ($flag2 ne "") && ($flag2 eq "--logging") ) {
+    $enable_logging = 1;
   }
 }
 
@@ -889,6 +912,11 @@ while (<$socket>)
         if ($result =~ m/NACK/) {
           die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
         }
+
+        if ($enable_logging == 1) {
+          `echo \"$aprs\" >> $log_file`;
+        }
+
       }
     }
   }
@@ -930,6 +958,11 @@ while (<$socket>)
       if ($result =~ m/NACK/) {
         die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
       }
+
+      if ($enable_logging == 1) {
+        `echo \"$aprs\" >> $log_file`;
+      }
+
     }
   }
 
@@ -1106,10 +1139,14 @@ while (<$socket>)
         # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
 #        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs [Pmin0.0,]\"`;
         $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
- 
         if ($result =~ m/NACK/) {
           die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
         }
+
+        if ($enable_logging == 1) {
+          `echo \"$aprs\" >> $log_file`;
+        }
+
       }
     }
     else {
@@ -1134,6 +1171,11 @@ while (<$socket>)
         if ($result =~ m/NACK/) {
           die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
         }
+
+        if ($enable_logging == 1) {
+          `echo \"$aprs\" >> $log_file`;
+        }
+
       }
     }
 
