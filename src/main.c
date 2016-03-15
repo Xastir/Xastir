@@ -217,7 +217,8 @@ char *xastir_version=VERSION;
 
 #define STATUSLINE_ACTIVE 10    /* status line is cleared after 10 seconds */
 #define REPLAY_DELAY       0    /* delay between replayed packets in sec, 0 is ok */
-#define REDRAW_WAIT        3    /* delay between consecutive redraws in seconds (file load) */
+//#define REDRAW_WAIT        3    /* delay between consecutive redraws in seconds (file load) */
+#define REDRAW_WAIT        0    /* delay between consecutive redraws in seconds (file load) */
 
 
 
