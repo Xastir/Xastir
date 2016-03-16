@@ -1020,9 +1020,14 @@ while (<$socket>)
   }
  
 
-  $newtrack = "000";
+  $newtrack = "360";
   if ( defined($track{$plane_id}) ) {
-    $newtrack = sprintf("%03d", $track{$plane_id} );
+    if ($track{$plane_id} == 0) {
+      $newtrack = "360";
+    }
+    else {
+      $newtrack = sprintf("%03d", $track{$plane_id} );
+    }
   }
 
   $newspeed = "000";
