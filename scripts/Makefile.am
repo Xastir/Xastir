@@ -13,9 +13,7 @@ dist_scripts_DATA = \
     get-fcc-rac.pl \
     get-gnis \
     get-pop \
-    get-maptools.sh \
     get-NWSdata \
-    get_shapelib.sh \
     gpx2shape \
     icontable.pl \
     inf2geo.pl \

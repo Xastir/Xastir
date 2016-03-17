@@ -818,34 +818,6 @@ See the README.MAPS file for where to get the maps, and a script to
 automate the download/install for you.
 
 
-Note from Gale Wilkinson, kc4pl:
-> >
-> > How do you get shapelib to "make" properly under cygwin?  I
-> > have installed the latest cygwin (packages per the win32
-> > install notes) and then downloaded and unpacked the latest
-> > shapelib source package for compiling.  But when trying to do
-> > the "make lib" it errors out part way through the process.
-> > The error seems to be:
-> >
-> >  dbfopen.lo: In function 'DBFReadAttribute':
-> > /home/gwilkinson/src/shapelib-1.2.10/dbfopen.c:724:undefined
-> > reference to '__getreent'
-> > /home/gwilkinson/src/shapelib-1.2.10/dbfopen.c:716:undefined
-> > reference to '__getreent'
-> > make: *** [lib] Error 1
-
-Dan Brown, n8ysz, responded:
->
-> I wrote this to get/make shapelib:
->
-> http://brauhaus.org/xastir/get_shapelib.sh
-> or
-> http://brauhaus.org/xastir/get_shapelib.sh.txt
-
-This script is now also in the Xastir sources as
-"xastir/scripts/get_shapelib.sh".
-
-
 
 OPTIONAL:  Adding ImageMagick:
 --------------------------------------------------------------

@@ -53,8 +53,9 @@ System Requirements:
 CPU: at least 1Ghz
 Memory: at least 512Meg with at least 1Gig of swap space
 OS: Windows 2000 or later
-Time: At least 6 hours if not using the get-maptools.sh script
-      24 to 48 hours if using the script
+Time: At least 6 hours
+      possibly as much as 48 hours if you have to build all of the
+      dependent packages from source on a slow machine
 
 
 Please Note:  It's beneficial to actually log in to your Windows
@@ -198,8 +199,8 @@ required:
 [ ] font-xfree86-type1
 [ ] gcc4
 
-[ ] gcc4-fortran (if you are going to use the get-maptools script)
-[ ] gcc4-objc (if you are going to use the get-maptools script)
+[ ] gcc4-fortran 
+[ ] gcc4-objc 
 
 [ ] GraphicsMagick
 [ ] gv
@@ -217,9 +218,9 @@ required:
 [ ] libdb4.x-devel (pick the same x as db2.x above)
 [ ] libfontconfig-devel
 
-[ ] libgeotiff (if you are NOT going to use the get-maptools script)
-[ ] libgeotiff-devel (if you are NOT going to use the get-maptools script)
-[ ] libgeotiff1 (if you are NOT going to use the get-maptools script)
+[ ] libgeotiff 
+[ ] libgeotiff-devel 
+[ ] libgeotiff1 
 
 [ ] libGraphicsMagick-devel
 [ ] libGraphicsMagick3
@@ -227,8 +228,8 @@ required:
 [ ] libpcrecpp-devel
 [ ] libpng*-devel (pick the number that matches the already selected libpng* library)
 
-[ ] libproj-devel (if you are NOT going to use the get-maptools script)
-[ ] libproj1 (if you are NOT going to use the get-maptools script)
+[ ] libproj-devel 
+[ ] libproj1 
 
 [ ] libtiff-devel
 [ ] libtool
@@ -244,7 +245,7 @@ required:
 [ ] pcre
 [ ] perl
 
-[ ] proj (if you are NOT going to use the get-maptools script)
+[ ] proj 
 
 [ ] python
 [ ] rcs
@@ -632,38 +633,6 @@ made to work yet on Cygwin are:
 The AX25 libraries will probably never work, as they are for Linux
 only.  GPSMan/gpsmanshp may work on Cygwin at some point if enough
 work is done to figure out and document the process.
-
-
-RECOMMENDED:  Adding maptools:
-------------------------------------------------------------
-
-*******************************NOTE**************************************
-As of 10 November 2006, xastir's source tree contains a copy of shapelib
-1.2.10, and automatically builds shapelib if you don't have it installed.
-************************************************************************
-
-
-[ ] From a BASH shell, type:
-
-    cd ~/src/xastir/scripts
-    ./get-maptools.sh
-    come back in six to 48 hours
-    
-The last thing the script tries to do is compile GDAL.  This is currently
-broken.  Don't worry.  The rest should have been installed just fine.
-
-[ ] Now you should be ready to configure and compile Xastir with
-Shapelib support.  Type these commands:
-
-    cd ~/src/xastir
-    cvs update
-    ./bootstrap.sh
-    ./configure
-    make
-    make install
-
-
-See the README.MAPS file for where to get the maps.
 
 
 OPTIONAL:  Install Festival support:
