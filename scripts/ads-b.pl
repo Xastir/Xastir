@@ -278,8 +278,11 @@ if ($result =~ m/NACK/) {
 chomp($remote_call);
 $remote_call =~ s/Received:\s+//;
 
-chomp($remote_ssid);
-if ($remote_ssid eq "") { $remote_ssid = 0; }
+$remote_ssid = 0;
+if (defined($remote_ssid) && $remote_ssid ne "") {
+    chomp($remote_ssid);
+    if ($remote_ssid eq "") { $remote_ssid = 0; }
+}
 
 #print "$remote_call $remote_ssid $injection_call $injection_ssid\n";
 #if ($remote_call eq $injection_call) { print "Call matches\n"; }
