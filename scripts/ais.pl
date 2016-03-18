@@ -6,6 +6,7 @@
 # APRS packets out of them and sends them to Xastir's server port (2023)
 # via UDP.
 #
+#
 # You'll need "libusb", "libpthread", "librtlsdr" installed to be able to
 # compile "rtl_ais".
 #
@@ -26,8 +27,41 @@
 #   ./ais.pl boats <callpass>
 #
 #
+# Antenna length should be:
+# 1/2 wave dipole: 2.89' -or- 2' 10.7" -or- 2' 10 5/8"
+# 1/4 wave: 1.44' -or- 1' 5.3" -or- 1' 5 5/16"
+#
+#
 # Good AIS info:
 # http://catb.org/gpsd/AIVDM.html
+#
+#
+# TODO: Decode more than just messages types 1/2/3.
+#   Targets of opportunity:
+#     Message type  5: Static and Voyage Related Data (Vessel name, callsign, ship type)
+#     Message type  9: Standard SAR Aircraft Position Report
+#     Message type 18: Standard Class B CS Position Report
+#     Message type 19: Extended Class B CS Position Report
+#     Message type 24: Static Data Report (Vessel name, callsign, ship type)
+#     Message type 27: Position Report For Long-Range Applications (rare)
+#
+# TODO: Decode country from 1st 3 digits of MMSI ($userID). Note that
+# U.S. ships sometimes incorrectly send "669" for those first 3 digits.
+#     http://www.itu.int/online/mms/glad/cga_mids.sh?lng=E
+#
+# TODO: Decode MID out of MMSI ($userID) too:
+#    8MIDXXXXX Diver's radio (not used in the U.S. in 2013)
+#    MIDXXXXXX Ship
+#    0MIDXXXXX Group of ships; the U.S. Coast Guard, for example, is 03699999
+#    00MIDXXXX Coastal stations
+#    111MIDXXX SAR (Search and Rescue) aircraft
+#    99MIDXXXX Aids to Navigation
+#    98MIDXXXX Auxilary craft associated with a parent ship
+#    970MIDXXX AIS SART (Search and Rescue Transmitter)
+#    972XXXXXX MOB (Man Overboard) device
+#    974XXXXXX EPIRB (Emergency Position Indicating Radio Beacon) AIS
+#
+# TODO: Decode Navigation Status
 #
 ###########################################################################
 
@@ -77,8 +111,11 @@ if ($result =~ m/NACK/) {
 chomp($remote_call);
 $remote_call =~ s/Received:\s+//;
 
-chomp($remote_ssid);
-if ($remote_ssid eq "") { $remote_ssid = 0; }
+$remote_ssid = 0;
+if (defined ($remote_ssid) && $remote_ssid ne "") {
+    chomp($remote_ssid);
+    if ($remote_ssid eq "") { $remote_ssid = 0; }
+}
 
 #print "$remote_call $remote_ssid $injection_call $injection_ssid\n";
 #if ($remote_call eq $injection_call) { print "Call matches\n"; }
@@ -183,6 +220,13 @@ while ($server->recv($received_data, 1024)) {
     #}
 
     $bmessage_type = substr($bin_string, 0, 6);
+    $message_type = &bin2dec($bmessage_type);
+    #print "Message Type: $message_type\n";
+    # If not messages types 1, 2, 3, skip for now
+    if ($message_type > 3) {
+        next;
+    }
+
     #$brepeat_indicator = substr($bin_string, 6, 2);
     $buserID = substr($bin_string, 8, 30);
     #$bnav_status = substr($bin_string, 38, 4);
@@ -200,13 +244,6 @@ while ($server->recv($received_data, 1024)) {
     #$bSOTDMAsyncState = substr($bin_string, 149, 3);
     #$bSOTDMAslotTimeout = substr($bin_string, 151, 3);
     #$bSOTDMAslotOffset = substr($bin_string, 154, 14);
-
-    $message_type = &bin2dec($bmessage_type);
-    #print "Message Type: $message_type\n";
-    # If not messages types 1, 2, 3, skip for now
-    if ($message_type > 3) {
-        next;
-    }
 
     $userID = &bin2dec($buserID);
     print "User ID: $userID\n";
