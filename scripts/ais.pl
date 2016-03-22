@@ -74,7 +74,7 @@
 
 # Enable debug mode by setting this first variable to a 1, then
 # can pipe packets into the program's STDIN for testing.
-$debug_mode   = 1;
+$debug_mode   = 0;
 
 # Turn on/off printing of various types of messages. Enables debugging of a few
 # sentence types at a time w/o other messages cluttering up the output.
