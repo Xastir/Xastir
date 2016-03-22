@@ -35,18 +35,21 @@
 # Good AIS info:
 #   http://catb.org/gpsd/AIVDM.html
 #
-# Example packets w/decoding of fields:
+# Example packets w/decoding of fields, plus large sample NMEA data file:
 #   http://fossies.org/linux/gpsd/test/sample.aivdm
 #
+# Possible live data feed (Too many connections when I try):
+#   ais.exploratorium.edu:80
 #
-# TODO: Decode more than just messages types 1/2/3.
+#
+# TODO: Decode more than just messages types 1/2/3/5/9/18/19.
 #   Targets of opportunity:
-#     Message type  5: Static and Voyage Related Data (Vessel name, callsign, ship type)
-#     Message type  9: Standard SAR Aircraft Position Report
-#     Message type 18: Standard Class B CS Position Report
-#     Message type 19: Extended Class B CS Position Report
 #     Message type 24: Static Data Report (Vessel name, callsign, ship type)
-#     Message type 27: Position Report For Long-Range Applications (rare)
+#       This one has multiple variants...  Figure out which variant the
+#       message is and process appropriately.
+#
+# TODO: Look for N/A values, like 63 for Knots, 511 for Course. Don't add
+#     those values to the APRS packets.
 #
 # TODO: Decode country from 1st 3 digits of MMSI ($userID). Note that
 # U.S. ships sometimes incorrectly send "669" for those first 3 digits.
@@ -67,6 +70,21 @@
 # TODO: Decode Navigation Status
 #
 ###########################################################################
+
+
+# Enable debug mode by setting this first variable to a 1, then
+# can pipe packets into the program's STDIN for testing.
+$debug_mode = 0;
+
+# Turn on/off printing of various types of messages. Enables debugging of a few
+# sentence types at a time w/o other messages cluttering up the output.
+$print_123  = 1;
+$print_5    = 1;
+$print_9    = 1;
+$print_18   = 1;
+$print_19   = 1;
+$print_24   = 0; # Not correctly decoded yet (variant record, only 1/3 has tac-call)
+$print_27   = 1;
 
 
 $udp_client = "xastir_udp_client";
@@ -131,32 +149,12 @@ if (     ($remote_call eq $injection_call)
 }
 
 
-# Create UDP server which connects to rtl_ais to get AIS data
-# Listen on localhost port 10110 for UDP packets
-#
-use IO::Socket;
-my $host = "localhost";
-my $port = 10110;
-my $protocol = 'udp';
-
-my $server = IO::Socket::INET->new(
-    #PeerAddr => $host,
-    LocalPort => $port,
-    Proto    => $protocol,
-    Type     => SOCK_DGRAM
-) or die "Socket could not be created, failed with error: $!\n";
-
-
-# Main processing loop. Fetch packets as they are received via
-# UDP from port 10110. Create APRS packets out of the interesting
-# ones and inject them into Xastir at port 2023 using UDP.
-#
-while ($server->recv($received_data, 1024)) {
-    #my $peer_address = $server->peerhost();
-    #my $peer_port    = $server->peerport();
-    #print "Message was received from: $peer_address, $peer_port\n";
-    #print "$received_data";
-
+if ($debug_mode) {
+    #
+    # Debug mode:
+    # Read from pipe in a loop
+    #
+    
     #$received_data = "!AIVDM,1,1,,B,ENkb9Ma89h:9V\@9Q@@@@@@@@@@@;W\@2v=hvOP00003vP000,0*17";
     #$received_data = "!AIVDM,1,1,,B,403Ot`Qv0q1Kio@7<0K?fL702L4q,0*4A";
     #$received_data = "!AIVDM,1,1,,B,D03Ot`Qe\@Nfp00N01FTf9IFdv9H,0*7B";
@@ -178,7 +176,86 @@ while ($server->recv($received_data, 1024)) {
     #$received_data = "!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41";                # Message Type 27
     #$received_data = "!AIVDM,1,1,,B,KC5E2b@U19PFdLbMuc5=ROv62<7m,0*16";    # Message Type 27
 
-    chomp($received_data);
+    while (<STDIN>) {
+        &process_line($_);
+    }
+}
+else {
+    #
+    # Not debug mode:
+    # Create UDP server which connects to rtl_ais to get AIS data
+    # Listen on localhost port 10110 for UDP packets
+    #
+    use IO::Socket;
+    my $host = "localhost";
+    my $port = 10110;
+    my $protocol = 'udp';
+
+    my $server = IO::Socket::INET->new(
+        #PeerAddr => $host,
+        LocalPort => $port,
+        Proto    => $protocol,
+        Type     => SOCK_DGRAM
+    ) or die "Socket could not be created, failed with error: $!\n";
+
+
+    # Main processing loop. Fetch packets as they are received via
+    # UDP from port 10110. Create APRS packets out of the interesting
+    # ones and inject them into Xastir at port 2023 using UDP.
+    #
+    while ($server->recv($received_data, 1024)) {
+
+        #my $peer_address = $server->peerhost();
+        #my $peer_port    = $server->peerport();
+        #print "Message was received from: $peer_address, $peer_port\n";
+        #print "$received_data";
+
+        &process_line($received_data);
+
+    } # End of main processing loop
+}
+
+
+
+sub process_line () {
+
+    $received_data = shift;
+#    chomp($received_data);
+    chop($received_data); # Live data ends in <CR><LF>. Why????
+    chop($received_data);
+
+    # Verify the checksum: Refuse to process a message if it's bad.
+    # Computed on entire sentence including the AIVDM tag but excluding
+    # the leading "!" character.
+    my $str = $received_data;
+    $str =~ s/^!//;
+    $str =~ s/(,\d)\*../$1/;
+
+    # Received checksum. Catches the correct bytes except
+    # for those cases where the NMEA sentences continues
+    # on past the checksum.
+    my $str2 = $received_data;
+    $str2 =~ s/.*(..)/$1/;
+
+    # Compute the checksum on the string between the '!' and the '*' chars.
+    $j = length($str);
+    my $sum = 0;
+    my $i;
+    for ($i = 0; $i <= $j; $i++) {
+        my $c = ord( substr($str, $i, 1) );
+        $sum = $sum ^ $c;
+    }
+    my $sum2 = sprintf( "%02X", $sum);
+    if ($str2 ne $sum2) {
+	print "$received_data\n";
+	#print "$str\t$str2\t$sum2\n";
+	printf("Bad checksum: Received:%s  Computed:%s\n\n", $str2, $sum2);
+        return(); # Skip this sentence
+    }
+    else {
+        #print "$str2\t$sum2\n";
+    }
+
     @pieces = split( ',', $received_data);
 
     # $pieces[0] = NMEA message type
@@ -235,7 +312,7 @@ while ($server->recv($received_data, 1024)) {
 
     $bmessage_type = substr($bin_string, 0, 6);
     $message_type = &bin2dec($bmessage_type);
-    print "Message Type: $message_type\n";
+#    print "Message Type: $message_type\n";
     # If not messages types 1, 2, 3, skip for now
     if (    $message_type !=  1
          && $message_type !=  2
@@ -248,49 +325,65 @@ while ($server->recv($received_data, 1024)) {
          && $message_type != 27
                                  ) {
         # Not something we decode so don't process the sentence.
-        next;
+        return;
     }
 
     if (    $message_type ==  1
          || $message_type ==  2
          || $message_type ==  3 ) {
+        if ($print_123) { print "Message Type: $message_type\n"; }
         &process_types_1_2_3($message_type);
     }
+
     elsif ( $message_type == 5 ) {
+        if ($print_5) { print "Message Type: $message_type\n"; }
         &process_type_5($message_type);
     }
+
     elsif ( $message_type == 9 ) {
+        if ($print_9) { print "Message Type: $message_type\n"; }
         &process_type_9($message_type);
     }
+
     elsif ( $message_type == 18 ) {
+        if ($print_18) { print "Message Type: $message_type\n"; }
         &process_type_18($message_type);
+ 
     }
+
     elsif ( $message_type == 19 ) {
+        if ($print_19) { print "Message Type: $message_type\n"; }
         &process_type_19($message_type);
+ 
     }
+
     elsif ( $message_type == 24 ) {
+        if ($print_24) { print "Message Type: $message_type\n"; }
         &process_type_24($message_type);
     }
+
     elsif ( $message_type == 27 ) {
+        if ($print_27) { print "Message Type: $message_type\n"; }
         &process_type_27($message_type);
     }
    
-} # End of main processing loop
+} # End of "process_line"
 
 
 
 # Message types 1, 2 and 3: Position Report Class A
 #
 sub process_types_1_2_3() {
+    # substr($bin_string,   0,   6); # Message Type
     #my $brepeat_indicator = substr($bin_string, 6, 2);
-    my $buserID = substr($bin_string, 8, 30);
+    my $bUserID = substr($bin_string, 8, 30);
     #my $bnav_status = substr($bin_string, 38, 4);
     #my $brateOfTurn = substr($bin_string, 42, 8);
-    my $bspeedOverGnd = substr($bin_string, 50, 10);
+    my $bSpeedOverGnd = substr($bin_string, 50, 10);    #####
     #my $bpositionAccuracy = substr($bin_string, 60, 1);
-    my $blongitude = substr($bin_string, 61, 28);
-    my $blatitude = substr($bin_string, 89, 27);
-    my $bcourseOverGnd = substr($bin_string, 116, 12);
+    my $bLongitude = substr($bin_string, 61, 28);   #####
+    my $bLatitude = substr($bin_string, 89, 27);    #####
+    my $bCourseOverGnd = substr($bin_string, 116, 12); #####
     #my $btrueHeading = substr($bin_string, 128, 9);
     #my $btimestamp = substr($bin_string, 137, 6);
     #my $bregional = substr($bin_string, 143, 2);
@@ -300,23 +393,23 @@ sub process_types_1_2_3() {
     #my $bSOTDMAslotTimeout = substr($bin_string, 151, 3);
     #my $bSOTDMAslotOffset = substr($bin_string, 154, 14);
 
-    my $userID = &bin2dec($buserID);
-    print "User ID: $userID\n";
+    my $userID = &bin2dec($bUserID);
+    if ($print_123) { print "User ID: $userID\n"; }
 
-    my $courseOverGnd = &bin2dec($bcourseOverGnd) / 10 ;
+    my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
     if ($courseOverGnd == 0) {
         $courseOverGnd = 360;
     }
-    print "Course: $courseOverGnd\n";
+    if ($print_123) { print "Course: $courseOverGnd\n"; }
     my $course = sprintf("%03d", $courseOverGnd);
 
-    my $speedOverGnd = &bin2dec($bspeedOverGnd) / 10;
-    print "Speed: $speedOverGnd\n";
+    my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    if ($print_123) { print "Speed: $speedOverGnd\n"; }
     my $speed = sprintf("%03d", $speedOverGnd);
 
-    my $latitude = &signedBin2dec($blatitude) / 600000.0;
+    my $latitude = &signedBin2dec($bLatitude) / 600000.0;
     my $NS;
-    print "Latitude: $latitude\n";
+    if ($print_123) { print "Latitude: $latitude\n"; }
     if ($latitude >= 0.0) {
         $NS = 'N';
     } else {
@@ -328,9 +421,9 @@ sub process_types_1_2_3() {
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
-    my $longitude = &signedBin2dec($blongitude) / 600000.0;
+    my $longitude = &signedBin2dec($bLongitude) / 600000.0;
     my $EW;
-    print "Longitude: $longitude\n";
+    if ($print_123) { print "Longitude: $longitude\n"; }
     if ($longitude >= 0.0) {
         $EW = 'E';
     } else {
@@ -342,17 +435,18 @@ sub process_types_1_2_3() {
     my $lonmins2 = $lonmins * 60.0;
     my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
 
-    print "\n";
-
     my $symbol = "s";
     my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed";
-    print "$aprs\n";
+    if ($print_123) { print "$aprs\n"; }
     # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
     my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
     if ($result =~ m/NACK/) {
         die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
     }
-        return();
+
+    if ($print_123) { print "\n"; }
+
+    return();
 }
 
 
@@ -362,11 +456,11 @@ sub process_types_1_2_3() {
 sub process_type_5() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   2); # AIS Version
     # substr($bin_string,  40,  30); # IMO Number
     # substr($bin_string,  70,  42); # Call Sign
-    my $bvessel_name = substr($bin_string, 112, 120); # Vessel Name
+    my $bVesselName = substr($bin_string, 112, 120); # Vessel Name #####
     # substr($bin_string, 232,   8); # Ship Type
     # substr($bin_string, 240,   9); # Dimension to Bow
     # substr($bin_string, 249,   9); # Dimension to Stern
@@ -382,22 +476,24 @@ sub process_type_5() {
     # substr($bin_string, 422,   1); # DTE
     # substr($bin_string, 423,   1); # Spare
 
-    my $userID = &bin2dec($buserID);
-    print "User ID: $userID\n";
+    my $userID = &bin2dec($bUserID);
+    if ($print_5) { print "User ID: $userID\n"; }
 
-    my $vessel_name = &bin2text($bvessel_name);
-    print "Vessel Name: $vessel_name\n";
+    my $vesselName = &bin2text($bVesselName);
+    if ($print_5) { print "Vessel Name: $vesselName\n"; }
 
-    # Assign tactical call = $vessel_name
+    # Assign tactical call = $vesselName
     # Max tactical call in Xastir is 57 chars (56 + terminator?)
     #
-    $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $vessel_name;
-    print "$aprs\n";
+    $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $vesselName;
+    if ($print_5) { print "$aprs\n"; }
     # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
     $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
     if ($result =~ m/NACK/) {
         die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
     }
+
+    if ($print_5) { print "\n"; }
 
     return();
 }
@@ -409,13 +505,13 @@ sub process_type_5() {
 sub process_type_9() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
-    # substr($bin_string,  38,  12); # Altitude
-    # substr($bin_string,  50,  10); # SOG
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
+    my $bAltitude = substr($bin_string,  38,  12); # Altitude
+    my $bSpeedOverGnd = substr($bin_string,  50,  10); # SOG
     # substr($bin_string,  60,   1); # Position Accuracy
-    # substr($bin_string,  61,  28); # Longitude
-    # substr($bin_string,  89,  27); # Latitude
-    # substr($bin_string, 116,  12); # Course Over Ground
+    my $bLongitude = substr($bin_string,  61,  28); # Longitude
+    my $bLatitude = substr($bin_string,  89,  27); # Latitude
+    my $bCourseOverGnd = substr($bin_string, 116,  12); # Course Over Ground
     # substr($bin_string, 128,   6); # Time Stamp
     # substr($bin_string, 134,   8); # Regional reserved
     # substr($bin_string, 142,   1); # DTE
@@ -423,6 +519,66 @@ sub process_type_9() {
     # substr($bin_string, 146,   1); # Assigned
     # substr($bin_string, 147,   1); # RAIM flag
     # substr($bin_string, 148,  20); # Radio status
+
+    my $userID = &bin2dec($bUserID);
+    if ($print_9) { print "User ID: $userID\n"; }
+
+    my $altitude_meters = &bin2dec($bAltitude);
+    my $altitude = "";
+    if ($altitude_meters != 4095) {
+      $altitude = sprintf( "%s%06d", " /A=", $altitude_meters * 3.28084 );
+      if ($print_9) { print "Altitude: $altitude\n"; }
+    }
+
+    my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
+    if ($courseOverGnd == 0) {
+        $courseOverGnd = 360;
+    }
+    if ($print_9) { print "Course: $courseOverGnd\n"; }
+    my $course = sprintf("%03d", $courseOverGnd);
+
+    my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    if ($print_9) { print "Speed: $speedOverGnd\n"; }
+    my $speed = sprintf("%03d", $speedOverGnd);
+
+    my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    my $NS;
+    if ($print_9) { print "Latitude: $latitude\n"; }
+    if ($latitude >= 0.0) {
+        $NS = 'N';
+    } else {
+        $NS = 'S';
+        $latitude = abs($latitude);
+    }
+    my $latdeg = int($latitude);
+    my $latmins = $latitude - $latdeg;
+    my $latmins2 = $latmins * 60.0;
+    my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
+
+    my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    my $EW;
+    if ($print_9) { print "Longitude: $longitude\n"; }
+    if ($longitude >= 0.0) {
+        $EW = 'E';
+    } else {
+        $EW = 'W';
+        $longitude = abs($longitude);
+    }
+    my $londeg = int($longitude);
+    my $lonmins = $longitude - $londeg;
+    my $lonmins2 = $lonmins * 60.0;
+    my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
+
+    my $symbol = "^";   # "^" = Large Aircraft. Could be "'" for small aircraft, "X" for helicopter.
+    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$altitude SAR Aircraft";
+    if ($print_9) { print "$aprs\n"; }
+    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+    if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+    }
+ 
+    if ($print_9) { print "\n"; }
 
     return();
 }
@@ -434,13 +590,13 @@ sub process_type_9() {
 sub process_type_18() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   8); # Regional Reserved
-    # substr($bin_string,  46,  10); # Speed Over Ground
+    my $bSpeedOverGnd = substr($bin_string,  46,  10); # Speed Over Ground
     # substr($bin_string,  56,   1); # Position Accuracy
-    # substr($bin_string,  57,  28); # Longitude
-    # substr($bin_string,  85,  27); # Latitude
-    # substr($bin_string, 112,  12); # Course Over Ground
+    my $bLongitude = substr($bin_string,  57,  28); # Longitude
+    my $bLatitude = substr($bin_string,  85,  27); # Latitude
+    my $bCourseOverGnd = substr($bin_string, 112,  12); # Course Over Ground
     # substr($bin_string, 124,   9); # True Heading
     # substr($bin_string, 133,   6); # Time Stamp
     # substr($bin_string, 139,   2); # Regional reserved
@@ -453,6 +609,59 @@ sub process_type_18() {
     # substr($bin_string, 147,   1); # RAIM flag
     # substr($bin_string, 148,  20); # Radio status
  
+    my $userID = &bin2dec($bUserID);
+    if ($print_18) { print "User ID: $userID\n"; }
+
+    my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
+    if ($courseOverGnd == 0) {
+        $courseOverGnd = 360;
+    }
+    if ($print_18) { print "Course: $courseOverGnd\n"; }
+    my $course = sprintf("%03d", $courseOverGnd);
+
+    my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    if ($print_18) { print "Speed: $speedOverGnd\n"; }
+    my $speed = sprintf("%03d", $speedOverGnd);
+
+    my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    my $NS;
+    if ($print_18) { print "Latitude: $latitude\n"; }
+    if ($latitude >= 0.0) {
+        $NS = 'N';
+    } else {
+        $NS = 'S';
+        $latitude = abs($latitude);
+    }
+    my $latdeg = int($latitude);
+    my $latmins = $latitude - $latdeg;
+    my $latmins2 = $latmins * 60.0;
+    my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
+
+    my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    my $EW;
+    if ($print_18) { print "Longitude: $longitude\n"; }
+    if ($longitude >= 0.0) {
+        $EW = 'E';
+    } else {
+        $EW = 'W';
+        $longitude = abs($longitude);
+    }
+    my $londeg = int($longitude);
+    my $lonmins = $longitude - $londeg;
+    my $lonmins2 = $lonmins * 60.0;
+    my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
+
+    my $symbol = "s";
+    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed";
+    if ($print_18) { print "$aprs\n"; }
+    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+    if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+    }
+ 
+    if ($print_18) { print "\n"; }
+
     return();
 }
 
@@ -463,17 +672,17 @@ sub process_type_18() {
 sub process_type_19() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   8); # Regional Reserved
-    # substr($bin_string,  46,  10); # Speed Over Ground
+    my $bSpeedOverGnd = substr($bin_string,  46,  10); # Speed Over Ground
     # substr($bin_string,  56,   1); # Position Accuracy
-    # substr($bin_string,  57,  28); # Longitude
-    # substr($bin_string,  85,  27); # Latitude
-    # substr($bin_string, 112,  12); # Course Over Ground
+    my $bLongitude = substr($bin_string,  57,  28); # Longitude
+    my $bLatitude = substr($bin_string,  85,  27); # Latitude
+    my $bCourseOverGnd = substr($bin_string, 112,  12); # Course Over Ground
     # substr($bin_string, 124,   9); # True Heading
     # substr($bin_string, 133,   6); # Time Stamp
     # substr($bin_string, 139,   4); # Regional reserved
-    # substr($bin_string, 143, 120); # Name
+    my $bVesselName = substr($bin_string, 143, 120); # Name
     # substr($bin_string, 263,   8); # Type of ship and cargo
     # substr($bin_string, 271,   9); # Dimension to Bow
     # substr($bin_string, 280,   9); # Dimension to Stern
@@ -485,6 +694,78 @@ sub process_type_19() {
     # substr($bin_string, 307,   1); # Assigned mode flag
     # substr($bin_string, 308,   4); # Spare
  
+    my $userID = &bin2dec($bUserID);
+    if ($print_19) { print "User ID: $userID\n"; }
+
+    my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
+    if ($courseOverGnd == 0) {
+        $courseOverGnd = 360;
+    }
+    if ($print_19) { print "Course: $courseOverGnd\n"; }
+    my $course = sprintf("%03d", $courseOverGnd);
+
+    my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    if ($print_19) { print "Speed: $speedOverGnd\n"; }
+    my $speed = sprintf("%03d", $speedOverGnd);
+
+    my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    my $NS;
+    if ($print_19) { print "Latitude: $latitude\n"; }
+    if ($latitude >= 0.0) {
+        $NS = 'N';
+    } else {
+        $NS = 'S';
+        $latitude = abs($latitude);
+    }
+    my $latdeg = int($latitude);
+    my $latmins = $latitude - $latdeg;
+    my $latmins2 = $latmins * 60.0;
+    my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
+
+    my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    my $EW;
+    if ($print_19) { print "Longitude: $longitude\n"; }
+    if ($longitude >= 0.0) {
+        $EW = 'E';
+    } else {
+        $EW = 'W';
+        $longitude = abs($longitude);
+    }
+    my $londeg = int($longitude);
+    my $lonmins = $longitude - $londeg;
+    my $lonmins2 = $lonmins * 60.0;
+    my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
+
+    my $symbol = "s";
+    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed";
+    if ($print_19) { print "$aprs\n"; }
+    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+    if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+    }
+
+    my $vesselName = "";
+    if ($bVesselName ne "") { 
+        $vesselName = &bin2text($bVesselName);
+    }
+    if ($vesselName ne "") {
+        if ($print_19) { print "Vessel Name: $vesselName\n"; }
+
+        # Assign tactical call = $vesselName
+        # Max tactical call in Xastir is 57 chars (56 + terminator?)
+        #
+        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $vesselName;
+        if ($print_19) { print "$aprs\n"; }
+        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
+    }
+
+    if ($print_19) { print "\n"; }
+
     return();
 }
 
@@ -495,9 +776,9 @@ sub process_type_19() {
 sub process_type_24() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   2); # Part Number
-    # substr($bin_string,  40, 120); # Vessel Name
+    my $bVesselName = substr($bin_string,  40, 120); # Vessel Name
     # substr($bin_string, 160,   8); # Spare.
 
 # Alternate format starting at bit 40:
@@ -520,6 +801,30 @@ sub process_type_24() {
 # Interpretation of 30 bits starting at 132: If MMSI is that of an auxiliary craft,
 # then it is the MMSI of the mother ship. Else these 30 bits describe vessel dimensions.
 # Auxiliary craft: MMSI of form 98XXXYYYY, the XXX digits are the country code.
+
+    my $userID = &bin2dec($bUserID);
+    if ($print_19) { print "User ID: $userID\n"; }
+ 
+    my $vesselName = "";
+    if ($bVesselName ne "") { 
+        $vesselName = &bin2text($bVesselName);
+    }
+    if ($vesselName ne "") {
+        if ($print_24) { print "Vessel Name: $vesselName\n"; }
+
+        # Assign tactical call = $vesselName
+        # Max tactical call in Xastir is 57 chars (56 + terminator?)
+        #
+        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $vesselName;
+        if ($print_24) { print "$aprs\n"; }
+        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+#        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+#        if ($result =~ m/NACK/) {
+#            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+#        }
+    }
+
+    if ($print_24) { print "\n"; }
  
     return();
 }
@@ -531,16 +836,69 @@ sub process_type_24() {
 sub process_type_27() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
-    my $buserID = substr($bin_string,   8,  30); # MMSI
+    my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   1); # Position Accuracy
     # substr($bin_string,  39,   1); # RAIM flag
     # substr($bin_string,  40,   4); # Navigation Status
-    # substr($bin_string,  44,  18); # Longitude
-    # substr($bin_string,  62,  17); # Latitude
-    # substr($bin_string,  79,   6); # Speed Over Ground
-    # substr($bin_string,  85,   9); # Course Over Ground
+    my $bLongitude = substr($bin_string,  44,  18); # Longitude
+    my $bLatitude = substr($bin_string,  62,  17); # Latitude
+    my $bSpeedOverGnd = substr($bin_string,  79,   6); # Speed Over Ground
+    my $bCourseOverGnd = substr($bin_string,  85,   9); # Course Over Ground
     # substr($bin_string,  94,   1); # GNSS Position Status
     # substr($bin_string,  95,   1); # SPare
+
+    my $userID = &bin2dec($bUserID);
+    if ($print_27) { print "User ID: $userID\n"; }
+ 
+    my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
+    if ($courseOverGnd == 0) {
+        $courseOverGnd = 360;
+    }
+    if ($print_27) { print "Course: $courseOverGnd\n"; }
+    my $course = sprintf("%03d", $courseOverGnd);
+
+    my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    if ($print_27) { print "Speed: $speedOverGnd\n"; }
+    my $speed = sprintf("%03d", $speedOverGnd);
+
+    my $latitude = &signedBin2dec($bLatitude) / 600.0;
+    my $NS;
+    if ($print_27) { print "Latitude: $latitude\n"; }
+    if ($latitude >= 0.0) {
+        $NS = 'N';
+    } else {
+        $NS = 'S';
+        $latitude = abs($latitude);
+    }
+    my $latdeg = int($latitude);
+    my $latmins = $latitude - $latdeg;
+    my $latmins2 = $latmins * 60.0;
+    my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
+
+    my $longitude = &signedBin2dec($bLongitude) / 600.0;
+    my $EW;
+    if ($print_27) { print "Longitude: $longitude\n"; }
+    if ($longitude >= 0.0) {
+        $EW = 'E';
+    } else {
+        $EW = 'W';
+        $longitude = abs($longitude);
+    }
+    my $londeg = int($longitude);
+    my $lonmins = $longitude - $londeg;
+    my $lonmins2 = $lonmins * 60.0;
+    my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
+
+#    my $symbol = "s";
+#    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed";
+#    if ($print_27) { print "$aprs\n"; }
+#    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
+#    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+#    if ($result =~ m/NACK/) {
+#        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+#    }
+ 
+    if ($print_27) { print "\n"; }
  
     return();
 }
@@ -563,8 +921,10 @@ sub bin2text() {
         my $binary_char = substr($input, $i, 6);
         # Convert from binary to decimal (ord)
         my $d = unpack("N", pack("B32", substr("0" x 32 . $binary_char, -32)));
-        if ($d < 32) { $d += 64; }
-        $final_string = $final_string . chr($d);
+        if ($d > 0) {   # Skip NULL characters
+            if ($d < 32) { $d += 64; }
+            $final_string = $final_string . chr($d);
+        }
     }
     $final_string =~ s/\s\s/ /g;
     return($final_string);
@@ -585,7 +945,7 @@ sub signedBin2dec {
         return $output;
     }
     else { # Positive number
-        $output = unpack("N", pack("B32", substr("0" x 32 . $input, -32)));
+        $output = unpack("N", pack("B32", substr("0" x 32 . $input, -32))); #####
         return $output;
     }
 }
@@ -594,7 +954,7 @@ sub signedBin2dec {
 
 # Convert an unsigned binary string of ASCII 0's and 1's to a decimal
 sub bin2dec {
-    return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
+    return unpack("N", pack("B32", substr("0" x 32 . shift, -32))); #####
 }
 
 
