@@ -1,5 +1,10 @@
 #!/usr/bin/perl -W
 #
+# $Id$
+#
+# XASTIR, Amateur Station Tracking and Information Reporting
+# Copyright (C) 2016  The Xastir Group
+#
 # Converts "dump1090" telnet port output to Xastir UDP input.  This script will
 # parse packets containing lat/long, turn them into APRS-like packets, then use
 # "xastir_udp_client" to inject them into Xastir. Must have "dump1090" running,
