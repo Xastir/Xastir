@@ -48,26 +48,13 @@
 #   ais.exploratorium.edu:80
 #
 #
-# TODO: Look for N/A values, like 63 for Knots, 511 for Course. Don't add
-#     those values to the APRS packets.
-#
-# TODO: Decode country from 1st 3 digits of MMSI ($userID). Note that
-# U.S. ships sometimes incorrectly send "669" for those first 3 digits.
-#     http://www.itu.int/online/mms/glad/cga_mids.sh?lng=E
-#
-# TODO: Decode MID out of MMSI ($userID) too:
-#    8MIDXXXXX Diver's radio (not used in the U.S. in 2013)
-#    MIDXXXXXX Ship
-#    0MIDXXXXX Group of ships; the U.S. Coast Guard, for example, is 03699999
-#    00MIDXXXX Coastal stations
-#    111MIDXXX SAR (Search and Rescue) aircraft
-#    99MIDXXXX Aids to Navigation
-#    98MIDXXXX Auxiliary craft associated with a parent ship
-#    970MIDXXX AIS SART (Search and Rescue Transmitter)
-#    972XXXXXX MOB (Man Overboard) device
-#    974XXXXXX EPIRB (Emergency Position Indicating Radio Beacon) AIS
-#
 # TODO: Decode Navigation Status
+#   See tables 7 and 11 at http://catb.org/gpsd/AIVDM.html
+
+# TODO: Shorten strings in country table. Add the string to the tactical
+#   callsign. This will require setting up a tactical hash so I don't
+#   ping pong between MMSI and VesselName each time a new sentence comes
+#   in.
 #
 ###########################################################################
 
@@ -669,6 +656,7 @@ sub process_line () {
 
     elsif ( $message_type == 27 ) {
         if ($print_27) { print " Msg Type: $message_type\n"; }
+if ($print_27) { print "$received_data\n"; }
         &process_type_27($message_type);
     }
    
@@ -704,21 +692,40 @@ sub process_types_1_2_3() {
     my $country = &decode_MID($userID);
     if ($print_123) { print "  Country: $country\n"; }
 
-# NOTE: 3600 = N/A
+# NOTE: 0-359 degrees
+# NOTE: 360 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
-    if ($courseOverGnd == 0) {
-        $courseOverGnd = 360;
+    my $course = "";
+    if ($courseOverGnd == 360) {
+        $course = "...";
+    }
+    elsif ($courseOverGnd == 0) {
+        $course = "360";
+    }
+    else {
+        $course = sprintf("%03d", $courseOverGnd);
     }
     if ($print_123) { print "   Course: $courseOverGnd\n"; }
-    my $course = sprintf("%03d", $courseOverGnd);
 
-# NOTE: 1023 = N/A
+# NOTE: 0 to 102 knots
+# NOTE: 102.3 = N/A
+# NOTE: 102.2 = 102.2 knots or higher
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    my $speed = "";
+    if ($speedOverGnd == 102.3) {
+        $speed = "...";
+    }
+    else {
+        $speed = sprintf("%03d", $speedOverGnd);
+    }
     if ($print_123) { print "    Speed: $speedOverGnd\n"; }
-    my $speed = sprintf("%03d", $speedOverGnd);
-
+ 
+# NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    if ($latitude == 91) { return(); }
     my $NS;
     if ($print_123) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -732,8 +739,10 @@ sub process_types_1_2_3() {
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
+# NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    if ($longitude == 181) { return(); }
     my $EW;
     if ($print_123) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -846,26 +855,49 @@ sub process_type_9() {
     my $altitude_meters = &bin2dec($bAltitude);
     my $altitude = "";
     if ($altitude_meters != 4095) {
-      $altitude = sprintf( "%s%06d", " /A=", $altitude_meters * 3.28084 );
+      if ($altitude_meters == 4094) {
+          $altitude = sprintf( "%s%06d%s", " /A=", $altitude_meters * 3.28084, "(Higher than)" );
+      }
+      else {
+          $altitude = sprintf( "%s%06d", " /A=", $altitude_meters * 3.28084 );
+      }
       if ($print_9) { print " Altitude: $altitude\n"; }
     }
 
-# NOTE: 3600 = N/A
+# NOTE: 0-359 degrees
+# NOTE: 360 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
-    if ($courseOverGnd == 0) {
-        $courseOverGnd = 360;
+    my $course = "";
+    if ($courseOverGnd == 360) {
+        $course = "...";
+    }
+    elsif ($courseOverGnd == 0) {
+        $course = "360";
+    }
+    else {
+        $course = sprintf("%03d", $courseOverGnd);
     }
     if ($print_9) { print "   Course: $courseOverGnd\n"; }
-    my $course = sprintf("%03d", $courseOverGnd);
 
-# NOTE: 1023 = N/A
-# NOTE: 1022 = 1022 knots or higher
+# NOTE: 0 to 102 knots
+# NOTE: 102.3 = N/A
+# NOTE: 102.2 = 102.2 knots or higher
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    my $speed = "";
+    if ($speedOverGnd == 102.3) {
+        $speed = "...";
+    }
+    else {
+        $speed = sprintf("%03d", $speedOverGnd);
+    }
     if ($print_9) { print "    Speed: $speedOverGnd\n"; }
-    my $speed = sprintf("%03d", $speedOverGnd);
-
+ 
+# NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    if ($latitude == 91) { return(); }
     my $NS;
     if ($print_9) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -879,8 +911,10 @@ sub process_type_9() {
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
+# NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    if ($longitude == 181) { return(); }
     my $EW;
     if ($print_9) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -940,21 +974,40 @@ sub process_type_18() {
     my $country = &decode_MID($userID);
     if ($print_18) { print "  Country: $country\n"; }
 
-# NOTE: 3600 = N/A
+# NOTE: 0-359 degrees
+# NOTE: 360 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
-    if ($courseOverGnd == 0) {
-        $courseOverGnd = 360;
+    my $course = "";
+    if ($courseOverGnd == 360) {
+        $course = "...";
+    }
+    elsif ($courseOverGnd == 0) {
+        $course = "360";
+    }
+    else {
+        $course = sprintf("%03d", $courseOverGnd);
     }
     if ($print_18) { print "   Course: $courseOverGnd\n"; }
-    my $course = sprintf("%03d", $courseOverGnd);
 
-# NOTE: 1023 = N/A
+# NOTE: 0 to 102 knots
+# NOTE: 102.3 = N/A
+# NOTE: 102.2 = 102.2 knots or higher
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    my $speed = "";
+    if ($speedOverGnd == 102.3) {
+        $speed = "...";
+    }
+    else {
+        $speed = sprintf("%03d", $speedOverGnd);
+    }
     if ($print_18) { print "    Speed: $speedOverGnd\n"; }
-    my $speed = sprintf("%03d", $speedOverGnd);
-
+ 
+# NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    if ($latitude == 91) { return(); }
     my $NS;
     if ($print_18) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -968,8 +1021,10 @@ sub process_type_18() {
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
+# NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    if ($longitude == 181) { return(); }
     my $EW;
     if ($print_18) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1032,21 +1087,40 @@ sub process_type_19() {
     my $country = &decode_MID($userID);
     if ($print_19) { print "  Country: $country\n"; }
 
-# NOTE: 3600 = N/A
+# NOTE: 0-359 degrees
+# NOTE: 360 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
-    if ($courseOverGnd == 0) {
-        $courseOverGnd = 360;
+    my $course = "";
+    if ($courseOverGnd == 360) {
+        $course = "...";
+    }
+    elsif ($courseOverGnd == 0) {
+        $course = "360";
+    }
+    else {
+        $course = sprintf("%03d", $courseOverGnd);
     }
     if ($print_19) { print "   Course: $courseOverGnd\n"; }
-    my $course = sprintf("%03d", $courseOverGnd);
 
-# NOTE: 1023 = N/A
+# NOTE: 0 to 102 knots
+# NOTE: 102.3 = N/A
+# NOTE: 102.2 = 102.2 knots or higher
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    my $speed = "";
+    if ($speedOverGnd == 102.3) {
+        $speed = "...";
+    }
+    else {
+        $speed = sprintf("%03d", $speedOverGnd);
+    }
     if ($print_19) { print "    Speed: $speedOverGnd\n"; }
-    my $speed = sprintf("%03d", $speedOverGnd);
-
+ 
+# NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
+    if ($latitude == 91) { return(); }
     my $NS;
     if ($print_19) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -1059,9 +1133,10 @@ sub process_type_19() {
     my $latmins = $latitude - $latdeg;
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
-
+# NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
+    if ($longitude == 181) { return(); }
     my $EW;
     if ($print_19) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1224,21 +1299,41 @@ sub process_type_27() {
     my $country = &decode_MID($userID);
     if ($print_27) { print "  Country: $country\n"; }
 
-# NOTE: 511 = N/A 
+# NOTE: 0-359 degrees
+# NOTE: 511 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $courseOverGnd = &bin2dec($bCourseOverGnd) / 10 ;
-    if ($courseOverGnd == 0) {
-        $courseOverGnd = 360;
+    my $course = "";
+    if ($courseOverGnd == 511) {
+        $course = "...";
+    }
+    elsif ($courseOverGnd == 0) {
+        $course = "360";
+    }
+    else {
+        $course = sprintf("%03d", $courseOverGnd);
     }
     if ($print_27) { print "   Course: $courseOverGnd\n"; }
-    my $course = sprintf("%03d", $courseOverGnd);
 
+# NOTE: 0-62 knots
 # NOTE: 63 = N/A
+# APRS spec says can set to "000", "...", or "   " if unknown
     my $speedOverGnd = &bin2dec($bSpeedOverGnd) / 10;
+    my $speed = "";
+    if ($speedOverGnd == 63) {
+        $speed = "...";
+    }
+    else {
+        $speed = sprintf("%03d", $speedOverGnd);
+    }
     if ($print_27) { print "    Speed: $speedOverGnd\n"; }
-    my $speed = sprintf("%03d", $speedOverGnd);
-
+ 
+# NOTE: -90 to +90
 # NOTE: 91 = N/A
+# Shows as minutes/10, 91000 = N/A, so divide by 600.0 (10 * 60)
+# Previous message encoding showed Minutes/10000, and we divided by 600000.0 (60 * 1000)
     my $latitude = &signedBin2dec($bLatitude) / 600.0;
+    if ($latitude == 91) { return(); }
     my $NS;
     if ($print_27) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -1252,8 +1347,10 @@ sub process_type_27() {
     my $latmins2 = $latmins * 60.0;
     my $lat = sprintf("%02d%05.2f%s", $latdeg, $latmins2, $NS);
 
+# NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600.0;
+    if ($longitude == 181) { return(); }
     my $EW;
     if ($print_27) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1359,9 +1456,12 @@ sub dec2bin {
 #    972XXXXXX MOB (Man Overboard) device
 #    974XXXXXX EPIRB (Emergency Position Indicating Radio Beacon) AIS
 #
+# NOTE: U.S. ships sometimes incorrectly send "669" for those first 3 digits.
+#     http://www.itu.int/online/mms/glad/cga_mids.sh?lng=E
+#
 sub decode_MID {
-    $userID = shift;
-    $MID = $userID;
+    my $userID = shift;
+    my $MID = $userID;
     if ($userID =~ m/^8.*/) {         # Diver's radio
         $MID =~ s/^8(...).*/$1/;
     }
@@ -1393,7 +1493,7 @@ sub decode_MID {
         $MID =~ s/^(...).*/$1/;
     }
 
-    $country = "";
+    my $country = "";
     if (defined($countries{$MID})) {
         $country = $countries{$MID};
     }
