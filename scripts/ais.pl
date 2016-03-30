@@ -23,7 +23,15 @@
 #
 #
 # Run "rtl_ais" like this (create a simple script!):
+#
 #   ./rtl_ais -h 127.0.0.1 -P 10110 -d 0 -l 161.975M -r 162.025M -n -p -1 -g 48
+#
+#
+# Listen to marine channels 75 (156.775 MHz) and 76 (156.825 MHz) to pick
+# up long-range AIS (Type 27 packets), perhaps with another dongle:
+#
+#   ./rtl_ais -h 127.0.0.1 -P 10110 -d 0 -l 156.775M -r 156.825M -n -p -1 -g 48
+#
 #
 # Note that the "-p -1" bit is the frequency error of the RTL dongle.
 # Set that to the proper number determined from "Kal".
@@ -43,9 +51,10 @@
 # 1/4 wave: 1.44' -or- 1' 5.3" -or- 1' 5 5/16"
 #
 #
-# Good AIS info:
-#   http://catb.org/gpsd/AIVDM.html
-#   https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.1371-5-201402-I!!PDF-E.pdf
+# Excellent AIS info:
+#   http://catb.org/gpsd/AIVDM.html     # Eric Raymond/GPSD
+#   https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.1371-5-201402-I!!PDF-E.pdf   # ITU Spec
+#   http://www.navcen.uscg.gov/pdf/AIS/AIS_Special_Notice_and_AIS_Encoding_Guide_2012.pdf
 #
 # Example packets w/decoding of fields, plus large sample NMEA data file:
 #   http://fossies.org/linux/gpsd/test/sample.aivdm
@@ -54,10 +63,9 @@
 #   ais.exploratorium.edu:80
 #
 #
-# TODO: Decode Ship Type from message types 5 and 24:
-#   See table 11 at http://catb.org/gpsd/AIVDM.html
-#   Could send as comment only, so could stack up info as we learn it.
-#   Same for CALLSIGN: Could send as additional comment.
+# TODO: Add ship type to an APRS comment?
+#
+# TODO: Add callsign to an APRS comment?
 #
 ###########################################################################
 
@@ -79,12 +87,12 @@ $statistics_mode = 1;
 # Turn on/off printing of various types of messages. Enables debugging of a few
 # sentence types at a time w/o other messages cluttering up the output.
 $print_123    = 1;
-$print_5      = 1;  # (includes vesselName)
+$print_5      = 1;  # (includes vesselName and shipType)
 $print_9      = 1;
 $print_18     = 1;
 $print_19     = 1;  # (includes vesselName)
 $print_24_A   = 1;  # A Variant (includes vesselName)
-$print_24_B   = 0;  # B Variant, not decoded yet
+$print_24_B   = 1;  # B Variant (includes shipType
 $print_27     = 1;
 $print_others = 0;  # Not decoded yet
  
@@ -207,7 +215,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "278" => "Slovenia",    # "Slovenia (Republic of)"
     "279" => "Serbia",    # "Serbia (Republic of)"
     "301" => "Anguilla",    # "Anguilla - United Kingdom of Great Britain and Northern Ireland"
-    "303" => "Alaska - U.S.",    # "Alaska (State of) - United States of America"
+    "303" => "Alaska,U.S.",    # "Alaska (State of) - United States of America"
     "304" => "Antigua & Barbuda",    # "Antigua and Barbuda"
     "305" => "Antigua & Barbuda",    # "Antigua and Barbuda"
     "306" => "Sint Maarten",    # "Sint Maarten (Dutch part) - Netherlands (Kingdom of the)"
@@ -247,7 +255,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "355" => "Panama",    # "Panama (Republic of)"
     "356" => "Panama",    # "Panama (Republic of)"
     "357" => "Panama",    # "Panama (Republic of)"
-    "358" => "Puerto Rico - U.S.",   # "Puerto Rico - United States of America"
+    "358" => "Puerto Rico,U.S.",   # "Puerto Rico - United States of America"
     "359" => "El Salvador",    # "El Salvador (Republic of)"
     "361" => "Saint Pierre & Miquelon",    # "Saint Pierre and Miquelon (Territorial Collectivity of) - France"
     "362" => "Trinidad & Tobago",    # "Trinidad and Tobago"
@@ -325,7 +333,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "529" => "Kiribati",    # "Kiribati (Republic of)"
     "531" => "Laos",    # "Lao People's Democratic Republic"
     "533" => "Malaysia",
-    "536" => "N. Mariana Is. - U.S.",    # "Northern Mariana Islands (Commonwealth of the) - United States of America"
+    "536" => "N. Mariana Is,U.S.",    # "Northern Mariana Islands (Commonwealth of the) - United States of America"
     "538" => "Marshall Is.",    # "Marshall Islands (Republic of the)"
     "540" => "New Caledonia",    # "New Caledonia - France"
     "542" => "Niue",    # "Niue - New Zealand"
@@ -335,7 +343,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "553" => "Papua New Guinea",
     "555" => "Pitcairn Is.",    # "Pitcairn Island - United Kingdom of Great Britain and Northern Ireland"
     "557" => "Solomon Islands",
-    "559" => "American Samoa - U.S.",   # "American Samoa - United States of America"
+    "559" => "American Samoa,U.S.",   # "American Samoa - United States of America"
     "561" => "Samoa",    # "Samoa (Independent State of)"
     "563" => "Singapore",    # "Singapore (Republic of)"
     "564" => "Singapore",    # "Singapore (Republic of)"
@@ -557,6 +565,9 @@ sub process_line () {
         chop($received_data);
     }
 
+    # Check for empty line
+    if ($received_data eq "") { return; }
+
     # Verify the checksum: Refuse to process a message if it's bad.
     # Computed on entire sentence including the AIVDM tag but excluding
     # the leading "!" character.
@@ -673,12 +684,12 @@ sub process_line () {
     # The escape clause for bad message types is here
     # so that they get included in the total count above.
     # Don't move this escape above that code.
-    if ($message_type > 27) {
-        print "***** Bad Msg Type $message_type: $received_data\n\n";
+    if ( ($message_type > 27) || ($message_type == 0) ) {
+#        print "***** Undefined Msg Type $message_type: $received_data\n\n";
         return();
     }
 
-#    print "Message Type: $message_type\n";
+    #print "Message Type: $message_type\n";
     # If not messages types 1, 2, 3, skip for now
     if (    $message_type !=  1
          && $message_type !=  2
@@ -740,6 +751,7 @@ if ($print_27) { print "$received_data\n"; }
 
 
 # Message types 1, 2 and 3: Position Report Class A
+# These messages should have 168 bits total
 #
 sub process_types_1_2_3() {
 
@@ -763,12 +775,10 @@ sub process_types_1_2_3() {
     my $bCourseOverGnd = substr($bin_string, 116, 12); #####
     #my $btrueHeading = substr($bin_string, 128, 9);
     #my $btimestamp = substr($bin_string, 137, 6);
-    #my $bregional = substr($bin_string, 143, 2);
+    #my $bspecialManeuver = substr($bin_string, 143, 2);
     #my $bspare = substr($bin_string, 145, 3);
     #my $bRAIM = substr($bin_string, 148, 1);
-    #my $bSOTDMAsyncState = substr($bin_string, 149, 3);
-    #my $bSOTDMAslotTimeout = substr($bin_string, 151, 3);
-    #my $bSOTDMAslotOffset = substr($bin_string, 154, 14);
+    #my $bCommState = substr($bin_string, 149, 19);
 
     my $userID = &bin2dec($bUserID);
     if ($print_123) { print "  User ID: $userID\n"; }
@@ -911,6 +921,7 @@ sub process_types_1_2_3() {
 
 
 # Message type 5: Static and Voyage Related Data (Vessel name, callsign, ship type)
+# This message should have 424 bits total
 #
 sub process_type_5() {
 
@@ -929,7 +940,7 @@ sub process_type_5() {
     # substr($bin_string,  40,  30); # IMO Number
     #my $bCallsign = substr($bin_string,  70,  42); # Call Sign
     my $bVesselName = substr($bin_string, 112, 120); # Vessel Name #####
-    # substr($bin_string, 232,   8); # Ship Type
+    my $bShipType = substr($bin_string, 232,   8); # Ship Type: Page 114 of ITU spec, Table 53
     # substr($bin_string, 240,   9); # Dimension to Bow
     # substr($bin_string, 249,   9); # Dimension to Stern
     # substr($bin_string, 258,   6); # Dimension to Port
@@ -962,10 +973,15 @@ sub process_type_5() {
 
     if ($print_5) { print "   Vessel: $vesselName\n"; }
 
+    my $shipTypeTxt = &decodeShipType($bShipType);
+    if ($print_5) { print "Ship Type: $shipTypeTxt\n"; }
+
     # Assign tactical call = $vesselName + $country
     # Max tactical call in Xastir is 57 chars (56 + terminator?)
     #
-    my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+#    my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+    my $temp = substr($vesselName . " ($shipTypeTxt:$country)", 0, 56);  # Chop at 56 chars
+ 
     if ( !defined($tactical_hash{$userID}) || $tactical_hash{$userID} ne $temp ) {
         $tactical_hash{$userID} = $temp;
         $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
@@ -986,6 +1002,7 @@ sub process_type_5() {
 
 
 # Message type 9: Standard SAR Aircraft Position Report
+# This message should have 168 bits total
 #
 sub process_type_9() {
 
@@ -1007,12 +1024,14 @@ sub process_type_9() {
     my $bLatitude = substr($bin_string,  89,  27); # Latitude
     my $bCourseOverGnd = substr($bin_string, 116,  12); # Course Over Ground
     # substr($bin_string, 128,   6); # Time Stamp
-    # substr($bin_string, 134,   8); # Regional reserved
+    # substr($bin_string, 134,   1); # Altitude sensor
+    # substr($bin_string, 135,   7); # Spare
     # substr($bin_string, 142,   1); # DTE
     # substr($bin_string, 143,   3); # Spare
-    # substr($bin_string, 146,   1); # Assigned
+    # substr($bin_string, 146,   1); # Assigned mode
     # substr($bin_string, 147,   1); # RAIM flag
-    # substr($bin_string, 148,  20); # Radio status
+    # substr($bin_string, 148,   1); # Comm state selector flag
+    # substr($bin_string, 149,  19); # Radio status
 
     my $userID = &bin2dec($bUserID);
     if ($print_9) { print "  User ID: $userID\n"; }
@@ -1147,6 +1166,7 @@ sub process_type_9() {
 
 
 # Message type 18: Standard Class B CS Position Report
+# This message should have 168 bits total
 #
 sub process_type_18() {
 
@@ -1161,7 +1181,7 @@ sub process_type_18() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
-    # substr($bin_string,  38,   8); # Regional Reserved
+    # substr($bin_string,  38,   8); # Spare
     my $bSpeedOverGnd = substr($bin_string,  46,  10); # Speed Over Ground
     # substr($bin_string,  56,   1); # Position Accuracy
     my $bLongitude = substr($bin_string,  57,  28); # Longitude
@@ -1169,15 +1189,16 @@ sub process_type_18() {
     my $bCourseOverGnd = substr($bin_string, 112,  12); # Course Over Ground
     # substr($bin_string, 124,   9); # True Heading
     # substr($bin_string, 133,   6); # Time Stamp
-    # substr($bin_string, 139,   2); # Regional reserved
+    # substr($bin_string, 139,   2); # Spare
     # substr($bin_string, 141,   1); # CS Unit
     # substr($bin_string, 142,   1); # Display flag
     # substr($bin_string, 143,   1); # DSC Flag
     # substr($bin_string, 144,   1); # Band flag
     # substr($bin_string, 145,   1); # Message 22 flag
-    # substr($bin_string, 146,   1); # Assigned
+    # substr($bin_string, 146,   1); # Assigned mode
     # substr($bin_string, 147,   1); # RAIM flag
-    # substr($bin_string, 148,  20); # Radio status
+    # substr($bin_string, 148,   1); # Comm state selector flag
+    # substr($bin_string, 149,  19); # Radio status
  
     my $userID = &bin2dec($bUserID);
     if ($print_18) { print "  User ID: $userID\n"; }
@@ -1298,6 +1319,7 @@ sub process_type_18() {
 
 
 # Message type 19: Extended Class B CS Position Report
+# This message should have 312 bits total
 #
 sub process_type_19() {
 
@@ -1312,7 +1334,7 @@ sub process_type_19() {
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
-    # substr($bin_string,  38,   8); # Regional Reserved
+    # substr($bin_string,  38,   8); # Spare
     my $bSpeedOverGnd = substr($bin_string,  46,  10); # Speed Over Ground
     # substr($bin_string,  56,   1); # Position Accuracy
     my $bLongitude = substr($bin_string,  57,  28); # Longitude
@@ -1320,7 +1342,7 @@ sub process_type_19() {
     my $bCourseOverGnd = substr($bin_string, 112,  12); # Course Over Ground
     # substr($bin_string, 124,   9); # True Heading
     # substr($bin_string, 133,   6); # Time Stamp
-    # substr($bin_string, 139,   4); # Regional reserved
+    # substr($bin_string, 139,   4); # Spare
     my $bVesselName = substr($bin_string, 143, 120); # Name
     # substr($bin_string, 263,   8); # Type of ship and cargo
     # substr($bin_string, 271,   9); # Dimension to Bow
@@ -1464,6 +1486,10 @@ sub process_type_19() {
 #           is that of the mothership.
 #       If not, then those 30 bits represent vessel dimmensions.
 #
+# This message should have:
+#   Type A: 160 bits total
+#   Type B: 168 bits total
+#
 sub process_type_24() {
 
     #if ( length($bin_string) < 160 ) {
@@ -1542,20 +1568,57 @@ sub process_type_24() {
         # to determine which Type B Variant to decode.
         # Auxiliary craft: MMSI of form 98XXXYYYY, the XXX digits are the country code.
 
-        # Alternate format starting at bit 40:
-        # substr($bin_string,  40,   8); # Ship Type
-        # substr($bin_string,  48,  18); # Vendor ID
-        # substr($bin_string,  66,   4); # Unit Model Code
-        # substr($bin_string,  70,  20); # Serial Number)
-        # substr($bin_string,  90,  42); # Call Sign
-        # substr($bin_string, 132,   9); # Dimension to bow
-        # substr($bin_string, 141,   9); # Dimension to Stern
-        # substr($bin_string, 150,   6); # Dimension to Port
-        # substr($bin_string, 156,   6); # Dimension to Starboard
+        if ( !($userID =~ m/^98/)) {
+            # It is NOT an auxiliary craft:
 
-        # Alternate format starting at bit 132:
-        # substr($bin_string, 132,  30); # Mothership MMSI
-        # substr($bin_string, 162,   6); # Spare
+            # Alternate format starting at bit 40:
+            $bShipType = substr($bin_string,  40,   8); # Ship Type: Page 114 of ITU spec, Table 53
+            # substr($bin_string,  48,  18); # Vendor ID
+            # substr($bin_string,  66,   4); # Unit Model Code
+            # substr($bin_string,  70,  20); # Serial Number)
+            # substr($bin_string,  90,  42); # Call Sign
+            # substr($bin_string, 132,   9); # Dimension to bow
+            # substr($bin_string, 141,   9); # Dimension to Stern
+            # substr($bin_string, 150,   6); # Dimension to Port
+            # substr($bin_string, 156,   6); # Dimension to Starboard
+            # substr($bin_string, 162,   4); # Type of fix
+            # substr($bin_string, 166,   2); # Spare
+
+            my $shipTypeTxt = &decodeShipType($bShipType);
+            if ($print_24_B) { print "Ship Type: $shipTypeTxt\n"; }
+
+            # Assign tactical call = $vesselName + $shipTypeTxt
+            # Max tactical call in Xastir is 57 chars (56 + terminator?)
+            #
+            #my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+            my $temp;
+            if (defined($vessel_hash{$userID}) ) {
+                $temp = substr($vessel_hash{$userID} . " ($shipTypeTxt:$country)", 0, 56);  # Chop at 56 chars
+            }
+            else {
+                $temp = substr("($shipTypeTxt:$country)", 0, 56);  # Chop at 56 chars
+            }
+ 
+            if ( !defined($tactical_hash{$userID}) || $tactical_hash{$userID} ne $temp ) {
+                $tactical_hash{$userID} = $temp;
+                $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
+                if ($print_24_A) { print "     APRS: $aprs\n"; }
+
+                if ($enable_tx) {
+                    $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+                    if ($result =~ m/NACK/) {
+                        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+                    }
+                }
+            }
+        }
+        else { 
+            # It IS an auxiliary craft:
+
+            # Alternate format starting at bit 132:
+            # substr($bin_string, 132,  30); # Mothership MMSI
+            # substr($bin_string, 162,   6); # Spare
+        }
 
         if ($print_24_B) { print "\n"; }
     }
@@ -1566,6 +1629,7 @@ sub process_type_24() {
 
 
 # Message type 27: Position Report For Long-Range Applications (rare)
+# This message should have 96 bits total
 #
 sub process_type_27() {
 
@@ -1587,8 +1651,8 @@ sub process_type_27() {
     my $bLatitude = substr($bin_string,  62,  17); # Latitude
     my $bSpeedOverGnd = substr($bin_string,  79,   6); # Speed Over Ground
     my $bCourseOverGnd = substr($bin_string,  85,   9); # Course Over Ground
-    # substr($bin_string,  94,   1); # GNSS Position Status
-    # substr($bin_string,  95,   1); # SPare
+    # substr($bin_string,  94,   1); # GNSS Position latency
+    # substr($bin_string,  95,   1); # Spare
 
     my $userID = &bin2dec($bUserID);
     if ($print_27) { print "  User ID: $userID\n"; }
@@ -1730,7 +1794,89 @@ sub process_type_27() {
     return();
 }
 
- 
+
+
+# Convert binary string $bShipType into text string $shipType
+#
+sub decodeShipType() {
+    my $bShipType = shift;
+
+    my $shipType = sprintf("%02d", &bin2dec($bShipType));
+    my $shipTypeTxt = "$shipType:";
+
+    # Special Craft
+    if    ($shipType == 50) { $shipTypeTxt = $shipTypeTxt . "Pilot_Vessel"; }
+    elsif ($shipType == 51) { $shipTypeTxt = $shipTypeTxt . "Search_and_Rescue"; }
+    elsif ($shipType == 52) { $shipTypeTxt = $shipTypeTxt . "Harbor_Tug"; }
+    elsif ($shipType == 53) { $shipTypeTxt = $shipTypeTxt . "Fish,Offshore_or_Port_Tender"; }
+    elsif ($shipType == 54) { $shipTypeTxt = $shipTypeTxt . "Anti-pollution"; }
+    elsif ($shipType == 55) { $shipTypeTxt = $shipTypeTxt . "Law_Enforcement"; }
+    elsif ($shipType == 56) { $shipTypeTxt = $shipTypeTxt . "Local"; }
+    elsif ($shipType == 57) { $shipTypeTxt = $shipTypeTxt . "Local"; }
+    elsif ($shipType == 58) { $shipTypeTxt = $shipTypeTxt . "Medical_Transport_or_Public_Safety"; }
+    elsif ($shipType == 59) { $shipTypeTxt = $shipTypeTxt . "Neutral_State"; }
+
+    # U.S. Specific Vessels
+    elsif ($shipType =~ m/^2/) {
+        if ($shipType =~ m/0$/) { $shipTypeTxt = $shipTypeTxt . "Wing_in_Ground"; }
+        if ($shipType =~ m/1$/) { $shipTypeTxt = $shipTypeTxt . "Tow-Push"; }
+        if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "Tow-Push"; }
+        if ($shipType =~ m/3$/) { $shipTypeTxt = $shipTypeTxt . "Light_Boat"; }
+        if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "Mobile_Offshore_Drilling"; }
+        if ($shipType =~ m/5$/) { $shipTypeTxt = $shipTypeTxt . "Offshore_Supply_Vessel"; }
+        if ($shipType =~ m/6$/) { $shipTypeTxt = $shipTypeTxt . "Processing_Vessel"; }
+        if ($shipType =~ m/7$/) { $shipTypeTxt = $shipTypeTxt . "School/Scientific/Research/Training_Vessel"; }
+        if ($shipType =~ m/8$/) { $shipTypeTxt = $shipTypeTxt . "U.S._Public_or_Govt"; }
+        if ($shipType =~ m/9$/) { $shipTypeTxt = $shipTypeTxt . "Autonomous_or_Remotely-Operated"; }
+    }
+
+    # Other Vessels
+    elsif ($shipType =~ m/^3/) {
+        if ($shipType =~ m/0$/) { $shipTypeTxt = $shipTypeTxt . "Fishing"; }
+        if ($shipType =~ m/1$/) { $shipTypeTxt = $shipTypeTxt . "Towing-Pull"; }
+        if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "Towing_Big"; }
+        if ($shipType =~ m/3$/) { $shipTypeTxt = $shipTypeTxt . "Dredging_or_Underwater_Ops"; }
+        if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "Diving_Ops"; }
+        if ($shipType =~ m/5$/) { $shipTypeTxt = $shipTypeTxt . "Military_Ops"; }
+        if ($shipType =~ m/6$/) { $shipTypeTxt = $shipTypeTxt . "Sailing"; }
+        if ($shipType =~ m/7$/) { $shipTypeTxt = $shipTypeTxt . "Pleasure_Craft"; }
+        if ($shipType =~ m/8$/) { $shipTypeTxt = $shipTypeTxt . "Other:Reserved"; }
+        if ($shipType =~ m/9$/) { $shipTypeTxt = $shipTypeTxt . "Other:Reserved"; }
+    }
+
+    elsif ($shipType =~ m/^0/) { $shipTypeTxt = $shipTypeTxt . "Not-Available"; }
+    elsif ($shipType =~ m/^1/) { $shipTypeTxt = $shipTypeTxt . "Reserved"; }
+    elsif ($shipType =~ m/^4/) { $shipTypeTxt = $shipTypeTxt . "Passenger_or_High_Speed"; }
+    elsif ($shipType =~ m/^6/) { $shipTypeTxt = $shipTypeTxt . "Passenger-Big"; }
+    elsif ($shipType =~ m/^7/) { $shipTypeTxt = $shipTypeTxt . "Cargo"; }
+    elsif ($shipType =~ m/^8/) { $shipTypeTxt = $shipTypeTxt . "Tanker"; }
+    elsif ($shipType =~ m/^9/) { $shipTypeTxt = $shipTypeTxt . "Other"; }
+
+    # Decode 2nd digit for 1/4/6/7/8/9 types:
+    if (   ($shipType =~ m/^1/)
+        || ($shipType =~ m/^4/)
+        || ($shipType =~ m/^6/)
+        || ($shipType =~ m/^7/)
+        || ($shipType =~ m/^8/)
+        || ($shipType =~ m/^9/) ) {
+
+        if ($shipType =~ m/0$/) { $shipTypeTxt = $shipTypeTxt . ""; }
+        if ($shipType =~ m/1$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:A/X"; }
+        if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:B/Y"; }
+        if ($shipType =~ m/3$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:C/Z"; }
+        if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "-:Haz_Cat:D/O"; }
+        if ($shipType =~ m/5$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
+        if ($shipType =~ m/6$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
+        if ($shipType =~ m/7$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
+        if ($shipType =~ m/8$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
+        if ($shipType =~ m/9$/) { $shipTypeTxt = $shipTypeTxt . ""; }
+    }
+
+
+    return($shipTypeTxt);
+}
+
+
 
 # Convert a 6-digit binary string to ASCII text
 # Encoded AIS data: Each 6 bits represents one ASCII character.
