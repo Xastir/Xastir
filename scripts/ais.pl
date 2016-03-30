@@ -30,7 +30,12 @@
 #
 #
 # Run "ais.pl" like this (again, create a simple script!):
-#   ./ais.pl boats <callpass>
+#   ./ais.pl boats <callpass> <--pipe>
+#
+# You may add the "--pipe" flag in order to have "ais.pl" accept data
+# from a pipe instead of setting up a UDP server for "rtl_ais" to send
+# packets to. This is very useful for debugging or for processing
+# stored log files.
 #
 #
 # Antenna length should be:
@@ -49,16 +54,19 @@
 #   ais.exploratorium.edu:80
 #
 #
-# TODO: Decode Navigation Status
-#   See tables 7 and 11 at http://catb.org/gpsd/AIVDM.html
-
+# TODO: Decode Ship Type from message types 5 and 24:
+#   See table 11 at http://catb.org/gpsd/AIVDM.html
+#   Could send as comment only, so could stack up info as we learn it.
+#   Same for CALLSIGN: Could send as additional comment.
+#
 ###########################################################################
 
 
-# Enable debug mode by setting this first variable to a 1, then
-# can pipe packets into the program's STDIN for testing. Set to
-# zero for normal operation where we get our packets from rtl_ais.
-$debug_mode   = 0;
+use IO::Socket;
+use Storable;
+#use File::HomeDir;
+#use Data::Dumper;  # Only used for debugging vessel_hash
+
 
 # Enable sending APRS packets to Xastir
 $enable_tx    = 1;
@@ -71,11 +79,11 @@ $statistics_mode = 1;
 # Turn on/off printing of various types of messages. Enables debugging of a few
 # sentence types at a time w/o other messages cluttering up the output.
 $print_123    = 1;
-$print_5      = 1;
+$print_5      = 1;  # (includes vesselName)
 $print_9      = 1;
 $print_18     = 1;
-$print_19     = 1;
-$print_24_A   = 1;  # A Variant
+$print_19     = 1;  # (includes vesselName)
+$print_24_A   = 1;  # A Variant (includes vesselName)
 $print_24_B   = 0;  # B Variant, not decoded yet
 $print_27     = 1;
 $print_others = 0;  # Not decoded yet
@@ -84,18 +92,41 @@ $print_others = 0;  # Not decoded yet
 @message_type_count = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 $statistics_count = 0; # Number of messages before printing stats 
 
+# Hash to store tac-calls in, to minimize tac-call assignment packets
+# This stores the complete tactical call, including whatever name
+# the ship goes by currently + the country of registry.
+my %tactical_hash;
+
+# Create external copy of vessel_hash for persistent store.
+# This contains only the vessel name, not the country of registry
+# or the 9-digit MMSI number.
+$home = `echo ~`;
+chomp $home;
+$persistentFileSpec = "$home/.xastir/config/vessel_hash";
+#$persistentFileSpec = File::HomeDir->my_home . "/.xastir/config/vessel_hash";
+#
+#
 # Hash to store vessel names in, for assigning tactical calls
+# If it doesn't exist, create it with some initial values
+# For final release this should simply create a dummy file
 my %vessel_hash;
 
-# Hash to store tac-calls in, to minimize tac-call assignment packets
-my %tactical_hash;
- 
-if ($enable_tx) {
-    $udp_client = "xastir_udp_client";
+if ( !(-e $persistentFileSpec )) {
+    %vessel_hash = (
+    );
+	
+	# Create the new hash file
+	store \%vessel_hash , $persistentFileSpec;
 }
-else {
-    $udp_client = "echo";
-}
+
+# Retrieve the cache
+%vessel_hash = %{retrieve($persistentFileSpec)};
+
+# Debug - print the hash values 
+#print Dumper(\%vessel_hash); 
+
+
+$udp_client = "xastir_udp_client";
 
 $xastir_host = "localhost"; # Server where Xastir is running
 $xastir_port = 2023;        # 2023 is Xastir default UDP port
@@ -415,73 +446,64 @@ if ($xastir_pass eq "") {
 }
 
 
-# Check Xastir's callsign/SSID to make sure we don't have a collision.  This
-# will prevent Xastir adopting the Items as its own and retransmitting them.
-#   "xastir_udp_client localhost 2023 <callsign> <passcode> -identify"
-#   "Received: WE7U-13"
-#
-$injection_call = $xastir_user;
-$injection_call =~ s/-\d+//;    # Get rid of dash and numbers
-
-$injection_ssid = $xastir_user;
-$injection_ssid =~ s/\w+//;     # Get rid of letters
-$injection_ssid =~ s/-//;       # Get rid of dash
-if ($injection_ssid eq "") { $injection_ssid = 0; }
-
-# # Find out Callsign/SSID of Xastir instance
-$result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass -identify`;
-if ($result =~ m/NACK/) {
-    die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
-}
-($remote_call, $remote_ssid) = split('-', $result);
-
-chomp($remote_call);
-$remote_call =~ s/Received:\s+//;
-
-if ( !defined($remote_ssid) ) { $remote_ssid = ""; }
-if ($remote_ssid ne "") { chomp($remote_ssid); }
-if ($remote_ssid eq "") { $remote_ssid = 0; }
-
-#print "$remote_call $remote_ssid $injection_call $injection_ssid\n";
-#if ($remote_call eq $injection_call) { print "Call matches\n"; }
-#if ($remote_ssid == $injection_ssid) { print "SSID matches\n"; }
-
-if (     ($remote_call eq $injection_call)
-     &&  ($remote_ssid == $injection_ssid) ) {
-    $remote_ssid++;
-    $remote_ssid%= 16;  # Increment by 1 mod 16
-    $xastir_user = "$remote_call-$remote_ssid";
-    print "Injection conflict. Corrected. New user = $xastir_user\n";
+# Enable pipe mode by adding the "--pipe" flag, then can pipe
+# packets into the program's STDIN for testing. Without this flag
+# we'll get our packets from "rtl_ais" via a UDP server we set up.
+$pipe_mode = 0;
+$pipe_flag = shift;
+if (defined($pipe_flag) && $pipe_flag ne "") {
+    chomp $pipe_flag;
+    if ($pipe_flag eq "--pipe") { $pipe_mode = 1; }
 }
 
 
-if ($debug_mode) {
+if ($enable_tx) {
+    # Check Xastir's callsign/SSID to make sure we don't have a collision.  This
+    # will prevent Xastir adopting the Items as its own and retransmitting them.
+    #   "xastir_udp_client localhost 2023 <callsign> <passcode> -identify"
+    #   "Received: WE7U-13"
+    #
+    $injection_call = $xastir_user;
+    $injection_call =~ s/-\d+//;    # Get rid of dash and numbers
+
+    $injection_ssid = $xastir_user;
+    $injection_ssid =~ s/\w+//;     # Get rid of letters
+    $injection_ssid =~ s/-//;       # Get rid of dash
+    if ($injection_ssid eq "") { $injection_ssid = 0; }
+
+    # Find out Callsign/SSID of Xastir instance
+    $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass -identify`;
+    if ($result =~ m/NACK/) {
+        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+    }
+    ($remote_call, $remote_ssid) = split('-', $result);
+
+    chomp($remote_call);
+    $remote_call =~ s/Received:\s+//;
+
+    if ( !defined($remote_ssid) ) { $remote_ssid = ""; }
+    if ($remote_ssid ne "") { chomp($remote_ssid); }
+    if ($remote_ssid eq "") { $remote_ssid = 0; }
+
+    #print "$remote_call $remote_ssid $injection_call $injection_ssid\n";
+    #if ($remote_call eq $injection_call) { print "Call matches\n"; }
+    #if ($remote_ssid == $injection_ssid) { print "SSID matches\n"; }
+
+    if (     ($remote_call eq $injection_call)
+         &&  ($remote_ssid == $injection_ssid) ) {
+        $remote_ssid++;
+        $remote_ssid%= 16;  # Increment by 1 mod 16
+        $xastir_user = "$remote_call-$remote_ssid";
+        print "Injection conflict. Corrected. New user = $xastir_user\n";
+    }
+}
+
+
+if ($pipe_mode) {
     #
     # Debug mode:
     # Read from pipe in a loop
     #
-    
-    #$received_data = "!AIVDM,1,1,,B,ENkb9Ma89h:9V\@9Q@@@@@@@@@@@;W\@2v=hvOP00003vP000,0*17";
-    #$received_data = "!AIVDM,1,1,,B,403Ot`Qv0q1Kio@7<0K?fL702L4q,0*4A";
-    #$received_data = "!AIVDM,1,1,,B,D03Ot`Qe\@Nfp00N01FTf9IFdv9H,0*7B";
-    #$received_data = "!AIVDM,1,1,,A,15MToB0ukAo?8H\@KKC0DtCq00pBU,0*0F";   # Message Type 1
-    #$received_data = "!AIVDM,1,1,,B,15Mf@6P001G?\@vdKFC:ckaD@0<26,0*26";   # Message Type 1
-    #$received_data = "!AIVDM,1,1,,A,15MToB0w3?o?MG8KEswnQU:@0h4S,0*1A";    # Message Type 1
-    #$received_data = "!AIVDM,1,1,,B,15Mf@6P001G?\@v>KFC5;kaD@084M,0*52";   # Message Type 1
-    #$received_data = "!AIVDM,1,1,,B,25Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*60";    # Message Type 2
-    #$received_data = "!AIVDM,1,1,,A,38Id705000rRVJhE7cl9n;160000,0*40";    # Message Type 3
-    #$received_data = "!AIVDM,2,1,1,A,55?MbV02;H;s<HtKR20EHE:0\@T4\@Dn2222222216L961O5Gf0NSQEp6ClRp8,0*1C";   # Message Type 5
-    #$received_data = "!AIVDM,1,1,,A,91b77=h3h00nHt0Q3r@@07000<0b,0*69";    # Message Type 9
-    #$received_data = "!AIVDM,1,1,,B,91b55wi;hbOS@OdQAC062Ch2089h,0*30";    # Message Type 9
-    #$received_data = "!AIVDM,1,1,,A,B52K>;h00Fc>jpUlNV@ikwpUoP06,0*4C";    # Message Type 18 
-    #$received_data = "!AIVDM,1,1,,A,B52KB8h006fu`Q6:g1McCwb5oP06,0*00";    # Message Type 18 
-    #$received_data = "!AIVDM,1,1,,B,B5O6hr00<veEKmUaMFdEow`UWP06,0*4F";    # Message Type 18 
-    #$received_data = "!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B";    # Message Type 19
-    #$received_data = "!AIVDM,1,1,,A,H42O55i18tMET00000000000000,2*6D";     # Message Type 24
-    #$received_data = "!AIVDM,1,1,,A,H42O55lti4hhhilD3nink000?050,0*40";    # Message Type 24
-    #$received_data = "!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41";                # Message Type 27
-    #$received_data = "!AIVDM,1,1,,B,KC5E2b@U19PFdLbMuc5=ROv62<7m,0*16";    # Message Type 27
-
     while (<STDIN>) {
         &process_line($_);
     }
@@ -492,7 +514,6 @@ else {
     # Create UDP server which connects to rtl_ais to get AIS data
     # Listen on localhost port 10110 for UDP packets
     #
-    use IO::Socket;
     my $host = "localhost";
     my $port = 10110;
     my $protocol = 'udp';
@@ -527,7 +548,7 @@ sub process_line () {
 
     $received_data = shift;
 
-    if ($debug_mode) {
+    if ($pipe_mode) {
         $received_data =~ s/\n//;   # Remove LF if present
         $received_data =~ s/\r//;   # Remove CR if present
     }
@@ -721,10 +742,19 @@ if ($print_27) { print "$received_data\n"; }
 # Message types 1, 2 and 3: Position Report Class A
 #
 sub process_types_1_2_3() {
+
+    #if ( length($bin_string) < 168 ) {
+    if ( length($bin_string) < 128 ) {
+        #printf("123\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("123\t%d\n", length($bin_string));
+        if ($print_123) { print "Msg too short\n\n"; }
+        return;
+    }
+
     # substr($bin_string,   0,   6); # Message Type
     #my $brepeat_indicator = substr($bin_string, 6, 2);
     my $bUserID = substr($bin_string, 8, 30); # MMSI
-    #my $bnav_status = substr($bin_string, 38, 4);
+    my $bnavStatus = substr($bin_string, 38, 4);
     #my $brateOfTurn = substr($bin_string, 42, 8);
     my $bSpeedOverGnd = substr($bin_string, 50, 10);    #####
     #my $bpositionAccuracy = substr($bin_string, 60, 1);
@@ -745,6 +775,25 @@ sub process_types_1_2_3() {
 
     my $country = &decode_MID($userID);
     if ($print_123) { print "  Country: $country\n"; }
+
+    my $navStatus = &bin2dec($bnavStatus);
+    my $navStatusTxt = "";
+    if    ($navStatus ==  0) { $navStatusTxt = "Under_way:engine"; }
+    elsif ($navStatus ==  1) { $navStatusTxt = "At_anchor"; }
+    elsif ($navStatus ==  2) { $navStatusTxt = "Not_under_command"; }
+    elsif ($navStatus ==  3) { $navStatusTxt = "Restricted_maneuverability"; }
+    elsif ($navStatus ==  4) { $navStatusTxt = "Constrained_by_draught"; }
+    elsif ($navStatus ==  5) { $navStatusTxt = "Moored"; }
+    elsif ($navStatus ==  6) { $navStatusTxt = "Aground"; }
+    elsif ($navStatus ==  7) { $navStatusTxt = "Fishing"; }
+    elsif ($navStatus ==  8) { $navStatusTxt = "Under_way:sailing"; }
+    #elsif ($navStatus ==  9) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 10) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 11) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 12) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 13) { $navStatusTxt = "Reserved"; }
+    elsif ($navStatus == 14) { $navStatusTxt = "AIS-SART_is_active"; }
+    #elsif ($navStatus == 15) { $navStatusTxt = "Not defined"; }
 
 # NOTE: 0-359 degrees
 # NOTE: 360 = N/A
@@ -811,14 +860,19 @@ sub process_types_1_2_3() {
     my $lon = sprintf("%03d%05.2f%s", $londeg, $lonmins2, $EW);
 
     my $symbol = "s";
+
+    # Set up to add country or vessel_name + country to comment field
     my $vesselTag = " ($country)";
     if ( defined($vessel_hash{$userID}) ) { $vesselTag = " " . $vessel_hash{$userID} . " (" . $country . ")"; }
-    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag";
+
+    my $aprs= &escape_from_shell("$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed $navStatusTxt$vesselTag");
     if ($print_123) { print "     APRS: $aprs\n"; }
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-    if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+    if ($enable_tx) {
+        my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
     }
 
     # Assign tactical call = "$userID + $country" or "$vesselName + $country"
@@ -829,16 +883,23 @@ sub process_types_1_2_3() {
         $temp = substr($vessel_hash{$userID} . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     else {
-        $temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+        # No vessel name
+        # N7IPB: Display country of registry
+        $temp = substr("($country)", 0, 56);  # Chop at 56 chars
+
+        # WE7U: Display the 9-digit MMSI + country of registry
+        #$temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     if ( !defined($tactical_hash{$userID}) ) {
         $tactical_hash{$userID} = $temp;
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+        $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
         if ($print_123) { print "     APRS: $aprs\n"; }
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
-            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+        if ($enable_tx) {
+            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+            if ($result =~ m/NACK/) {
+                die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+            }
         }
     }
 
@@ -852,12 +913,21 @@ sub process_types_1_2_3() {
 # Message type 5: Static and Voyage Related Data (Vessel name, callsign, ship type)
 #
 sub process_type_5() {
+
+    #if ( length($bin_string) < 336  ) {
+    if ( length($bin_string) < 232  ) {
+        #printf("5\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("5\t%d\n", length($bin_string));
+        if ($print_5) { print "Msg too short\n\n"; }
+        return;
+    }
+
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   2); # AIS Version
     # substr($bin_string,  40,  30); # IMO Number
-    # substr($bin_string,  70,  42); # Call Sign
+    #my $bCallsign = substr($bin_string,  70,  42); # Call Sign
     my $bVesselName = substr($bin_string, 112, 120); # Vessel Name #####
     # substr($bin_string, 232,   8); # Ship Type
     # substr($bin_string, 240,   9); # Dimension to Bow
@@ -877,12 +947,19 @@ sub process_type_5() {
     my $userID = &bin2dec($bUserID);
     if ($print_5) { print "  User ID: $userID\n"; }
 
+    #my $callSign = &bin2text($bCallsign);
+    #print "Callsign: $callSign\n";
+
     my $country = &decode_MID($userID);
     if ($print_5) { print "  Country: $country\n"; }
 
     my $vesselName = &bin2text($bVesselName);
     $vesselName =~ s/\s+$//;    # Remove extra spaces at end
+    
     $vessel_hash{$userID} = $vesselName;
+    # Update the persistent store
+    store \%vessel_hash , $persistentFileSpec;
+
     if ($print_5) { print "   Vessel: $vesselName\n"; }
 
     # Assign tactical call = $vesselName + $country
@@ -891,15 +968,16 @@ sub process_type_5() {
     my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     if ( !defined($tactical_hash{$userID}) || $tactical_hash{$userID} ne $temp ) {
         $tactical_hash{$userID} = $temp;
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+        $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
         if ($print_5) { print "     APRS: $aprs\n"; }
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
-            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+        if ($enable_tx) {
+            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+            if ($result =~ m/NACK/) {
+                die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+            }
         }
     }
-
     if ($print_5) { print "\n"; }
 
     return();
@@ -910,6 +988,15 @@ sub process_type_5() {
 # Message type 9: Standard SAR Aircraft Position Report
 #
 sub process_type_9() {
+
+    #if ( length($bin_string) < 168 ) {
+    if ( length($bin_string) < 128 ) {
+        #printf("9\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("9\t%d\n", length($bin_string));
+        if ($print_9) { print "Msg too short\n\n"; }
+        return;
+    }
+
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
@@ -1014,12 +1101,14 @@ sub process_type_9() {
     my $symbol = "^";   # "^" = Large Aircraft. Could be "'" for small aircraft, "X" for helicopter.
     my $vesselTag = " ($country)";
     if ( defined($vessel_hash{$userID}) ) { $vesselTag = " " . $vessel_hash{$userID} . " (" . $country . ")"; }
-    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$altitude SAR Aircraft$vesselTag";
+    my $aprs = &escape_from_shell("$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$altitude SAR Aircraft$vesselTag");
     if ($print_9) { print "     APRS: $aprs\n"; }
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-    if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+    if ($enable_tx) {
+        my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
     }
  
     # Assign tactical call = "$userID + $country" or "$vesselName + $country"
@@ -1030,16 +1119,23 @@ sub process_type_9() {
         $temp = substr($vessel_hash{$userID} . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     else {
-        $temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+        # No vessel name
+        # N7IPB: Display country of registry
+        $temp = substr("($country)", 0, 56);  # Chop at 56 chars
+
+        # WE7U: Display the 9-digit MMSI + country of registry
+        #$temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     if ( !defined($tactical_hash{$userID}) ) {
         $tactical_hash{$userID} = $temp;
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+        $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
         if ($print_9) { print "     APRS: $aprs\n"; }
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
+
+        if ($enable_tx) {
+            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+            if ($result =~ m/NACK/) {
             die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+            }
         }
     }
 
@@ -1053,6 +1149,15 @@ sub process_type_9() {
 # Message type 18: Standard Class B CS Position Report
 #
 sub process_type_18() {
+
+    #if ( length($bin_string) < 168 ) {
+    if ( length($bin_string) < 124 ) {
+        #printf("18\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("18\t%d\n", length($bin_string));
+        if ($print_18) { print "Msg too short\n\n"; }
+        return;
+    }
+
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
@@ -1147,12 +1252,14 @@ sub process_type_18() {
     my $symbol = "s";
     my $vesselTag = " ($country)";
     if ( defined($vessel_hash{$userID}) ) { $vesselTag = " " . $vessel_hash{$userID} . " (" . $country . ")"; }
-    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag";
+    my $aprs = &escape_from_shell("$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag");
     if ($print_18) { print "     APRS: $aprs\n"; }
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-    if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+    if ($enable_tx) {
+        my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
     }
  
     # Assign tactical call = "$userID + $country" or "$vesselName + $country"
@@ -1163,16 +1270,23 @@ sub process_type_18() {
         $temp = substr($vessel_hash{$userID} . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     else {
-        $temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+        # No vessel name
+        # N7IPB: Display country of registry
+        $temp = substr("($country)", 0, 56);  # Chop at 56 chars
+
+        # WE7U: Display the 9-digit MMSI + country of registry
+        #$temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     if ( !defined($tactical_hash{$userID}) ) {
         $tactical_hash{$userID} = $temp;
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+        $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
         if ($print_18) { print "     APRS: $aprs\n"; }
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
-            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+        if ($enable_tx) {
+            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+            if ($result =~ m/NACK/) {
+                die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+            }
         }
     }
 
@@ -1186,6 +1300,15 @@ sub process_type_18() {
 # Message type 19: Extended Class B CS Position Report
 #
 sub process_type_19() {
+
+    #if ( length($bin_string) < 311 ) {
+    if ( length($bin_string) < 263 ) {
+        #printf("19\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("19\t%d\n", length($bin_string));
+        if ($print_19) { print "Msg too short\n\n"; }
+        return;
+    }
+ 
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
@@ -1288,16 +1411,21 @@ sub process_type_19() {
     my $symbol = "s";
     my $vesselTag = " ($country)";
     if ( defined($vessel_hash{$userID}) ) { $vesselTag = " " . $vessel_hash{$userID} . " (" . $country . ")"; }
-    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag";
+    my $aprs = &escape_from_shell("$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag");
     if ($print_19) { print "     APRS: $aprs\n"; }
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-    if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+    if ($enable_tx) {
+        my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
     }
 
     if ($vesselName ne "") {
         $vessel_hash{$userID} = $vesselName;
+        # Update the persistent store
+        store \%vessel_hash , $persistentFileSpec;
+
         if ($print_19) { print "   Vessel: $vesselName\n"; }
 
         # Assign tactical call = $vesselName
@@ -1306,12 +1434,14 @@ sub process_type_19() {
         my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
         if ( !defined($tactical_hash{$userID}) || $tactical_hash{$userID} ne $temp ) {
             $tactical_hash{$userID} = $temp;
-            $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+            $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
             if ($print_19) { print "     APRS: $aprs\n"; }
-            # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-            if ($result =~ m/NACK/) {
-                die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+            if ($enable_tx) {
+                $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+                if ($result =~ m/NACK/) {
+                    die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+                }
             }
         }
     }
@@ -1335,6 +1465,15 @@ sub process_type_19() {
 #       If not, then those 30 bits represent vessel dimmensions.
 #
 sub process_type_24() {
+
+    #if ( length($bin_string) < 160 ) {
+    if ( length($bin_string) < 160 ) {
+        #printf("24\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("24\t%d\n", length($bin_string));
+        if ($print_24_A || $print_24_B) { print "Msg too short\n\n"; }
+        return;
+    }
+ 
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
@@ -1365,6 +1504,9 @@ sub process_type_24() {
         }
         if ($vesselName ne "") {
             $vessel_hash{$userID} = $vesselName;
+            # Update the persistent store
+            store \%vessel_hash , $persistentFileSpec;
+
             if ($print_24_A) { print "   Vessel: $vesselName\n"; }
     
             # Assign tactical call = $vesselName
@@ -1373,12 +1515,14 @@ sub process_type_24() {
             my $temp = substr($vesselName . " (" . $country . ")", 0, 56);  # Chop at 56 chars
             if ( !defined($tactical_hash{$userID}) || $tactical_hash{$userID} ne $temp ) {
                 $tactical_hash{$userID} = $temp;
-                $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+                $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
                 if ($print_24_A) { print "     APRS: $aprs\n"; }
-                # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-                $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-                if ($result =~ m/NACK/) {
-                    die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+                if ($enable_tx) {
+                    $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+                    if ($result =~ m/NACK/) {
+                        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+                    }
                 }
             }
         }
@@ -1424,12 +1568,21 @@ sub process_type_24() {
 # Message type 27: Position Report For Long-Range Applications (rare)
 #
 sub process_type_27() {
+
+    #if ( length($bin_string) < 96 ) {
+    if ( length($bin_string) < 94 ) {
+        #printf("27\t%s\t%d\n", $bin_string, length($bin_string));
+        #printf("27\t%d\n", length($bin_string));
+        if ($print_27) { print "Msg too short\n\n"; }
+        return;
+    }
+ 
     # substr($bin_string,   0,   6); # Message Type
     # my $brepeat_indicator = substr($bin_string,   6,   2); # Repeat Indicator
     my $bUserID = substr($bin_string,   8,  30); # MMSI
     # substr($bin_string,  38,   1); # Position Accuracy
     # substr($bin_string,  39,   1); # RAIM flag
-    # substr($bin_string,  40,   4); # Navigation Status
+    my $bNavStatus = substr($bin_string,  40,   4); # Navigation Status
     my $bLongitude = substr($bin_string,  44,  18); # Longitude
     my $bLatitude = substr($bin_string,  62,  17); # Latitude
     my $bSpeedOverGnd = substr($bin_string,  79,   6); # Speed Over Ground
@@ -1443,6 +1596,25 @@ sub process_type_27() {
     my $country = &decode_MID($userID);
     if ($print_27) { print "  Country: $country\n"; }
 
+    my $navStatus = &bin2dec($bNavStatus);
+    my $navStatusTxt = "";
+    if    ($navStatus ==  0) { $navStatusTxt = "Under_way:engine"; }
+    elsif ($navStatus ==  1) { $navStatusTxt = "At_anchor"; }
+    elsif ($navStatus ==  2) { $navStatusTxt = "Not_under_command"; }
+    elsif ($navStatus ==  3) { $navStatusTxt = "Restricted_maneuverability"; }
+    elsif ($navStatus ==  4) { $navStatusTxt = "Constrained_by_draught"; }
+    elsif ($navStatus ==  5) { $navStatusTxt = "Moored"; }
+    elsif ($navStatus ==  6) { $navStatusTxt = "Aground"; }
+    elsif ($navStatus ==  7) { $navStatusTxt = "Fishing"; }
+    elsif ($navStatus ==  8) { $navStatusTxt = "Under_way:sailing"; }
+    #elsif ($navStatus ==  9) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 10) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 11) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 12) { $navStatusTxt = "Reserved"; }
+    #elsif ($navStatus == 13) { $navStatusTxt = "Reserved"; }
+    elsif ($navStatus == 14) { $navStatusTxt = "AIS-SART_is_active"; }
+    #elsif ($navStatus == 15) { $navStatusTxt = "Not defined"; }
+ 
 # NOTE: 0-359 degrees
 # NOTE: 511 = N/A
 # APRS spec says can set to "000", "...", or "   " if unknown
@@ -1515,12 +1687,14 @@ sub process_type_27() {
     my $symbol = "s";
     my $vesselTag = " ($country)";
     if ( defined($vessel_hash{$userID}) ) { $vesselTag = " " . $vessel_hash{$userID} . " (" . $country . ")"; }
-    my $aprs="$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed$vesselTag";
+    my $aprs = &escape_from_shell("$xastir_user>APRS:)$userID!$lat/$lon$symbol$course/$speed $navStatusTxt$vesselTag");
     if ($print_27) { print "     APRS: $aprs\n"; }
-    # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-    my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-    if ($result =~ m/NACK/) {
-        die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+    if ($enable_tx) {
+        my $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+        if ($result =~ m/NACK/) {
+            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+        }
     }
  
     # Assign tactical call = "$userID + $country" or "$vesselName + $country"
@@ -1531,16 +1705,23 @@ sub process_type_27() {
         $temp = substr($vessel_hash{$userID} . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     else {
-        $temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
+        # No vessel name
+        # N7IPB: Display country of registry
+        $temp = substr("($country)", 0, 56);  # Chop at 56 chars
+
+        # WE7U: Display the 9-digit MMSI + country of registry
+        #$temp = substr($userID . " (" . $country . ")", 0, 56);  # Chop at 56 chars
     }
     if ( !defined($tactical_hash{$userID}) ) {
         $tactical_hash{$userID} = $temp;
-        $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp;
+        $aprs = &escape_from_shell($xastir_user . '>' . "APRS::TACTICAL :" . $userID . "=" . $temp);
         if ($print_27) { print "     APRS: $aprs\n"; }
-        # xastir_udp_client  <hostname> <port> <callsign> <passcode> {-identify | [-to_rf] <message>}
-        $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
-        if ($result =~ m/NACK/) {
-            die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+
+        if ($enable_tx) {
+            $result = `$udp_client $xastir_host $xastir_port $xastir_user $xastir_pass \"$aprs\"`;
+            if ($result =~ m/NACK/) {
+                die "Received NACK from Xastir: Callsign/Passcode don't match?\n";
+            }
         }
     }
 
@@ -1668,7 +1849,9 @@ sub toDecimal {
 
 # Convert an unsigned binary string of ASCII 0's and 1's to a decimal
 sub bin2dec {
-    return unpack("N", pack("B32", substr("00000000000000000000000000000000" . shift, -32))); #####
+    my $temp = shift;
+    if (!defined($temp) || $temp eq "") { return; }
+    return unpack("N", pack("B32", substr("00000000000000000000000000000000" . $temp, -32))); #####
 }
 
 
@@ -1737,10 +1920,31 @@ sub decode_MID {
         $country = $countries{$MID};
     }
     else {
-        $country = "*** Unknown ***";
+        $country = "Unknown";
     }
 
     return $country; 
+}
+
+
+
+# Escape characters from the shell
+#
+# Between double quotes the literal value of all characters is preserved except
+# for dollar sign, backticks (backward single quotes, ``) and backslash.
+#
+# The backslash retains its meaning only when followed by dollar, backtick, double quote,
+# backslash or newline. Within double quotes, the backslashes are removed from the input
+# stream when followed by one of these characters. Backslashes preceding characters that
+# don't have a special meaning are left unmodified for processing by the shell interpreter.
+#
+sub escape_from_shell {
+    $temp = shift;
+    $temp =~ s/\\/\\/g;     # Look for \ and escape it. Do this one FIRST!
+    $temp =~ s/"/\\"/g;     # Look for " and escape it
+    $temp =~ s/\$/\\\$/g;   # Look for $ and escape it
+    $temp =~ s/\`/\\`/g;    # Look for ` and escape it
+    return ($temp);
 }
 
 
