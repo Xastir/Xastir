@@ -6,11 +6,23 @@
 # XASTIR, Amateur Station Tracking and Information Reporting
 # Copyright (C) 2016  The Xastir Group
 #
-# "ais.pl", a Perl script to connect aisdecoder and Xastir. This script
-# will create a UDP server at localhost:10110 for aisdecoder to send
-# packets into. It currently decodes AIS sentence types 1/2/3, creates
-# APRS packets out of them and sends them to Xastir's server port (2023)
-# via UDP.
+# "ais.pl", a Perl script to connect aisdecoder and Xastir for receiving
+# packets from ships. This script will create a UDP server at localhost:10110
+# for aisdecoder to send packets into. It decodes AIS sentences, creates APRS
+# packets out of them and sends them to Xastir's server port (2023) via UDP.
+#
+# AIS is the international tracking system for ships. They transmit on Marine
+# VHF frequencies between 156.025 and 162.025, using a low power output of 1W,
+# high power output of either 5W or 12.5W, at a bit rate of 9600 bits/s using
+# NRZI data encoding and GMSK/FM at 0.5 modulation index.
+#
+# The two default AIS channels are:
+# Ch 87B, AIS-1: 161.975 MHz
+# Ch 88B, AIS-2: 162.025 MHz
+#
+# The two long-range channels are:
+# Ch 75: 156.775 MHz
+# Ch 76: 156.825 MHz
 #
 #
 # You'll need "libusb", "libpthread", "librtlsdr" installed to be able to
@@ -22,19 +34,22 @@
 #   make
 #
 #
-# Run "rtl_ais" like this (create a simple script!):
+# Run "rtl_ais" like this (create a simple script!) for the two default channels:
 #
-#   ./rtl_ais -h 127.0.0.1 -P 10110 -d 0 -l 161.975M -r 162.025M -n -p -1 -g 48
+#   ./rtl_ais -h 127.0.0.1 -P 10110 -d 0 -l 161.975M -r 162.025M -n -p -2
 #
-#
-# Listen to marine channels 75 (156.775 MHz) and 76 (156.825 MHz) to pick
+# Change to marine channels 75 (156.775 MHz) and 76 (156.825 MHz) to pick
 # up long-range AIS (Type 27 packets), perhaps with another dongle:
 #
-#   ./rtl_ais -h 127.0.0.1 -P 10110 -d 0 -l 156.775M -r 156.825M -n -p -1 -g 48
+#   ./rtl_ais -h 127.0.0.1 -P 10110 -d 1 -l 156.775M -r 156.825M -n -p -2
 #
-#
-# Note that the "-p -1" bit is the frequency error of the RTL dongle.
+# Note that "-p -2" is the frequency error of the RTL dongle.
 # Set that to the proper number determined from "Kal".
+#
+# "-d 0" or "-d 1" selects which dongle you're attaching to.
+#
+# Don't use "-g <number>" and instead use auto-gain, which appears to work
+# better. This also works better than enabling AGC in the chipset itself.
 #
 #
 # Run "ais.pl" like this (again, create a simple script!):
@@ -61,11 +76,6 @@
 #
 # Possible live data feed (Too many connections when I try):
 #   ais.exploratorium.edu:80
-#
-#
-# TODO: Add ship type to an APRS comment?
-#
-# TODO: Add callsign to an APRS comment?
 #
 ###########################################################################
 
@@ -94,7 +104,7 @@ $print_19     = 1;  # (includes vesselName)
 $print_24_A   = 1;  # A Variant (includes vesselName)
 $print_24_B   = 1;  # B Variant (includes shipType
 $print_27     = 1;
-$print_others = 0;  # Not decoded yet
+$print_others = 1;  # Not decoded yet
  
 # Keep statistics on each type (28 slots)
 @message_type_count = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -242,8 +252,8 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "336" => "Haiti",    # "Haiti (Republic of)"
     "338" => "U.S.", # "United States of America"
     "339" => "Jamaica",
-    "341" => "Saint Kitts & Nevis",    # "Saint Kitts and Nevis (Federation of)"
-    "343" => "Saint Lucia",
+    "341" => "St. Kitts & Nevis",    # "Saint Kitts and Nevis (Federation of)"
+    "343" => "St. Lucia",
     "345" => "Mexico",
     "347" => "Martinique",    # "Martinique (French Department of) - France"
     "348" => "Montserrat",    # "Montserrat - United Kingdom of Great Britain and Northern Ireland"
@@ -257,7 +267,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "357" => "Panama",    # "Panama (Republic of)"
     "358" => "Puerto Rico,U.S.",   # "Puerto Rico - United States of America"
     "359" => "El Salvador",    # "El Salvador (Republic of)"
-    "361" => "Saint Pierre & Miquelon",    # "Saint Pierre and Miquelon (Territorial Collectivity of) - France"
+    "361" => "St. Pierre & Miquelon",    # "Saint Pierre and Miquelon (Territorial Collectivity of) - France"
     "362" => "Trinidad & Tobago",    # "Trinidad and Tobago"
     "364" => "Turks & Caicos Is.",    # "Turks and Caicos Islands - United Kingdom of Great Britain and Northern Ireland"
     "366" => "U.S.", # "United States of America"
@@ -269,9 +279,9 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "372" => "Panama",    # "Panama (Republic of)"
     "373" => "Panama",    # "Panama (Republic of)"
     "374" => "Panama",    # "Panama (Republic of)"
-    "375" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
-    "376" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
-    "377" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
+    "375" => "St. Vincent & Grenadines",    # "Saint Vincent and the Grenadines"
+    "376" => "St. Vincent & Grenadines",    # "Saint Vincent and the Grenadines"
+    "377" => "St. Vincent & Grenadines",    # "Saint Vincent and the Grenadines"
     "378" => "British Virgin Is.",    # "British Virgin Islands - United Kingdom of Great Britain and Northern Ireland"
     "379" => "U.S. Virgin Is.",    # "United States Virgin Islands - United States of America"
     "401" => "Afghanistan",
@@ -359,7 +369,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "601" => "S. Africa",    # "South Africa (Republic of)"
     "603" => "Angola",    # "Angola (Republic of)"
     "605" => "Algeria",    # "Algeria (People's Democratic Republic of)"
-    "607" => "Saint Paul & Amsterdam Is.",    # "Saint Paul and Amsterdam Islands - France"
+    "607" => "St. Paul & Amsterdam Is.",    # "Saint Paul and Amsterdam Islands - France"
     "608" => "Ascension Is.",    # "Ascension Island - United Kingdom of Great Britain and Northern Ireland"
     "609" => "Burundi",    # "Burundi (Republic of)"
     "610" => "Benin",    # "Benin (Republic of)"
@@ -404,7 +414,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "662" => "Sudan",    # "Sudan (Republic of the)"
     "663" => "Senegal",    # "Senegal (Republic of)"
     "664" => "Seychelles",    # "Seychelles (Republic of)"
-    "665" => "Saint Helena",    # "Saint Helena - United Kingdom of Great Britain and Northern Ireland"
+    "665" => "St. Helena",    # "Saint Helena - United Kingdom of Great Britain and Northern Ireland"
     "666" => "Somalia",    # "Somalia (Federal Republic of)"
     "667" => "Sierra Leone",
     "668" => "Sao Tome & Principe",    # "Sao Tome and Principe (Democratic Republic of)"
@@ -414,7 +424,7 @@ $xastir_port = 2023;        # 2023 is Xastir default UDP port
     "672" => "Tunisia",
     "674" => "Tanzania",    # "Tanzania (United Republic of)"
     "675" => "Uganda",    # "Uganda (Republic of)",
-    "676" => "Dem. Rep. of the Congo",    # "Democratic Republic of the Congo"
+    "676" => "Dem. Rep. of Congo",    # "Democratic Republic of the Congo"
     "677" => "Tanzania",    # "Tanzania (United Republic of)"
     "678" => "Zambia",    # "Zambia (Republic of)"
     "679" => "Zimbabwe",    # "Zimbabwe (Republic of)"
@@ -838,7 +848,10 @@ sub process_types_1_2_3() {
 # NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
-    if ($latitude == 91) { return(); }
+    if ($latitude == 91) {
+        if ($print_123) { print "\n"; }
+        return();
+    }
     my $NS;
     if ($print_123) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -855,7 +868,10 @@ sub process_types_1_2_3() {
 # NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
-    if ($longitude == 181) { return(); }
+    if ($longitude == 181) {
+        if ($print_123) { print "\n"; }
+        return();
+    }
     my $EW;
     if ($print_123) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -925,8 +941,8 @@ sub process_types_1_2_3() {
 #
 sub process_type_5() {
 
-    #if ( length($bin_string) < 336  ) {
-    if ( length($bin_string) < 232  ) {
+    #if ( length($bin_string) < 424  ) {
+    if ( length($bin_string) < 240  ) {
         #printf("5\t%s\t%d\n", $bin_string, length($bin_string));
         #printf("5\t%d\n", length($bin_string));
         if ($print_5) { print "Msg too short\n\n"; }
@@ -1086,7 +1102,10 @@ sub process_type_9() {
 # NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
-    if ($latitude == 91) { return(); }
+    if ($latitude == 91) {
+        if ($print_9) { print "\n"; }
+        return();
+    }
     my $NS;
     if ($print_9) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -1103,7 +1122,10 @@ sub process_type_9() {
 # NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
-    if ($longitude == 181) { return(); }
+    if ($longitude == 181) {
+        if ($print_9) { print "\n"; }
+        return();
+    }
     my $EW;
     if ($print_9) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1239,7 +1261,10 @@ sub process_type_18() {
 # NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
-    if ($latitude == 91) { return(); }
+    if ($latitude == 91) {
+        if ($print_18) { print "\n"; }
+        return();
+    }
     my $NS;
     if ($print_18) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -1256,7 +1281,10 @@ sub process_type_18() {
 # NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
-    if ($longitude == 181) { return(); }
+    if ($longitude == 181) {
+        if ($print_18) { print "\n"; }
+        return();
+    }
     my $EW;
     if ($print_18) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1323,7 +1351,7 @@ sub process_type_18() {
 #
 sub process_type_19() {
 
-    #if ( length($bin_string) < 311 ) {
+    #if ( length($bin_string) < 312 ) {
     if ( length($bin_string) < 263 ) {
         #printf("19\t%s\t%d\n", $bin_string, length($bin_string));
         #printf("19\t%d\n", length($bin_string));
@@ -1394,7 +1422,10 @@ sub process_type_19() {
 # NOTE: -90 to +90
 # NOTE: 91 = N/A
     my $latitude = &signedBin2dec($bLatitude) / 600000.0;
-    if ($latitude == 91) { return(); }
+    if ($latitude == 91) {
+        if ($print_19) { print "\n"; }
+        return();
+    }
     my $NS;
     if ($print_19) { printf(" Latitude: %07.5f\n", $latitude); }
     if ($latitude >= 0.0) {
@@ -1410,7 +1441,10 @@ sub process_type_19() {
 # NOTE: -180 to +180
 # NOTE: 181 = N/A
     my $longitude = &signedBin2dec($bLongitude) / 600000.0;
-    if ($longitude == 181) { return(); }
+    if ($longitude == 181) {
+        if ($print_19) { print "\n"; }
+        return();
+    }
     my $EW;
     if ($print_19) { printf("Longitude: %08.5f\n", $longitude); }
     if ($longitude >= 0.0) {
@@ -1711,7 +1745,10 @@ sub process_type_27() {
 # NOTE: -90 to +90
 # NOTE: 91 = N/A = D548h or 54600 decimal. Divide by 91 to get 600 (our factor).
     my $latitude = &signedBin2dec($bLatitude) / 600.0;
-    if ($latitude == 91) { return(); }
+    if ($latitude == 91) {
+        if ($print_27) { print "\n"; }
+        return();
+    }
     if ($print_27) {
         #printf(" bLatitude: %s\n", $bLatitude);
         printf(" Latitude: %07.5f\n", $latitude);
@@ -1731,7 +1768,10 @@ sub process_type_27() {
 # NOTE: -180 to +180
 # NOTE: 181 = N/A = 1A838h or 108600 decimal. Divide by 181 to get 600 (our factor).
     my $longitude = &signedBin2dec($bLongitude) / 600.0;
-    if ($longitude == 181) { return(); }
+    if ($longitude == 181) {
+        if ($print_27) { print "\n"; }
+        return();
+    }
     if ($print_27) {
         #printf("bLongitude: %s\n", $bLongitude);
         printf("Longitude: %08.5f\n", $longitude);
@@ -1814,7 +1854,7 @@ sub decodeShipType() {
     elsif ($shipType == 56) { $shipTypeTxt = $shipTypeTxt . "Local"; }
     elsif ($shipType == 57) { $shipTypeTxt = $shipTypeTxt . "Local"; }
     elsif ($shipType == 58) { $shipTypeTxt = $shipTypeTxt . "Medical_Transport_or_Public_Safety"; }
-    elsif ($shipType == 59) { $shipTypeTxt = $shipTypeTxt . "Neutral_State"; }
+    elsif ($shipType == 59) { $shipTypeTxt = $shipTypeTxt . "Neutral_State_Vessel"; }
 
     # U.S. Specific Vessels
     elsif ($shipType =~ m/^2/) {
@@ -1834,7 +1874,7 @@ sub decodeShipType() {
     elsif ($shipType =~ m/^3/) {
         if ($shipType =~ m/0$/) { $shipTypeTxt = $shipTypeTxt . "Fishing"; }
         if ($shipType =~ m/1$/) { $shipTypeTxt = $shipTypeTxt . "Towing-Pull"; }
-        if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "Towing_Big"; }
+        if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "Towing-Big"; }
         if ($shipType =~ m/3$/) { $shipTypeTxt = $shipTypeTxt . "Dredging_or_Underwater_Ops"; }
         if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "Diving_Ops"; }
         if ($shipType =~ m/5$/) { $shipTypeTxt = $shipTypeTxt . "Military_Ops"; }
@@ -1864,7 +1904,7 @@ sub decodeShipType() {
         if ($shipType =~ m/1$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:A/X"; }
         if ($shipType =~ m/2$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:B/Y"; }
         if ($shipType =~ m/3$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:C/Z"; }
-        if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "-:Haz_Cat:D/O"; }
+        if ($shipType =~ m/4$/) { $shipTypeTxt = $shipTypeTxt . "-Haz_Cat:D/O"; }
         if ($shipType =~ m/5$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
         if ($shipType =~ m/6$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
         if ($shipType =~ m/7$/) { $shipTypeTxt = $shipTypeTxt . "-Reserved"; }
