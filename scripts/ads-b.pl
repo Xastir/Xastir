@@ -5,11 +5,12 @@
 # XASTIR, Amateur Station Tracking and Information Reporting
 # Copyright (C) 2016  The Xastir Group
 #
-# Converts "dump1090" telnet port output to Xastir UDP input.  This script will
-# parse packets containing lat/long, turn them into APRS-like packets, then use
-# "xastir_udp_client" to inject them into Xastir. Must have "dump1090" running,
-# and optionally "dump978" to dump packets into "dump1090" from the other
-# frequency/protocol for ADS-B.
+# Converts "dump1090" telnet port output to Xastir UDP input, for decoding
+# packets directly from aircraft.  This script will parse packets containing
+# lat/long, turn them into APRS-like packets, then use "xastir_udp_client"
+# to inject them into Xastir. Must have "dump1090" running, and optionally
+# "dump978" to dump packets into "dump1090" from the other frequency/protocol
+# for ADS-B.
 #
 #
 # TODO: Create probability circle around my position for aircraft sending altitude
@@ -53,7 +54,7 @@
 #       https://github.com/mutability/dump1090
 #
 # Invoke Mutability's "dump1090" program like so:
-#   "./dump1090 --interactive --net --net-sbs-port 30003 --phase-enhance --oversample --fix
+#   "./dump1090 --interactive --net --net-sbs-port 30003 --phase-enhance --oversample --fix --ppm -1 --gain -10 --device-index 0
 #
 #
 # Note: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
