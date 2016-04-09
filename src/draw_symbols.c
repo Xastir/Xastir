@@ -205,6 +205,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             // Real Shadow text
             (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
 
+            gcontext = XGContextFromGC(gc);
             xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
             font_width = (int)((xfs_ptr->max_bounds.width
                 + xfs_ptr->max_bounds.width
