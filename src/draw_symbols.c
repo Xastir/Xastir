@@ -91,12 +91,14 @@ void clear_symbol_data(void) {
 
 /* 
  *  Draw nice looking text
+ * 
+ *  Modified to take into account the font metrics - N7IPB
+ *  4/8/2016
  */
 void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *text, int bgcolor, int fgcolor, int length) {
     GContext gcontext;
     XFontStruct *xfs_ptr;
     int font_width, font_height;
-
 
     if (x > screen_width)  return;
     if (x < 0)             return;
@@ -124,13 +126,35 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             // Leave this next one hard-coded to 0xff.  This keeps
             // the background as gray.
 
-// With a large font, the background rectangle is too small.  Need
-// to include the font metrics in this drawing algorithm.
+            // With a large font, the background rectangle is too small.  Need
+            // to include the font metrics in this drawing algorithm.
+
+            gcontext = XGContextFromGC(gc);
+            xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
+            font_width = (int)((xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->min_bounds.width) / 4);
+
+            font_height = xfs_ptr->max_bounds.ascent
+                + xfs_ptr->max_bounds.descent;
+
+            if (xfs_ptr) {
+                // This leaks memory if the last parameter is a "0"
+                XFreeFontInfo(NULL, xfs_ptr, 1);
+            }
 
             (void)XSetForeground(XtDisplay(w),gc,colors[0xff]);
-            (void)XFillRectangle(XtDisplay(w),where,gc,x-1,(y-10),(length*6)+2,11);
+            (void)XFillRectangle( XtDisplay(w),
+                where,
+                gc,
+                x,                    // X
+                y-(font_height-(font_height/4)),          // Y
+                length*font_width,  // width
+                font_height);         // height
+
             (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
-            (void)XDrawString(XtDisplay(w),where,gc,x+1,y+1,text,length);
+            (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/8),y+(font_width/8),text,length);
             break;
 
         case 2:
@@ -145,11 +169,6 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
             xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
 
-
-//            font_width = xfs_ptr->max_bounds.width
-//                + xfs_ptr->max_bounds.rbearing
-//                - xfs_ptr->max_bounds.lbearing;
-//            font_width = xfs_ptr->max_bounds.width;
             font_width = (int)((xfs_ptr->max_bounds.width
                 + xfs_ptr->max_bounds.width
                 + xfs_ptr->max_bounds.width
@@ -162,13 +181,6 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                 // This leaks memory if the last parameter is a "0"
                 XFreeFontInfo(NULL, xfs_ptr, 1);
             }
-
-            // Normal font returns 10 & 13.  Large system font
-            // returns 13 & 20 here.
-            //fprintf(stderr,
-            //    "Font dimemsions:  Width:%d  Height:%d\n",
-            //    font_width,
-            //    font_height);
  
             (void)XSetForeground( XtDisplay(w),
                 gc,
@@ -182,11 +194,33 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             (void)XFillRectangle( XtDisplay(w),
                 where,
                 gc,
-                x-2,                    // X
-                y-font_height,          // Y
-                (length*font_width)+3,  // width
-                font_height+2);         // height
+                x,                    // X
+                y-(font_height-(font_height/4)),          // Y
+                length*font_width,  // width
+                font_height);         // height
 
+            break;
+// Temporary - until I really add another style selection - N7IPB
+        case 3:
+            // Real Shadow text
+            (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
+
+            xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
+            font_width = (int)((xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->min_bounds.width) / 4);
+
+            font_height = xfs_ptr->max_bounds.ascent
+                + xfs_ptr->max_bounds.descent;
+
+            if (xfs_ptr) {
+                // This leaks memory if the last parameter is a "0"
+                XFreeFontInfo(NULL, xfs_ptr, 1);
+            }
+
+            (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
+            (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/8),y+(font_width/8),text,length);
             break;
 
     }
@@ -196,15 +230,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
     (void)XDrawString(XtDisplay(w),where,gc,x,y,text,length);
 }
 
-
-
-
-
 /* symbol drawing routines */
-
-
-
-
 
 // Function to draw a line between a WP symbol "\/" and the
 // transmitting station.  We pass it the WP symbol.  It does a
@@ -2594,16 +2620,32 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
     int posyl;
     int posyr;
 
+// Added to allow dynamic offsets for the text around a symbol
+// Originally it was hard coded offsets, this bases the offset on
+// the font height and width
+// N7IPB - 4/7/2016
+//
+    GContext gcontext;
+    XFontStruct *xfs_ptr;
+    int font_width, font_height;
+
+            gcontext = XGContextFromGC(gc);
+
+            xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
+
+            font_width = (int)((xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->max_bounds.width
+                + xfs_ptr->min_bounds.width) / 4);
+
+// Get the font height and use it for the distance between line of text
+// We only use the ascent height to keep the spacing from being too wide
+            font_height = xfs_ptr->max_bounds.ascent;
+                //+ xfs_ptr->max_bounds.descent;
 
     if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
         if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
-
-//            if ((x_long+10 < 0) || (x_long-10 > 129600000l))  // 360 deg
-//                return;
-
-//            if ((y_lat+10 < 0) || (y_lat-10 > 64800000l))     // 180 deg
-//                return;
 
             x_offset=((x_long-NW_corner_longitude)/scale_x)-(10);
             y_offset=((y_lat -NW_corner_latitude) /scale_y)-(10);
@@ -2615,19 +2657,19 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             if (Display_.symbol)
                 symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
 
-            posyr = 10;      // align symbols vertically centered to the right
+            posyr = font_height;      // align symbols vertically centered to the right
             if ( (!ghost || Select_.old_data) && strlen(alt_text)>0)
-                posyr -= 7;
+                posyr -= font_height/2;
             if (strlen(callsign_text)>0)
-                posyr -= 7;
+                posyr -= font_height/2;
             if ( (!ghost || Select_.old_data) && strlen(speed_text)>0)
-                posyr -= 7;
+                posyr -= font_height/2 ;
             if ( (!ghost || Select_.old_data) && strlen(course_text)>0)
-                posyr -= 7;
+                posyr -= font_height/2;
             if (area_type == AREA_LINE_RIGHT)
                 posyr += 9;
             if (signpost[0] != '\0')    // Signpost data?
-                posyr -=7;
+                posyr -=font_height/2;
             // we may eventually have more adjustments for different types of areas
 
             length=(int)strlen(alt_text);
@@ -2635,7 +2677,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
-                posyr += 13;
+                posyr += font_height;
             }
 
             length=(int)strlen(callsign_text);
@@ -2643,7 +2685,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
-                posyr += 13;
+                posyr += font_height;
             }
 
             length=(int)strlen(speed_text);
@@ -2651,7 +2693,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
-                posyr += 13;
+                posyr += font_height;
             }
 
             length=(int)strlen(course_text);
@@ -2659,7 +2701,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
-                posyr += 13;
+                posyr += font_height;
             }
  
             length=(int)strlen(signpost);   // Make it white like callsign?
@@ -2667,31 +2709,31 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+12;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,signpost,0x08,0x0f,length);
-                posyr += 13;
+                posyr += font_height;
             }
  
-            posyl = 10; // distance and direction goes to the left.
+            posyl = font_height; // distance and direction goes to the left.
                                 // Also minutes last heard.
             if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
-                posyl -= 7;
+                posyl -= font_height/2;
             if ( (!ghost || Select_.old_data) && strlen(my_course)>0)
-                posyl -= 7;
+                posyl -= font_height/2;
             if ( (!ghost || Select_.old_data) && temp_show_last_heard)
-                posyl -= 7;
+                posyl -= font_height/2;
 
             length=(int)strlen(my_distance);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*font_width))-12;
                 y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
-                posyl += 13;
+                posyl += font_height;
             }
             length=(int)strlen(my_course);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*font_width))-12;
                 y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
-                posyl += 13;
+                posyl += font_height;
             }
             if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
                 char age[20];
@@ -2749,29 +2791,29 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 }
 
                 length = strlen(age);
-                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*6))-12;
+                x_offset=(((x_long-NW_corner_longitude)/scale_x)-(length*font_width))-12;
                 y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
-                posyl += 13;
+                posyl += font_height;
             }
 
             // weather goes to the bottom, centered horizontally.
             if (posyr < posyl)
                 posyr = posyl;
-            if (posyr < 18)
-                posyr = 18;
+            if (posyr < font_height)
+                posyr = font_height;
 
             length=(int)strlen(wx_temp);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*font_width/2);
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
-                posyr += 13;
+                posyr += font_height;
             }
 
             length=(int)strlen(wx_wind);
             if ( (!ghost || Select_.old_data) && length>0) {
-                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*font_width/2);
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
             }
@@ -2781,12 +2823,12 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                 // horizontally.  White.
                 if (posyr < posyl)
                     posyr = posyl;
-                if (posyr < 22)
-                    posyr = 22;
+                if (posyr < font_width)
+                    posyr = font_width;
 
                 length=(int)strlen(gauge_data);
                 if ( (!ghost || Select_.old_data) && length>0) {
-                    x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*3);
+                    x_offset=((x_long-NW_corner_longitude)/scale_x)-(length*font_width/2);
                     y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
                     draw_nice_string(w,where,letter_style,x_offset,y_offset,gauge_data,0x08,0x0f,length);
                 }
