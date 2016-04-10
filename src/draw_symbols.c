@@ -2644,6 +2644,13 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             font_height = xfs_ptr->max_bounds.ascent;
                 //+ xfs_ptr->max_bounds.descent;
 
+		// We no longer need the font info so free the memory
+		// to avoid a nasty memory leak
+            if (xfs_ptr) {
+                // This leaks memory if the last parameter is a "0"
+                XFreeFontInfo(NULL, xfs_ptr, 1);
+            }
+
     if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
         if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
