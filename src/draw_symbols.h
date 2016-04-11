@@ -50,6 +50,7 @@ extern void load_pixmap_symbol_file(char *filename, int reloading);
 extern void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, int reloading);
 extern char symbol_orient(char *course);
 extern void symbol(Widget w, int ghost,char symbol_table, char symbol_id, char symbol_overlay, Pixmap where, int mask, long x_offset, long y_offset, char rotate);
+long get_text_width(Widget w,char *text);
 
 extern void draw_WP_line(DataRow *p_station, int ambiguity_flag, long ambiguity_coord_lon, long ambiguity_coord_lat, Pixmap where, Widget w);
 
