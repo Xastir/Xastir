@@ -29,9 +29,7 @@
 #
 #
 # Invoke it as:
-#   ./ads-b.pl planes <passcode>
-# or
-#   ./ads-b.pl p1anes <passcode>
+#   ./ads-b.pl planes <passcode> [--circles] [--logging]
 #
 # If you add " --circles" to the end you'll also get a red circle around plane
 # symbols at your current location which represent the area that a plane might
@@ -208,16 +206,20 @@ $log_file = "~/.xastir/logs/planes.log";
 
 
 $xastir_user = shift;
-chomp $xastir_user;
-if ($xastir_user eq "") {
+if (defined($xastir_user)) {
+  chomp $xastir_user;
+}
+if ( (!defined($xastir_user)) || ($xastir_user eq "") ) {
   print "Please enter a callsign for Xastir injection, but not Xastir's callsign/SSID!\n";
   die;
 }
 $xastir_user =~ tr/a-z/A-Z/;
 
 $xastir_pass = shift;
-chomp $xastir_pass;
-if ($xastir_pass eq "") {
+if (defined($xastir_pass)) {
+  chomp $xastir_pass;
+}
+if ( (!defined($xastir_pass)) || ($xastir_pass eq "") ) {
   print "Please enter a passcode for Xastir injection\n";
   die;
 }
@@ -318,12 +320,12 @@ while (<$socket>)
   if ( $_ eq "" ) { next; }
 
 
-  # Sentences have either 10 or 22 fields.
+  # Sentences have either 10 or 22 fields, assuming they aren't cut off / collided with.
   @fields = split(",");
 
 
-  # Check whether we have a plane ID. If not we're done with this loop iteration
-  if ( (!defined($fields[4])) || ($fields[4] eq "") ) { next; }
+  # Check whether we have a sentence type, message type, and plane ID. If not we're done with this loop iteration
+  if ( (!defined($fields[0])) || (!defined($fields[1])) || (!defined($fields[4])) || ($fields[4] eq "") ) { next; }
 
   $plane_id = $fields[4];
   $print1 = $plane_id;
