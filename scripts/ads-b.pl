@@ -790,7 +790,8 @@ while (<$socket>)
        || $fields[1] == 6
        || $fields[1] == 7 ) {
 
-    if ( $fields[11] ne ""
+    if ( defined($fields[11])
+         && $fields[11] ne ""
          && $fields[11] ne 0 ) {
 
       $old = "";
@@ -814,7 +815,7 @@ while (<$socket>)
   $print4 = "    ";
   if ( $fields[1] ==  4 || $fields[1] == 2 ) {
 
-    if ( $fields[12] ne "" ) {
+    if ( defined($fields[12]) && $fields[12] ne "" ) {
 
       $old = "";
       if (defined($groundspeed{$plane_id})) {
@@ -830,7 +831,7 @@ while (<$socket>)
       }
     }
 
-    if ( $fields[13] ne "" ) {
+    if ( defined($fields[13]) && $fields[13] ne "" ) {
 
       $old = "";
       if (defined($track{$plane_id})) {
@@ -851,8 +852,8 @@ while (<$socket>)
   # Parse lat/long if MSG Type 2 or 3, save in hash.
   $print5 = "                 ";
   if (  ( $fields[1] == 2 || $fields[1] == 3 )
-       && $fields[14] ne ""
-       && $fields[15] ne "" ) {
+       && defined($fields[14]) && $fields[14] ne ""
+       && defined($fields[15]) && $fields[15] ne "" ) {
 
     $oldlat = "";
     if (defined($lat{$plane_id})) {
@@ -931,6 +932,7 @@ while (<$socket>)
 
   # Save tail or flight number in hash if MSG Type 1 or "ID" sentence.
   if (    ($fields[0] eq "ID" || $fields[1] ==  1)
+       && defined($fields[10])
        && $fields[10] ne "????????"
        && $fields[10] ne ""
        && !($fields[10] =~ m/^\s+$/) ) {
