@@ -53,7 +53,7 @@
 #
 #
 # Run "ais.pl" like this (again, create a simple script!):
-#   ./ais.pl boats <callpass> [--pipe] [--logging]
+#   ./ais.pl boats <passcode> [--pipe] [--logging]
 #
 # You may add the "--pipe" flag in order to have "ais.pl" accept data
 # from a pipe instead of setting up a UDP server for "rtl_ais" to send
@@ -240,7 +240,7 @@ $log_file = "~/.xastir/logs/ships.log";
     "305" => "Antigua & Barbuda",    # "Antigua and Barbuda"
     "306" => "Sint Maarten",    # "Sint Maarten (Dutch part) - Netherlands (Kingdom of the)"
     "306" => "Bonaire, Sint Eustatius & Saba",    # "Bonaire, Sint Eustatius and Saba - Netherlands (Kingdom of the)"
-    "306" => "Curaï¿½ao",    # "Curaï¿½ao - Netherlands (Kingdom of the)"
+    "306" => "Curaçao",    # "Curaçao - Netherlands (Kingdom of the)"
     "307" => "Aruba",    # "Aruba - Netherlands (Kingdom of the)"
     "308" => "Bahamas",    # "Bahamas (Commonwealth of the)"
     "309" => "Bahamas",    # "Bahamas (Commonwealth of the)"
@@ -390,7 +390,7 @@ $log_file = "~/.xastir/logs/ships.log";
     "616" => "Comoros",    # "Comoros (Union of the)"
     "617" => "Cabo Verde",    # "Cabo Verde (Republic of)"
     "618" => "Crozet Archipelago",    # "Crozet Archipelago - France"
-    "619" => "Cï¿½te d'Ivoire",    # "Cï¿½te d'Ivoire (Republic of)"
+    "619" => "Côte d'Ivoire",    # "Côte d'Ivoire (Republic of)"
     "620" => "Comoros",    # "Comoros (Union of the)"
     "621" => "Djibouti",    # "Djibouti (Republic of)"
     "622" => "Egypt",    # "Egypt (Arab Republic of)"
@@ -483,7 +483,7 @@ if ( (!defined($xastir_pass)) || ($xastir_pass eq "") ) {
 # we'll get our packets from "rtl_ais" via a UDP server we set up.
 # Enable logging mode by adding the "--logging" flag.
 $pipe_mode = 0;
-$logging_mode = 1;
+$logging_mode = 0;
 $pipe_flag = shift;
 if (defined($pipe_flag) && $pipe_flag ne "") {
     chomp $pipe_flag;
