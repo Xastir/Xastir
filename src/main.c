@@ -3442,16 +3442,16 @@ int create_image(Widget w) {
 
     /* Compute distance */
     if (lat_offset_temp<0l)
-        lat_offset_temp=0l;                     // max 90�N
+        lat_offset_temp=0l;                     // max 90°N
     else
         if (lat_offset_temp>64800000l)
-            lat_offset_temp=64800000l;          // max 90�S
+            lat_offset_temp=64800000l;          // max 90°S
 
     if(long_offset_temp<0l)
-        long_offset_temp=0l;                    // max 180�W
+        long_offset_temp=0l;                    // max 180°W
     else
         if (long_offset_temp>129600000l)
-            long_offset_temp=129600000l;        // max 180�E
+            long_offset_temp=129600000l;        // max 180°E
 
     pos1_lat = lat_offset_temp;
     pos1_lon = long_offset_temp;
@@ -3586,16 +3586,16 @@ void refresh_image(Widget w) {
 
     /* Compute distance */
     if (lat_offset_temp<0l)
-        lat_offset_temp=0l;                     // max 90�N
+        lat_offset_temp=0l;                     // max 90°N
     else
         if (lat_offset_temp>64800000l)
-            lat_offset_temp=64800000l;          // max 90�S
+            lat_offset_temp=64800000l;          // max 90°S
 
     if(long_offset_temp<0l)
-        long_offset_temp=0l;                    // max 180�W
+        long_offset_temp=0l;                    // max 180°W
     else
         if (long_offset_temp>129600000l)
-            long_offset_temp=129600000l;        // max 180�E
+            long_offset_temp=129600000l;        // max 180°E
 
     pos1_lat = lat_offset_temp;
     pos1_lon = long_offset_temp;
@@ -3712,19 +3712,19 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
     if (x < 0)
-//        x = 0l;                 // 180�W
+//        x = 0l;                 // 180°W
         return;
 
     if (x > 129600000l)
-//        x = 129600000l;         // 180�E
+//        x = 129600000l;         // 180°E
         return;
 
     if (y < 0)
-//        y = 0l;                 //  90�N
+//        y = 0l;                 //  90°N
         return;
 
     if (y > 64800000l)
-//        y = 64800000l;          //  90�S
+//        y = 64800000l;          //  90°S
         return;
 
     if (DISPLAY_XASTIR_COORDINATES) {
@@ -3750,12 +3750,12 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         } else if (coordinate_system == USE_DDMMSS) {
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL_FORMATED);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL_FORMATED);
-            //str_lat[2]='�'; str_long[3]='�';
+            //str_lat[2]='\xB0'; str_long[3]='\xB0';
             //str_lat[5]='\''; str_long[6]='\'';
         } else {    // Assume coordinate_system == USE_DDMMMM
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL_FORMATED);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL_FORMATED);
-            //str_lat[2]='�'; str_long[3]='�';
+            //str_lat[2]='\xB0'; str_long[3]='\xB0';
         }
         xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }
@@ -3810,7 +3810,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
                     value*1.852);
             }
         }
-        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s�",temp1_my_course);
+        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s\xB0",temp1_my_course);
 
 
         strncat(my_text,
@@ -10634,16 +10634,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
                     if (x < 0)
-                    x = 0l;                 // 180�W
+                    x = 0l;                 // 180°W
 
                     if (x > 129600000l)
-                    x = 129600000l;         // 180�E
+                    x = 129600000l;         // 180°E
 
                     if (y < 0)
-                    y = 0l;                 //  90�N
+                    y = 0l;                 //  90°N
 
                     if (y > 64800000l)
-                    y = 64800000l;          //  90�S
+                    y = 64800000l;          //  90°S
 
                     if (debug_level & 1) {
                         // This math is only used for the debug mode printf below.
@@ -13155,7 +13155,7 @@ void check_range(void) {
     //
     if ((height*new_scale_y) > 64800000l) {
 
-        // Center between 90�N and 90�S
+        // Center between 90°N and 90°S
         new_mid_y  =  64800000l/2;
 
         // Adjust y-scaling so that we fit perfectly in the window
@@ -13163,10 +13163,10 @@ void check_range(void) {
     }
 
     if ((new_mid_y < (height*new_scale_y)/2))
-            new_mid_y  = (height*new_scale_y)/2;    // upper border max 90�N
+            new_mid_y  = (height*new_scale_y)/2;    // upper border max 90°N
 
     if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
-        new_mid_y = 64800000l-((height*new_scale_y)/2); // lower border max 90�S
+        new_mid_y = 64800000l-((height*new_scale_y)/2); // lower border max 90°S
 
     // Adjust scaling based on latitude of new center
     new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
@@ -13177,7 +13177,7 @@ void check_range(void) {
 
 //    // scale_x will always be bigger than scale_y, so no problem here...
 //    if ((width*new_scale_x) > 129600000l) {
-//        // Center between 180�W and 180�E
+//        // Center between 180°W and 180°E
 //        new_mid_x = 129600000l/2;
 //    }
 
@@ -13196,14 +13196,14 @@ void check_range(void) {
     if ((new_mid_x < (width*new_scale_x)/2)) {
         // This will cause the map image to snap to the left of the
         // display.
-        new_mid_x = (width*new_scale_x)/2;  // left border max 180�W
+        new_mid_x = (width*new_scale_x)/2;  // left border max 180°W
     }
     else {
         // Check against right border
         if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
             // This will cause the map image to snap to the right of
             // the display.
-            new_mid_x = 129600000l-((width*new_scale_x)/2); // right border max 180�E
+            new_mid_x = 129600000l-((width*new_scale_x)/2); // right border max 180°E
     }
 */
 
@@ -26717,7 +26717,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption1,XmNvalueChangedCallback,Directivity_toggle,"0");
 
         // 45 NE
-        doption2 = XtVaCreateManagedWidget("45�",
+        doption2 = XtVaCreateManagedWidget("45\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26727,7 +26727,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption2,XmNvalueChangedCallback,Directivity_toggle,"1");
 
         // 90 E
-        doption3 = XtVaCreateManagedWidget("90�",
+        doption3 = XtVaCreateManagedWidget("90\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26737,7 +26737,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption3,XmNvalueChangedCallback,Directivity_toggle,"2");
 
         // 135 SE
-        doption4 = XtVaCreateManagedWidget("135�",
+        doption4 = XtVaCreateManagedWidget("135\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26747,7 +26747,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption4,XmNvalueChangedCallback,Directivity_toggle,"3");
 
         // 180 S
-        doption5 = XtVaCreateManagedWidget("180�",
+        doption5 = XtVaCreateManagedWidget("180\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26757,7 +26757,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption5,XmNvalueChangedCallback,Directivity_toggle,"4");
 
         // 225 SW
-        doption6 = XtVaCreateManagedWidget("225�",
+        doption6 = XtVaCreateManagedWidget("225\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26767,7 +26767,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption6,XmNvalueChangedCallback,Directivity_toggle,"5");
 
         // 270 W
-        doption7 = XtVaCreateManagedWidget("270�",
+        doption7 = XtVaCreateManagedWidget("270\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26777,7 +26777,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption7,XmNvalueChangedCallback,Directivity_toggle,"6");
 
         // 315 NW
-        doption8 = XtVaCreateManagedWidget("315�",
+        doption8 = XtVaCreateManagedWidget("315\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26787,7 +26787,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption8,XmNvalueChangedCallback,Directivity_toggle,"7");
 
         // 360 N
-        doption9 = XtVaCreateManagedWidget("360�",
+        doption9 = XtVaCreateManagedWidget("360\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,

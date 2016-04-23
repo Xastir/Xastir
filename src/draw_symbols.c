@@ -1225,7 +1225,7 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     int half_barbs = 0;
     int shaft_length = 0;
     int my_speed = atoi(speed);     // In mph (so far)
-    int my_course = atoi(course);   // In � true
+    int my_course = atoi(course);   // In ° true
     float bearing_radians;
     long off_x,off_y;
     long x,y;
@@ -1521,14 +1521,14 @@ void draw_bearing(long x_long, long y_lat, char *course,
           compute_DR_position(x_long,       // input (long)
                               y_lat,        // input (long)
                               range,        // input in nautical miles (double)
-                              real_bearing_min,     // input in � true (double)
+                              real_bearing_min,     // input in ° true (double)
                               &x_long2,             // output (*long)
                               &y_lat2);             // output (*long)
 
           compute_DR_position(x_long,       // input (long)
                               y_lat,        // input (long)
                               range,        // input in nautical miles (double)
-                              real_bearing_max,    // input in � true (double)
+                              real_bearing_max,    // input in ° true (double)
                               &x_long3,            // output (*long)
                               &y_lat3);            // output (*long)
         }
@@ -1537,7 +1537,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
           compute_DR_position(x_long,       // input (long)
                               y_lat,        // input (long)
                               range,        // input in nautical miles (double)
-                              real_bearing,   // input in � true (double)
+                              real_bearing,   // input in ° true (double)
                               &x_long4,           // output (*long)
                               &y_lat4);           // output (*long)
         }
