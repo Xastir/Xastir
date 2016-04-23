@@ -175,6 +175,7 @@ PULDNMBC12|Zwart||
 PULDNMSL01|Zwarte Rand||
 PULDNMSL02|Zwarte Schaduw en gevulde achtergrond||
 PULDNMSL03|Tekst op Zwarte achtergond|T|
+PULDNMSL04|DropShadow||
 #
 # PullDown "Icon Outline Style"
 PULDNMIO01|Geen Omranding|G|
@@ -208,6 +209,8 @@ PULDNDP045|Selecteer Objecten/Items||
 PULDNDP026|- Selecteer  weer Objecten/Items||
 PULDNDP039|- Selecteer  water Hoogte Objecten/Items||
 PULDNDP031|- Selecteer  andere Objecten/Items||
+PULDNDP057|- Selecteer Aircraft Object/Artikelen||
+PULDNDP058|- Selecteer Vessel Objecten/Artikelen||
 PULDNDP033|Filter weergave||
 PULDNDP010|Roepnaam|R|
 PULDNDP012|Symbolen|y|
@@ -463,6 +466,7 @@ WPUPCFTM10|Nieuwe volg tijd (min)||
 WPUPCFTM11|Nieuw volg Interval (graden)||
 WPUPCFTM12|RINO -> Objecten Interval (min), 0 = Uitgeschakeld||
 WPUPCFTM13|Snapshot Interval (min)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (min), 0 = Disabled||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer coordinaten stelsel||

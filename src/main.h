@@ -210,6 +210,8 @@ typedef struct _selections {
     int weather_objects;
     int gauge_objects;
     int other_objects;
+    int aircraft_objects;
+    int vessel_objects;
 } Selections;
 extern Selections Select_;
 
@@ -313,6 +315,7 @@ extern char prox_min[30];
 extern char prox_max[30];
 extern time_t sec_old;
 extern time_t sec_clear;
+extern time_t aircraft_sec_clear;
 extern int trail_segment_time;
 extern int trail_segment_distance;
 extern int RINO_download_interval;

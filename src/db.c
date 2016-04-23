@@ -2519,6 +2519,15 @@ int ok_to_draw_station(DataRow *p_station) {
                 return 0;
         }
 
+	//N7IPB - check for aircraft and if so check aircraft timeout
+	// return 0 if timedout - else continue
+        if ((aircraft_sec_clear != 0) 
+           && ((p_station->aprs_symbol.aprs_symbol == '^')
+           || (p_station->aprs_symbol.aprs_symbol == '\'')
+           || (p_station->aprs_symbol.aprs_symbol == 'X'))) { 
+              if ((p_station->sec_heard + (aircraft_sec_clear * 5)) < secs_now)
+                  return 0;
+	      }
         // Check if we want to display data past the clear time
         if (!Select_.old_data) {
             if ((p_station->sec_heard + sec_clear) < secs_now)
@@ -2531,7 +2540,7 @@ int ok_to_draw_station(DataRow *p_station) {
     if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
         // Check whether we wish to display objects/items
         if (!Select_.objects ||
-            (!Select_.weather_objects && !Select_.gauge_objects && !Select_.other_objects))
+            (!Select_.weather_objects && !Select_.gauge_objects && !Select_.aircraft_objects && !Select_.vessel_objects && !Select_.other_objects))
             return 0;
 
         // Check if WX info and we wish to see it
@@ -2542,6 +2551,19 @@ int ok_to_draw_station(DataRow *p_station) {
         else if (p_station->aprs_symbol.aprs_type == '/'
                  && p_station->aprs_symbol.aprs_symbol == 'w') {
             return Select_.gauge_objects;
+        }
+       // Check if aircraft and we wish to see it
+        else if (p_station->aprs_symbol.aprs_type == '/'
+                 && (p_station->aprs_symbol.aprs_symbol == '^') 
+                 || (p_station->aprs_symbol.aprs_symbol == '\'') 
+                 || (p_station->aprs_symbol.aprs_symbol == 'X') ) {
+            return Select_.aircraft_objects;
+        }
+        // Check if vessel and we wish to see it
+        else if (p_station->aprs_symbol.aprs_type == '/'
+                 && ((p_station->aprs_symbol.aprs_symbol == 's') 
+                 || (p_station->aprs_symbol.aprs_symbol == 'Y')) ) {
+            return Select_.vessel_objects;
         }
         // Check if we wish to see other objects/items
         else {
@@ -2745,7 +2767,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         // Check whether we have course in the current data
         if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
             course_ok++;
-            xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+            xastir_snprintf(temp_course, sizeof(temp_course), "%.0fï¿½",
                             atof(p_station->course));
         }
         // Else check whether the previous position had a course
@@ -2756,7 +2778,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                   && (p_station->newest_trackpoint->prev != NULL) ) {
             if( p_station->newest_trackpoint->prev->course > 0 ) {
                 course_ok++;
-                xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+                xastir_snprintf(temp_course, sizeof(temp_course), "%.0fï¿½",
                                 (float)p_station->newest_trackpoint->prev->course);
             }
         }
@@ -2791,7 +2813,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         else
             sprintf(temp_my_distance,"%0.0f%s",value,un_dst);
 
-        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%.0f°",
+        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%.0fï¿½",
                 atof(temp1_my_course));
     }
 
@@ -2817,10 +2839,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 tmp[0] = '\0';
 
             if (english_units)
-                xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°F ",
+                xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0fï¿½F ",
                                 tmp, atof(weather->wx_temp));
             else
-                xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
+                xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0fï¿½C ",
                                 tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
         }
 
@@ -2846,7 +2868,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             }
 
             if (strlen(weather->wx_course) > 0) {
-                xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
+                xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0fï¿½", atof(weather->wx_course));
                 strncat(temp_wx_wind,
                     wx_tm,
                     sizeof(temp_wx_wind) - 1 - strlen(temp_wx_wind));
@@ -5233,7 +5255,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
                     value*1.852);
             }
         }
-        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
+        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%sï¿½",temp1_my_course);
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI022"),temp_my_distance,temp_my_course);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -5314,7 +5336,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     pos += strlen(temp);
 
     if (p_station->course[0] != '\0')
-        xastir_snprintf(temp, sizeof(temp), " %3d°",atoi(p_station->course));
+        xastir_snprintf(temp, sizeof(temp), " %3dï¿½",atoi(p_station->course));
     else
         xastir_snprintf(temp, sizeof(temp), "     ");
 
@@ -5450,7 +5472,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
 
             if (ptr->course >= 0)
-                xastir_snprintf(temp, sizeof(temp), " %3d°",
+                xastir_snprintf(temp, sizeof(temp), " %3dï¿½",
                     ptr->course);
             else
                 xastir_snprintf(temp, sizeof(temp), "     ");
@@ -7052,7 +7074,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         (void)extract_weather_item(data,'#',3,temp);                  // raw rain counter
 
-        (void)extract_weather_item(data,'F',3,weather->wx_fuel_temp); // Fuel Temperature in °F (RAWS)
+        (void)extract_weather_item(data,'F',3,weather->wx_fuel_temp); // Fuel Temperature in ï¿½F (RAWS)
 
         if (extract_weather_item(data,'f',2,weather->wx_fuel_moisture))// Fuel Moisture (RAWS) (in %, 00 = 100%)
             xastir_snprintf(weather->wx_fuel_moisture,
@@ -8280,7 +8302,7 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
                 fprintf(f,"          ");
         
             if (course >= 0)                    // DK7IN: is 0 undefined ?? 1..360 ?
-                fprintf(f," %3d°\n",course);
+                fprintf(f," %3dï¿½\n",course);
             else        // undefined
                 fprintf(f,"     \n");
     }
@@ -8705,8 +8727,8 @@ void init_station(DataRow *p_station) {
     p_station->newest_trackpoint  = NULL;         // no trail
     p_station->trail_color        = 0;
     p_station->weather_data       = NULL;         // no weather
-    p_station->coord_lat          = 0l;           //  90°N  \ undefined
-    p_station->coord_lon          = 0l;           // 180°W  / position
+    p_station->coord_lat          = 0l;           //  90ï¿½N  \ undefined
+    p_station->coord_lon          = 0l;           // 180ï¿½W  / position
     p_station->pos_amb            = 0;            // No ambiguity
     p_station->error_ellipse_radius = 600;        // In cm, default 6 meters
     p_station->lat_precision      = 60;           // In 100ths of seconds latitude (60 = 0.01 minutes)
@@ -10431,8 +10453,8 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         ok = (int)(ok && (c == -1 || ((c >=0 && c < 91) && (s >= 0 && s < 91) && (T >= 0 && T < 64))));
 
         if (ok) {
-            lat = (((y1 * 91 + y2) * 91 + y3) * 91 + y4 ) / 380926.0; // in deg, 0:  90°N
-            lon = (((x1 * 91 + x2) * 91 + x3) * 91 + x4 ) / 190463.0; // in deg, 0: 180°W
+            lat = (((y1 * 91 + y2) * 91 + y3) * 91 + y4 ) / 380926.0; // in deg, 0:  90ï¿½N
+            lon = (((x1 * 91 + x2) * 91 + x3) * 91 + x4 ) / 190463.0; // in deg, 0: 180ï¿½W
             lat *= 60 * 60 * 100;                       // in 1/100 sec
             lon *= 60 * 60 * 100;                       // in 1/100 sec
 

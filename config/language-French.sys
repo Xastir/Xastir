@@ -164,6 +164,7 @@ PULDNMBC12|Noir||
 PULDNMSL01|Bordure noire|n|
 PULDNMSL02|Ombré avec toile de fond|O|
 PULDNMSL03|Blanc sur noir|B|
+PULDNMSL04|DropShadow||
 #
 # PullDown "Icon Outline Style"
 PULDNMIO01|Pas de contour|N|
@@ -197,6 +198,8 @@ PULDNDP045|Objets/articles||
 PULDNDP026|- Objets/articles météo||
 PULDNDP039|- Objets/articles indicateurs d'eau||#'
 PULDNDP031|- Autres objets/articles||
+PULDNDP057|- Selecte Aircraft objets/articles||
+PULDNDP058|- Sélectionnez l'objet du navire/Articles||
 PULDNDP033|Filtrer affichage||
 PULDNDP010|Afficher indicatif|n|
 PULDNDP012|Afficher symbole|c|
@@ -455,6 +458,7 @@ WPUPCFTM10|Délai nouvelle piste (min)||
 WPUPCFTM11|Espace nouvelle piste (degrés)||
 WPUPCFTM12|RINO -> Intervalle d'objets (min), 0 = Désactivé||
 WPUPCFTM13|Intervalle de capture instantané (min)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (min), 0 = Disabled||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configurer système de coordonnées||

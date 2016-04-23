@@ -171,6 +171,7 @@ PULDNMBC12|Schwarz||
 PULDNMSL01|Schwarze Umrandung|U|
 PULDNMSL02|Schatten|S|
 PULDNMSL03|Schwarzer Hintergrund|H|
+PULDNMSL04|DropShadow||
 #
 # PullDown "Symbol Umrandung"
 PULDNMIO01|Keine Umrandung|K|
@@ -204,6 +205,8 @@ PULDNDP045|Objekte||
 PULDNDP026|- Wetter Objekte||
 PULDNDP039|- Regenmengen Objekte||
 PULDNDP031|- Andere Objekte||
+PULDNDP057|- W‰hlen Sie Flugzeug Objekte/Items||
+PULDNDP058|- W‰hlen Sie Schiff Objekte/Items||
 PULDNDP033|Anzeige filtern||
 PULDNDP010|Rufzeichen||
 PULDNDP012|Symbol||
@@ -459,6 +462,7 @@ WPUPCFTM10|Neue Spur Zeit (Min)||
 WPUPCFTM11|Neue Spur Intervall (Grad)||
 WPUPCFTM12|RINO -> Objekt Intervall (min), 0 = Aus||
 WPUPCFTM13|Schnapschuﬂ-Intervall (min)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (min), 0 = Disabled||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||

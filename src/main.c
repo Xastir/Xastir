@@ -505,7 +505,7 @@ Widget map_font_dialog = (Widget)NULL;
 Widget map_font_text[FONT_MAX];
 
 
-Widget map_station_label0,map_station_label1,map_station_label2;
+Widget map_station_label0,map_station_label1,map_station_label2,map_station_label3;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
 int letter_style;               /* Station Letter style */
 
@@ -592,6 +592,9 @@ Widget select_objects_button;
 Widget select_weather_objects_button;
 Widget select_gauge_objects_button;
 Widget select_other_objects_button;
+Widget select_aircraft_objects_button;
+Widget select_vessel_objects_button;
+
 
 
 Widget display_callsign_button;
@@ -646,7 +649,8 @@ static void Select_objects_toggle(Widget w, XtPointer clientData, XtPointer call
 static void Select_weather_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_other_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_gauge_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
-
+static void Select_aircraft_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_vessel_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void Display_callsign_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_label_all_trackpoints_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -1094,6 +1098,7 @@ Widget sb_wait_time_data = (Widget)NULL;
 
 Widget ghosting_time = (Widget)NULL;
 Widget clearing_time = (Widget)NULL;
+Widget aircraft_clearing_time = (Widget)NULL;
 Widget removal_time = (Widget)NULL;
 Widget posit_interval = (Widget)NULL;
 Widget gps_interval = (Widget)NULL;
@@ -1114,6 +1119,7 @@ time_t last_statusline;         // last update of statusline or 0 if inactive
 time_t last_id_time;            // Time of last ID message to statusline
 time_t sec_old;                 /* station old after */
 time_t sec_clear;               /* station cleared after */
+time_t aircraft_sec_clear;      /* aircraft cleared after */
 time_t sec_remove;              /* Station removed after */
 int trail_segment_time;         // Segment missing if above this time (mins)
 int trail_segment_distance;     // Segment missing if greater distance
@@ -3436,16 +3442,16 @@ int create_image(Widget w) {
 
     /* Compute distance */
     if (lat_offset_temp<0l)
-        lat_offset_temp=0l;                     // max 90°N
+        lat_offset_temp=0l;                     // max 90ï¿½N
     else
         if (lat_offset_temp>64800000l)
-            lat_offset_temp=64800000l;          // max 90°S
+            lat_offset_temp=64800000l;          // max 90ï¿½S
 
     if(long_offset_temp<0l)
-        long_offset_temp=0l;                    // max 180°W
+        long_offset_temp=0l;                    // max 180ï¿½W
     else
         if (long_offset_temp>129600000l)
-            long_offset_temp=129600000l;        // max 180°E
+            long_offset_temp=129600000l;        // max 180ï¿½E
 
     pos1_lat = lat_offset_temp;
     pos1_lon = long_offset_temp;
@@ -3580,16 +3586,16 @@ void refresh_image(Widget w) {
 
     /* Compute distance */
     if (lat_offset_temp<0l)
-        lat_offset_temp=0l;                     // max 90°N
+        lat_offset_temp=0l;                     // max 90ï¿½N
     else
         if (lat_offset_temp>64800000l)
-            lat_offset_temp=64800000l;          // max 90°S
+            lat_offset_temp=64800000l;          // max 90ï¿½S
 
     if(long_offset_temp<0l)
-        long_offset_temp=0l;                    // max 180°W
+        long_offset_temp=0l;                    // max 180ï¿½W
     else
         if (long_offset_temp>129600000l)
-            long_offset_temp=129600000l;        // max 180°E
+            long_offset_temp=129600000l;        // max 180ï¿½E
 
     pos1_lat = lat_offset_temp;
     pos1_lon = long_offset_temp;
@@ -3706,19 +3712,19 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
     if (x < 0)
-//        x = 0l;                 // 180°W
+//        x = 0l;                 // 180ï¿½W
         return;
 
     if (x > 129600000l)
-//        x = 129600000l;         // 180°E
+//        x = 129600000l;         // 180ï¿½E
         return;
 
     if (y < 0)
-//        y = 0l;                 //  90°N
+//        y = 0l;                 //  90ï¿½N
         return;
 
     if (y > 64800000l)
-//        y = 64800000l;          //  90°S
+//        y = 64800000l;          //  90ï¿½S
         return;
 
     if (DISPLAY_XASTIR_COORDINATES) {
@@ -3744,12 +3750,12 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         } else if (coordinate_system == USE_DDMMSS) {
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL_FORMATED);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL_FORMATED);
-            //str_lat[2]='°'; str_long[3]='°';
+            //str_lat[2]='ï¿½'; str_long[3]='ï¿½';
             //str_lat[5]='\''; str_long[6]='\'';
         } else {    // Assume coordinate_system == USE_DDMMMM
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL_FORMATED);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL_FORMATED);
-            //str_lat[2]='°'; str_long[3]='°';
+            //str_lat[2]='ï¿½'; str_long[3]='ï¿½';
         }
         xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }
@@ -3804,7 +3810,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
                     value*1.852);
             }
         }
-        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
+        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%sï¿½",temp1_my_course);
 
 
         strncat(my_text,
@@ -6830,10 +6836,21 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
+    map_station_label3 = XtVaCreateManagedWidget(langcode("PULDNMSL04"),
+            xmPushButtonGadgetClass,
+            Map_station_label_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMSL04"),
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
     XtAddCallback(map_station_label0,   XmNactivateCallback,Map_station_label,"0");
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
     XtAddCallback(map_station_label2,   XmNactivateCallback,Map_station_label,"2");
+    XtAddCallback(map_station_label3,   XmNactivateCallback,Map_station_label,"3");
+
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -7398,6 +7415,39 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XmToggleButtonSetState(select_gauge_objects_button, TRUE, FALSE);
     if (!Select_.objects || no_data_selected())
         XtSetSensitive(select_gauge_objects_button, FALSE);
+
+
+   select_aircraft_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP057"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_aircraft_objects_button, XmNvalueChangedCallback,
+                  Select_aircraft_objects_toggle, "1");
+    if (Select_.aircraft_objects)
+        XmToggleButtonSetState(select_aircraft_objects_button, TRUE, FALSE);
+    if (!Select_.objects || no_data_selected())
+        XtSetSensitive(select_aircraft_objects_button, FALSE);
+
+   select_vessel_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP058"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_vessel_objects_button, XmNvalueChangedCallback,
+                  Select_vessel_objects_toggle, "1");
+    if (Select_.vessel_objects)
+        XmToggleButtonSetState(select_vessel_objects_button, TRUE, FALSE);
+    if (!Select_.objects || no_data_selected())
+        XtSetSensitive(select_vessel_objects_button, FALSE);
 
 
     select_other_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP031"),
@@ -10584,16 +10634,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     y = (center_latitude  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
 
                     if (x < 0)
-                    x = 0l;                 // 180°W
+                    x = 0l;                 // 180ï¿½W
 
                     if (x > 129600000l)
-                    x = 129600000l;         // 180°E
+                    x = 129600000l;         // 180ï¿½E
 
                     if (y < 0)
-                    y = 0l;                 //  90°N
+                    y = 0l;                 //  90ï¿½N
 
                     if (y > 64800000l)
-                    y = 64800000l;          //  90°S
+                    y = 64800000l;          //  90ï¿½S
 
                     if (debug_level & 1) {
                         // This math is only used for the debug mode printf below.
@@ -13105,7 +13155,7 @@ void check_range(void) {
     //
     if ((height*new_scale_y) > 64800000l) {
 
-        // Center between 90°N and 90°S
+        // Center between 90ï¿½N and 90ï¿½S
         new_mid_y  =  64800000l/2;
 
         // Adjust y-scaling so that we fit perfectly in the window
@@ -13113,10 +13163,10 @@ void check_range(void) {
     }
 
     if ((new_mid_y < (height*new_scale_y)/2))
-            new_mid_y  = (height*new_scale_y)/2;    // upper border max 90°N
+            new_mid_y  = (height*new_scale_y)/2;    // upper border max 90ï¿½N
 
     if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
-        new_mid_y = 64800000l-((height*new_scale_y)/2); // lower border max 90°S
+        new_mid_y = 64800000l-((height*new_scale_y)/2); // lower border max 90ï¿½S
 
     // Adjust scaling based on latitude of new center
     new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
@@ -13127,7 +13177,7 @@ void check_range(void) {
 
 //    // scale_x will always be bigger than scale_y, so no problem here...
 //    if ((width*new_scale_x) > 129600000l) {
-//        // Center between 180°W and 180°E
+//        // Center between 180ï¿½W and 180ï¿½E
 //        new_mid_x = 129600000l/2;
 //    }
 
@@ -13146,14 +13196,14 @@ void check_range(void) {
     if ((new_mid_x < (width*new_scale_x)/2)) {
         // This will cause the map image to snap to the left of the
         // display.
-        new_mid_x = (width*new_scale_x)/2;  // left border max 180°W
+        new_mid_x = (width*new_scale_x)/2;  // left border max 180ï¿½W
     }
     else {
         // Check against right border
         if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
             // This will cause the map image to snap to the right of
             // the display.
-            new_mid_x = 129600000l-((width*new_scale_x)/2); // right border max 180°E
+            new_mid_x = 129600000l-((width*new_scale_x)/2); // right border max 180ï¿½E
     }
 */
 
@@ -14612,7 +14662,7 @@ void Map_station_label( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 
     if(display_up){
         letter_style = style;
-        sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
+        sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
         redraw_symbols(da);
         (void)XCopyArea(XtDisplay(da),
             pixmap_final,
@@ -16285,11 +16335,15 @@ void set_sensitive_select_types(int sensitive)
     if (!Select_.objects) {
         XtSetSensitive(select_weather_objects_button, FALSE);
         XtSetSensitive(select_gauge_objects_button,   FALSE);
+        XtSetSensitive(select_aircraft_objects_button,   FALSE);
+        XtSetSensitive(select_vessel_objects_button,   FALSE);
         XtSetSensitive(select_other_objects_button,   FALSE);
     }
     else {
         XtSetSensitive(select_weather_objects_button, sensitive);
         XtSetSensitive(select_gauge_objects_button,   sensitive);
+        XtSetSensitive(select_aircraft_objects_button,   sensitive);
+        XtSetSensitive(select_vessel_objects_button,   sensitive);
         XtSetSensitive(select_other_objects_button,   sensitive);
     }
 }
@@ -16696,12 +16750,16 @@ void Select_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
         Select_.objects = atoi(which);
         XtSetSensitive(select_weather_objects_button, TRUE);
         XtSetSensitive(select_gauge_objects_button,   TRUE);
+        XtSetSensitive(select_aircraft_objects_button,   TRUE);
+        XtSetSensitive(select_vessel_objects_button,   TRUE);
         XtSetSensitive(select_other_objects_button,   TRUE);
     }
     else {
         Select_.objects = 0;
         XtSetSensitive(select_weather_objects_button, FALSE);
         XtSetSensitive(select_gauge_objects_button,   FALSE);
+        XtSetSensitive(select_aircraft_objects_button,   FALSE);
+        XtSetSensitive(select_vessel_objects_button,   FALSE);
         XtSetSensitive(select_other_objects_button,   FALSE);
     }
 
@@ -16741,8 +16799,29 @@ void Select_gauge_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, X
 }
 
 
+void Select_aircraft_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
+    if (state->set)
+        Select_.aircraft_objects = atoi(which);
+    else
+        Select_.aircraft_objects = 0;
 
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+void Select_vessel_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Select_.vessel_objects = atoi(which);
+    else
+        Select_.vessel_objects = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
 
 void Select_other_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
@@ -23245,6 +23324,9 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 
     XmScaleGetValue(snapshot_interval_slider, &snapshot_interval);
 
+    XmScaleGetValue(aircraft_clearing_time, &value);     // Minutes 
+    aircraft_sec_clear = (time_t)(value * 60);      // Convert to seconds
+
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
 }
@@ -23500,10 +23582,10 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
                 XmNleftPosition, 1,
-                XmNleftOffset, 10,
+                XmNleftOffset, 5,
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 2,
-                XmNrightOffset, 5,
+                XmNrightOffset, 10,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
@@ -23558,10 +23640,10 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
                 XmNleftPosition, 1,
-                XmNleftOffset, 10,
+                XmNleftOffset, 5,
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 2,
-                XmNrightOffset, 5,
+                XmNrightOffset, 10,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
@@ -23619,10 +23701,10 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
                 XmNleftPosition, 1,
-                XmNleftOffset, 10,
+                XmNleftOffset, 5,
                 XmNrightAttachment, XmATTACH_POSITION,
                 XmNrightPosition, 2,
-                XmNrightOffset, 5,
+                XmNrightOffset, 10,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
@@ -23665,6 +23747,37 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 XmNfontList, fontlist1,
                 NULL);
         XmStringFree(x_str);
+
+// Interval for aircraft not being displayed
+        x_str = XmStringCreateLocalized(langcode("WPUPCFTM14"));
+        aircraft_clearing_time = XtVaCreateManagedWidget("Aircraft Clear Time",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+//                XmNtopWidget, clearing_time,
+		XmNtopWidget, RINO_download_timeout,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 0,      // zero disables - this is the default
+                XmNmaximum, 60*8,   // 8 hours
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(aircraft_sec_clear/(60)),
+                XmNtitleString, x_str,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                XmNfontList, fontlist1,
+                NULL);
+        XmStringFree(x_str);
+
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
@@ -26604,7 +26717,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption1,XmNvalueChangedCallback,Directivity_toggle,"0");
 
         // 45 NE
-        doption2 = XtVaCreateManagedWidget("45°",
+        doption2 = XtVaCreateManagedWidget("45ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26614,7 +26727,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption2,XmNvalueChangedCallback,Directivity_toggle,"1");
 
         // 90 E
-        doption3 = XtVaCreateManagedWidget("90°",
+        doption3 = XtVaCreateManagedWidget("90ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26624,7 +26737,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption3,XmNvalueChangedCallback,Directivity_toggle,"2");
 
         // 135 SE
-        doption4 = XtVaCreateManagedWidget("135°",
+        doption4 = XtVaCreateManagedWidget("135ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26634,7 +26747,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption4,XmNvalueChangedCallback,Directivity_toggle,"3");
 
         // 180 S
-        doption5 = XtVaCreateManagedWidget("180°",
+        doption5 = XtVaCreateManagedWidget("180ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26644,7 +26757,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption5,XmNvalueChangedCallback,Directivity_toggle,"4");
 
         // 225 SW
-        doption6 = XtVaCreateManagedWidget("225°",
+        doption6 = XtVaCreateManagedWidget("225ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26654,7 +26767,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption6,XmNvalueChangedCallback,Directivity_toggle,"5");
 
         // 270 W
-        doption7 = XtVaCreateManagedWidget("270°",
+        doption7 = XtVaCreateManagedWidget("270ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26664,7 +26777,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption7,XmNvalueChangedCallback,Directivity_toggle,"6");
 
         // 315 NW
-        doption8 = XtVaCreateManagedWidget("315°",
+        doption8 = XtVaCreateManagedWidget("315ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -26674,7 +26787,7 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
         XtAddCallback(doption8,XmNvalueChangedCallback,Directivity_toggle,"7");
 
         // 360 N
-        doption9 = XtVaCreateManagedWidget("360°",
+        doption9 = XtVaCreateManagedWidget("360ï¿½",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,

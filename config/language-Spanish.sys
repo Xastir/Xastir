@@ -161,6 +161,7 @@ PULDNMBC12|Negro||
 PULDNMSL01|Fondo Negro||
 PULDNMSL02|Fondo Gris||
 PULDNMSL03|Texto en Negro|T|
+PULDNMSL04|DropShadow||
 #
 # PullDown "Icon Outline Style"
 PULDNMIO01|No Outline|N|
@@ -194,6 +195,8 @@ PULDNDP045|- Seleccionar Objetos/Artículos||
 PULDNDP026|- Seleccionar Objetos/Artículos de WX||
 PULDNDP039|- Seleccionar Objetos/Artículos Medidores de Agua||
 PULDNDP031|- Seleccionar Otros Objetos/Artículos||
+PULDNDP057|- Seleccione los objetos aeronáuticos/Artículos||
+PULDNDP058|- Seleccionar objetos del buque / Artículos||
 PULDNDP033|Filtrar Visualización||
 PULDNDP010|Mostrar Indicativo|I|
 PULDNDP012|Mostrar Símbolo|D|
@@ -449,6 +452,7 @@ WPUPCFTM10|Nuevo Tiempo Rastro (min)||
 WPUPCFTM11|Nuevo Interval Rastro (grados)||
 WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
 WPUPCFTM13|Snapshot Interval (min)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (min), 0 = Disabled||
 #
 # Configurar Sistema de Coordenada"
 WPUPCFC001|Configurar Sistema de Coordenada||

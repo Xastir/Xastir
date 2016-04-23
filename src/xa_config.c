@@ -664,6 +664,8 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_int (fout, "DISPLAY_STATION_WX_OBJ",        Select_.weather_objects);
         store_int (fout, "DISPLAY_WATER_GAGE_OBJ",        Select_.gauge_objects);
         store_int (fout, "DISPLAY_OTHER_OBJECTS",         Select_.other_objects);
+        store_int (fout, "DISPLAY_AIRCRAFT_OBJECTS",      Select_.aircraft_objects);
+        store_int (fout, "DISPLAY_VESSEL_OBJECTS",        Select_.vessel_objects);
 
         // display values
         store_int (fout, "DISPLAY_CALLSIGN",              Display_.callsign);
@@ -1084,6 +1086,8 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
         store_long (fout, "DEFAULT_STATION_OLD", (long)sec_old);
 
         store_long (fout, "DEFAULT_STATION_CLEAR", (long)sec_clear);
+        store_long (fout, "DEFAULT_AIRCRAFT_CLEAR", (long)aircraft_sec_clear);
+
         store_long(fout, "DEFAULT_STATION_REMOVE", (long)sec_remove);
         store_string (fout, "HELP_DATA", HELP_FILE);
 
@@ -1487,7 +1491,7 @@ void load_data_or_default(void) {
             );
     }
 
-    letter_style = get_int ("MAP_LETTERSTYLE", 0, 2, 1);
+    letter_style = get_int ("MAP_LETTERSTYLE", 0, 3, 0 );
 
     icon_outline_style = get_int ("MAP_ICONOUTLINESTYLE", 0, 3, 0);
 
@@ -1754,6 +1758,8 @@ void load_data_or_default(void) {
     Select_.weather_objects = get_int ("DISPLAY_STATION_WX_OBJ", 0, 1, 1);
     Select_.gauge_objects = get_int ("DISPLAY_WATER_GAGE_OBJ", 0, 1, 1);
     Select_.other_objects = get_int ("DISPLAY_OTHER_OBJECTS", 0, 1, 1);
+    Select_.aircraft_objects = get_int ("DISPLAY_AIRCRAFT_OBJECTS", 0, 1, 1);
+    Select_.vessel_objects = get_int ("DISPLAY_VESSEL_OBJECTS", 0, 1, 1);
 
     // display values
     Display_.callsign = get_int ("DISPLAY_CALLSIGN", 0, 1, 1);
@@ -2376,6 +2382,7 @@ void load_data_or_default(void) {
     sec_old = (time_t) get_long ("DEFAULT_STATION_OLD", 1l, 604800l, 4800l);
 
     sec_clear = (time_t) get_long ("DEFAULT_STATION_CLEAR", 1l, 604800l, 43200l);
+    aircraft_sec_clear = (time_t) get_long ("DEFAULT_AIRCRAFT_CLEAR", 1l, 604800l, 0l);
 
     sec_remove = get_long("DEFAULT_STATION_REMOVE", 1l, 604800*2, sec_clear*2);
 
