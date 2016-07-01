@@ -65,8 +65,8 @@ echo
 echo "*******************************************"
 echo "***** Creating MINIMUM binary package *****"
 echo "*******************************************"
-(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -bb --clean xastir-2.0.5/xastir-min.spec)
-mv /usr/src/packages/RPMS/x86_64/xastir-2.0.5-1.x86_64.rpm /usr/src/packages/RPMS/x86_64/xastir-2.0.5-min.x86_64.rpm
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -bb --clean xastir-2.0.8/xastir-min.spec)
+mv /usr/src/packages/RPMS/x86_64/xastir-2.0.8-1.x86_64.rpm /usr/src/packages/RPMS/x86_64/xastir-2.0.8-min.x86_64.rpm
 #
 #
 # Build maximum system (all optional libraries included), binary and
@@ -76,8 +76,8 @@ echo
 echo "***************************************************************"
 echo "***** Creating MAXIMUM binary package plus source package *****"
 echo "***************************************************************"
-(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -ba --clean xastir-2.0.5/xastir.spec)
-mv /usr/src/packages/RPMS/x86_64/xastir-2.0.5-1.x86_64.rpm /usr/src/packages/RPMS/x86_64/xastir-2.0.5-max.x86_64.rpm
+(cd /usr/src/packages/SOURCES; tar xzf xastir-*.tar.gz; rpmbuild -ba --clean xastir-2.0.8/xastir.spec)
+mv /usr/src/packages/RPMS/x86_64/xastir-2.0.8-1.x86_64.rpm /usr/src/packages/RPMS/x86_64/xastir-2.0.8-max.x86_64.rpm
 
 
 

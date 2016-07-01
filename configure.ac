@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2000-2014  The Xastir Group
+# Copyright (C) 2000-2016  The Xastir Group
 
 
 #########################################################################
@@ -21,13 +21,13 @@
 #
 #
 # AC_INIT():
-# It should look something like this:  (xastir, 2.0.6, xastir@xastir.org)
+# It should look something like this:  (xastir, 2.0.8, xastir@xastir.org)
 # The revision number must contain at least one '.' and two digits.
 # AM_INIT_AUTOMAKE():
-# It should look something like this:  (xastir, 2.0.6)
+# It should look something like this:  (xastir, 2.0.8)
 # The revision number must contain at least one '.' and two digits.
 #
-AC_INIT([xastir], [2.0.7], [xastir@xastir.org])
+AC_INIT([xastir], [2.0.8], [xastir@xastir.org])
 AM_INIT_AUTOMAKE
 #########################################################################
 
