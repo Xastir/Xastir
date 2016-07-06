@@ -1,8 +1,0 @@
-Makefile.in
-Makefile
-.deps
-testdbfawk
-xastir
-xastir_udp_client
-compiledate.c
-tile_test
