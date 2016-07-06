@@ -1,0 +1,139 @@
+Git Instructions:
+-----------------
+     For those who think git might be a bit too complicated to deal with,
+     here are (I think) the minimal commands.  See the "SUDO" section
+     below though for ideas on how to make updating Xastir even simpler.
+
+     Initial Git clone:
+     ---------------------
+     0) Make sure git is installed on your system.
+     
+     1) Run
+        git config --global user.name="Your Name" usr.email="Your@email.address"
+        This is not strictly necessary, but if you ever try to make changes
+        to Xastir and get them integrated with the project it is important.
+
+     2) Go to <http://github.com/Xastir/Xastir> to access the project page.
+        There you will find the URL of the git repository, just to the
+        right of a button that says "HTTPS".  Copy this URL to your clipboard.
+
+        (At the time of this writing, the URL was
+         <https://github.com/Xastir/Xastir.git>)
+     
+     3) Open a shell, navigate to a directory where you want to store
+        the Xastir source code, and enter this command:
+
+        git  clone https://github.com/Xastir/Xastir.git
+        
+        This will create a clone of the Xastir git repository in an
+        "Xastir" subdirectory of the current directory.
+        
+     All done!  You now have the latest development sources on your computer.
+     Not only that, you have a complete copy of the entire project history
+     and access to all prior releases.
+
+     Git Commands for Maintaining the Current Development Sources:
+     -------------------------------------------------------------
+     Once all this is in place, just cd into the "Xastir" directory at any
+     time, type "git pull".  This will update your directory tree and
+     repository clone with the most recent code.
+
+
+     Then type "make install" in your build directory and you'll have the
+     latest development stuff installed on your system.
+
+     Here are the commands to do if you want a clean build of the latest
+     sources, and want configure to recheck all the libraries and header
+     files that Xastir needs:
+
+         cd Xastir
+         git pull 
+         ./bootstrap.sh
+         cd ../build
+         ../Xastir/configure
+         (make clean;make -j3 2>&1) | tee make.log
+         su
+         make install (make install-strip can be used after the first time,
+                       it removes debugging info from executable)
+         chmod 4555 /usr/local/bin/xastir (only needed if using kernel AX.25)
+         exit (from root)
+         xastir
+
+     Note that you'll need autoconf 2.53 or newer and automake 1.6.3 or newer
+     in order to run the "./bootstrap.sh" script.
+
+
+    Checking out a branch:
+    ------------------------------------------------
+    All branches associated with the Xastir project are contained in the clone
+    you made earlier.  You can switch your current working directory to
+    one of those branches easily:
+
+    cd Xastir
+    git fetch (this updates your local repo copy from github, but doesn't
+               merge changes into your working tree)
+    git checkout <branch name>    (this switches all the files in your working
+                                   tree to match those in the branch)
+    git merge                     (This makes sure that all the changes that
+                                   may have happened upstream on that branch
+                                   get into your copy)
+
+
+    You do not have to do this in a new directory --- so long as
+    you haven't changed any files in the source tree, git checkout
+    automatically swaps out all files it knows about with versions from the
+    branch.
+
+    If you really want to keep more than one branch's code around to work on,
+    you can do that if you have git version 2.5 or later with the following
+    commands:
+
+    cd Xastir
+    git worktree add <path> <branchname>
+
+    This will create a new directory tree called <path> with the named
+    branch checked out into it.
+
+    At the time of this writing there were only two branches in the Xastir
+    repository:  master (the primary Xastir project) and "BRANCH_qt".
+    
+    Checking out the Qt branch (for anonymous-CVS users):
+    -----------------------------------------------------
+    There is only one non-default branch in the Xastir repository, for an
+    experimental Qt-based version of Xastir.
+
+    You can check it out according to the instructions above.
+
+    Latest Qt status:  The File->Exit and Interface->Interface Control portions work,
+    but none of the other menu options have been implemented.  It will display raw
+    packets as they come in but there are no maps, symbols, etc.  The networking is
+    both IPv4 and IPv6 compatible.
+
+
+    There are many more CVS commands and options.  Many of them are more of
+    use to the developers.  Some of those are listed below.  The above should
+    be enough for most people to keep their copies in sync with the latest CVS
+    development sources.
+
+Developer's git Instructions:
+-----------------------------
+
+   Make sure you know how git works.  Read https://git-scm.com/book/en/v2
+
+   If you are very familiar with CVS, get used to working differently, because
+   git is different.
+
+   Read and understand http://chris.beams.io/posts/git-commit/
+
+   Read http://justinhileman.info/article/changing-history/
+
+   Read http://think-like-a-git.net/
+
+   Branching and merging in git is very simple, and is documented very well
+   by all those links.  We will not repeat it here.
+
+
+  ------------------------------------------------------------------------
+Copyright (C) 1999 Frank Giannandrea
+Copyright (C) 2000-2016 The Xastir Group
+
