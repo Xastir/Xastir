@@ -27,7 +27,7 @@ $Id$
    KD6VPE   Jim Sevilla
    KD6ZWR   Chris Bell
    KE4NFJ   Gerald Stueve (K4INT)
-   KG4IJB   Charles Byam (fearless leader)
+   KG4IJB   Charles Byam
    KM5VY    Tom Russo
    N0VH     Jim Chandler
    N2YGK    Alan Crosswell
@@ -38,7 +38,7 @@ $Id$
    PE1DNN   Henk de Groot
    VE3UNW   Richard Hagemyer
    VE6LFM   Lloyd Miller
-   WE7U     Curt Mills (lackey)
+   WE7U     Curt Mills
 
    SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
    Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
@@ -51,9 +51,8 @@ $Id$
    otherwise supported the project.  There are too many to list.
 
    If you think that you are missing from this list contact the Xastir
-   Development Team at <http://sourceforge.net/projects/xastir/> or at
-   <http://xastir.sourceforge.net>.
+   Development Team at <http://xastir.org>.
      _________________________________________________________________
 
-   Copyright (C) 2000-2012 The Xastir Group
+   Copyright (C) 2000-2016 The Xastir Group
 
