@@ -97,10 +97,10 @@ Git Instructions:
     At the time of this writing there were only two branches in the Xastir
     repository:  master (the primary Xastir project) and "BRANCH_qt".
     
-    Checking out the Qt branch (for anonymous-CVS users):
+    Checking out the Qt branch:
     -----------------------------------------------------
     There is only one non-default branch in the Xastir repository, for an
-    experimental Qt-based version of Xastir.
+    experimental Qt-based version of Xastir.  It is called BRANCH_qt
 
     You can check it out according to the instructions above.
 
@@ -110,9 +110,9 @@ Git Instructions:
     both IPv4 and IPv6 compatible.
 
 
-    There are many more CVS commands and options.  Many of them are more of
+    There are many more git commands and options.  Many of them are more of
     use to the developers.  Some of those are listed below.  The above should
-    be enough for most people to keep their copies in sync with the latest CVS
+    be enough for most people to keep their copies in sync with the latest git
     development sources.
 
 Developer's git Instructions:
