@@ -1,4 +1,5 @@
 *~
+*.o
 *.swp
 .deps
 OSM_tiled_cycle.geo
@@ -33,7 +34,6 @@ stamp-h1
 xastir.spec
 xastir-min.spec
 xastir-lsb.spec
-src/*.o
 src/Makefile.in
 src/Makefile
 src/testdbfawk
@@ -41,12 +41,7 @@ src/xastir
 src/xastir_udp_client
 src/compiledate.c
 src/tile_test
-src/rtree/card.o
-src/rtree/index.o
 src/rtree/librtree.a
-src/rtree/node.o
-src/rtree/rect.o
-src/rtree/split_l.o
 src/shapelib/shpcreate
 src/shapelib/shpadd
 src/shapelib/shpdump
@@ -76,7 +71,6 @@ config/language-PigLatin.sys
 config/language-PirateEnglish.sys
 config/tnc-startup.def
 callpass/callpass
-callpass/callpass.o
 Davis/aclocal.m4
 Davis/autom4te.cache
 Davis/config.h
