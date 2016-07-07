@@ -14,7 +14,7 @@ README
      0    Important notice
      1    What is Xastir?
      2    How do I get Xastir
-     2a   CVS usage
+     2a   Git usage
      3    Quick startup
      4    Upgrading
      5    Identification notes
@@ -53,13 +53,14 @@ README
           binaries are available under the GPL license, with a few modules
           available under other open-source or public domain licenses.
 
-          More information on Xastir can be found at:
+          More information on Xastir can be found here:
 
-            http://www.xastir.org
+            http://xastir.org
+            http://github.com/Xastir
             http://xastir.sourceforge.net
             http://sourceforge.net/projects/xastir/
 
-          including the latest releases, the anonymous CVS access (lets you
+          including the latest releases, Git access (lets you
           download the latest developers' code), and information on how to join
           Xastir mailing lists.  Note that you must be subscribed in order to
           post to the mailing lists.
@@ -83,12 +84,12 @@ README
           <http://xastir.sourceforge.net>.
 
 
-     (2a) CVS USAGE
+     (2a) Git USAGE
 
           You might obtain the *very latest* version of Xastir that
-          is still under development by using CVS. 
+          is still under development by using Git. 
           
-          See the file README.CVS for more details.
+          See the file README.Git for more details.
 
      (3) QUICK STARTUP
 
@@ -179,7 +180,7 @@ README
      The FreeBSD port of xastir uses a development snapshot, and not
      necessarily the latest snapshot, depending on how busy the port
      maintainer is.  If you wish to be on the bleeding edge you can build
-     xastir yourself from the latest development snapshot or from CVS,
+     xastir yourself from the latest development snapshot or from Git,
      without much more difficulty than Linux users have.  There are a few
      caveats, though.
 
