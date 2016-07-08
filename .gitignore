@@ -1,6 +1,7 @@
 *~
 *.o
 *.swp
+build
 .deps
 OSM_tiled_cycle.geo
 OSM_tiled_fosm.geo
