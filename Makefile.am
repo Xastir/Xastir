@@ -17,7 +17,7 @@ SUBDIRS = src m4 config help scripts symbols callpass
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
         missing mkinstalldirs placeholder FAQ LICENSE README README.GIT \
         README.CYGWIN README.Getting-Started README.Contributing \
-        README.MAPS README.win32 README.OSM_maps testdbfawk.1 \
+        README.MAPS README.win32 README.OSM_maps README.sudo testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \
         worldhi.map \
         Davis LaCrosse \
@@ -54,7 +54,7 @@ sound_DATA=placeholder
 
 docdir=${prefix}/share/doc/xastir
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT README.CYGWIN \
-        README.MAPS README.win32 COPYING INSTALL UPGRADE \
+        README.MAPS README.win32 README.sudo COPYING INSTALL UPGRADE \
         README.Getting-Started README.Contributing README.OSM_maps\
         COPYING.LIB.LESSTIF
 

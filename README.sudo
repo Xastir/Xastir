@@ -1,0 +1,84 @@
+SUDO Instructions:
+------------------
+
+    "sudo" is a command that can make your life much simpler.  After you set
+    it up that is!  By adding a couple of lines to your /etc/sudoers file
+    (using the "visudo" command to edit this file), you'll be able to run a few
+    commands as root without having to type the root password each time.
+    Another thing you can do at that point is automate the entire
+    "git pull;./configure;su;make install" process via a script.  Here's how
+    to set all of this up:
+
+    Type "su" to become the root user, then type "visudo".  This will bring up
+    the "vi" editor on the /etc/sudoers file.  If you'd like to learn more
+    about what I'm going to describe, type "man sudoers" in another window and
+    read about this file.  Another man-page that is useful here is the "man
+    sudo" page.
+
+    Back to the editing:  There's a section in there for user alias.  Mine is
+    labeled "# User alias specification".  Add a line there that reads like
+    this:
+
+        User_Alias XASTIR = username1, username2, username3
+
+    where username1, etc, are valid usernames that you wish to be able to do
+    Xastir installs.  For instance you might have:
+
+        User_Alias XASTIR = mikey
+
+    Next, add a line near the bottom that reads like this:
+
+        XASTIR ALL = NOPASSWD: /bin/chmod, /usr/bin/make
+
+    Now write out and close the file.  At this point the "mikey" user will have
+    root permissions when he/she runs the commands "/bin/chmod" or
+    "/usr/bin/make".  Make sure the paths to those programs are correct for
+    your system.
+
+    Exit from "su" so that you're a regular (non-root) user again.
+
+    Now, in the "xastir" source directory (mine is in "~/src/xastir"), create a
+    script that reads like this.  I named my script  "update-xastir" but nearly
+    any name for the script will do:
+
+    -----------------cut here--------------------
+        #! /bin/sh
+
+        git pull
+        ./bootstrap.sh
+        ./configure
+        sudo make clean
+        sudo make install
+        sudo chmod 4755 /usr/local/bin/xastir
+    -----------------cut here--------------------
+
+    Now type "chmod u+rwx update-xastir" to make that script executable.
+
+    Actually, we've just created a script for Xastir that implements the above
+    and called it "update-xastir".  Do a "git pull" to get it.
+
+    Try out the script.  Type:
+
+        ./update-xastir
+
+    It should run through the entire update/configure/make/install process for
+    Xastir.  Remember to either change to the proper xastir directory before
+    running it, or add a "cd" command at the beginning of the script so that it
+    will run in the proper directory in all cases.  If you add the proper "cd"
+    command you can copy the script to /usr/local/bin and then run it as
+    "update-xastir" from anywhere.
+
+    Windows users:  You may need to remove the "sudo" keyword on each line to
+    have it work properly for you.
+
+    A note from Gerry Creager as to another way to set up the sudoers file:
+
+      "I now consider it a good idea to add the "gifted" users to the 'wheel'
+      group and then solely enable wheel in /etc/sudoers; I've seen a recent
+      article also supporting this."
+
+
+  ------------------------------------------------------------------------
+Copyright (C) 1999 Frank Giannandrea
+Copyright (C) 2000-2016 The Xastir Group
+
