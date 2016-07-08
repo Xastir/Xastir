@@ -290,9 +290,9 @@ and you must disable an option and try again.  The correct way to do
 this is (Festival speech synthesizer is used as an example, not that
 I'm picking on Festival or anything):
 
-    mkdir ../build
-    cd ../build
-    ../Xastir/configure --without-festival
+    mkdir build
+    cd build
+    ../configure --without-festival
 
 That will guarantee that configure will skip Festival entirely,
 which will set up the Makefiles to skip it, and the Xastir binary

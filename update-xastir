@@ -31,12 +31,12 @@ echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
 (date 2>&1)                               | tee -a make.log
-(mkdir ../build 2>&1)                     | tee -a make.log
+(mkdir build 2>&1)                        | tee -a make.log
 
 echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
 (date 2>&1)                               | tee -a make.log
-(cd ../build; ../Xastir/configure 2>&1)   | tee -a make.log
+(cd build; ../configure 2>&1)             | tee -a make.log
 
 echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
@@ -48,12 +48,12 @@ then
     (echo "************************************") | tee -a make.log
     (echo "Building for Cygwin Operating System") | tee -a make.log
     (echo "************************************") | tee -a make.log
-    (cd ../build; make clean 2>&1)                | tee -a make.log
+    (cd build; make clean 2>&1)           | tee -a make.log
 
     echo ""                               | tee -a make.log
     echo ""                               | tee -a make.log
     (date 2>&1)                           | tee -a make.log
-    (cd ../build; make install 2>&1)      | tee -a make.log
+    (cd build; make install 2>&1)         | tee -a make.log
 #    chmod 4755 /usr/local/bin/xastir
     chmod 755 /usr/local/bin/xastir
 
@@ -63,13 +63,13 @@ else
     (echo "************************************************") | tee -a make.log
     (echo "Building for Unix/Linux/MacOSX Operating Systems") | tee -a make.log
     (echo "************************************************") | tee -a make.log
-    (cd ../build; sudo make clean 2>&1)   | tee -a make.log
+    (cd build; sudo make clean 2>&1)      | tee -a make.log
 
     echo ""                               | tee -a make.log
     echo ""                               | tee -a make.log
     (date 2>&1)                           | tee -a make.log 
-    (cd ../build; make 2>&1)              | tee -a make.log
-    (cd ../build; sudo make install-strip 2>&1)    | tee -a make.log
+    (cd build; make 2>&1)                 | tee -a make.log
+    (cd build; sudo make install-strip 2>&1)    | tee -a make.log
 #    sudo chmod 4755 /usr/local/bin/xastir
     sudo chmod 755 /usr/local/bin/xastir
 

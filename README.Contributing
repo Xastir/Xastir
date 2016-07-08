@@ -221,9 +221,9 @@ somewhere else.
 To build with custom CFLAGS like this, just tell configure what you
 want CFLAGS to be:
 
-  mkdir ../build
-  cd ../build
-  ../Xastir/configure CFLAGS="-O -g -fno-inline"
+  mkdir build
+  cd build
+  ../configure CFLAGS="-O -g -fno-inline"
 
 Naturally, unless you're using build directories separate from the
 source directory (see below under "Segregating specialized builds"),

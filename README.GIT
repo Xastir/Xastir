@@ -9,9 +9,15 @@ Git Instructions:
      0) Make sure git is installed on your system.
      
      1) Run
-        git config --global user.name="Your Name" usr.email="Your@email.address"
+        git config --global user.name "Your Name" user.email "Your@email.address"
         This is not strictly necessary, but if you ever try to make changes
         to Xastir and get them integrated with the project it is important.
+
+        NOTE: If you already have a different git global config, you can create
+        a local config for a particular repo by going into that repo and doing:
+        git config --local user.name "Your Name" user.email "Your@email.address"
+
+        Check the config by:  git config --local -l
 
      2) Go to <http://github.com/Xastir/Xastir> to access the project page.
         There you will find the URL of the git repository, just to the
@@ -49,10 +55,9 @@ Git Instructions:
          cd Xastir
          git pull 
          ./bootstrap.sh
-         cd ..
          mkdir build
          cd build
-         ../Xastir/configure
+         ../configure
          (make clean;make -j3 2>&1) | tee make.log
          su
          make install (make install-strip can be used after the first time,

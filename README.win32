@@ -373,9 +373,9 @@ the next command:
 
     cd ~/src/xastir
     ./bootstrap.sh
-    mkdir ../build
-    cd ../build
-    ../Xastir/configure
+    mkdir build
+    cd build
+    ../configure
     make
     make install
 
@@ -754,9 +754,9 @@ errors.
 Shapelib support.  Type these commands:
 
     cd ~/src/xastir
-    mkdir ../build
-    cd ../build
-    ../Xastir/configure
+    mkdir build
+    cd build
+    ../configure
     make
     make install
 

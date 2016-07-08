@@ -354,9 +354,9 @@ the next command:
 
     cd ~/src/xastir
     ./bootstrap.sh
-    mkdir ../build
-    cd ../build
-    ../Xastir/configure
+    mkdir build
+    cd build
+    ../configure
     make
     make install
 

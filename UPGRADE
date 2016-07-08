@@ -48,9 +48,9 @@ Previous Install Notes:
         cd src/Xastir
         git pull
         ./bootstrap.sh
-        mkdir ../build
-        cd ../build
-        ../Xastir/configure
+        mkdir build
+        cd build
+        ../configure
         make
         Shut down any running Xastir instances
         cd scripts
