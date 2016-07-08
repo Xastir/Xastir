@@ -32,8 +32,8 @@ MAINTAINERCLEANFILES = configure config.status aclocal.m4 \
         missing mkinstalldirs
 
 #docdir=${pkgdatadir}/doc
-#doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
-#        README.MAPS README.win32 COPYING INSTALL UPGRADE
+#doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT \
+#        README.MAPS README.sudo README.win32 COPYING INSTALL UPGRADE
 
 #mandir=${prefix}/man
 #man_MANS=xastir.1
