@@ -149,7 +149,9 @@ README
      You may want to install everything to /sw though, so that the normal
      user can find it easily and add maps.  To do this, run this instead:
 
-        ./configure --prefix=/sw
+        mkdir ../build
+        cd ../build
+        ../Xastir/configure --prefix=/sw
 
      That will cause Xastir to be installed in /sw/xastir/* directories, and
      the executable will go into /sw/bin/xastir.
@@ -377,16 +379,19 @@ README
         I've found that I need to do this when configuring for OpenSUSE in
         order to pick up the libgeotiff include files:
 
-            ./configure CPPFLAGS="-I/usr/include/libgeotiff"
+            mkdir ../build
+            cd ../build
+            ../Xastir/configure CPPFLAGS="-I/usr/include/libgeotiff"
 
         I just put it into a script called "configure.suse" so that I don't
         have to remember it each time.  Here are the complete contents of
-        the script:
+        the script (run it from the "build" directory):
 
             #!/bin/sh
-            ./configure CPPFLAGS="-I/usr/include/libgeotiff"
+            ../Xastir/configure CPPFLAGS="-I/usr/include/libgeotiff"
 
-        then do "chmod 755 configure.suse", and run it like this:
+        then do "chmod 755 configure.suse", and run it like this from the "build"
+        directory:
 
             ./configure.suse
 

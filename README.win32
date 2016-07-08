@@ -373,7 +373,9 @@ the next command:
 
     cd ~/src/xastir
     ./bootstrap.sh
-    ./configure
+    mkdir ../build
+    cd ../build
+    ../Xastir/configure
     make
     make install
 
@@ -752,7 +754,9 @@ errors.
 Shapelib support.  Type these commands:
 
     cd ~/src/xastir
-    ./configure
+    mkdir ../build
+    cd ../build
+    ../Xastir/configure
     make
     make install
 
@@ -838,7 +842,8 @@ here:
 [ ] Reconfigure Xastir to use this library:
 
     cd ~/src/xastir
-    ./configure
+    cd ../build
+    ../Xastir/configure
 
 [ ] If "configure" did not find ImageMagick properly, edit the
 resulting config.h file and change this line:
@@ -1077,7 +1082,8 @@ that file is already present:
 [ ] Set up Xastir to use the new geotiff libraries:
 
     cd ~/src/xastir
-    ./configure
+    cd ../build
+    ../Xastir/configure
     make
     make install
 

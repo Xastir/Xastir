@@ -8,9 +8,9 @@ General steps to configure/compile/install Xastir:
 
 1) Get one of the source releases and explode it.
 
-  mkdir xastir
-  cp xastir*.tgz xastir
-  cd xastir
+  mkdir Xastir
+  cp xastir*.tgz Xastir
+  cd Xastir
   tar xzvf xastir*
 
 An alternative to the above steps is to use git to download the
@@ -19,12 +19,14 @@ you to easily keep up to date with the developers.
 
 2) Go into the xastir directory to build the executable:
 
-  cd xastir*
+  cd Xastir
 
 If you used Git to fetch the sources, you need one more step here
 before you run configure:  "./bootstrap.sh"
 
-  ./configure
+  mkdir ../build
+  cd ../build
+  ../Xastir/configure
   make
   su (become the root user)
   make install (make install-strip can be used after the first time)
@@ -1040,7 +1042,9 @@ First Time Install:
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using Git)
-        "./configure"
+        "mkdir ../build"
+        "cd ../build"
+        "../Xastir/configure"
         "make" ("gmake" for Solaris or *BSD)
 
      This builds XASTIR, You should not get any error or warning messages.
