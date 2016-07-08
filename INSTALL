@@ -236,20 +236,20 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
     ---------------------
         http://proj.maptools.org/
         http://www.remotesensing.org/proj/
-        http://wetnet.net/~we7u/xastir/
+        http://we7u.wetnet.net/xastir/
 
     Datum translations (proj-nad27 or proj-datumgrid):
     --------------------------------------------------
         http://proj.maptools.org/
         ftp://ftp.remotesensing.org/pub/proj/
-        http://wetnet.net/~we7u/xastir/
+        http://we7u.wetnet.net/xastir/
 
     libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.4):
     --------------------------------------------------
         http://dl.maptools.org/dl/geotiff/libgeotiff/
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
-        http://wetnet.net/~we7u/xastir/
+        http://we7u.wetnet.net/xastir/
 
     Please note that the order of installation for the above libraries is
     critical.  Follow the instructions below carefully.  Also, the particular
@@ -276,7 +276,7 @@ For speech support via the festival speech synthesis software you need:
 For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
         http://shapelib.maptools.org/
-        http://wetnet.net/~we7u/xastir/
+        http://we7u.wetnet.net/xastir/
     pcre:
         http://www.pcre.org
 
@@ -284,7 +284,7 @@ For GDAL/OGR:
     http://www.gdal.org/
     http://remotesensing.org/gdal/
     http://www.maptools.org
-    http://wetnet.net/~we7u/xastir/
+    http://we7u.wetnet.net/xastir/
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
@@ -1196,7 +1196,7 @@ First Time Install:
      without having to be the root user.  The program is called aprs_tty
      and can be obtained here:
 
-     http://wetnet.net/~we7u/xastir/aprs_tty.0.0.2.tgz
+     http://we7u.wetnet.net/xastir/aprs_tty.0.0.2.tgz
 
      It actually responds to some TNC commands. The code is straight forward
      and works well.  Run the program, telling it what port to use, and then

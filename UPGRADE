@@ -46,7 +46,6 @@ Previous Install Notes:
      may need to perform the alternate procedure listed below under ALTERNATE.
 
         cd src/xastir
-        #cvs update
         git pull
         ./bootstrap.sh
         ./configure

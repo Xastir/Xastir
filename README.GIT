@@ -49,7 +49,9 @@ Git Instructions:
          cd Xastir
          git pull 
          ./bootstrap.sh
-         cd ../build
+         cd ..
+         mkdir build
+         cd build
          ../Xastir/configure
          (make clean;make -j3 2>&1) | tee make.log
          su

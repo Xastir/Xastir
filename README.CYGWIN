@@ -323,72 +323,22 @@ X-server running.
 Once you've gotten to this stage, you now have Cygwin and Xwindows
 installed and operational.  Next we go after Xastir itself.
 
-[ ] Step 5) NOTE: We've switched to Git now, so these instructions need updating.
-
-Create a file at C:\cygwin\home\<user>\ called
-".cvsrc", where the "<user>" part is your Windows login name.  Don't
-forget the leading period in the filename as it's important.  For
-instance, I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The
-file should contain the following lines:
-
-    cvs -z3
-    update -P -d
-    status -v
-    diff -u
-
-The '#' marks comment out the first line.  "cvs -z3" invokes
-compression, and the SourceForge site isn't performing compression
-currently.
-
-PLEASE NOTE:  this file must be created in Unix format, not DOS
-format.  DO NOT USE Notepad or other Windows tools to create the
-file, as CVS will not recognize the contents.  Thanks to Kirk
-Mefford <kc2elo@softhome.net> for noticing this.  The editor "nano"
-can be invoked from a Cygwin window to create this file, or for
-those of you who know "vi" or have Windows editors available that
-can save in Unix format, use those.  If you don't, the "cvs update"
-commands won't work for you, at least until you recreate the file in
-Unix format.  You've been warned!
-
-The "." in ".cvsrc" makes it a Unix hidden file, and it won't appear
-in most Unix listings.  Unix files don't need a file extension, so
-don't create a file that has one (or else rename it to ".cvsrc" when
-done).
-
-Another option is to create the file using a Windows editor, then
-run a dos2unix program on it to convert it to the proper format.
-
-
-[ ] Step 5)  NOTE: We've switched to Git now, so these instructions need updating.
-
-Download Xastir sources.  Start up Xwindows using your
-shortcut.  Type the six lines below into the shell exactly as shown.
+[ ] Step 4)  Download Xastir sources.  Start up Xwindows using your
+shortcut.  Type the four lines below into the shell exactly as shown.
 Hit <ENTER> when asked for a password after typing line four (the
 "login" command):
 
   cd ~
-  #touch .cvspass
   mkdir src
   cd src
-  #cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login 
-  #cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir 
   git clone http://github.com/Xastir/Xastir
-
-NOTE:  The "login" command must complete without errors in order to
-create a dummy blank password in your .cvspass file.  Without this
-password you'll have trouble with later CVS commands.  If you see
-"EOF", "connection reset by peer", "connection refused", or "timed
-out", it means that the anonymous CVS server at SourceForge is
-overloaded (too many users).  Keep trying the failed commands until
-they succeed!  Notice that up-arrow (on the keyboard) and then
-<ENTER> will repeat the last command, saving you some typing.
 
 The end result when it succeeds  will be a new directory
 "C:\cygwin\home\<user>\src\xastir\" which contains all of the Xastir
 source code.  You can type "ls xastir" (that's lower-case LS) to see
 the file listing.
 
-Side Note:  Here's the coolest thing about CVS:  Once you've done
+Side Note:  Here's the coolest thing about Git:  Once you've done
 this initial source-code download, you'll never have to do the whole
 Xastir download again.  You'll just go into the "src/xastir"
 directory and type "git pull", which will snag just the _changes_
@@ -590,22 +540,16 @@ and type these commands to update the Xastir source code:
     cd ~/src/xastir
     git pull
 
-If you see "EOF" or "connection reset by peer" it means that the
-anonymous CVS server at SourceForge is overloaded (too many users).
-Keep trying the failed commands until they succeed!  Notice that
-up-arrow (on the keyboard) and then <ENTER> will repeat the last
-command, saving you some typing.
-
 Every once in a while Windows will refuse to allow you to
 delete/rename one of the files.  The only way I've found to get
 around this problem is to reboot.  I sometimes see this when trying
-to do a CVS update, and Windows won't allow one or more files to get
+to do a "git pull", and Windows won't allow one or more files to get
 updated.
 
 Repeat step 6) above to recompile/reinstall the latest Xastir.
 
 A very good option is to read the SUDO instructions in the
-README.CVS file, setting up the /etc/sudoers file and creating an
+README.sudo file, setting up the /etc/sudoers file and creating an
 update-xastir script as shown.  Then you can type "./update-xastir"
 at any time to snag down the latest Xastir changes, compile, and
 install it.  We've just included an update-xastir script with

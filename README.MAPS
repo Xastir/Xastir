@@ -200,7 +200,7 @@ Getting Maps and other Data Files for Xastir:
 
       A few maps of various types are available from:
 
-        http://wetnet.net/~we7u/xastir/maps/
+        http://we7u.wetnet.net/xastir/maps/
 
       Here's a page that we'll try to keep up-to-date which will have lots of
       links to download-able maps on it:
@@ -346,7 +346,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       Tiger/Line 2000 map data is available from:
       http://www.esri.com/data/download/census2000_tigerline/index.html
       but requires free registration.  A example of these types of files can
-      be found at "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
+      be found at "http://we7u.wetnet.net/xastir/maps/shapefile/USA/WA/".
       You'll need to run "tar xzvf <filename>" on each one of the files
       from that last site after downloading.  Some layers that may be of
       interest:
@@ -1029,7 +1029,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       for NWS radars are available from one of these sites:
 
           ftp://gcpoolz.com/geos/Srb_geos.zip
-          http://wetnet.net/~we7u/xastir/maps/radar-geos.tgz
+          http://we7u.wetnet.net/xastir/maps/radar-geos.tgz
 
       You'll probably want to add an IMAGESIZE line to each one to speed up
       loading when some radars are offscreen: (bash syntax, modify for your
@@ -1154,7 +1154,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
 
        or more easily found here (but not guaranteed to be the most
        current:
-         http://wetnet.net/~we7u/xastir/Counties/
+         http://we7u.wetnet.net/xastir/Counties/
 
        We now have a script in the xastir/scripts directory called
        "get-NWSdata" which fetches the files you need and plops them
