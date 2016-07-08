@@ -8,7 +8,7 @@ Group     : Applications/Networking
 Packager  : n2ygk@weca.org
 # Icon    : src/@PACKAGE@.xpm
 Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
-URL       : http://www.xastir.org
+URL       : http://xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
 #Requires  :
 
@@ -44,7 +44,7 @@ rm -rf ${RPM_BUILD_ROOT}
 # Documents:  Go into special doc area at /usr/share/doc/xastir/ or
 # /usr/share/doc/packages/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
-%doc README README.Contributing README.CVS README.Getting-Started
+%doc README README.Contributing README.GIT README.Getting-Started
 %doc README.MAPS README.win32 UPGRADE
 
 

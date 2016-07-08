@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 
 Recommended Configurations for:
@@ -205,7 +205,7 @@ Getting Maps and other Data Files for Xastir:
       Here's a page that we'll try to keep up-to-date which will have lots of
       links to download-able maps on it:
 
-        http://www.xastir.org/wiki/index.php/Xastir_Maps
+        http://xastir.org/index.php/Xastir_Maps
 
      Dos/Win/MacAPRS style vector/fill maps:
 
@@ -241,7 +241,7 @@ Getting Maps and other Data Files for Xastir:
 
 **** Note that recent changes at the "Department of Natural Resources Geomatics 
 Canada" have made these scripts fail.  Changes to the scripts are being coded 
-and tested.  CVS well be updated once the scripts are proven to work again. ****
+and tested.  Git will be updated once the scripts are proven to work again. ****
 
 
      For Ireland, EI8IC (http://www.mapability.com) has produced a set of overlay 

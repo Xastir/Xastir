@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 README
   ------------------------------------------------------------------------
@@ -79,13 +79,15 @@ README
           <http://github.com/Xastir/Xastir>
           You can get the latest version of Xastir from there.
 
-          You might try <http://xastir.org> for help and information.
+          You might try <http://xastir.org> for help and information,
+          particularly the Xastir mailing list (listed near the bottom
+          of the page).
 
 
      (2a) Git USAGE
 
-          You might obtain the *very latest* version of Xastir that
-          is still under development by using Git. 
+          Obtain the *very latest* version of Xastir under development by
+          using Git. 
           
           See the file README.GIT for more details.
 
@@ -578,8 +580,8 @@ README
           To subscribe to the Xastir mailing list, send email to:
           xastir-request@xastir.org In the body of the message,
           put "subscribe xastir"; or go to
-          http://www.xastir.org and click on "User List" or
-          "Developer List" links on the left to subscribe.
+          http://xastir.org and click on "XASTIR MAILING LISTS" (in the
+          "Resources" section near the bottom) to subscribe.
 
                ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 

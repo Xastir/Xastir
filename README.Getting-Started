@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 
 Hello new user, and welcome to Xastir!
@@ -44,13 +44,13 @@ configure/compile/install and Xastir will be able to take advantage
 of them.
 
 For those that really must have the latest-latest:  Download the
-Xastir sources using CVS instead, then issue the command "cvs
-update" periodically in order to snag the latest changes.  If
+Xastir sources using Git instead, then issue the command "git
+pull" periodically in order to snag the latest changes.  If
 anything comes down the pipe, just configure/make/install and then
 use the latest version.  This avoids large file downloads (after the
 initial download) as it just grabs _changes_ to the sources off the
-'net each time you issue the "cvs update" command.  This is the
-power-user's method of keeping Xastir up-to-date.  See README.CVS
+'net each time you issue the "git pull" command.  This is the
+power-user's method of keeping Xastir up-to-date.  See README.GIT
 for details.
 
 After the three configuration sections there's a section on
@@ -72,7 +72,7 @@ That's where everyone is kept up-to-date on the latest features,
 plus lots of questions are asked/answered there on a weekly or
 sometimes daily basis.  It's a great way to learn and to stay
 connected with the other Xastir users.  See the mailing links on the
-left of the Xastir home page:  http://www.xastir.org
+left of the Xastir home page:  http://xastir.org
 You must be subscribed in order to post messages there.
 
 So...  Let's get started!
@@ -119,14 +119,14 @@ Sources of help you may find useful:
 *) "README.Contributing" file:  Info on how to contribute to the
    Xastir project.
 
-*) "README.CVS" file:  Info on a more advanced way to keep up-to-date
+*) "README.GIT" file:  Info on a more advanced way to keep up-to-date
    on the latest Xastir sources.
 
 *) "README.Getting-Started" file:  The file you're reading.
 
 *) "README.MAPS" file:  Much of the info about maps and where to get
    them may be found here.  Also see the Xastir Documentation
-   section, the Wiki pages, at <http://www.xastir.org>
+   section, the Wiki pages, at <http://xastir.org>
 
 *) "README.win32" file:  For Windows/Cygwin users.
 
@@ -134,7 +134,7 @@ Sources of help you may find useful:
    Xastir.
 
 *) Xastir Web-based documentation, including a set of Wiki pages,
-   found at <http://www.xastir.org>
+   found at <http://xastir.org>
 
 *) Xastir man page, accessed by typing "man xastir" on a Unix or
    Unix-like system.  This page is a bit out-of-date.
@@ -142,9 +142,9 @@ Sources of help you may find useful:
 *) "Help->Help Index" in the Xastir program itself.  Note that only
    the English language variation of this is somewhat up-to-date.
 
-*) Mailing lists at <http://www.xastir.org>
+*) Mailing lists at <http://xastir.org>
 
-*) User forums at <http://www.xastir.org>
+*) User forums at <http://xastir.org>
 
 
 --------------------------------------------------------------------
@@ -163,7 +163,7 @@ libraries and other cool features later.
 Getting the package:
 --------------------
 *) Option 1:  Download one of stable or development snapshots from
-http://www.xastir.org.  There are links from that page or you can go
+http://xastir.org.  There are links from that page or you can go
 to the SourceForge page and click on Files to see the entire set
 that is available.
 
@@ -190,11 +190,11 @@ configure and make commands listed below.
 
 from an xterm window should take you there.
 
-*) Option 2:  An alternative is to use CVS to snag the sources for
+*) Option 2:  An alternative is to use Git to snag the sources for
 you.  Using this method you can periodically update to the latest
 released version, the latest "stable" version, or the latest
-development sources.  See README.CVS for info about that option.
-One of the advantages of CVS is that you only pull down the changes
+development sources.  See README.GIT for info about that option.
+One of the advantages of Git is that you only pull down the changes
 since you last updated, instead of doing very large file downloads
 each time.  Another advantage is that you can keep up with the
 latest features on a daily basis if you wish, nearly effortlessly.
@@ -246,6 +246,7 @@ be needed later, install these as well:
     curl
     curl development headers
     cvs
+    git
     rcs
     tar
     liblcms
@@ -898,5 +899,5 @@ be expanded in this document.  Thanks!
 
 APRS(tm) is a Trademark of Bob Bruninga
 
-Copyright (C) 2005-2012 The Xastir Group
+Copyright (C) 2005-2016 The Xastir Group
 

@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 
 Previous Install Notes:
@@ -33,7 +33,7 @@ Previous Install Notes:
      problems. Fix these files by "chmod 644 filename" where filename is the
      problem file.
 
-  Xastir 1.2.1 or later CVS:
+  Xastir 1.2.1 or later Git:
 
      On or about July 3rd, 2003, the locations of the Xastir system directories
      were changed.  Existing users must go through this procedure in order to
@@ -46,7 +46,8 @@ Previous Install Notes:
      may need to perform the alternate procedure listed below under ALTERNATE.
 
         cd src/xastir
-        cvs update
+        #cvs update
+        git pull
         ./bootstrap.sh
         ./configure
         make
@@ -91,5 +92,5 @@ Previous Install Notes:
  
   ------------------------------------------------------------------------
 Copyright (C) 1999 Frank Giannandrea
-Copyright (C) 2000-2012 The Xastir Group
+Copyright (C) 2000-2016 The Xastir Group
 

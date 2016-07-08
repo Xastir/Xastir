@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 This file has three parts.  The first part describes the new structure for
 debug levels.  The second part describes the debug_level definitions that

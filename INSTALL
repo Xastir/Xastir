@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 
 General steps to configure/compile/install Xastir:
@@ -13,15 +13,15 @@ General steps to configure/compile/install Xastir:
   cd xastir
   tar xzvf xastir*
 
-An alternative to the above steps is to use CVS to download the
-Xastir sources.  See README.CVS for those instructions.   CVS allows
+An alternative to the above steps is to use git to download the
+Xastir sources.  See README.GIT for those instructions. Git allows
 you to easily keep up to date with the developers.
 
 2) Go into the xastir directory to build the executable:
 
   cd xastir*
 
-If you used CVS to fetch the sources, you need one more step here
+If you used Git to fetch the sources, you need one more step here
 before you run configure:  "./bootstrap.sh"
 
   ./configure
@@ -616,7 +616,7 @@ First Time Install:
 
     Note that you'll have to set up /etc/sudoers file to allow those
     commands to be run by a normal user before sudo will work for
-    you.  See the README.CVS file for sudo instructions.
+    you.  See the README.Git file for sudo instructions.
 
 
 
@@ -1039,7 +1039,7 @@ First Time Install:
    13. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
-        "./bootstrap.sh" (This step needed only for those using CVS)
+        "./bootstrap.sh" (This step needed only for those using Git)
         "./configure"
         "make" ("gmake" for Solaris or *BSD)
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id$
+# $Id: $
 
 # Simple regression tests.  Run through various combinations of the
 # configure flags, create a lot file, then grep for "warning" or

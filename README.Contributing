@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 
 Hello possible new developer, and welcome to the Xastir project!
@@ -8,7 +8,7 @@ In order to get contributed patches accepted more easily by the
 Xastir developers:
 
 *) Read "Developer Guidelines and Notes" in the "HowTos" section of
-Xastir's Wiki (http://www.xastir.org).  Make sure to follow the
+Xastir's Wiki (http://xastir.org).  Make sure to follow the
 formatting and indentation rules, and in particular the tab format
 (spaces, not tabs).  If you don't like some of the formatting rules,
 abide by them anyway for consistency (Hey, I don't like some of them
@@ -46,16 +46,16 @@ by others later.
 
 *) Put your patches into either "context diff" or "unified diff"
 format.  Don't submit complete files.  Make sure your diff is
-against the latest CVS sources, as that is the version that the
+against the latest Git sources, as that is the version that the
 developers work from.  Create the diff file against the directories
 recursively if more than one file has been changed:
 
     diff -ur xastir-1.7.0 xastir-modified-directory > mypatch
 
-Here's a shorthand method if you're doing all this against the CVS
+Here's a shorthand method if you're doing all this against the Git
 version.  Do this from the top-level Xastir directory:
 
-    cvs diff -u > mypatch
+    git diff -u > mypatch
 
 *) By compressing the patch and attaching it to an e-mail you
 preserve the lines exactly so that the "patch" program will have no
@@ -245,7 +245,7 @@ suffixes.
 
 To use this capability, make sure you're starting with a completely
 clean source directory.  In the directory where you normally do your
-"cvs update", do a make distclean.  This will remove anything that
+"git pull", do a make distclean.  This will remove anything that
 configure created as well as anything that make created.  From this
 point forward, you don't build xastir in the source code directory
 anymore.
@@ -290,7 +290,7 @@ but because you've done the buil in a separate directory, your normal
 compile is untouched.
 
   cd ~/XASTIR-DEV/xastir
-  cvs update
+  git pull
   cd ../build-normal
   make && sudo make install
   cd ../build-debug
@@ -323,5 +323,5 @@ be expanded in this document.  Thanks!
 
 APRS(tm) is a Trademark of Bob Bruninga
 
-Copyright (C) 2006-2012 The Xastir Group
+Copyright (C) 2006-2016 The Xastir Group
 

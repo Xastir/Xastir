@@ -1,8 +1,8 @@
 #!/bin/sh
 
 
-# $Id$
-# Copyright (C) 2005-2012 The Xastir Group
+# $Id: $
+# Copyright (C) 2005-2016 The Xastir Group
 
 
 echo
@@ -21,16 +21,17 @@ echo Press ENTER to continue downloading the latest Xastir sources:
 read
 
 
-# Set up an anonymous login for the CVS server
-#
-echo
-echo Press the ENTER key when asked for the CVS password below:
-cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
+## Set up an anonymous login for the Git server
+##
+#echo
+#echo Press the ENTER key when asked for the CVS password below:
+#cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
 
 
 # Fetch the latest Xastir sources
 #
-cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
+#cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
+git clone http://github.com/Xastir/Xastir
 
 
 # Run the update script to configure/compile/install it
@@ -41,7 +42,7 @@ cd xastir; ./update-xastir
 echo
 echo
 echo
-echo If you have previously set up the /etc/sudoers file as described in README.CVS,
+echo If you have previously set up the /etc/sudoers file as described in README.GIT,
 echo you should have "xastir" and "callpass" binaries installed in /usr/local/bin.
 echo If not, set up the /etc/sudoers file now and run the "update-xastir" command
 echo listed below.  To update Xastir to the latest version at any time in the future,

@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2000-2016  The Xastir Group
 #
-# $Id$
+# $Id: $
 
 # test for devices.  Avoid the tests on Cygwin as they hang on some
 # WinXP boxes.

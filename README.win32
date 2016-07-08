@@ -1,5 +1,5 @@
 
-$Id$
+$Id: $
 
 ---------------------------------------------------------------------
 Note that there are other options to get Xastir running on Win32.
@@ -7,7 +7,7 @@ The method described below in this document is for getting Xastir
 running under Cygwin which can be problematic.  Other methods exist
 on the Xastir Wiki pages which are typically easier and more robust:
 
-    http://www.xastir.org/wiki/index.php/Installation_Notes
+    http://xastir.org/index.php/Installation_Notes
 ---------------------------------------------------------------------
 
   Two companies have created simpler installs of Cygwin/Xastir than
@@ -95,7 +95,7 @@ it up in that manner, so you can have Xastir as just another app on
 your Windows desktop.
 
 Please subscribe to the "xastir" mailing list at
-"http://www.xastir.org".  There are lots of helpful people there
+"http://xastir.org".  There are lots of helpful people there
 that can aid you in installing/running Xastir.  You must be subscribed
 in order to post messages there.
 
@@ -179,6 +179,7 @@ required:
 [ ] db4.2
 [ ] diffutils
 [ ] gcc
+[ ] git
 [ ] gv
 [ ] gzip
 [ ] ImageMagick  (See notes under "Adding ImageMagick" below 
@@ -341,7 +342,9 @@ and then reopen the shell.
      cp .profile .bashrc
      source .bashrc
 
-[ ] Step 4)  Create a file at C:\cygwin\home\<user>\ called
+[ ] Step 4) NOTE: We've switched to Git. These instructions need updating.
+
+Create a file at C:\cygwin\home\<user>\ called
 ".cvsrc", where the "<user>" part is your Windows login name.  Don't
 forget the leading period in the filename as it's important.  For
 instance, I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The
@@ -362,7 +365,7 @@ file, as CVS will not recognize the contents.  Thanks to Kirk
 Mefford <kc2elo@softhome.net> for noticing this.  The editor "nano"
 can be invoked from a Cygwin window to create this file, or for
 those of you who know "vi" or have Windows editors available that
-can save in Unix format, use those.  If you don't, the "cvs update"
+can save in Unix format, use those.  If you don't, the "git pull"
 commands won't work for you, at least until you recreate the file in
 Unix format.  You've been warned!
 
@@ -375,17 +378,20 @@ Another option is to create the file using a Windows editor, then
 run a dos2unix program on it to convert it to the proper format.
 
 
-[ ] Step 5)  Download Xastir sources.  Start up Xwindows using your
+[ ] Step 5) NOTE: We've switched to Git. These instructions need updating.
+
+Download Xastir sources.  Start up Xwindows using your
 shortcut.  Type the six lines below into the shell exactly as shown.
 Hit <ENTER> when asked for a password after typing line four (the
 "login" command):
 
   cd ~
-  touch .cvspass
+  #touch .cvspass
   mkdir src
   cd src
-  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login 
-  cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir 
+  #cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login 
+  #cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir 
+  git clone http://github.com/Xastir/Xastir
 
 NOTE:  The "login" command must complete without errors in order to
 create a dummy blank password in your .cvspass file.  Without this
@@ -404,7 +410,7 @@ the file listing.
 Side Note:  Here's the coolest thing about CVS:  Once you've done
 this initial source-code download, you'll never have to do the whole
 Xastir download again.  You'll just go into the "src/xastir"
-directory and type "cvs update", which will snag just the _changes_
+directory and type "git pull", which will snag just the _changes_
 to the files since you last updated, and is very fast.  Compile and
 install at that point and you'll be running the latest developer's
 version in just a few minutes!  It's very easy to keep up with the
@@ -643,7 +649,7 @@ program (step 1b above).  After it finishes, open a Cygwin window
 and type these commands to update the Xastir source code:
 
     cd ~/src/xastir
-    cvs update
+    git pull
 
 If you see "EOF" or "connection reset by peer" it means that the
 anonymous CVS server at SourceForge is overloaded (too many users).
