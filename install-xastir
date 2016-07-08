@@ -8,9 +8,9 @@
 echo
 echo
 echo
-echo Please note that a subdirectory called "xastir" will be created
+echo Please note that a subdirectory called "Xastir" will be created
 echo here and populated with the latest Xastir source code.  If you
-echo already have an "xastir" directory and are running the script
+echo already have an "Xastir" directory and are running the script
 echo from there, you may want to run it from one directory higher up
 echo instead.  Just stop this script and run these commands instead:
 echo
@@ -21,22 +21,14 @@ echo Press ENTER to continue downloading the latest Xastir sources:
 read
 
 
-## Set up an anonymous login for the Git server
-##
-#echo
-#echo Press the ENTER key when asked for the CVS password below:
-#cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir login
-
-
 # Fetch the latest Xastir sources
 #
-#cvs -d:pserver:anonymous@xastir.cvs.sourceforge.net:/cvsroot/xastir co xastir
 git clone http://github.com/Xastir/Xastir
 
 
 # Run the update script to configure/compile/install it
 #
-cd xastir; ./update-xastir
+cd Xastir; ./update-xastir
 
 
 echo
@@ -46,7 +38,7 @@ echo If you have previously set up the /etc/sudoers file as described in README.
 echo you should have "xastir" and "callpass" binaries installed in /usr/local/bin.
 echo If not, set up the /etc/sudoers file now and run the "update-xastir" command
 echo listed below.  To update Xastir to the latest version at any time in the future,
-echo change to the "xastir" directory and type:
+echo change to the "Xastir" directory and type:
 echo
 echo "    ./update-xastir"
 echo
