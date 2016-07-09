@@ -5,12 +5,18 @@ Release   : 1
 #Epoch    : 1
 License   : GPL
 Group     : Applications/Networking
-Packager  : n2ygk@weca.org
+Packager  : dranch@trinnet.net
 # Icon    : src/@PACKAGE@.xpm
-Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+Source    : https://github.com/Xastir/Xastir/archive/xastir@VERSION@.tar.gz
 URL       : http://xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
-#Requires  :
+#BuildRequires reflect Centos/RHEL naming conventions - edit package names to suit other RPM-based distros
+BuildRequires : tk, tkimg, lesstif, libXp, libXp-devel
+BuildRequires : geos, giflib, unixODBC, netcdf, gdal, gdal-devel
+BuildRequires : GraphicsMagick, pcre-devel, proj-devel, shapelib-devel
+BuildRequires : db4-devel, perl-HTTP-Lite, perl-Device-SerialPort, perl-Test-Simple
+BuildRequires : perl-Module-Build, perl-Image-Size, perl-perl-GPS, perl-Tree-R,
+BuildRequires : perl-Geo-Shapelib, perl-Test-Simple, perl-Module-Build
 
 %description
 Xastir is a graphical application that interfaces HAM radio
@@ -25,12 +31,13 @@ software.
 
 %build
 ./bootstrap.sh
-%configure --without-graphicsmagick --with-rtree
-make
+%configure CPPFLAGS="-I/usr/include/libgeotiff"
+make %{?_smp_mflags}
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
 %makeinstall
+%{__chmod} 4755 $RPM_BUILD_ROOT/usr/bin/xastir
 # Docs go into package docs area instead of the Makefile install
 # locations listed here:
 rm -rf ${RPM_BUILD_ROOT}/usr/share/doc
@@ -53,7 +60,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_prefix}/share/xastir/config
 %{_prefix}/share/xastir/symbols
 %{_prefix}/share/man
-#%{_prefix}/%{lib}/xastir
 
 # protect user-installed map and other files from being clobbered
 
@@ -66,6 +72,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %config %{_prefix}/share/xastir/scripts
 
 %changelog
+* Fri Jul 8 2017 David Ranch <dranch@trinnet.net>
+- Updated to 2.0.9 with Git support
 * Thu Jul 03 2003 Alan Crosswell <n2ygk@weca.org> 
 - 1.2.1 my patches now integrated into the main trunk.
 * Sat Jun 21 2003 Alan Crosswell <n2ygk@weca.org> 
