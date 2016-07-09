@@ -228,7 +228,7 @@ float roundf(float x)
 //#define UTM_DEBUG_VERB
 //#define UTM_DEBUG_ALLOC
 //
-inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
+static inline int  max_i(int  a, int  b) { return (a > b ? a : b); }
 #define UTM_GRID_EQUATOR 10000000
 // the maximum number of UTM zones that will appear on a screen that has a 
 // high enough resolution to display the within-zone utm grid

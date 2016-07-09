@@ -5171,7 +5171,7 @@ void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
-inline int no_data_selected(void)
+static inline int no_data_selected(void)
 {
     return (
         Select_.none || (
