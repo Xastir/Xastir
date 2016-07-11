@@ -1,14 +1,16 @@
 Git Instructions:
 -----------------
-     For those who think git might be a bit too complicated to deal with,
-     here are (I think) the minimal commands.  See the "SUDO" section
-     below though for ideas on how to make updating Xastir even simpler.
 
-     Initial Git clone:
-     ---------------------
-     0) Make sure git is installed on your system.
+    For those who think git might be a bit too complicated to deal with,
+    here are (I think) the minimal commands.  See the "SUDO" section in
+    README.sudo for ideas on how to make updating Xastir even simpler.
+
+
+    Initial Git clone:
+    ---------------------
+    0) Make sure git is installed on your system.
      
-     1) Run
+    1) Run
         git config --global user.name "Your Name" user.email "Your@email.address"
         This is not strictly necessary, but if you ever try to make changes
         to Xastir and get them integrated with the project it is important.
@@ -19,14 +21,14 @@ Git Instructions:
 
         Check the config by:  git config --local -l
 
-     2) Go to <http://github.com/Xastir/Xastir> to access the project page.
+    2) Go to <http://github.com/Xastir/Xastir> to access the project page.
         There you will find the URL of the git repository, just to the
         right of a button that says "HTTPS".  Copy this URL to your clipboard.
 
         (At the time of this writing, the URL was
          <https://github.com/Xastir/Xastir.git>)
      
-     3) Open a shell, navigate to a directory where you want to store
+    3) Open a shell, navigate to a directory where you want to store
         the Xastir source code, and enter this command:
 
         git  clone https://github.com/Xastir/Xastir.git
@@ -34,40 +36,44 @@ Git Instructions:
         This will create a clone of the Xastir git repository in an
         "Xastir" subdirectory of the current directory.
         
-     All done!  You now have the latest development sources on your computer.
-     Not only that, you have a complete copy of the entire project history
-     and access to all prior releases.
-
-     Git Commands for Maintaining the Current Development Sources:
-     -------------------------------------------------------------
-     Once all this is in place, just cd into the "Xastir" directory at any
-     time, type "git pull".  This will update your directory tree and
-     repository clone with the most recent code.
+    All done!  You now have the latest development sources on your computer.
+    Not only that, you have a complete copy of the entire project history
+    and access to all prior releases.
 
 
-     Then type "make install" in your build directory and you'll have the
-     latest development stuff installed on your system.
+    Git Commands for Maintaining the Current Development Sources:
+    -------------------------------------------------------------
+    Once all this is in place, just cd into the "Xastir" directory at any
+    time, type "git pull".  This will update your directory tree and
+    repository clone with the most recent code.
 
-     Here are the commands to do if you want a clean build of the latest
-     sources, and want configure to recheck all the libraries and header
-     files that Xastir needs:
+    Then type "make install" in your build directory and you'll have the
+    latest development stuff installed on your system.
+
+    Here are the commands to do if you want a clean build of the latest
+    sources, and want configure to recheck all the libraries and header
+    files that Xastir needs:
 
          cd Xastir
-         git pull 
+         git pull           # Update your local repo
          ./bootstrap.sh
-         mkdir build
+         mkdir build        # Build in a separate directory
          cd build
          ../configure
          (make clean;make -j3 2>&1) | tee make.log
-         su
-         make install (make install-strip can be used after the first time,
-                       it removes debugging info from executable)
-         chmod 4555 /usr/local/bin/xastir (only needed if using kernel AX.25)
-         exit (from root)
-         xastir
+         sudo make install  # "make install-strip" can be used after the first
+                            # time: It removes debugging info from executable
+         sudo chmod 4555 /usr/local/bin/xastir  # Only needed if using kernel AX.25
+         xastir &   # Start it up!
 
-     Note that you'll need autoconf 2.53 or newer and automake 1.6.3 or newer
-     in order to run the "./bootstrap.sh" script.
+    Note that you'll need autoconf 2.53 or newer and automake 1.6.3 or newer
+    in order to run the "./bootstrap.sh" script.
+
+    Note that the latest "update-xastir" script performs most of the above
+    steps:
+
+        cd Xastir
+        ./update-xastir
 
 
     Checking out a branch:
@@ -84,7 +90,6 @@ Git Instructions:
     git merge                     (This makes sure that all the changes that
                                    may have happened upstream on that branch
                                    get into your copy)
-
 
     You do not have to do this in a new directory --- so long as
     you haven't changed any files in the source tree, git checkout
@@ -103,6 +108,7 @@ Git Instructions:
 
     At the time of this writing there were only two branches in the Xastir
     repository:  master (the primary Xastir project) and "BRANCH_qt".
+
     
     Checking out the Qt branch:
     -----------------------------------------------------
@@ -116,31 +122,86 @@ Git Instructions:
     packets as they come in but there are no maps, symbols, etc.  The networking is
     both IPv4 and IPv6 compatible.
 
-
     There are many more git commands and options.  Many of them are more of
     use to the developers.  Some of those are listed below.  The above should
     be enough for most people to keep their copies in sync with the latest git
     development sources.
 
-Developer's git Instructions:
------------------------------
 
-   Make sure you know how git works.  Read https://git-scm.com/book/en/v2
+    Developer's git Instructions:
+    -----------------------------
 
-   If you are very familiar with CVS, get used to working differently, because
-   git is different.
+    Make sure you know how git works.  Read https://git-scm.com/book/en/v2
 
-   Read and understand http://chris.beams.io/posts/git-commit/
+    If you are very familiar with CVS, get used to working differently, because
+    git is different.
 
-   Read http://justinhileman.info/article/changing-history/
+    Read and understand http://chris.beams.io/posts/git-commit/
 
-   Read http://think-like-a-git.net/
+    Read http://justinhileman.info/article/changing-history/
 
-   Branching and merging in git is very simple, and is documented very well
-   by all those links.  We will not repeat it here.
+    Read http://think-like-a-git.net/
+
+    Branching and merging in git is very simple, and is documented very well
+    by all those links.  We will not repeat it here.
+
+    If you use SSH, set up your SSH keys on GitHub and do the "git clone" using
+    the SSH path. This will save you having to put in your password each time
+    you use the remote repository.
 
 
-  ------------------------------------------------------------------------
-Copyright (C) 1999 Frank Giannandrea
-Copyright (C) 2000-2016 The Xastir Group
+    Useful Git Commands:
+    --------------------
+    Set up global user/email
+        git config --global user.name "Your Name"
+        git config --global user.email "user@domain.com"
+
+    Set up user/email for a local repository
+        cd /path/repository
+        git config user.name "Your Name"
+        git config user.email "user@domain.com"
+
+    Configure Git's editor:
+        git config --global core.editor /path/to/editor
+
+    Colorizing Git output (set once and forget):
+        git config --global color.ui auto
+
+    Clone a repo:
+        git clone http://github.com/Xastir/Xastir
+        git clone https://github.com/Xastir/Xastir
+        git clone ssh://github.com/Xastir/Xastir
+
+    Status of local repo:
+        git status
+
+    Diff for a file:
+        git diff <filename>
+
+    See all branches, local and remote:
+        git branch -a
+
+    Visual Git viewer:
+        gitg
+
+    Commit changes to LOCAL repo:
+        git commit <file1> <file2>
+
+    Push local changes to remote repository:
+        git push
+
+    Update local repo from remote repo
+        git fetch
+
+    Update local repo and merge remote/local changes in local repo:
+        git pull
+
+    Rebase local changes against latest master branch
+        git fetch
+        git rebase master
+
+
+------------------------------------------------------------------------
+Copyright (C) 2016 The Xastir Group
+
 
