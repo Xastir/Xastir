@@ -182,7 +182,9 @@ Git Instructions:
         git branch -a
 
     Visual Git viewer:
-        gitg
+        gitk (tcl/tk and generic X11 viewer, comes with git)
+        or
+        gitg (gnome git viewer)
 
     Commit changes to LOCAL repo:
         git commit <file1> <file2>
