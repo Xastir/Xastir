@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mkdir build
+mkdir build -p
 cd build
 qmake ../xastir-qt.pro
 make
