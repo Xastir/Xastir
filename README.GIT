@@ -3,23 +3,31 @@ Git Instructions:
 
     For those who think git might be a bit too complicated to deal with,
     here are (I think) the minimal commands.  See the "SUDO" section in
-    README.sudo for ideas on how to make updating Xastir even simpler.
+    README.sudo for ideas to make updating Xastir even simpler.
 
 
-    Initial Git clone:
-    ---------------------
+USERS:
+------
+
+    Initial Copy (Git Clone):
+    -------------------------
+
     0) Make sure git is installed on your system.
      
     1) Run
         git config --global user.name "Your Name" user.email "Your@email.address"
-        This is not strictly necessary, but if you ever try to make changes
+
+        The above is not strictly necessary, but if you ever try to make changes
         to Xastir and get them integrated with the project it is important.
 
         NOTE: If you already have a different git global config, you can create
         a local config for a particular repo by going into that repo and doing:
         git config --local user.name "Your Name" user.email "Your@email.address"
 
-        Check the config by:  git config --local -l
+        Check the config by:
+            git config --local -l
+            git config --global -l
+            git config -l   # Doesn't differentiate between global and local though!
 
     2) Go to <http://github.com/Xastir/Xastir> to access the project page.
         There you will find the URL of the git repository, just to the
@@ -41,43 +49,84 @@ Git Instructions:
     and access to all prior releases.
 
 
-    Git Commands for Maintaining the Current Development Sources:
-    -------------------------------------------------------------
-    Once all this is in place, just cd into the "Xastir" directory at any
-    time, type "git pull".  This will update your directory tree and
-    repository clone with the most recent code.
+    Updating Your Copy:
+    -------------------
 
-    Then type "make install" in your build directory and you'll have the
-    latest development stuff installed on your system.
-
-    Here are the commands to do if you want a clean build of the latest
-    sources, and want configure to recheck all the libraries and header
-    files that Xastir needs:
-
-         cd Xastir
-         git pull           # Update your local repo
-         ./bootstrap.sh
-         mkdir build        # Build in a separate directory
-         cd build
-         ../configure
-         (make clean;make -j3 2>&1) | tee make.log
-         sudo make install  # "make install-strip" can be used after the first
-                            # time: It removes debugging info from executable
-         sudo chmod 4555 /usr/local/bin/xastir  # Only needed if using kernel AX.25
-         xastir &   # Start it up!
+    cd Xastir
+    git pull           # Update your local repo
+    ./bootstrap.sh
+    mkdir build        # Build in a separate directory
+    cd build
+    ../configure
+    (make clean;make -j3 2>&1) | tee make.log
+    sudo make install  # "make install-strip" can be used after the first
+                       # time: It removes debugging info from executable
+    sudo chmod 4555 /usr/local/bin/xastir  # Only needed if using kernel AX.25
+    xastir &   # Start it up!
 
     Note that you'll need autoconf 2.53 or newer and automake 1.6.3 or newer
     in order to run the "./bootstrap.sh" script.
 
-    Note that the latest "update-xastir" script performs most of the above
-    steps:
+    -or-
 
+    Bypass all of the commands above and just type:
         cd Xastir
         ./update-xastir
 
 
-    Checking out a branch:
-    ------------------------------------------------
+DEVELOPERS:
+-----------
+
+    Initial Checkout:
+    -----------------
+
+      git clone https://github.com/Xastir/Xastir
+
+    -or- add keys to GitHub and then:
+
+      git clone ssh://github.com/Xastir/Xastir
+
+    Note that using the SSH method means that you won't have to answer the
+    popups for user/password each time you do anything with the remote repo.
+    Highly recommended for active developers! 
+
+
+    Normal Development Flow:
+    ------------------------
+
+    A pull before committing can be dangerous, if there are substantial
+    conflicts between your work and others (not very likely with Xastir, but
+    definitely likely in bigger projects). It is much better to do a fetch
+    (which pulls down changes from the remote but DOESN'T merge them into your
+    tracking branch), then look at what changed upstream, and then either a
+    merge, rebase, stash/pop, or something else depending on the level of
+    conflict you see. See README.GIT.
+
+    Doing a pull before starting your own work is reasonable, but if someone
+    pushes while you're working (again, not very likely with Xastir), you can
+    still wind up with really ugly history, with weird merge commits and
+    undesired branching.
+
+    On the other hand, if you replace "git pull" with "git pull --rebase" in
+    that recipe, with the caveat that sometimes you might have to be more
+    careful and that you need to understand what you're doing, a lot of the
+    danger of the simple git pull can be avoided.
+
+    We will often be working on a branch for development, then merging that
+    branch with the trunk when that feature or bug-fix is ready for prime-time.
+
+    Commit your work to your LOCAL repo:
+
+       git commit
+
+    Push your local repo changes up to GitHub:
+
+       git push
+
+
+    Checking Out A Branch:
+    ----------------------
+
     All branches associated with the Xastir project are contained in the clone
     you made earlier.  You can switch your current working directory to
     one of those branches easily:
@@ -110,8 +159,9 @@ Git Instructions:
     repository:  master (the primary Xastir project) and "BRANCH_qt".
 
     
-    Checking out the Qt branch:
-    -----------------------------------------------------
+    Checking Out The Qt Branch:
+    ---------------------------
+
     There is only one non-default branch in the Xastir repository, for an
     experimental Qt-based version of Xastir.  It is called BRANCH_qt
 
@@ -128,8 +178,37 @@ Git Instructions:
     development sources.
 
 
-    Developer's git Instructions:
-    -----------------------------
+    If Using Multiple GitHub Accounts:
+    ----------------------------------
+
+    You may have trouble getting your commits attributed to the correct GitHub
+    login. GitHub uses the username/email in your git config settings for
+    attribution. If it is wrong, you may have to do some of the below in order
+    to set a LOCAL username and email for the one repository.
+
+    The user.name and user.email are pulled from the global git config, but a
+    local git config inside each repo will override those settings.
+
+    Go to root of checked-out repo and set local user.name and user.email for
+    this repo:
+
+       git config user.name <github username>
+       git config user.email <email address>
+       git config -l           # Shows both local and global settings, hard to tell which is which
+       git config --global     # Shows global settings
+       git config --local -l   # Shows local repo configs, so should show new settings
+
+    Another method (but more error-prone) of editing local/global git config is:
+
+       git config edit             # Edit local config
+       git config --global edit    # Edit global config
+
+    If new commits still aren't using the right email, make sure you have not
+    set GIT_COMMITTER_EMAIL or GIT_AUTHOR_EMAIL environment variables. 
+
+
+    More Info:
+    ----------
 
     Make sure you know how git works.  Read https://git-scm.com/book/en/v2
 
@@ -152,6 +231,7 @@ Git Instructions:
 
     Useful Git Commands:
     --------------------
+
     Set up global user/email
         git config --global user.name "Your Name"
         git config --global user.email "user@domain.com"
