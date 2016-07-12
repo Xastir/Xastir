@@ -226,12 +226,10 @@ DEVELOPERS:
 
     Read http://think-like-a-git.net/
 
+    Read "Visual Git Cheat Sheet" at http://ndpsoftware.com/git-cheatsheet.html
+
     Branching and merging in git is very simple, and is documented very well
     by all those links.  We will not repeat it here.
-
-    If you use SSH, set up your SSH keys on GitHub and do the "git clone" using
-    the SSH path. This will save you having to put in your password each time
-    you use the remote repository.
 
 
     Useful Git Commands:
@@ -271,8 +269,12 @@ DEVELOPERS:
         or
         gitg (gnome git viewer)
 
+    Add files to the staging area:
+        git add <file1> <file2>
+
     Commit changes to LOCAL repo:
-        git commit <file1> <file2>
+        git commit      # If have files in staging area already
+        git commit <file1> <file2>  # Ignores staging area
 
     Push local changes to remote repository:
         git push
