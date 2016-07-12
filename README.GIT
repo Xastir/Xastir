@@ -117,6 +117,7 @@ DEVELOPERS:
 
     Commit your work to your LOCAL repo:
 
+<<<<<<< HEAD
        - First add all desired changes to the staging area:
            git add <file1>  <file2> <file3> ...
 
@@ -129,6 +130,15 @@ DEVELOPERS:
 
        git push
 
+=======
+       git commit
+
+    Push your local repo changes up to GitHub:
+
+       git push
+
+
+>>>>>>> Removing .cvsignore and README.CVS. Adding README.GIT from the master branch.
     Checking Out A Branch:
     ----------------------
 
@@ -226,11 +236,21 @@ DEVELOPERS:
 
     Read http://think-like-a-git.net/
 
+<<<<<<< HEAD
     Read "Visual Git Cheat Sheet" at http://ndpsoftware.com/git-cheatsheet.html
 
     Branching and merging in git is very simple, and is documented very well
     by all those links.  We will not repeat it here.
 
+=======
+    Branching and merging in git is very simple, and is documented very well
+    by all those links.  We will not repeat it here.
+
+    If you use SSH, set up your SSH keys on GitHub and do the "git clone" using
+    the SSH path. This will save you having to put in your password each time
+    you use the remote repository.
+
+>>>>>>> Removing .cvsignore and README.CVS. Adding README.GIT from the master branch.
 
     Useful Git Commands:
     --------------------
