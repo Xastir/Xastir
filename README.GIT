@@ -187,6 +187,9 @@ DEVELOPERS:
     packets as they come in but there are no maps, symbols, etc.  The networking is
     both IPv4 and IPv6 compatible.
 
+    NOTE: "BRANCH_qt" was merged with the "master" branch July 12, 2016.
+    Refer to "README.qt" for instructions on building the Qt version. 
+
     There are many more git commands and options.  Many of them are more of
     use to the developers.  Some of those are listed below.  The above should
     be enough for most people to keep their copies in sync with the latest git
