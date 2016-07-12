@@ -1,4 +1,16 @@
 
+BUILDING:
+---------
+  cd Xastir/src/qt
+  ./build.sh
+
+
+RUNNING:
+--------
+  cd build
+  ./xastir_qt &
+
+
 GENERAL NOTES:
 --------------
 *) Use QT 4 Designer to create the graphical elements.  Each
