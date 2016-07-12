@@ -117,12 +117,17 @@ DEVELOPERS:
 
     Commit your work to your LOCAL repo:
 
-       git commit
+       - First add all desired changes to the staging area:
+           git add <file1>  <file2> <file3> ...
 
-    Push your local repo changes up to GitHub:
+       - Then commit your staged changes to your local repo
+
+          git commit
+
+    Push your local repo changes up to GitHub when you are ready to
+    publish them:
 
        git push
-
 
     Checking Out A Branch:
     ----------------------
