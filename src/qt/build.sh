@@ -1,5 +1,7 @@
 #!/bin/sh
 
-qmake xastir-qt.pro
+mkdir build
+cd build
+qmake ../xastir-qt.pro
 make
 
