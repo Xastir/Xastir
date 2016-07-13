@@ -1,3 +1,13 @@
+INITIAL PREPARATION:
+--------------------
+
+Qt4 development tools are required. For SuSE Linux they are in the
+"libqt4-devel" RPM package. This includes "qmake", "uic", and "designer"
+(Qt4 Designer).
+
+You'll also need the gcc-c++ compiler installed. For SuSE Linux that's in
+the "gcc-c++" package.
+
 
 BUILDING:
 ---------
@@ -11,10 +21,16 @@ RUNNING:
   ./xastir_qt &
 
 
-GENERAL NOTES:
---------------
+GENERAL QT4 NOTES:
+------------------
 *) Use QT 4 Designer to create the graphical elements.  Each
    dialog/window gets written out to a separate *.ui file.
+
+*) Do an out-of-source build to keep the source code directory pristine.
+   Perform all configure/compile commands from inside a "build" directory:
+
+   mkdir build -p
+   cd build
 
 *) Manual method:  Use the "uic" compiler to compile these .ui files
    to .h files:  Note:  The "qmake" command below does this
@@ -33,22 +49,24 @@ GENERAL NOTES:
 
 *) "make"
 
-uic -o ui_mydialog.h mydialog.ui
-moc -o mydialog.moc mydialog.h
-qmake -project
-qmake
-make
+Examples: (Generic, not for the Xastir project:
+  uic -o ui_mydialog.h mydialog.ui
+  moc -o mydialog.moc mydialog.h
+  qmake -project
+  qmake
+  make
 
 
 Once the project branch has been checked-out, these steps issued
 from the command-line should compile it:
 
-*) qmake xastir-qt.pro
-*) make
+  cd Xastir/src/qt
+  mkdir build -p
+  cd build
+  qmake ../xastir-qt.pro
+  make
 
 
-HOWEVER (from Tom, edited slightly by Curt):
----------------------------------------------------------------------
 Remember also that the *best* way to do multiple builds of an
 autoconfiscated code (and a qmake-ified code) is do do out-of-source
 builds, not in-source builds.  Doing so keeps the source tree
@@ -68,7 +86,6 @@ will build the qt stuff, and
 
 will build the normal build, and neither will interfere with the
 other.
----------------------------------------------------------------------
 
 
 SPECIFIC NOTES:
@@ -85,6 +102,7 @@ rm -f *~ core *.core
 make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
 Exited with code 0.
 
+
 Here's a Build->Build All command:
 ----------------------------------
 Configuration unchanged, skipping QMake step.
@@ -98,6 +116,7 @@ g++ -c -m64 -pipe -g -Wall -W -D_REENTRANT -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CO
 g++ -m64 -o xastir-qt main.o mainwindow.o moc_xastir.o -L/usr/lib64 -lQtGui -L/usr/lib64 -L/usr/X11R6/lib64 -lQtNetwork -lQtCore -lpthread
 make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
 Exited with code 0.
+
 
 Here's a Build->Run qmake (I must have something misconfigured in my project):
 --------------------------
@@ -115,6 +134,5 @@ LINUX:
 ------
 For Linux:  Had to run "qmake;make" on a 32-bit system because all the files were created on a 64-bit system.
 On a 64-bit system just run "make".
-
 
 
