@@ -43,8 +43,7 @@ map_DATA=worldhi.map CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-        OSM_tiled_fosm.geo OSM_tiled_mapquest.geo \
-	OSM_tiled_mapquest-aerial.geo 
+        OSM_tiled_fosm.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
@@ -91,18 +90,6 @@ OSM_tiled_fosm.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
 	    -e's!^#URL tileURL!URL http://map.fosm.org/default/!' \
 	    -e 's/-STYLE/-fosm/' \
-	    < $(top_srcdir)/OSM_template >$@
-
-OSM_tiled_mapquest.geo: OSM_template
-	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
-	    -e's!^#URL tileURL!URL http://otile3.mqcdn.com/tiles/1.0.0/osm/!' \
-	    -e 's/-STYLE/-mapquest/' \
-	    < $(top_srcdir)/OSM_template >$@
-
-OSM_tiled_mapquest-aerial.geo: OSM_template
-	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
-	    -e's!^#URL tileURL!URL http://otile3.mqcdn.com/tiles/1.0.0/sat/!' \
-	    -e 's/-STYLE/-mapquest-aerial/' \
 	    < $(top_srcdir)/OSM_template >$@
 
 ChangeLog::

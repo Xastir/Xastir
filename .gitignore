@@ -6,8 +6,6 @@ build
 OSM_tiled_cycle.geo
 OSM_tiled_fosm.geo
 OSM_tiled_mapnik.geo
-OSM_tiled_mapquest-aerial.geo
-OSM_tiled_mapquest.geo
 aclocal.m4
 autom4te-2.53.cache
 compile
