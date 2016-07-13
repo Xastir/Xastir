@@ -6,7 +6,7 @@ SUDO Instructions:
     (using the "visudo" command to edit this file), you'll be able to run a few
     commands as root without having to type the root password each time.
     Another thing you can do at that point is automate the entire
-    "git pull; mkdir build; cd build; ../configure; su; make install"
+    "git pull; mkdir build -p; cd build; ../configure; su; make install"
     process via a script.  Here's how to set all of this up:
 
     Type "su" to become the root user, then type "visudo".  This will bring up
@@ -46,7 +46,7 @@ SUDO Instructions:
 
         git pull
         ./bootstrap.sh
-        mkdir build
+        mkdir build -p
         cd build
         ../configure
         sudo make clean

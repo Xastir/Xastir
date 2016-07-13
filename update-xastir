@@ -31,7 +31,7 @@ echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log
 (date 2>&1)                               | tee -a make.log
-(mkdir build 2>&1)                        | tee -a make.log
+(mkdir build -p 2>&1)                     | tee -a make.log
 
 echo ""                                   | tee -a make.log
 echo ""                                   | tee -a make.log

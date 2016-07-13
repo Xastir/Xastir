@@ -24,7 +24,7 @@ you to easily keep up to date with the developers.
 If you used Git to fetch the sources, you need one more step here
 before you run configure:  "./bootstrap.sh"
 
-  mkdir build
+  mkdir build -p
   cd build
   ../configure
   make
@@ -1042,7 +1042,7 @@ First Time Install:
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using Git)
-        "mkdir build"
+        "mkdir build -p"
         "cd build"
         "../configure"
         "make" ("gmake" for Solaris or *BSD)
