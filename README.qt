@@ -1,39 +1,54 @@
+LATEST STATUS:
+--------------
+The File->Exit and Interface->Interface Control portions work. No other
+menu options have been implemented. It will connect to a server and display
+raw packets as they come in, but there are no maps, symbols, etc. There's
+not any packet decoding either. The networking is both IPv4 and IPv6
+compatible. It compiles/runs fine and should be very cross-platform at
+this stage (must be compiled on each one though).
+
+
 INITIAL PREPARATION:
 --------------------
-
-Qt4 development tools are required. For SuSE Linux they are in the
-"libqt4-devel" RPM package. This includes "qmake", "uic", and "designer"
-(Qt4 Designer).
+Qt4 development tools are required for compiling -or- GUI design. For SuSE
+Linux they are in the "libqt4-devel" RPM package. This includes "qmake",
+"uic", and "designer" (Qt4 Designer).
 
 You'll also need the gcc-c++ compiler installed. For SuSE Linux that's in
 the "gcc-c++" package.
 
+You can do manual builds or builds from within Qt Creator. In general I
+describe manual builds here.
 
-BUILDING:
----------
+
+MANUAL BUILD:
+-------------
   cd Xastir/src/qt
   ./build.sh
 
 
-RUNNING:
---------
+RUN THE EXECUTABLE:
+-------------------
   cd build
   ./xastir_qt &
 
 
 GENERAL QT4 NOTES:
 ------------------
-*) Use QT 4 Designer to create the graphical elements.  Each
-   dialog/window gets written out to a separate *.ui file.
-
 *) Do an out-of-source build to keep the source code directory pristine.
    Perform all configure/compile commands from inside a "build" directory:
 
    mkdir build -p
    cd build
 
-*) Manual method:  Use the "uic" compiler to compile these .ui files
-   to .h files:  Note:  The "qmake" command below does this
+*) Use QT 4 Designer to create the graphical elements. Each
+   dialog/window gets written out to a separate *.ui file.
+
+    designer &
+    Open->mainwindow.ui
+
+*) Manual compile of ".ui" files:  Use the "uic" compiler to compile
+   .ui files to .h files:  Note:  The "qmake" command below does this
    automatically!
 
     uic -o *.h *.ui
@@ -69,17 +84,17 @@ from the command-line should compile it:
 
 Remember also that the *best* way to do multiple builds of an
 autoconfiscated code (and a qmake-ified code) is do do out-of-source
-builds, not in-source builds.  Doing so keeps the source tree
-unpolluted with build droppings.  Thus,
+builds, not in-source builds. Doing so keeps the source tree
+unpolluted with build droppings. Thus,
 
-  mkdir ~/builds/xastir-qt
+  mkdir ~/builds/xastir-qt -p
   cd ~/builds/xastir-qt
   qmake ~/src/xastir/qt/xastir-qt.pro
   make
 
 will build the qt stuff, and
 
-  mkdir ~/builds/xastir-motif
+  mkdir ~/builds/xastir-motif -p
   cd ~/builds/xastir-motif
   ~/src/xastir/configure
   make
@@ -88,8 +103,32 @@ will build the normal build, and neither will interfere with the
 other.
 
 
+libqt4-devel rpm provides these binaries (as well as include files
+and others). Those with '*' are the ones we currently use:
+*   /usr/bin/designer
+    /usr/bin/lconvert
+    /usr/bin/linguist
+    /usr/bin/lrelease
+    /usr/bin/lupdate
+*   /usr/bin/moc
+    /usr/bin/pixeltool
+    /usr/bin/qdbuscpp2xml
+    /usr/bin/qdbusxml2cpp
+    /usr/bin/qdoc3
+    /usr/bin/qhelpconverter
+    /usr/bin/qhelpgenerator
+*   /usr/bin/qmake
+    /usr/bin/qt3to4
+    /usr/bin/qttracereplay
+    /usr/bin/qvfb
+    /usr/bin/rcc
+*   /usr/bin/uic
+    /usr/bin/uic3
+
+
 SPECIFIC NOTES:
 ---------------
+
 
 Here's what Qt Creator does when you do a Build->Clean All:
 -----------------------------------------------------------
@@ -103,8 +142,8 @@ make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
 Exited with code 0.
 
 
-Here's a Build->Build All command:
-----------------------------------
+Here's a Qt Creator Build->Build All command:
+---------------------------------------------
 Configuration unchanged, skipping QMake step.
 Starting: /usr/bin/make -w 
 make: Entering directory `/home/src/we7u/xastir/xastir-qt'
@@ -118,21 +157,21 @@ make: Leaving directory `/home/src/we7u/xastir/xastir-qt'
 Exited with code 0.
 
 
-Here's a Build->Run qmake (I must have something misconfigured in my project):
---------------------------
+Here's a Qt Creator Build->Run qmake (I must have something misconfigured in my project):
+-----------------------------------------------------------------------------------------
 Starting: /usr/bin/qmake /home/src/we7u/xastir/xastir-qt/xastir-qt.pro -spec linux-g++-64 -r CONFIG+=debug QMLJSDEBUGGER_PATH=/usr/share/qtcreator/qml/qmljsdebugger 
 Exited with code 0.
 
 
 <I'm pretty sure that Curt's notes below assume that there are
-left-over droppings from a previous qmake on another system.  None of
+left-over droppings from a previous qmake on another system. None of
 those files are still in CVS, so they shouldn't be relevant: you
 should always need to do a qmake from a fresh check-out, and you are 
 highly advised to do an out-of-source build as noted above>
 
 LINUX:
 ------
-For Linux:  Had to run "qmake;make" on a 32-bit system because all the files were created on a 64-bit system.
-On a 64-bit system just run "make".
+For Linux:  Had to run "qmake;make" on a 32-bit system because all the files
+had been created on a 64-bit system.  On a 64-bit system just run "make".
 
 
