@@ -1,0 +1,106 @@
+# $Id$
+#
+# Copyright (C) 2003-2016  The Xastir Group
+#
+# This dbfawk file is used to map arbitrary dbf data that
+# accompanies a shapefile into Xastir canonical values of:
+#
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
+#   pattern - line pattern for road, river, etc. (0 - solid; 1 - dash; 2 - double dash)
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near
+# awk compatible.
+#
+# This file is used to map OSM shapefiles by "Cloudmade" which are
+# named "*_highway.dbf".
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column
+# names in order. dbfinfo should match the dbf file that we say this
+# dbfawk file goes with.
+dbfinfo="osm_id:name:ref:type:oneway:bridge:tunnel:maxspeed";
+
+# dbffields is which of the above fields we actually want to look
+# at.  No point reading dbffields that are not looked at further.
+dbffields="type:name:oneway";
+}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple
+# fields. Use this rule to re-initialize variables between records.
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0;}
+
+# per-field rules are applied to the dbffields that are read from
+# each record.
+
+# select the name given in the record
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=Highway (.*)$/ {name="$(name)Hwy $1"; next}
+/^name=State Route (.*)$/ {name="$(name)SR-$1"; next}
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=Interstate (.*) Northbound$/ {name="$(name)I-$1 N"; next}
+/^name=Interstate (.*) Southbound$/ {name="$(name)I-$1 S"; next}
+/^name=Interstate (.*) Eastbound$/ {name="$(name)I-$1 E"; next}
+/^name=Interstate (.*) Westbound$/ {name="$(name)I-$1 W"; next}
+/^name=Interstate (.*)$/ {name="$(name)I-$1"; next}
+/^name=Washington Highway (.*)$/ {name="$(name)Hwy $1"; next}
+/^name=(.+)$/ {name="$1";next}
+
+#/^LANES=(.+)$/ {lanes="$1";}
+
+# type:
+/^type=abandoned/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=bridleway/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=construction/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=crossing/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=cycleway/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=driveway/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=footway/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=ford/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=living_street/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+# Note:  No display_level or label_level
+/^type=motorway/ {lanes=4; color=4; label_level=65536; font_size=3; next}
+# Note:  No display_level
+/^type=motorway_link/ {lanes=3; color=2; label_level=16; font_size=1; next}
+/^type=path/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=pedestrian/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=platform/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=primary/ {lanes=2; color=8; display_level=512; label_level=128; font_size=1; next}
+/^type=primary_link/ {lanes=2; color=8; display_level=512; label_level=128; font_size=1; next}
+/^type=raceway/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=ramp/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=residential/ {lanes=1; color=44; display_level=64; label_level=16; font_size=1; next}
+/^type=road/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=secondary/ {lanes=2; color=8; display_level=256; label_level=64; font_size=1; next}
+/^type=secondary_link/ {lanes=1; color=8; display_level=256; label_level=64; font_size=1; next}
+/^type=service/ {lanes=1; color=8; display_level=64; label_level=16; font_size=1; next}
+/^type=service; residential/ {lanes=7; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=steps/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=tertiary/ {lanes=1; color=8; display_level=256; label_level=64; font_size=1; next}
+/^type=tertiary_link/ {lanes=1; color=8; display_level=256; label_level=64; font_size=1; next}
+/^type=t/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=track/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=trail/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
+/^type=tr/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=trunk/ {lanes=3; color=8; display_level=128; label_level=16; font_size=3; next}
+/^type=trunk_link/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=unclassified/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^type=unsurfaced/ {lanes=1; color=105; display_level=64; label_level=16; font_size=1; next}
+
+# key: set the search key to be the Tiger/Line ID.  Not currently
+# used.
+#/^TLID=(.*)$/ {key=$1; next}
+
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}
