@@ -106,7 +106,7 @@
     <item>
      <widget class="QLabel" name="label_9">
       <property name="text">
-       <string>N/S</string>
+       <string>E/W</string>
       </property>
      </widget>
     </item>
