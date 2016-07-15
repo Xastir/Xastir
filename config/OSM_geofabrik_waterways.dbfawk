@@ -19,10 +19,8 @@
 # NOTE: This file format is modeled after awk but is nowhere near
 # awk compatible.
 #
-# This file is used to map OSM shapefiles by "Cloudmade" which are
-# named "*_water.dbf" and "*_coastline.dbf".  Unfortunately both
-# DBF files have the same signature, so we need to have this dbfawk
-# file match both of them.
+# This file is used to map OSM shapefiles by "geofabrik.de" which are
+# named "waterways.dbf".
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
