@@ -19,8 +19,8 @@
 # NOTE: This file format is modeled after awk but is nowhere near
 # awk compatible.
 #
-# This file is used to map OSM shapefiles by "Cloudmade" which are
-# named "*_highway.dbf".
+# This file is used to map OSM shapefiles by "geofabrik.ge" which are
+# named "roads.dbf".
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
@@ -43,6 +43,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # each record.
 
 # select the name given in the record
+# NOTE: Most of these came from the OSM Cloudmade dbfawk. They need to be re-done for the geofabrik.de files.
 /^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
 /^name=Highway (.*)$/ {name="$(name)Hwy $1"; next}
 /^name=State Route (.*)$/ {name="$(name)SR-$1"; next}
@@ -59,6 +60,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 #/^LANES=(.+)$/ {lanes="$1";}
 
 # type:
+# NOTE: Most of these came from the OSM Cloudmade dbfawk. They need to be re-done for the geofabrik.de files.
 /^type=abandoned/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
 /^type=bridleway/ {lanes=1; color=66; display_level=64; label_level=16; font_size=1; next}
 /^type=construction/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
