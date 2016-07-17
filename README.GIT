@@ -2,7 +2,7 @@ Git Instructions:
 -----------------
 
     For those who think git might be a bit too complicated to deal with,
-    here are (I think) the minimal commands.  See the "SUDO" section in
+    here are (I think) the minimal commands. See the "SUDO" section in
     README.sudo for ideas to make updating Xastir even simpler.
 
 
@@ -31,7 +31,7 @@ USERS:
 
     2) Go to <http://github.com/Xastir/Xastir> to access the project page.
         There you will find the URL of the git repository, just to the
-        right of a button that says "HTTPS".  Copy this URL to your clipboard.
+        right of a button that says "HTTPS". Copy this URL to your clipboard.
 
         (At the time of this writing, the URL was
          <https://github.com/Xastir/Xastir.git>)
@@ -84,11 +84,12 @@ DEVELOPERS:
 
     -or- add keys to GitHub and then:
 
-      git clone ssh://github.com/Xastir/Xastir
+      git clone git@github.com:Xastir/Xastir
 
     Note that using the SSH method means that you won't have to answer the
-    popups for user/password each time you do anything with the remote repo.
-    Highly recommended for active developers! 
+    popups for user/password each time you do anything with the remote repo,
+    although you will have to enter a passphrase if you added a passphrase to
+    your SSH key. The SSH method is highly recommended for active developers! 
 
 
     Normal Development Flow:
@@ -143,7 +144,7 @@ DEVELOPERS:
     ----------------------
 
     All branches associated with the Xastir project are contained in the clone
-    you made earlier.  You can switch your current working directory to
+    you made earlier. You can switch your current working directory to
     one of those branches easily:
 
     cd Xastir
@@ -178,20 +179,20 @@ DEVELOPERS:
     ---------------------------
 
     There is only one non-default branch in the Xastir repository, for an
-    experimental Qt-based version of Xastir.  It is called BRANCH_qt
+    experimental Qt-based version of Xastir. It is called BRANCH_qt
 
     You can check it out according to the instructions above.
 
     Latest Qt status:  The File->Exit and Interface->Interface Control portions work,
-    but none of the other menu options have been implemented.  It will display raw
-    packets as they come in but there are no maps, symbols, etc.  The networking is
+    but none of the other menu options have been implemented. It will display raw
+    packets as they come in but there are no maps, symbols, etc. The networking is
     both IPv4 and IPv6 compatible.
 
     NOTE: "BRANCH_qt" was merged with the "master" branch July 12, 2016.
     Refer to "README.qt" for instructions on building the Qt version. 
 
-    There are many more git commands and options.  Many of them are more of
-    use to the developers.  Some of those are listed below.  The above should
+    There are many more git commands and options. Many of them are more of
+    use to the developers. Some of those are listed below. The above should
     be enough for most people to keep their copies in sync with the latest git
     development sources.
 
@@ -228,7 +229,7 @@ DEVELOPERS:
     More Info:
     ----------
 
-    Make sure you know how git works.  Read https://git-scm.com/book/en/v2
+    Make sure you know how git works. Read https://git-scm.com/book/en/v2
 
     If you are very familiar with CVS, get used to working differently, because
     git is different.
@@ -239,21 +240,15 @@ DEVELOPERS:
 
     Read http://think-like-a-git.net/
 
-<<<<<<< HEAD
     Read "Visual Git Cheat Sheet" at http://ndpsoftware.com/git-cheatsheet.html
 
     Branching and merging in git is very simple, and is documented very well
-    by all those links.  We will not repeat it here.
-
-=======
-    Branching and merging in git is very simple, and is documented very well
-    by all those links.  We will not repeat it here.
+    by all those links. We will not repeat it here.
 
     If you use SSH, set up your SSH keys on GitHub and do the "git clone" using
     the SSH path. This will save you having to put in your password each time
-    you use the remote repository.
-
->>>>>>> Removing .cvsignore and README.CVS. Adding README.GIT from the master branch.
+    you use the remote repository, although if you added a passphrase to your
+    SSH key you'll have to enter that each time.
 
     Useful Git Commands:
     --------------------
@@ -276,7 +271,7 @@ DEVELOPERS:
     Clone a repo:
         git clone http://github.com/Xastir/Xastir
         git clone https://github.com/Xastir/Xastir
-        git clone ssh://github.com/Xastir/Xastir
+        git clone git@github.com:Xastir/Xastir
 
     Status of local repo:
         git status
