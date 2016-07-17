@@ -118,7 +118,6 @@ DEVELOPERS:
 
     Commit your work to your LOCAL repo:
 
-<<<<<<< HEAD
        - First add all desired changes to the staging area:
            git add <file1>  <file2> <file3> ...
 
@@ -131,15 +130,18 @@ DEVELOPERS:
 
        git push
 
-=======
-       git commit
 
-    Push your local repo changes up to GitHub:
+    Important: Git Commit Message Format
+    ------------------------------------
 
-       git push
+    Git commit messages need to be in a certain format to make the best use
+    of the "git log" commands. In particular the first line needs to be 50
+    chars or less, then a BLANK LINE, then a detailed commit message. See
+    this link for more info:
+
+    http://chris.beams.io/posts/git-commit/
 
 
->>>>>>> Removing .cvsignore and README.CVS. Adding README.GIT from the master branch.
     Checking Out A Branch:
     ----------------------
 
