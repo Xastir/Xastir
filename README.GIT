@@ -53,7 +53,7 @@ USERS:
     -------------------
 
     cd Xastir
-    git pull           # Update your local repo
+    git pull           # Update your local repo (May be dangerous for developers)
     ./bootstrap.sh
     mkdir build -p     # Build in a separate directory
     cd build
@@ -305,7 +305,8 @@ DEVELOPERS:
     Update local repo from remote repo
         git fetch
 
-    Update local repo and merge remote/local changes in local repo:
+    Update local repo and merge remote/local changes in local repo (May be
+    dangerous for developers with modified code in their working tree):
         git pull
 
     Rebase local changes against latest master branch
