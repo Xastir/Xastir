@@ -55,7 +55,7 @@ Steps in order:
    inches of Mercury, inches of rain, and windspeed in knots.
 
 3) Install or update your installation for Xastir to the latest
-   version (http://www.sourceforge.net, project Xastir) 
+   version ("http://github.com/Xastir/Xastir" project Xastir) 
 
 4) Install open2300db2APRS 
    See instructions below.

@@ -164,7 +164,7 @@ Getting the package:
 --------------------
 *) Option 1:  Download one of stable or development snapshots from
 http://xastir.org.  There are links from that page or you can go
-to the SourceForge page and click on Files to see the entire set
+to the Sourceforge page and click on Files to see the entire set
 that is available.
 
 Once you have the file, create a subdirectory for it to reside.  I
@@ -794,7 +794,7 @@ are located there.
 
 Enabling Audio Alarms:
 ----------------------
-Download and install sample audio files from Xastir's SourceForge
+Download and install sample audio files from Xastir's GitHub
 download site.  Install the audio files in
 /usr/local/share/xastir/sounds/ directory.
 

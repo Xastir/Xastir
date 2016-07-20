@@ -51,7 +51,7 @@ Steps in order:
    not absolutely required...
 
 3) Install or update your installation for Xastir to the latest
-   version (http://www.sourceforge.net, project Xastir) 
+   version ("http://github.com/Xastir/Xastir" project Xastir) 
 
 4) Install db2APRS -  version 0.1.2
    See instructions below.

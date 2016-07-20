@@ -15,11 +15,10 @@ abide by them anyway for consistency (Hey, I don't like some of them
 either, but consistency is more important than ideas I might have of
 coding style!  --we7u).
 
-*) Check the Xastir pages at Sourceforge.  There are sections for bug
-reports and feature requests.  Anyone can log new bugs or feature requests,
-whether or not they are logged into Sourceforge.  This is one of the best
-places to see what needs to be worked on, and to see if anyone else has
-had a similar idea. 
+*) Check the Xastir issue tracker: http://github.com/Xastir/Xastir/issues
+You need a GitHub account to create new issues, but this is free.
+This is one of the best places to see what needs to be worked on,
+and to see if anyone else has had a similar idea. 
 
 *) Check with the Xastir-Dev list first to see if anyone else is
 working on that particular idea or section of code.
