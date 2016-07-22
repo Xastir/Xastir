@@ -70,7 +70,8 @@ Image Maps          ImageMagick.  Often need lcms library and others
                     image types without installing ImageMagick.
 Internet Maps       ImageMagick plus wget or libcurl.  Often need
                     lcms library and others as well (whatever it
-                    takes to make ImageMagick happy).
+                    takes to make ImageMagick happy). WMS Maps are
+                    in this category as well.
 UI-View Maps        Convert from .INF to .GEO format using
                     xastir/scripts/inf2geo.pl
 OziExplorer Maps    Convert some maps to .GEO format using
@@ -97,6 +98,29 @@ How to Use APRS Overlay Maps (*.POS files) within Xastir:
 
     Xastir:  Map->Configure->Index: Add New Maps
              Map Chooser:  Select the "testmap" map
+
+
+Using Online Maps:
+------------------
+      There are a few *.geo files that get installed into Xastir's
+      maps/ directory upon install. For others, you might try WMS map
+      servers and create your own *.geo files for them. Look for the
+      "GetCapabilities" XML file link for the WMS map server of interest.
+      Inside that file will be "Layer" definitions, each with a "Name".
+      Use that name in a newly-created *.geo file in Xastir's map
+      directory. Here's an example file that Xastir can use (only 2 lines!):
+
+-----
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANPARENT=FALSE
+-----
+
+      In this example we're getting Canadian maps, the "Layer" is
+      "Sub_regional", and it just so happens to work at zoom levels
+      between 1 and 300 in Xastir. The layer name was derived from this
+      XML link:
+
+  http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetCapabilities
 
 
 Getting Maps and other Data Files for Xastir:
@@ -190,7 +214,8 @@ Getting Maps and other Data Files for Xastir:
       Raster Format:
       .tif/.fgd       geoTIFF raster image map
       .geo            Raster image map or Internet raster image map.  Note that
-                      for http/ftp-based maps Xastir requires an IMAGESIZE line.
+                      for http/ftp-based maps Xastir requires an IMAGESIZE line
+                      unless using WMS maps.
 
       Note:  .geo is listed twice because it can fit in both categories,
       depending on the base format of the map file that the .geo file
