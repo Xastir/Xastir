@@ -122,6 +122,21 @@ Using Online Maps:
 
   http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetCapabilities
 
+      The /usr/local/share/xastir/scripts/wms.pl script can be used to
+      determine the "Layers" available for a WMS map source. Use it like this:
+
+  ./wms.pl "http\://geogratis.gc.ca/maps/CBMT\?service=wms\&version=1.1.1\&request\=GetCapabilities"
+
+      where backslashes have been added prior to each '&' character in the
+      GetCapabilities URL. The output of the script will be the format of the
+      XML file, then a section at the end which looks like this:
+
+      MAP LAYERS:
+          Name: "National"
+          Name: "Sub_national"
+          Name: "Regional"
+          Name: "Sub_regional"
+
 
 Getting Maps and other Data Files for Xastir:
 ---------------------------------------------
