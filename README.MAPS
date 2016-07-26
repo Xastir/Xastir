@@ -133,23 +133,27 @@ Using Online Maps:
       character in the URL. "wms.pl" will show the format of the XML file plus
       a section at the end which looks like:
 
-      MAP LAYERS:
-             Name: "National"
-             Name: "Sub_national"
-             Name: "Regional"
-             Name: "Sub_regional"
+---------------
+  POSSIBLE .GEO FILE CONTENTS:
+
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=National
+
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=Sub_national
+
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=Regional
+
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=Sub_regional
+---------------
 
       This means there are four different map layers you can get from that WMS
-      server, so to see/use each one you'll need to create four different .geo
-      files for Xastir. The format of a WMS Server .geo file is exactly 2 lines:
-
-----------
-  WMSSERVER
-  URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE
-----------
-
-      That example is for Canadian maps, layer "Sub_regional", which just so
-      happens is visible from about zoom 1 to zoom 300.
+      server. To see/use each one you'll need to create four different .geo
+      files for Xastir. The format of a WMS Server .geo file is exactly two
+      lines. Try using each of the two-line outputs from wms.pl as a start
+      towards creating your own .geo files.
 
 
 Getting Maps and other Data Files for Xastir:

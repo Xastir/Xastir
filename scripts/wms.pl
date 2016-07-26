@@ -34,50 +34,9 @@
 # from README.MAPS. Both lines are required in the .geo file:
 # -----------------------
 # WMSSERVER
-# URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANPARENT=FALSE
+# URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE
 # -----------------------
 #
-
-use strict;
-use XML::Simple;
-use Getopt::Std;
-use Data::Dumper;
-use Scalar::Util 'reftype';
-
-
-my $url;
-$url = shift;
-if (!defined $url || $url eq "") {
-  print "Please enter GetCapabilities URL with '\' before each '&' character.\n";
-  $url = <>;
-}
-
-my $xml_text= `wget -O - $url`;
-my $xml = XMLin( $xml_text );
-print Dumper($xml);
-
-print "\n----------------------------------------------------------\n\n";
-
-print "MAP LAYERS:\n";
-
-my $ii;
-my $reftype = reftype $xml->{Capability}->{Layer}->{Layer};
-if ( (defined $reftype) && ($reftype eq 'ARRAY') ) {
-  for ($ii = 0; $ii < 15; $ii++) {
-    if ( defined($xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}) ) {
-      print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
-    }
-  }
-}
-
-if ( (defined $reftype) && ($reftype eq 'HASH') ) {
-  for ($ii = 0; $ii < 15; $ii++) {
-    if ( defined($xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}) ) {
-      print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
-    }
-  }
-}
-
 #Here's the info from Dumper that we're interested in (Name):
 #$VAR1 = {
 #          'Capability' => [
@@ -98,5 +57,58 @@ if ( (defined $reftype) && ($reftype eq 'HASH') ) {
 #                                                'Layer' => [
 #                                                           {
 #                                                             'Name' => '1',
+
+
+use strict;
+use XML::Simple;
+use Getopt::Std;
+use Data::Dumper;
+use Scalar::Util 'reftype';
+
+
+my $url;
+$url = shift;
+if (!defined $url || $url eq "") {
+  print "Please enter GetCapabilities URL with '\' before each '&' character.\n";
+  $url = <>;
+}
+
+my $xml_text= `wget -O - $url`;
+my $xml = XMLin( $xml_text );
+
+print Dumper($xml);
+
+print "\n----------------------------------------------------------\n\n";
+
+my $url_filtered = $url;
+$url_filtered =~ s/\\//g;   # Get rid of backslashes
+$url_filtered =~ s/(.*\?).*/$1/;   # Remove everything after '?'
+$url_filtered = "URL " . $url_filtered . "service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=";
+
+print "POSSIBLE .GEO FILE CONTENTS:\n";
+
+my $ii;
+my $reftype = reftype $xml->{Capability}->{Layer}->{Layer};
+if ( (defined $reftype) && ($reftype eq 'ARRAY') ) {
+  for ($ii = 0; $ii < 15; $ii++) {
+    if ( defined($xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}) ) {
+      print "\nWMSSERVER\n";
+      print $url_filtered;
+      #print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
+      print "$xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}\n";
+    }
+  }
+}
+
+if ( (defined $reftype) && ($reftype eq 'HASH') ) {
+  for ($ii = 0; $ii < 15; $ii++) {
+    if ( defined($xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}) ) {
+      print "\nWMSSERVER\n";
+      print $url_filtered;
+      #print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
+      print "$xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}\n";
+    }
+  }
+}
 
 
