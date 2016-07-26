@@ -102,40 +102,54 @@ How to Use APRS Overlay Maps (*.POS files) within Xastir:
 
 Using Online Maps:
 ------------------
-      There are a few *.geo files that get installed into Xastir's
-      maps/ directory upon install. For others, you might try WMS map
-      servers and create your own *.geo files for them. Look for the
-      "GetCapabilities" XML file link for the WMS map server of interest.
-      Inside that file will be "Layer" definitions, each with a "Name".
-      Use that name in a newly-created *.geo file in Xastir's map
-      directory. Here's an example file that Xastir can use (only 2 lines!):
+      There are a few *.geo files that get installed into Xastir's maps/
+      directory upon install. These invoke online map sources of various types:
 
------
-  WMSSERVER
-  URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANPARENT=FALSE
------
+   OpenStreetMap
+   -------------
 
-      In this example we're getting Canadian maps, the "Layer" is
-      "Sub_regional", and it just so happens to work at zoom levels
-      between 1 and 300 in Xastir. The layer name was derived from this
-      XML link:
+      Select the appropriate files from the Online/ directory in Map Chooser
+
+   WMS Map Servers
+   ---------------
+
+      Xastir has support for WMS map servers built-in. To use this you'll need
+      to create a *.geo file in your map directory (usually
+      "/usr/local/share/xastir/maps/Online/", "/usr/share/xastir/maps/Online/"
+      or any directory below those) for each LAYER you wish to use, perform a
+      re-index of your maps, then select them in the Map Chooser.
+
+      Procedure: Hunt down a WMS map server that you wish to use, then find
+      its "GetCapabilities" link. Here's an example:
 
   http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetCapabilities
 
-      The /usr/local/share/xastir/scripts/wms.pl script can be used to
-      determine the "Layers" available for a WMS map source. Use it like this:
+      Look at it directly in your browser or use Xastir's "wms.pl" script to
+      see the structure and keywords of the XML:
 
-  ./wms.pl "http\://geogratis.gc.ca/maps/CBMT\?service=wms\&version=1.1.1\&request\=GetCapabilities"
+  wms.pl "http://geogratis.gc.ca/maps/CBMT?service=wms\&version=1.1.1\&request=GetCapabilities"
 
-      where backslashes have been added prior to each '&' character in the
-      GetCapabilities URL. The output of the script will be the format of the
-      XML file, then a section at the end which looks like this:
+      Note that if using "wms.pl" you must add backslashes prior to each '&'
+      character in the URL. "wms.pl" will show the format of the XML file plus
+      a section at the end which looks like:
 
       MAP LAYERS:
-          Name: "National"
-          Name: "Sub_national"
-          Name: "Regional"
-          Name: "Sub_regional"
+             Name: "National"
+             Name: "Sub_national"
+             Name: "Regional"
+             Name: "Sub_regional"
+
+      This means there are four different map layers you can get from that WMS
+      server, so to see/use each one you'll need to create four different .geo
+      files for Xastir. The format of a WMS Server .geo file is exactly 2 lines:
+
+----------
+  WMSSERVER
+  URL http://geogratis.gc.ca/maps/CBMT?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:4326&LAYERS=Sub_regional&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE
+----------
+
+      That example is for Canadian maps, layer "Sub_regional", which just so
+      happens is visible from about zoom 1 to zoom 300.
 
 
 Getting Maps and other Data Files for Xastir:
@@ -171,7 +185,7 @@ Getting Maps and other Data Files for Xastir:
     Download some maps:
 
       If you compiled with ImageMagick and have wget or libcurl installed,
-      you can skip this step and use the online Tiger/Terraserver maps
+      you can skip this step and use the online OSM/WSM maps
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
       failures of your Internet connection.  See the section below on map
@@ -294,7 +308,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
      [http://ireland.aprs2.net/xastir/IrelandMaps/Ireland1600x2000.bmp country], with 
      an associated [http://ireland.aprs2.net/xastir/IrelandMapsIreland1600x2000.geo 
      geo] file, the [http://ireland.aprs2.net/xastir/IrelandMaps/Ireland1600x2000.bmp 
-     South East], it's associated  
+     South East], its associated  
      [http://ireland.aprs2.net/xastir/IrelandMapsIreland1600x2000.geo geo] and a 
      [http://ireland.aprs2.net/xastir/IrelandMaps/IrishMET.geo Weather Radar] .geo file.
 
@@ -570,7 +584,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
            If you browse config/*.dbfawk you will see dbfawk's for the most
            well know shapefile types.  For example, tgrlk.dbfawk matches
            all the "tgr*lk?.dbf" US Census Tiger/Line files.  When a shapefile
-           map is displayed, it's .dbf signature is matched up with one of
+           map is displayed, its .dbf signature is matched up with one of
            the config/*.dbfawk files.
         2. "Tied" to a file.  If you installed a .dbfawk file in the same
             directory as the .shp and .dbf files (e.g. sample.shp, sample.dbf
@@ -1090,12 +1104,14 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       "Enable/configure Tigermap". These maps are generated by the census
       bureau web-server.
 
+      NO LONGER WORKS:
       A .geo with only the word "TERRASERVER-SATELLITE" in it will retrieve a
       satellite photo of the area from terraserver.  You need "wget" or libcurl,
       plus ImageMagick installed, and support for them compiled into Xastir.  No
       additional map downloads are needed if these are the only maps that you
       want to use.
 
+      NO LONGER WORKS:
       A .geo with only the word "TERRASERVER-TOPO" in it will retrieve a
       topographic map of the area from terraserver.  You need "wget" or
       libcurl, plus ImageMagick installed, and support for them compiled into
