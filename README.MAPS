@@ -185,7 +185,7 @@ Getting Maps and other Data Files for Xastir:
     Download some maps:
 
       If you compiled with ImageMagick and have wget or libcurl installed,
-      you can skip this step and use the online OSM/WSM maps
+      you can skip this step and use the online OSM/WMS maps
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
       failures of your Internet connection.  See the section below on map
