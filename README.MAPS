@@ -125,13 +125,13 @@ Using Online Maps:
   http://geogratis.gc.ca/maps/CBMT?service=wms&version=1.1.1&request=GetCapabilities
 
       Look at it directly in your browser or use Xastir's "wms.pl" script to
-      see the structure and keywords of the XML:
+      see the structure and keywords of the XML. Note that if using "wms.pl"
+      you must add backslashes prior to each '&' character in the URL.
 
   wms.pl "http://geogratis.gc.ca/maps/CBMT?service=wms\&version=1.1.1\&request=GetCapabilities"
 
-      Note that if using "wms.pl" you must add backslashes prior to each '&'
-      character in the URL. "wms.pl" will show the format of the XML file plus
-      a section at the end which looks like:
+      "wms.pl" will show the format of the XML file plus a section at the end
+      which looks like:
 
 ---------------
   POSSIBLE .GEO FILE CONTENTS:
