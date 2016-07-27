@@ -3,7 +3,7 @@
 # $Id: $
 
 #
-# Copyright (C) 2016 Curtis E. Mills, WE7U
+# Copyright (C) 2016 The Xastir Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -80,21 +80,24 @@ print Dumper($xml);
 
 print "\n----------------------------------------------------------\n\n";
 
+my $version = $url;
+$version =~ s/.*version=(\d+\.\d+\.\d+).*/$1/;
+
 my $url_filtered = $url;
 $url_filtered =~ s/\\//g;   # Get rid of backslashes
 $url_filtered =~ s/(.*\?).*/$1/;   # Remove everything after '?'
-$url_filtered = "URL " . $url_filtered . "service=wms&version=1.1.1&request=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=";
+$url_filtered = "URL " . $url_filtered . "SERVICE=wms&VERSION=$version&REQUEST=GetMap&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=false&STYLES=&LAYERS=";
 
-print "POSSIBLE .GEO FILE CONTENTS:\n";
+print "POSSIBLE .GEO FILE CONTENTS:\n\n";
 
 my $ii;
 my $reftype = reftype $xml->{Capability}->{Layer}->{Layer};
 if ( (defined $reftype) && ($reftype eq 'ARRAY') ) {
   for ($ii = 0; $ii < 15; $ii++) {
     if ( defined($xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}) ) {
-      print "\nWMSSERVER\n";
+      print "-----\n";
+      print "WMSSERVER\n";
       print $url_filtered;
-      #print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
       print "$xml->{Capability}->{Layer}->{Layer}->[$ii]->{Name}\n";
     }
   }
@@ -103,9 +106,9 @@ if ( (defined $reftype) && ($reftype eq 'ARRAY') ) {
 if ( (defined $reftype) && ($reftype eq 'HASH') ) {
   for ($ii = 0; $ii < 15; $ii++) {
     if ( defined($xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}) ) {
+      print "-----\n";
       print "\nWMSSERVER\n";
       print $url_filtered;
-      #print "\tName: \"$xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}\"\n";
       print "$xml->{Capability}->{Layer}->{Layer}->{Layer}->[$ii]->{Name}\n";
     }
   }
