@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
- * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 2007-2012  The Xastir Group

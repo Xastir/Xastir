@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 #
-# $Id$
 #
 # Contributed to the public domain.  Authored by Jeremy McDermond
 # (NH6Z).

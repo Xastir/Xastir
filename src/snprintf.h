@@ -2,7 +2,6 @@
  * snprintf.h
  *   header file for snprintf.c
  *
- * $Id$
  */
 /*
  * Copyright (C) 2000-2012 The Xastir Group

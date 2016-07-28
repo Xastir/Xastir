@@ -29,9 +29,6 @@
 
 
 #
-# $Id$
-#
-#
 # Reference ellipsoids derived from Peter H. Dana's website- 
 # New:  http://www.Colorado.EDU/geography/gcraft/notes/datum/elist.html
 #

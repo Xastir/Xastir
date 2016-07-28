@@ -1,7 +1,5 @@
 #!/usr/bin/env perl 
 
-# $Id$
-
 # Copyright (C) 2007-2016  The Xastir Group
 #
 # This program is free software; you can redistribute it and/or
@@ -49,14 +47,12 @@ if (length($a) > 0 && $a =~ m/-split/) {
   $do_split = 1;
 }
 
+# Add these two lines to show that we translated the file.
+print "# language-PigLatin.sys, translated from language-English.sys\n";
+print "# Please do not edit this derived file.\n";
+
 while ( <> ) {
 
-  # Change the "Id:" RCS tag to show that we translated the file.
-  if (m/^#.*\$Id:/) {
-    print "# language-PigLatin.sys, translated from language-English.sys\n";
-    print "# Please do not edit this derived file.\n";
-    next;
-  }
   # Skip other comment lines
   if (m/^#/) {
     next;

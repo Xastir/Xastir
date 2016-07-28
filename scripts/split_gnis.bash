@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# $Id$
-
 # script created 14-MAR-04 by William Baguhn, kc9asi
 # This script is in the public domain.
 # Comments or suggestions to kc9asi@arrl.net

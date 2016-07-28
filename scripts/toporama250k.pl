@@ -1,8 +1,6 @@
 #!/usr/bin/perl -W
 
 
-# $Id$
-#
 # Copyright (C) 2004-2012 The Xastir Group.
 #
 # This program is free software; you can redistribute it and/or

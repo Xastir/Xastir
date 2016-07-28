@@ -1,5 +1,4 @@
 #!/usr/bin/perl -w
-# $Id$
 
 # Update utility for XASTIR language files                  17.04.2001
 #  Copyright (C) 2001 Rolf Bleher                  http://www.dk7in.de

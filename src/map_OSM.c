@@ -1,6 +1,5 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
- * $Id$
  *
  * Copyright (C) 2010-2012 The Xastir Group
  *

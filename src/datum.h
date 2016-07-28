@@ -25,7 +25,6 @@
    Thanks Chuck!
 
    N7TAP
-   $Id$
 */
 
 

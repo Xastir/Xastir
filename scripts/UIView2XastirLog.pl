@@ -1,7 +1,5 @@
 #!/usr/bin/perl -W
 #
-# $Id$
-#
 # Script to convert a UI-View log file to an Xastir log file.
 #
 # Copyright (C) 2009-2012  The Xastir Group

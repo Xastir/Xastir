@@ -3,8 +3,6 @@
 # Written by Derrick J Brashear, KB3EGH
 # Released to the public domain.
 
-# $Id$
-
 # Usage: mapfgd <directory>
 # Creates fake fgd files for all correctly USGS-named maps which don't 
 # already have them

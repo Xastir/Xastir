@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-# $Id$
 #
 # Script to create a slideshow from Xastir snapshot images.  Note
 # that this script is Unix/Linux-centric due to the use of the $HOME

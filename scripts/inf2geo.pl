@@ -3,8 +3,6 @@
 # Written by Curt Mills, WE7U
 # Released to the public domain.
 #
-# $Id$
-#
 #
 # Invoke this script against one or more info files by typing:
 #

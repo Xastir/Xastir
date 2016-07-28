@@ -1,4 +1,3 @@
-# $Id$
 #
 # Copyright (C) 2000-2014  The Xastir Group
 #

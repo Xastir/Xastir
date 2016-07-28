@@ -1,7 +1,6 @@
 #! /bin/sh
 
 
-# $Id: $
 # Copyright (C) 2004-2016 The Xastir Group
 
 # See README.sudo for instructions on setting up SUDO for

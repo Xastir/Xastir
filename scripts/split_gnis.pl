@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 #
-# $Id$
 #
 # split_gnis.pl -- 2004 Mar 15 -- jmt@twilley.org
 

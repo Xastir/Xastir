@@ -1,7 +1,5 @@
 #!/usr/bin/perl -W
 
-# $Id: $
-
 #
 # Copyright (C) 2016 The Xastir Group
 #

@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# $Id$
-
 # Copyright (C) 2004-2012  Curt Mills, WE7U
 #
 # This program is free software; you can redistribute it and/or

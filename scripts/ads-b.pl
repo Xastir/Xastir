@@ -1,7 +1,5 @@
 #!/usr/bin/perl -W
 #
-# $Id$
-#
 # XASTIR, Amateur Station Tracking and Information Reporting
 # Copyright (C) 2016  The Xastir Group
 #

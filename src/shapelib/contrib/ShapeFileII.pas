@@ -1,6 +1,5 @@
 {
 /******************************************************************************
- * $Id$
  *
  * Project:  Shapelib
  * Purpose:  Delphi Pascal interface to Shapelib.

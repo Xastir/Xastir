@@ -1,5 +1,4 @@
 /*
- * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea

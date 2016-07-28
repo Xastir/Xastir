@@ -4,8 +4,6 @@
 # Released to the public domain.
 # Modified from the earlier inf2geo.pl script.
 #
-# $Id$
-#
 # Read in .map file (an OziExplorer file in this case).
 # Check the version of the map format (1st line).  My example is
 # version 2.2.
