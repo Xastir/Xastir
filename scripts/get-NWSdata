@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# $Id$
-#
 # Script to retrieve NWS data files. 
 #
 # Originally written 2006/03/07 by Steven, WM5Z, and Curt, WE7U.

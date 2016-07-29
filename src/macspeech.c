@@ -1,6 +1,5 @@
 /* Copyright (C) 2004-2012  The Xastir Group                             */
 /*                                                                       */
-/* $Id$ */
 /*                                                                       */
 /*  First draft                                                          */
 /*                  KB3EGH 03/24/2004                                    */

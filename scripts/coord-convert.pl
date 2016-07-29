@@ -6,7 +6,6 @@
 # Released to the public domain.
 #
 #
-# $Id$
 #
 #
 # Converts between different lat/lon formats.  Will also give UMS

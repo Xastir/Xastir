@@ -5,8 +5,7 @@
 #
 # http://lclint.cs.virginia.edu/
 #
-# $Id$
-#
+
 
 
 #$options = "+forcehints +gnuextensions -warnposix -I/usr/X11/LessTif/Motif2.0/include -I/usr/local/include -I/usr/X11/include +trytorecover";

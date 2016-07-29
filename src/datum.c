@@ -4,7 +4,6 @@
 
    Portions Copyright (C) 2002-2012  The Xastir Group
 
-   $Id$
 */
 
 

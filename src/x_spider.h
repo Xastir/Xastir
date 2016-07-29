@@ -1,5 +1,4 @@
 /*
- * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 2003-2012  The Xastir Group

@@ -6,8 +6,6 @@
 # Released to the public domain.
 #
 #
-# $Id$
-#
 #
 # Finds the different lat/long representations corresponding to the
 # input numbers.  A space is required between the degrees portion

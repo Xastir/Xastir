@@ -1,6 +1,5 @@
 # Process this file with autoconf to produce a configure script.
 #
-# $Id: $
 #
 # Copyright (C) 2000-2016  The Xastir Group
 

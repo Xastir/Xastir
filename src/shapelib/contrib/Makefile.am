@@ -1,5 +1,4 @@
 
-# $Id$
 # C2pyright (C) 2004-2012  The Xastir Group
 
 EXTRA_DIST=Makefile_orig ShapeFileII.pas dbfcat.c dbfinfo.c makefile.vc \

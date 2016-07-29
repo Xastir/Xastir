@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Id$
 
 # XASTIR .geo file generator for mapblast pixel maps    16.10.2001
 #  Copyright (C) 2001 Rolf Bleher              http://www.dk7in.de

@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# $Id$
-#
 # Script to retrieve GNIS files by state. 
 #
 # Written 20041205 Dan Brown N8YSZ

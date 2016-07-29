@@ -3,49 +3,8 @@
  *
  * This code is in the public domain.
  *
- * $Log$
- * Revision 1.3  2010/07/11 07:24:37  we7u
- * Fixing multiple minor warnings with Shapelib.  Still plenty left.
- *
- * Revision 1.2  2007/07/25 15:45:27  we7u
- * Adding includes necessary for warning-free compiles.
- *
- * Revision 1.1  2006/11/10 21:48:10  tvrusso
- * Add shapelib as an internal library, and use it if we don't find an external
- * one.
- *
- * Make a loud warning if we do so, because the result of this is that we'll
- * have a bigger executable.
- *
- * This commit is bigger than it needs to be, because it includes all of
- * shapelib, including the contrib directory.
- *
- * Added an automake-generated Makefile for this thing.
- *
- * Builds only a static library, and calls it "libshape.a" instead of
- * "libshp.a" so that if we use ask to use the static one while there is
- * also an external one installed, the linker doesn't pull in the shared
- * library one unbidden.
- *
- * This stuff can be tested on a system with libshp installed by configuring with
- * "--without-shapelib"
- *
- * I will be removing Makefile.in because it's not supposed to be in CVS.  My
- * mistake.
- *
- * Revision 1.1  1999/05/26 02:56:31  candrsn
- * updates to shpdxf, dbfinfo, port from Shapelib 1.1.5 of dbfcat and shpinfo
- *
- * Revision 1.3  1995/10/21  03:15:01  warmerda
- * Changed to use binary file access.
- *
- * Revision 1.2  1995/08/04  03:16:22  warmerda
- * Added header.
  *
  */
-
-//static char rcsid[] = 
-//  "$Id$";
 
 #include "shapefil.h"
 #include <stdlib.h>

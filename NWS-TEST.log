@@ -1,6 +1,4 @@
 
-# $Id: $
-
 # Test log file for weather alerts.  Bring this file into Xastir via
 # the Open Log File option and within 30-60 seconds you should see
 # the alerts light up.  All except the first one listed here which

@@ -2,8 +2,6 @@
 # Copyright (C) 1999,2000  Frank Giannandrea
 # Copyright (C) 2001-2012  The Xastir Group
 #
-# $Id$
-#
 # Symbol definitions for XASTIR
 #
 # If the 20th char in the APRS symbol line is a "l" (small letter L),

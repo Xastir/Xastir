@@ -1,5 +1,4 @@
 
-// $Id$
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.

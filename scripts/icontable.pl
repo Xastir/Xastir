@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-# $Id$
-
 # XASTIR icon table overview generator                        20.02.01
 #  Copyright (C) 2001 Rolf Bleher                  http://www.dk7in.de
 

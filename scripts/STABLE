@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# $Id$
-
 # This is an example script used by one of the developers to ease
 # the workload.  It's not intended to be used by the general
 # userbase.  It's included with the Xastir sources so that it

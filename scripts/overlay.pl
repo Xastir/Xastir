@@ -4,7 +4,6 @@
 # Written by Curt Mills, WE7U
 # Released to the public domain.
 #
-# $Id$
 
 
 # Script to create Xastir "Overlay" files from "CSV" files of the

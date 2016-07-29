@@ -1,7 +1,5 @@
 #!/usr/bin/env perl
 #
-# $Id$
-#
 #  Copyright (C) 2006-2012 Tom Russo
 
 #  This program is free software; you can redistribute it and/or modify
