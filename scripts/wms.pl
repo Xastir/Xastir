@@ -82,6 +82,11 @@ print "\n----------------------------------------------------------\n\n";
 
 my $version = $url;
 $version =~ s/.*version=(\d+\.\d+\.\d+).*/$1/;
+if ($version =~ /\d+\.\d+\.\d+/) {
+}
+else {
+  $version = "1.0.0";
+}
 
 my $url_filtered = $url;
 $url_filtered =~ s/\\//g;   # Get rid of backslashes

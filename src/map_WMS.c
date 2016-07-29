@@ -977,7 +977,7 @@ void draw_WMS_map (Widget w,
 
                         // now copy a pixel from the map image to the screen
                         l = map_x + map_y * image->columns;
-                        trans_skip = 1; // possibily transparent
+                        trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
                             if ( c_trans_color_head &&
                                     check_trans(my_colors[index_pack[l]],c_trans_color_head)) {
