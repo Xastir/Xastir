@@ -2081,7 +2081,7 @@ double CAD_object_compute_area(CADRow *CAD_list_head) {
     VerticeRow *tmp;
     double area;
     char temp_course[20];
-    // Walk the linked list again, computing the area of the
+    // Walk the linked list, computing the area of the
     // polygon.  Greene's Theorem is how we can compute the area of
     // a polygon using the vertices.  We could also compute whether
     // we're going clockwise or counter-clockwise around the polygon
@@ -2172,9 +2172,10 @@ double CAD_object_compute_area(CADRow *CAD_list_head) {
                                                                                                                       
     if (area < 0.0)
         area = -area;
-                                                                                                                        
+
+//fprintf(stderr,"Square nautical miles: %f\n", area);
+ 
     return area;
-                                                                                                                        
 
 }
 
@@ -3761,29 +3762,34 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 
 
 
-// Formats an area in square kilometers as a string in english or
-// metric units, converting to feet or meters if the area is less
-// than 0.1 square kilometers and adding localized text.
-// Parameters: area: an area in square kilometers.
-// area_description: area reformatted as a localized text string.
-// sizeof_area_description: array length of area_description.
+// Formats an area as a string in english (square miles) or metric units
+// (square kilometers). Switches to square feet or square meters if the
+// area is less than 0.1 of the units.
+//
+// Parameters:
+//     area: an area in square kilometers.
+//     area_description: area reformatted as a localized text string.
+//     sizeof_area_description: array length of area_description.
 //
 void Format_area_for_output(double *area_km2, char *area_description, int sizeof_area_description) {
     double area;
-    // Format it for output and dump it out.  We're using square
-    // terms, so apply the conversion factor twice to convert from
-    // nautical square miles to the units of interest.
-    area = *area_km2 * cvt_kn2len * cvt_kn2len;
+    // Format it for output and dump it out.  We're using square terms, so
+    // apply the conversion factor twice to convert from square kilometers
+    // to the units of interest. The result here is squared meters or
+    // squared feet.
+//fprintf(stderr,"Square km: %f\n", *area_km2);
+
+    area = *area_km2 * 1000.0 * 1000.0 * cvt_m2len * cvt_m2len;
 
     // We could be measuring a very small or a very large object.
     // In the case of very small, convert it to square feet or
     // square meters.
-    if (area < 0.1) {
 
-        // Small area.  Convert to square feet or square meters
+    if (english_units) { // Square feet
+//fprintf(stderr,"Square feet: %f\n", area);
 
-        if (english_units) { // Square feet
-            area = area * 5280 * 5280;
+        if (area < 2787840.0) { // Switch at 0.5 miles squared
+            // Smaller area: Output in feet squared
             xastir_snprintf(area_description,
                 sizeof_area_description,
                 "A:%0.2f %s %s",
@@ -3792,8 +3798,23 @@ void Format_area_for_output(double *area_km2, char *area_description, int sizeof
                 langcode("POPUPMA053") );   // ft
             //popup_message_always(langcode("POPUPMA020"),area_description);
         }
-        else {  // Square meters
-            area = area * 1000 * 1000;  // Square meters
+        else {
+            // Larger area: Output in miles squared
+            area = area / 27878400.0;
+            xastir_snprintf(area_description,
+                sizeof_area_description,
+                "A:%0.2f %s %s",
+                area,
+                langcode("POPUPMA052"),     // sq
+                langcode("POPUPMA055") );   // mi
+            //popup_message_always(langcode("POPUPMA020"),area_description);
+        }
+    }
+    else {  // Square meters
+//fprintf(stderr,"Square meters: %f\n", area);
+
+        if (area < 100000.0) { // Switch at 0.1 km squared
+            // Smaller area: Output in meters squared
             xastir_snprintf(area_description,
                 sizeof_area_description,
                 "A:%0.2f %s %s",
@@ -3802,15 +3823,17 @@ void Format_area_for_output(double *area_km2, char *area_description, int sizeof
                 langcode("POPUPMA054") );   // meters
             //popup_message_always(langcode("POPUPMA020"),area_description);
         }
-    }
-    else {  // Not small
-        xastir_snprintf(area_description,
-            sizeof_area_description,
-            "A:%0.2f %s %s",
-            area,
-            langcode("POPUPMA052"), // sq
-            un_dst);
-        //popup_message_always(langcode("POPUPMA020"),area_description);
+        else {
+            // Larger ara: Output in kilometers squared
+            area = area / 1000000.0;
+            xastir_snprintf(area_description,
+                sizeof_area_description,
+                "A:%0.2f %s %s",
+                area,
+                langcode("POPUPMA052"),     // sq
+                langcode("UNIOP00005") );   // km
+            //popup_message_always(langcode("POPUPMA020"),area_description);
+        }
     }
 }
 
@@ -3896,8 +3919,10 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     area =  CAD_object_compute_area(CAD_list_head);
 
     // Save it in the object.  Convert nautical square miles to
-    // square kilometers.
-    area = area * 1.852 * 1.852; //km2
+    // square kilometers because that's what "Format_area_for_output"
+    // requires.
+    area = area * 3.429903999977917; // Now in km squared
+//fprintf(stderr,"SQUARE KM: %f\n", area);
     CAD_list_head->computed_area = area;
 
     Format_area_for_output(&area, area_description, sizeof_area_description);
