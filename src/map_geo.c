@@ -1862,6 +1862,7 @@ fprintf(stderr,"2 ");
     if (debug_level & 16)
         fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
+/*
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
         if (image)
@@ -1871,6 +1872,7 @@ fprintf(stderr,"2 ");
         DestroyExceptionInfo(&exception);
         return;
     }
+*/
 
     width = image->columns;
     height = image->rows;

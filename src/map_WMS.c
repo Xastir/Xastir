@@ -667,6 +667,7 @@ void draw_WMS_map (Widget w,
     if (debug_level & 512)
         fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
+/*
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
         if (image)
@@ -676,6 +677,7 @@ void draw_WMS_map (Widget w,
         DestroyExceptionInfo(&exception);
         return;
     }
+*/
 
     width = image->columns;
     height = image->rows;

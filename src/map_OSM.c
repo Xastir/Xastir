@@ -487,10 +487,12 @@ static void draw_image(
     //if (debug_level & 512)
     //    fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
+/*
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
         return;
     }
+*/
 
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
@@ -677,10 +679,12 @@ static void draw_OSM_image(
     //if (debug_level & 512)
     //    fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
+/*
     if (image->colorspace != RGBColorspace) {
         fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
         return;
     }
+*/
 
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
