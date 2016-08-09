@@ -48,6 +48,9 @@ nationalmapdir=${pkgdatadir}/maps/Online/nationalmap.gov
 nationalmap_DATA=Aerial.geo Contours.geo Hydrography.geo ShadedRelief.geo \
         Topo1-10.geo  TopoRelief1-7.geo Transportation.geo
 
+geogratismapdir=${pkgdatadir}/maps/Online/geogratis.gc.ca
+geogratismap_DATA=National.geo Regional.geo Sub_national.geo Sub_regional.geo
+
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
 
