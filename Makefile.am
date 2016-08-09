@@ -44,6 +44,10 @@ onlinedir=${pkgdatadir}/maps/Online
 online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
         OSM_tiled_fosm.geo
 
+nationalmapdir=${pkgdatadir}/maps/Online/nationalmap.gov
+nationalmap_DATA=Aerial.geo Contours.geo Hydrography.geo ShadedRelief.geo \
+        Topo1-10.geo  TopoRelief1-7.geo Transportation.geo
+
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
 

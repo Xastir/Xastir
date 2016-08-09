@@ -1,0 +1,3 @@
+WMSSERVER
+URL http://raster.nationalmap.gov/arcgis/services/Orthoimagery/USGS_EROS_Ortho_SCALE/ImageServer/WMSServer?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&STYLES=&LAYERS=0
+
