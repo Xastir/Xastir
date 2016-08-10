@@ -794,8 +794,12 @@ are located there.
 Enabling Audio Alarms:
 ----------------------
 Download and install sample audio files from Xastir's GitHub
-download site.  Install the audio files in
-/usr/local/share/xastir/sounds/ directory.
+download site:
+
+  git clone http://github.com/Xastir/xastir-sounds
+
+Copy the files to your Xastir sounds directory, for instance:
+  /usr/local/share/xastir/sounds/
 
 Install a command-line audio player.  Call out the path/name of that
 player in the File->Configure->Audio Alarms dialog.  Common ones are
