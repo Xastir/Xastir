@@ -147,7 +147,7 @@ README
      You may want to install everything to /sw though, so that the normal
      user can find it easily and add maps.  To do this, run this instead:
 
-        mkdir build -p
+        mkdir -p build
         cd build
         ../configure --prefix=/sw
 
@@ -377,7 +377,7 @@ README
         I've found that I need to do this when configuring for OpenSUSE in
         order to pick up the libgeotiff include files:
 
-            mkdir build -p
+            mkdir -p build
             cd build
             ../configure CPPFLAGS="-I/usr/include/libgeotiff"
 

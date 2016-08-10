@@ -38,7 +38,7 @@ GENERAL QT4 NOTES:
 *) Do an out-of-source build to keep the source code directory pristine.
    Perform all configure/compile commands from inside a "build" directory:
 
-   mkdir build -p
+   mkdir -p build
    cd build
 
 *) Use QT 4 Designer to create the graphical elements. Each
@@ -76,7 +76,7 @@ Once the project branch has been checked-out, these steps issued
 from the command-line should compile it:
 
   cd Xastir/src/qt
-  mkdir build -p
+  mkdir -p build
   cd build
   qmake ../xastir-qt.pro
   make

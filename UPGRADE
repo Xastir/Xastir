@@ -45,7 +45,7 @@ Previous Install Notes:
         cd src/Xastir
         git pull
         ./bootstrap.sh
-        mkdir build -p
+        mkdir -p build
         cd build
         ../configure
         make

@@ -55,7 +55,7 @@ USERS:
     cd Xastir
     git pull           # Update your local repo (May be dangerous for developers)
     ./bootstrap.sh
-    mkdir build -p     # Build in a separate directory
+    mkdir -p build     # Build in a separate directory
     cd build
     ../configure
     (make clean;make -j3 2>&1) | tee make.log

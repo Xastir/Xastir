@@ -218,7 +218,7 @@ somewhere else.
 To build with custom CFLAGS like this, just tell configure what you
 want CFLAGS to be:
 
-  mkdir build -p
+  mkdir -p build
   cd build
   ../configure CFLAGS="-O -g -fno-inline"
 
@@ -265,7 +265,7 @@ and so on.
 
 So I would do:
   cd XASTIR-DEV
-  mkdir build-normal -p
+  mkdir -p build-normal
 
 In the build directory, you run configure using the path to the configure 
 script:
@@ -280,7 +280,7 @@ out where to find the source code.
 
 The beauty of this is you can make a second build without doing a make clean:
   cd XASTIR-DEV
-  mkdir build-debug -p
+  mkdir -p build-debug
   cd build-debug
   ../Xastir/configure --program-suffix="-debug" CFLAGS="-O -g -fno-inline"
   make && sudo  make install
@@ -303,7 +303,7 @@ NFS, building the code for multiple operating systems in separate
 build directories. 
   (log in to CYGWIN machine, mount NFS directory)
   cd /mounted/directory/XASTIR-DEV
-  mkdir build-cygnus -p
+  mkdir -p build-cygnus
   ../Xastir/configure
   make && make install
 
