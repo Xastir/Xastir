@@ -15,7 +15,7 @@ SUBDIRS = src m4 config help scripts symbols callpass
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
         missing mkinstalldirs placeholder FAQ LICENSE README README.GIT \
-        README.CYGWIN README.Getting-Started README.Contributing \
+        README.CYGWIN README.Getting-Started CONTRIBUTING \
         README.MAPS README.win32 README.OSM_maps README.sudo testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \
         worldhi.map \
@@ -60,7 +60,7 @@ sound_DATA=placeholder
 docdir=${prefix}/share/doc/xastir
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT README.CYGWIN \
         README.MAPS README.win32 README.sudo COPYING INSTALL UPGRADE \
-        README.Getting-Started README.Contributing README.OSM_maps\
+        README.Getting-Started README.OSM_maps CONTRIBUTING\
         COPYING.LIB.LESSTIF
 
 # It'd be nice to remove the directory and contents at
