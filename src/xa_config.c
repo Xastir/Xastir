@@ -2381,7 +2381,7 @@ void load_data_or_default(void) {
     sec_old = (time_t) get_long ("DEFAULT_STATION_OLD", 1l, 604800l, 4800l);
 
     sec_clear = (time_t) get_long ("DEFAULT_STATION_CLEAR", 1l, 604800l, 43200l);
-    aircraft_sec_clear = (time_t) get_long ("DEFAULT_AIRCRAFT_CLEAR", 1l, 604800l, 0l);
+    aircraft_sec_clear = (time_t) get_long ("DEFAULT_AIRCRAFT_CLEAR", 0l, 604800l, 0l);
 
     sec_remove = get_long("DEFAULT_STATION_REMOVE", 1l, 604800*2, sec_clear*2);
 
