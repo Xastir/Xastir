@@ -50,6 +50,18 @@ FILE6="fz11jl17"   # NWSM Libraries: Fire Weather Zone Boundaries
 FILE7="c_11au16"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
 
 
+####################
+# TODO:
+# Run commands such as these:
+#   cd /usr/local/share/xastir; testdbfawk -D config -d Counties/mz11au16.dbf 2>&1 | less
+#   cd /usr/local/share/xastir; testdbfawk -D config -d Counties/w_11au16.dbf 2>&1 | less
+# to determine whether there's dbfawk support for each of the NWS files. NWS changes the signature
+# on their files often, so we need to create a new dbfawk for each in xastir/config, test it, then
+# add it into the Makefile.am file there and commit, then do another "make install" to put the
+# dbfawk's into place.
+####################
+
+
 x=`dirname $0`
 . $x/values
 cd ${prefix}/share/xastir/Counties
