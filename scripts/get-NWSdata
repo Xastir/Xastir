@@ -35,19 +35,19 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="w_05ap16a"  # NWSM Libraries: County Warning Area Boundaries
+FILE1="w_11au16"   # NWSM Libraries: County Warning Area Boundaries
 
-FILE2="z_16jn16a"  # NWSM Libraries: Public Zone Boundaries
+FILE2="z_04ap17"   # NWSM Libraries: Public Zone Boundaries
 
-FILE3="mz05ap16a"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz11au16"   # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE4="oz01ap14b"  # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE5="hz04jn14"   # NWSM Libraries: Coastal and Offshore Marine Zones
 
-FILE6="fz16jn16a"  # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz11jl17"   # NWSM Libraries: Fire Weather Zone Boundaries
 
-FILE7="c_05ap16a"  # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+FILE7="c_11au16"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
 
 
 x=`dirname $0`
