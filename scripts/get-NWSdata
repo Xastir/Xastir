@@ -1,4 +1,5 @@
 #!/bin/sh
+##!/bin/sh -xv
 #
 # Script to retrieve NWS data files. 
 #
@@ -33,21 +34,31 @@
 # Please only have ONE of each variable listed here!  Note that the "Valid
 # Date" listed on the NWS web pages is the date at which the Shapefile
 # should START to be used.  Don't just blindly put the newest filename
-# here if that start-date hasn't arrived yet!
+# here if that start-date hasn't arrived yet! If the filename ends in an
+# alpha character, then also add the filename to the "FILE?s" variable
+# below but WITHOUT the extra character.
 #
-FILE1="w_11au16"   # NWSM Libraries: County Warning Area Boundaries
+FILE1="w_11au16"    # NWSM Libraries: County Warning Area Boundaries
+#FILE1s=""           # Short name of above (the names inside the zipfile)
 
-FILE2="z_04ap17"   # NWSM Libraries: Public Zone Boundaries
+FILE2="z_04ap17"    # NWSM Libraries: Public Zone Boundaries
+#FILE2s=""           # Short name of above (the names inside the zipfile)
 
-FILE3="mz11au16"   # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz11au16"    # NWSM Libraries: Coastal and Offshore Marine Zones
+#FILE3s=""           # Short name of above (the names inside the zipfile)
 
-FILE4="oz01ap14b"  # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE4="oz01ap14b"   # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE4s="oz01ap14"   # Short name of above (the names inside the zipfile)
 
-FILE5="hz04jn14"   # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE5="hz04jn14"    # NWSM Libraries: Coastal and Offshore Marine Zones
+#FILE5s=""           # Short name of above (the names inside the zipfile)
 
-FILE6="fz11jl17"   # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz11jl17"    # NWSM Libraries: Fire Weather Zone Boundaries
+#FILE6s=""           # Short name of above (the names inside the zipfile)
 
-FILE7="c_11au16"   # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+FILE7="c_11au16"    # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+#FILE7s=""           # Short name of above (the names inside the zipfile)
+
 
 
 x=`dirname $0`
@@ -65,8 +76,7 @@ rm -f *.zip 2>&1 >/dev/null
 #
 DIR=wsom
 for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6; do
-if [ -e $d.shp ]
-  then
+  if [ -e $d.shp ]; then
     echo "Already have $d shapefile, skipping..."
   else
     # Remove possible older copies
@@ -75,13 +85,12 @@ if [ -e $d.shp ]
     wget http://www.weather.gov/geodata/catalog/$DIR/data/$d.zip
     unzip $d.zip
     rm -f *.zip
-fi
+  fi
 done
 
 DIR=county
 for d in $FILE7; do
-if [ -e $d.shp ]
-  then
+  if [ -e $d.shp ]; then
     echo "Already have $d shapefile, skipping..."
   else
     # Remove possible older copies
@@ -90,7 +99,7 @@ if [ -e $d.shp ]
     wget http://www.weather.gov/geodata/catalog/$DIR/data/$d.zip
     unzip $d.zip
     rm -f *.zip
-fi
+  fi
 done
 
 ####################
@@ -100,18 +109,22 @@ done
 #   cd /usr/local/share/xastir; testdbfawk -D config -d Counties/w_11au16.dbf 2>&1 | head -5
 #
 # to determine whether there's dbfawk support for each of the NWS files. NWS
-# often changes the signature on their files often, so we need to create a
-# new dbfawk for each in xastir/config, test it, then add it into the
+# changes the signature on their files often so we need to create a new
+# dbfawk for each in xastir/config, test it, then add it into the
 # Makefile.am file there and commit, then do another "make install" to put
 # the dbfawk's into place.
-# TODO: Fix the issue where there's an 'a' or 'b' after the filename above. NWS likes
-# to do that, but have non-a/b files extracted from the zip, which makes the below
-# test fail. Chop off any trailing alphanumeric from the filename below to make it work.
+# Fixed the issue where there's an 'a' or 'b' after the filename root. NWS likes
+# to do that, but have non-a/b files extracted from the zip, which made the below
+# tests fail. The 's' variables above are the shortened names we use for the
+# tests.
 ####################
-for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6 $FILE7; do
-  echo
-  echo $d.dbf
-  cd /usr/local/share/xastir; /usr/local/bin/testdbfawk -D config -d Counties/$d.dbf 2>&1 | head -3
+for d in $FILE1 $FILE1s $FILE2 $FILE2s $FILE3 $FILE3s $FILE4 $FILE4s $FILE5 $FILE5s $FILE6 $FILE6s $FILE7 $FILE7s; do
+  if [ -e $d.dbf ]; then
+    echo
+    # Run in a separate shell so we don't mess up the current directory for the -e test above
+    (cd /usr/local/share/xastir; /usr/local/bin/testdbfawk -D config -d Counties/$d.dbf 2>&1 | head -3)
+    echo $d.dbf
+  fi
 done
 
 
