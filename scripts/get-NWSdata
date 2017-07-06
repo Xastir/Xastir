@@ -111,24 +111,8 @@ done
 #
 for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6 $FILE7; do
 
-  last=${d:(-1)}    # Snag last character of filename root
-  case ${last} in
-    a) e=${d::(-1)} # 'a' suffix so chop it off
-       ;;
-    b) e=${d::(-1)} # 'b' suffix so chop it off
-       ;;
-    c) e=${d::(-1)} # 'c' suffix so chop it off
-       ;;
-    d) e=${d::(-1)} # 'd' suffix so chop it off
-       ;;
-    e) e=${d::(-1)} # 'e' suffix so chop it off
-       ;;
-    f) e=${d::(-1)} # 'f' suffix so chop it off
-       ;;
-    *) e=$d         # It's a number, don't change the string
-       ;;
-  esac
-
+  e=`echo $d | sed -e's/\(.*[0-9]\)[a-f]$/\1/'`
+    
   if [ -e $e.dbf ]; then
     echo
     echo $e.dbf
