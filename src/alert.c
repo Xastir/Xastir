@@ -1226,18 +1226,13 @@ void alert_build_list(Message *fill) {
         title[3][TITLE_SIZE]        = '\0';
         title[4][TITLE_SIZE]        = '\0';
 
-        // Check for "NWS_" in the call_sign field.  Underline
-        // signifies compressed alert format.  Dash signifies
-        // non-compressed format.
+	// Check for "NWS_" in the call_sign field.  Underline
+	// signifies compressed alert format.  Dash signifies
+	// non-compressed format.
 
-        // K2DLS 08/24/17 Reverse 2009 temporary change to allow
+	// K2DLS 08/24/17 Reverse 2009 temporary change to allow
 	// viewing of compressed-zone format alerts sent by AE5PL.
-	// This broke uncompressed alerts
-	//
-        // Uncompressed alerts must have '-' as the fourth char
-        // of the destination.  Compressed packets must have '_' as
-        // the fourth char of the destination.
-	//
+	// This broke uncompressed alerts.
 	// Tested against NWS-TEST.log
 
         if (strncmp(fill->call_sign,"NWS_",4) == 0) {
