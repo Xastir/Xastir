@@ -1229,18 +1229,18 @@ void alert_build_list(Message *fill) {
         // Check for "NWS_" in the call_sign field.  Underline
         // signifies compressed alert format.  Dash signifies
         // non-compressed format.
-//
-// TEMPORARY CHANGE:  Process all NWS_ or NWS- as compressed to
-// handle the format that Pete Loveall, AE5PL, is putting out on the
-// 'net.  The correct change would be to check inside the data
-// portion for compressed-format zones in all cases and de-compress
-// them when found.
-// WE7U.
-//
-// K2DLS -- Undo TEMPORARY CHANGE
+
+        // K2DLS 08/24/17 Reverse 2009 temporary change to allow
+	// viewing of compressed-zone format alerts sent by AE5PL.
+	// This broke uncompressed alerts
+	//
+        // Uncompressed alerts must have '-' as the fourth char
+        // of the destination.  Compressed packets must have '_' as
+        // the fourth char of the destination.
+	//
+	// Tested against NWS-TEST.log
+
         if (strncmp(fill->call_sign,"NWS_",4) == 0) {
-//        if (       (strncmp(fill->call_sign,"NWS_",4) == 0)
-//                || (strncmp(fill->call_sign,"NWS-",4) == 0) ) {
 
             char compressed_wx[512];
             char *ptr;
