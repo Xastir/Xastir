@@ -1237,9 +1237,10 @@ void alert_build_list(Message *fill) {
 // them when found.
 // WE7U.
 //
-//        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
-        if (       (strncmp(fill->call_sign,"NWS_",4) == 0)
-                || (strncmp(fill->call_sign,"NWS-",4) == 0) ) {
+// K2DLS -- Undo TEMPORARY CHANGE
+        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
+//        if (       (strncmp(fill->call_sign,"NWS_",4) == 0)
+//                || (strncmp(fill->call_sign,"NWS-",4) == 0) ) {
 
             char compressed_wx[512];
             char *ptr;
