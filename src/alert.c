@@ -1226,20 +1226,18 @@ void alert_build_list(Message *fill) {
         title[3][TITLE_SIZE]        = '\0';
         title[4][TITLE_SIZE]        = '\0';
 
-        // Check for "NWS_" in the call_sign field.  Underline
-        // signifies compressed alert format.  Dash signifies
-        // non-compressed format.
-//
-// TEMPORARY CHANGE:  Process all NWS_ or NWS- as compressed to
-// handle the format that Pete Loveall, AE5PL, is putting out on the
-// 'net.  The correct change would be to check inside the data
-// portion for compressed-format zones in all cases and de-compress
-// them when found.
-// WE7U.
-//
-//        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
-        if (       (strncmp(fill->call_sign,"NWS_",4) == 0)
-                || (strncmp(fill->call_sign,"NWS-",4) == 0) ) {
+	// Check for "NWS_" in the call_sign field.  Underline
+	// signifies compressed alert format.  Dash signifies
+	// non-compressed format.
+
+        // K2DLS 08/25/17
+	// Also check for NWS- where title[0] does not contain
+	// an underscore.  This is to identify AE5PL's compressed
+	// alerts in uncompressed clothing.
+
+        if ((strncmp(fill->call_sign,"NWS_",4) == 0) |
+           ((strncmp(fill->call_sign,"NWS-",4) == 0) &
+            (strstr(title[0], "_") == NULL))) {
 
             char compressed_wx[512];
             char *ptr;
