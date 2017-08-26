@@ -1235,10 +1235,6 @@ void alert_build_list(Message *fill) {
 	// an underscore.  This is to identify AE5PL's compressed
 	// alerts in uncompressed clothing.
 
-        char cnc[TITLE_SIZE];
-	strcpy(cnc, title[0]);
-//	fprintf(stderr,"Dest: %s\tTitle: %s\n", fill->call_sign, cnc);
-
         if ((strncmp(fill->call_sign,"NWS_",4) == 0) |
            ((strncmp(fill->call_sign,"NWS-",4) == 0) &
             (strstr(title[0], "_") == NULL))) {
