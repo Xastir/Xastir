@@ -1230,12 +1230,20 @@ void alert_build_list(Message *fill) {
 	// signifies compressed alert format.  Dash signifies
 	// non-compressed format.
 
-	// K2DLS 08/24/17 Reverse 2009 temporary change to allow
-	// viewing of compressed-zone format alerts sent by AE5PL.
-	// This broke uncompressed alerts.
-	// Tested against NWS-TEST.log
+        // K2DLS
+	// Also check for NWS- where the 7th char of the first
+	// title also indicates a compressed alert.  This is to
+	// allow for AE5PL's compressed alerts in uncompressed
+	// clothing.
+	// K2DLS
 
-        if (strncmp(fill->call_sign,"NWS_",4) == 0) {
+        char cnc[TITLE_SIZE];
+	strcpy(cnc, title[0]);
+        fprintf(stderr,"Dest: %s\tTitle: %s\n", fill->call_sign, cnc);
+
+        if ((strncmp(fill->call_sign,"NWS_",4) == 0) |
+           ((strncmp(fill->call_sign,"NWS-",4) == 0) &
+            (strstr(cnc, "_") == NULL))) {
 
             char compressed_wx[512];
             char *ptr;
