@@ -84,9 +84,12 @@ testdbfawk_SOURCES = \
     dbfawk.c \
     rpl_malloc.c rpl_malloc.h
 
+.PHONY: compiledate.c
+
 compiledate.c: $(XASTIR_SRC)
 	rm -f compiledate.c compiledate.o
 	echo 'char compiledate[] = "'"Compiled: `date`"'";' > compiledate.c
+	echo 'char gitstring[] = "'"`$(top_srcdir)/scripts/XastirGitStamp.sh $(top_srcdir)`"'";' >> compiledate.c
 
 remove_compiledate:
 	rm -f compiledate.c compiledate.o

@@ -17543,8 +17543,9 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     char string1[200];
     char string2[200];
     extern char compiledate[];
+    extern char gitstring[];
    
-    xastir_snprintf(string2, sizeof(string2),"\nXastir V%s \n",xastir_version);
+    xastir_snprintf(string2, sizeof(string2),"\nXastir V%s %s\n",xastir_version,gitstring);
     xb = XmStringCreateLocalized(string2);
     xa = XmStringCreateLocalized(compiledate);
     xms = XmStringConcat(xb, xa);
