@@ -28,7 +28,8 @@
 # NOTE:  Run this script as root.
 #
 # MAINTAINERS:  Go here to find out what the latest versions are:
-# <http://www.weather.gov/geodata/>
+# <http://www.nws.noaa.gov/geodata/>
+
 
 
 # Please only have ONE of each variable listed here!  Note that the "Valid
@@ -41,6 +42,7 @@ FILE1="w_11au16"    # NWSM Libraries: County Warning Area Boundaries
 FILE2="z_04ap17"    # NWSM Libraries: Public Zone Boundaries
 
 FILE3="mz11au16"    # NWSM Libraries: Coastal and Offshore Marine Zones
+#FILE3="mz05de17"    # NWSM Libraries: Coastal and Offshore Marine Zones
 
 FILE4="oz01ap14b"   # NWSM Libraries: Coastal and Offshore Marine Zones
 
