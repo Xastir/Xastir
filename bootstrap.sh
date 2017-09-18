@@ -24,32 +24,6 @@ autoconf
 echo "    3) Running automake..."
 automake -a -c
 
-# Automake-1.9 on SuSE 10 doesn't copy over "mkinstalldirs" if
-# missing.  Check whether it is missing and copy it over ourselves
-# if so.
-if test -x "mkinstalldirs"
-then
-  echo "    2) Checking for 'mkinstalldirs'... Found!"
-else
-  echo "    2) Checking for 'mkinstalldirs'... Not Found"
-  echo "       Attempting to copy it from system directories'"
-  (cp /usr/local/share/automake*/mkinstalldirs . 2>/dev/null)
-  # Did we succeed?
-  if [ $? ]
-  then
-    # Failed the copy above, try in another directory.
-    (cp /usr/share/automake*/mkinstalldirs . 2>/dev/null)
-  fi
-  # Check whether we have the file now in our current directory and
-  # that it is executable.
-  if test -x "mkinstalldirs"
-  then
-    echo "       Checking for 'mkinstalldirs'... Found!"
-  else
-    echo "***ERROR: Couldn't copy the file***"
-  fi
-fi
-
 # Generate derived language files
 echo -n "    1) Generating derived language files"
 (cd config; ../scripts/langPigLatin.pl -split <language-English.sys >language-PigLatin.sys) 

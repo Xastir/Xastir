@@ -14,7 +14,7 @@ SUBDIRS = src m4 config help scripts symbols callpass
 # DISTCLEANFILES = intl/libintl.h
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
-        missing mkinstalldirs placeholder FAQ LICENSE README README.GIT \
+        missing placeholder FAQ LICENSE README README.GIT \
         README.CYGWIN README.Getting-Started CONTRIBUTING \
         README.MAPS README.win32 README.OSM_maps README.sudo testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \

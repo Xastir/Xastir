@@ -28,7 +28,7 @@ EXTRA_DIST = aclocal.m4 AUTHORS bootstrap.sh ChangeLog config.h.in \
 
 MAINTAINERCLEANFILES = configure config.status aclocal.m4 \
         Makefile.in Makefile config.guess config.sub install-sh \
-        missing mkinstalldirs
+        missing
 
 #docdir=${pkgdatadir}/doc
 #doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT \

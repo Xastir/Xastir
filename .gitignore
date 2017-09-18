@@ -20,7 +20,6 @@ Makefile.in
 Makefile
 make.log
 missing
-mkinstalldirs
 nwr
 stamp-h.in
 SYMBOLS.TXT
