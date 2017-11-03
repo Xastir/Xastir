@@ -44,6 +44,7 @@ dist_scripts_DATA = \
     values.pl \
     waypoint-get.pl \
     wms.pl \
+    wxnowsrv.pl \
     xastir-fixcfg.sh \
     xastir-migrate.sh \
     Xastir_tigerpoly.py
