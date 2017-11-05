@@ -920,9 +920,28 @@ void set_proc_title(char *fmt,...) {
     Argv[1] = ((void *)0) ;
 }
 
+#define ADDR_STR_LEN 39
 
+char *addr_str(const struct sockaddr *sa, char *s) {
+    switch(sa->sa_family) {
+    case AF_INET:
+        inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
+                  s, ADDR_STR_LEN);
+        break;
 
+    case AF_INET6:
+        inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
+                  s, ADDR_STR_LEN);
+        break;
 
+    default:
+        xastir_snprintf(s, ADDR_STR_LEN, "<unknown family: %d>",
+                        sa->sa_family);
+        return NULL;
+    }
+
+    return s;
+}
 
 // This TCP server provides a listening socket.  When a client
 // connects, the server forks off a separate process to handle it
@@ -958,17 +977,17 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 
     int sockfd, newsockfd, childpid;
     socklen_t clilen;
-    struct sockaddr_in cli_addr, serv_addr;
+    struct sockaddr_in6 cli_addr, serv_addr;
     pipe_object *p;
     int sendbuff;
     int pipe_to_parent; /* symbolic names to reduce confusion */
     int pipe_from_parent;
     char timestring[101];
+    char addrstring[ADDR_STR_LEN+1];
 
-    
     // Open a TCP listening socket
     //
-    if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ( (sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
         fprintf(stderr,"x_spider: Can't open socket for listening\n");
         fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         exit(1);
@@ -997,9 +1016,9 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     // Bind our local address so that the client can send to us.
     //
     memset((char *)&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(SERV_TCP_PORT);
+    serv_addr.sin6_family = AF_INET6;
+    // serv_addr.sin6_addr.s6_addr = htonl(INADDR_ANY);
+    serv_addr.sin6_port = htons(SERV_TCP_PORT);
 
     if (bind(sockfd,
             (struct sockaddr *)&serv_addr,
@@ -1045,7 +1064,8 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
                 // no incoming socket connection.  Check the pipe
                 // queues for incoming data.
                 //
-                if (pipe_check(inet_ntoa(cli_addr.sin_addr)) == -1) {
+                if (pipe_check(addr_str((struct sockaddr*)&cli_addr,
+                                        addrstring)) == -1) {
 
                     // We received a shutdown command from the
                     // master socket connection.
@@ -1083,8 +1103,8 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         get_timestamp(timestring);
 
         fprintf(stderr,"%s X_spider client connected from address %s\n",
-            timestring,
-            inet_ntoa(cli_addr.sin_addr));
+                timestring,
+                addr_str((struct sockaddr*)&cli_addr, addrstring));
  
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
@@ -1154,7 +1174,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             init_set_proc_title(argc, argv, envp);
             set_proc_title("%s%s %s",
                 "x-spider client @",
-                inet_ntoa(cli_addr.sin_addr),
+                           addr_str((struct sockaddr*)&cli_addr, addrstring),
                 "(xastir)");
             //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 	    (void) signal(SIGHUP, exit);
