@@ -965,7 +965,7 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
    hints.ai_family = PF_UNSPEC;
    hints.ai_socktype = socktype;
    hints.ai_flags = AI_PASSIVE;
-   /// XXX Need to fix port handindling to not use hardcoded string
+
    error = getaddrinfo(NULL, port_str, &hints, &res0);
    if (error) {
            fprintf(stderr, "Error: Unable to lookup addresses for port %s\n", port_str);
@@ -984,6 +984,14 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
             continue;
        }
 
+#ifdef IPV6_V6ONLY
+       if(res->ai_family == AF_INET6) {
+            buf = 1;
+            if (setsockopt(s[nsock], IPPROTO_IPV6, IPV6_V6ONLY, (char *)&buf, sizeof(buf)) < 0) {
+                fprintf(stderr, "x_spider: Unable to set IPV6_V6ONLY.\n");
+            }
+       }
+#endif
        if(socktype == SOCK_STREAM) {
             // Set the new socket to be non-blocking.
             //
@@ -1003,7 +1011,7 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
        if (bind(s[nsock], res->ai_addr, res->ai_addrlen) < 0) {
             fprintf(stderr, "x_spider: Can't bind local address for AF %d: %d - %s\n",
                     res->ai_family, errno, strerror(errno));
-            fprintf(stderr, "Either this OS maps IPv4 addresses to IPv6 and this is expected or\n");
+            fprintf(stderr, "Either this OS maps IPv4 addresses to IPv6 and this may be expected or\n");
             fprintf(stderr,"could some processes still be running from a previous run of Xastir?\n");
             close(s[nsock]);
             continue;
@@ -1065,7 +1073,6 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     struct sockaddr_storage cli_addr;
     struct pollfd *polls;
     pipe_object *p;
-    int sendbuff;
     int pipe_to_parent; /* symbolic names to reduce confusion */
     int pipe_from_parent;
     char timestring[101];
