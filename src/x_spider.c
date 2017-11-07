@@ -126,6 +126,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <poll.h>
 #include <netinet/in.h>     // Moved ahead of inet.h as reports of some *BSD's not
                             // including this as they should.
 #include <arpa/inet.h>
@@ -920,9 +921,119 @@ void set_proc_title(char *fmt,...) {
     Argv[1] = ((void *)0) ;
 }
 
+#define ADDR_STR_LEN 39
+
+char *addr_str(const struct sockaddr *sa, char *s) {
+    switch(sa->sa_family) {
+    case AF_INET:
+        inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
+                  s, ADDR_STR_LEN);
+        break;
+
+    case AF_INET6:
+        inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
+                  s, ADDR_STR_LEN);
+        break;
+
+    default:
+        xastir_snprintf(s, ADDR_STR_LEN, "<unknown family: %d>",
+                        sa->sa_family);
+        return NULL;
+    }
+
+    return s;
+}
 
 
+#define MAXSOCK 8
+int open_spider_server_sockets(int socktype, int port, int **s_in)
+{
+   struct addrinfo hints, *res, *res0;
+   int error;
+   int nsock;
+   int buf;
+   int *s;
+   char port_str[16];
 
+   xastir_snprintf(port_str, 16, "%d", port);
+
+   *s_in = calloc(MAXSOCK, sizeof(int));
+   s = *s_in;
+
+   // Query for socketrs we need to create (probably 1 each for IPv4 + IPv6)
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = PF_UNSPEC;
+   hints.ai_socktype = socktype;
+   hints.ai_flags = AI_PASSIVE;
+
+   error = getaddrinfo(NULL, port_str, &hints, &res0);
+   if (error) {
+           fprintf(stderr, "Error: Unable to lookup addresses for port %s\n", port_str);
+           return 0;
+   }
+
+   // Create and setup each socket
+   nsock = 0;
+   for (res = res0; res && nsock < MAXSOCK; res = res->ai_next) {
+       s[nsock] = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+       if (s[nsock] < 0) {
+            fprintf(stderr, "Error: Opening socket (family %d protocol %d\n",
+                    res->ai_family, res->ai_protocol);
+            fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
+            continue;
+       }
+
+#ifdef IPV6_V6ONLY
+       if(res->ai_family == AF_INET6) {
+            buf = 1;
+            if (setsockopt(s[nsock], IPPROTO_IPV6, IPV6_V6ONLY, (char *)&buf, sizeof(buf)) < 0) {
+                fprintf(stderr, "x_spider: Unable to set IPV6_V6ONLY.\n");
+            }
+       }
+
+#endif
+       if(socktype == SOCK_STREAM) {
+            // Set the new socket to be non-blocking.
+            //
+            if (fcntl(s[nsock], F_SETFL, O_NONBLOCK) < 0) {
+                fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
+                fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
+            }
+
+            // Set up to reuse the port number (good for debug so we can
+            // restart the server quickly against the same port).
+            buf = 1;
+            if (setsockopt(s[nsock], SOL_SOCKET, SO_REUSEADDR, (char *)&buf, sizeof(buf)) < 0) {
+                fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
+                fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
+            }
+       }
+
+       if (bind(s[nsock], res->ai_addr, res->ai_addrlen) < 0) {
+            fprintf(stderr, "x_spider: Can't bind local address for AF %d: %d - %s\n",
+                    res->ai_family, errno, strerror(errno));
+            fprintf(stderr, "Either this OS maps IPv4 addresses to IPv6 and this may be expected or\n");
+            fprintf(stderr,"could some processes still be running from a previous run of Xastir?\n");
+            close(s[nsock]);
+            continue;
+       }
+
+       if(socktype == SOCK_STREAM) {
+            // Set up to listen.  We allow up to five backlog connections
+            // (unserviced connects that get put on a queue until we can
+            // service them).
+            (void) listen(s[nsock], 5);
+        }
+
+       nsock++;
+    }
+   if (nsock == 0) {
+           fprintf(stderr, "x_spider: Couldn't open any sockets\n");
+   }
+   freeaddrinfo(res0);
+   return nsock;
+}
 
 // This TCP server provides a listening socket.  When a client
 // connects, the server forks off a separate process to handle it
@@ -957,63 +1068,35 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 #endif  // STANDALONE_PROGRAM
 
     int sockfd, newsockfd, childpid;
+    int *sockfds;
+    int nsock;
+    int i, rc;
     socklen_t clilen;
-    struct sockaddr_in cli_addr, serv_addr;
+    struct sockaddr_storage cli_addr;
+    struct pollfd *polls;
     pipe_object *p;
-    int sendbuff;
     int pipe_to_parent; /* symbolic names to reduce confusion */
     int pipe_from_parent;
     char timestring[101];
+    char addrstring[ADDR_STR_LEN+1];
 
     
-    // Open a TCP listening socket
-    //
-    if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        fprintf(stderr,"x_spider: Can't open socket for listening\n");
-        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
+    nsock = open_spider_server_sockets(SOCK_STREAM, SERV_TCP_PORT, &sockfds);
+    if(!nsock) {
+        fprintf(stderr, "Unable to setup any x_spider server sockets.\n");
         exit(1);
     }
 
-    // Set the new socket to be non-blocking.
-    //
-    if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
-        fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
-        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
+    // Setup socket polling array
+    polls = calloc(nsock, sizeof(struct pollfd));
+    for(i=0; i<nsock; i++) {
+        polls[i].fd = sockfds[i];
+        polls[i].events = POLLIN;
     }
 
-    // Set up to reuse the port number (good for debug so we can
-    // restart the server quickly against the same port).
-    //
-    sendbuff = 1;
-    if (setsockopt(sockfd,
-            SOL_SOCKET,
-            SO_REUSEADDR,
-            (char *)&sendbuff,
-            sizeof(sendbuff)) < 0) {
-        fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
-        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
-    }
+    // Since we copied the FDs we are done with the array.
+    free(sockfds);
 
-    // Bind our local address so that the client can send to us.
-    //
-    memset((char *)&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(SERV_TCP_PORT);
-
-    if (bind(sockfd,
-            (struct sockaddr *)&serv_addr,
-            sizeof(serv_addr)) < 0) {
-        fprintf(stderr,"x_spider: Can't bind local address\n");
-        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
-        exit(1);
-    }
-
-    // Set up to listen.  We allow up to five backlog connections
-    // (unserviced connects that get put on a queue until we can
-    // service them).
-    //
-    listen(sockfd, 5);
     memset((char *)&cli_addr, 0, sizeof(cli_addr));
 
     // Infinite loop
@@ -1028,6 +1111,41 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 
         clilen = (socklen_t)sizeof(cli_addr);
 
+        rc = poll(polls, nsock, 0);
+
+        if(rc==0) {
+            // We returned from the non-blocking poll but with
+            // no incoming socket connection.  Check the pipe
+            // queues for incoming data.
+            //
+            if (pipe_check(addr_str((struct sockaddr*)&cli_addr, addrstring)) == -1) {
+
+                // We received a shutdown command from the
+                // master socket connection.
+                exit(0);
+            }
+            goto finis;
+        }
+        else if(rc==-1) {
+            // Some error with poll
+            fprintf(stderr, "x_spider: Error with TCP poll(): %d - %s\n", errno, strerror(errno));
+            goto finis;
+        }
+
+        // A connection should be waiting. Scan the poll set for an FD that has one
+        // waiting and use that.
+        sockfd = -1;
+        for(i=0; i<nsock; i++) {
+            if(polls[i].revents == POLLIN) sockfd = polls[i].fd;
+        }
+
+        if(sockfd == -1) {
+            // Something unexpected is going on as we didn't find a socket with a
+            // connection waiting.
+            fprintf(stderr, "x_spider: Weird, poll() said connection waiting but none found.\n");
+            goto finis;
+        }
+
         // "accept" is the call where we wait for a connection.  We
         // made the socket non-blocking above so that we pop out of
         // it with an EAGAIN if we don't have an incoming socket
@@ -1041,17 +1159,6 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         if (newsockfd == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
 
-                // We returned from the non-blocking accept but with
-                // no incoming socket connection.  Check the pipe
-                // queues for incoming data.
-                //
-                if (pipe_check(inet_ntoa(cli_addr.sin_addr)) == -1) {
-
-                    // We received a shutdown command from the
-                    // master socket connection.
-                    exit(0);
-                }
-                goto finis;
             }
             else if (newsockfd < 0) {
 
@@ -1084,7 +1191,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 
         fprintf(stderr,"%s X_spider client connected from address %s\n",
             timestring,
-            inet_ntoa(cli_addr.sin_addr));
+            addr_str((struct sockaddr*)&cli_addr, addrstring));
  
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
@@ -1154,7 +1261,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             init_set_proc_title(argc, argv, envp);
             set_proc_title("%s%s %s",
                 "x-spider client @",
-                inet_ntoa(cli_addr.sin_addr),
+                addr_str((struct sockaddr*)&cli_addr, addrstring),
                 "(xastir)");
             //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 	    (void) signal(SIGHUP, exit);
