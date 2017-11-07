@@ -991,6 +991,7 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
                 fprintf(stderr, "x_spider: Unable to set IPV6_V6ONLY.\n");
             }
        }
+
 #endif
        if(socktype == SOCK_STREAM) {
             // Set the new socket to be non-blocking.
@@ -1002,6 +1003,7 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
 
             // Set up to reuse the port number (good for debug so we can
             // restart the server quickly against the same port).
+            buf = 1;
             if (setsockopt(s[nsock], SOL_SOCKET, SO_REUSEADDR, (char *)&buf, sizeof(buf)) < 0) {
                 fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
                 fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
@@ -1027,7 +1029,7 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
        nsock++;
     }
    if (nsock == 0) {
-           printf("x_spider: Couldn't open any sockets\n");
+           fprintf(stderr, "x_spider: Couldn't open any sockets\n");
    }
    freeaddrinfo(res0);
    return nsock;
@@ -1092,6 +1094,9 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         polls[i].events = POLLIN;
     }
 
+    // Since we copied the FDs we are done with the array.
+    free(sockfds);
+
     memset((char *)&cli_addr, 0, sizeof(cli_addr));
 
     // Infinite loop
@@ -1109,7 +1114,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         rc = poll(polls, nsock, 0);
 
         if(rc==0) {
-            // We returned from the non-blocking accept but with
+            // We returned from the non-blocking poll but with
             // no incoming socket connection.  Check the pipe
             // queues for incoming data.
             //
@@ -1365,7 +1370,6 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
     int send_to_rf;
 
 
-    //open_spider_server_sockets(SOCK_DGRAM);
     sock = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (sock < 0) {
