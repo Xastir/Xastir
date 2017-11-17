@@ -184,23 +184,20 @@ just add the below packages to the selection.  As you select
 packages, other packages may be selected for you that are also
 required:
 
+[ ] adobe-source-* (pick all fonts)
 [ ] autoconf
 [ ] automake
 [ ] binutils
+[ ] bitstream-vera-fonts
 [ ] bzip2
 [ ] curl
 [ ] cvs
-[ ] db4.x (pick the highest number listed for x)
+[ ] db
 [ ] diffutils
-[ ] font-adobe-* (pick all of them)
-[ ] font-bitstream-* (pick all of them)
 [ ] font-util
-[ ] font-xfree86-type1
-[ ] gcc4
-
-[ ] gcc4-fortran 
-[ ] gcc4-objc 
-
+[ ] gcc-core
+[ ] gcc-fortran
+[ ] gcc-objc 
 [ ] git
 [ ] GraphicsMagick
 [ ] gv
@@ -209,30 +206,26 @@ required:
 [ ] jbigkit
 [ ] lcms
 [ ] less
-[ ] lesstif
 [ ] libbz2-devel
 [ ] libcurl-devel
 [ ] libjasper-devel
 [ ] liblcms-devel
-[ ] libdb4.x (pick the same x as db2.x above)
-[ ] libdb4.x-devel (pick the same x as db2.x above)
+[ ] libdb5.x
+[ ] libdb-devel
 [ ] libfontconfig-devel
-
 [ ] libgeotiff 
 [ ] libgeotiff-devel 
-[ ] libgeotiff1 
-
+[ ] libgeotiff2
 [ ] libGraphicsMagick-devel
 [ ] libGraphicsMagick3
 [ ] libjbig-devel
 [ ] libpcrecpp-devel
 [ ] libpng*-devel (pick the number that matches the already selected libpng* library)
-
 [ ] libproj-devel 
-[ ] libproj1 
-
+[ ] libproj12 
 [ ] libtiff-devel
 [ ] libtool
+[ ] libwebp-devel
 [ ] libwmf-devel
 [ ] libX11-devel
 [ ] libXext-devel
@@ -244,19 +237,16 @@ required:
 [ ] patch
 [ ] pcre
 [ ] perl
-
 [ ] proj 
-
-[ ] python
+[ ] python2
 [ ] rcs
-[ ] tcltk
+[ ] tcl-tk
 [ ] tiff 
 [ ] unzip
 [ ] vim (a Unix-style text editor, optional)
 [ ] wget (Optional: Can use libcurl instead)
-[ ] X-start-menu-icons (may take a minute to respond because it turns on many others)
 [ ] xextproto
-
+[ ] xorg-x11-fonts-Type1
 [ ] zip
 
 Clicking on the small circle with the two arrows will run you
@@ -737,43 +727,15 @@ Turn up the volume on your PC speakers and enjoy the noise xastir makes."
 
 OPTIONAL:  Install GDAL/OGR support:
 ------------------------------------
-One user has been successful in compiling GDAL/OGR support into
-Xastir.  One thing he mentioned:
 
-"Now the word of warning.  If you try to compile GDAL under Cygwin
-and the compile blows up, you are better rm -rvf'ing the entire
-directory and re-untaring the source again than trying to recompile
-in that blown directory.  Make Clean doesn't do a thing and the old
-settings and mistakes stick around no matter what you try."
+Use the Cygwin Setup program and select:
 
-Make sure you've got Shapelib installed on your system else Xastir
-won't find GDAL (the private Xastir copy of Shapelib is fine).  Both
-are needed.
+[ ] gdal
+[ ] libgdal-devel
 
-Download "gdal-1.2.0b.tar.gz".  In a cygwin window, type the
-following:
-
-
-    tar xzvf gdal-1.2.0b.tar.gz
-    cd gdal-1.2.0b
-    ./configure --with-jpeg=internal --with-libtiff=internal
-    make
-    make install
-
-
-The GDAL/OGR library should now be installed on your system.  Return
-to the xastir directory and start with the ./configure command.  It
-should pick up the fact that GDAL/OGR has been installed and compile
-support for it into Xastir.  Follow with the rest of the commands to
-make/install Xastir.
-
-One user required the below GDAL configure line as otherwise it
-complained about not finding libproj:
-
-    ./configure --with-jpeg=internal --with-libtiff=internal --with-static-proj4
-
+Note: Required packages reviewed/updated by K2DLS on 11/17/2017.  Many
+packages had been renamed or were no longer offered.
 
 APRS(tm) is a Trademark of Bob Bruninga
 
 Copyright (C) 2003-2016 The Xastir Group
-
