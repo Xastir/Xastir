@@ -45,7 +45,7 @@ rm -rf ${RPM_BUILD_ROOT}
 # /usr/share/doc/packages/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
 %doc README CONTRIBUTING README.GIT README.Getting-Started
-%doc README.MAPS README.win32 README.sudo UPGRADE
+%doc README.MAPS README.sudo UPGRADE
 
 
 %{_prefix}/bin

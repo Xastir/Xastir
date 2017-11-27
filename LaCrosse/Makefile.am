@@ -30,13 +30,6 @@ MAINTAINERCLEANFILES = configure config.status aclocal.m4 \
         Makefile.in Makefile config.guess config.sub install-sh \
         missing
 
-#docdir=${pkgdatadir}/doc
-#doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT \
-#        README.MAPS README.sudo README.win32 COPYING INSTALL UPGRADE
-
-#mandir=${prefix}/man
-#man_MANS=xastir.1
-
 ChangeLog::
 
 

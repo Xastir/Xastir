@@ -808,7 +808,7 @@ The Answers
 
     4.22 ImageMagick gives me: "no decode delegate", why?
 
-    README.win32 has a bit of info about this one, as it most often happens
+    README.CYGWIN has a bit of info about this one, as it most often happens
     on Win32 systems.  It has been seen on other systems as well though.
     The short answer is that you may have to set the environment variable
     "MAGICK_HOME" to the location where the ImageMagick modules reside.
