@@ -1,4 +1,4 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl 
 #
 #
 # Copyright (C) 2000-2012  The Xastir Group
