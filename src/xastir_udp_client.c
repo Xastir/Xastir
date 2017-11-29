@@ -46,13 +46,95 @@
 #include <sys/wait.h>
 #include <errno.h>
 
+#include <poll.h>
+
 
 // Must be last include file
 #include "leak_detection.h"
 
+// Atttempt to send to one of the addresses, waiting for 10 seconds
+// for (hopefully) a response. Returns 1 on success or 0 if we didn't
+// get a response. (Any response is considered a success)
+int try_exchange(struct addrinfo *addr, char *buffer, int buflen)
+{
+    int sockfd, n;
+    socklen_t length;
+    struct sockaddr_storage from;
+    struct pollfd polls;
 
+    sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+    if (sockfd < 0) {
+        fprintf(stderr, "socket error: %s\n", strerror(errno));
+        return(0);
+    }
 
+    n = sendto(sockfd, buffer, (size_t)strlen(buffer), 0, addr->ai_addr,
+               addr->ai_addrlen);
+    if (n < 0) {
+        fprintf(stderr, "Sendto error %s\n", strerror(errno));
+        close(sockfd);
+        return(0);
+    }
 
+    polls.fd = sockfd;
+    polls.events = POLLIN;
+
+    // wait for up to 10 seconds for a response.
+    n = poll(&polls, 1, 10 * 1000);
+    if(n == 0) {
+        fprintf(stderr, "Timeout waiting for response\n");
+        close(sockfd);
+        return 0;
+    }
+    else if (n < 0 ) {
+        fprintf(stderr, "poll() returned an error: %s\n", strerror(errno));
+        close(sockfd);
+        return 0;
+    }
+
+    // Response should be waiting, get it.
+    n = recvfrom(sockfd, buffer, 256, 0, (struct sockaddr *)&from, &length);
+    if (n < 0) {
+        fprintf(stderr, "recvfrom: %s\n", strerror(errno));
+        close(sockfd);
+        return(0);
+    }
+
+    close(sockfd);
+    return 1;
+}
+
+// Loop through the possible addresses for hostname (probably IPv6 and IPv4)
+// Tries until we are successful (get a reponse) or we run out of addresses
+int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
+{
+    struct addrinfo hints, *res, *r;
+    int error;
+    int success = 0;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = PF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_DEFAULT;
+
+    error = getaddrinfo(hostname, port, &hints, &res);
+    if (error) {
+           fprintf(stderr, "Error: Unable to lookup addresses for host %s port %s\n",
+                   hostname, port);
+           return 1;
+    }
+
+    r = res;
+    while(!success && r) {
+       success = try_exchange(r, buffer, buflen);
+       r = r->ai_next;
+       if(!success && r) {
+          fprintf(stderr, "Trying next address to send to\n");
+       }
+    }
+
+    return success;
+}
 
 // Send a UDP packet to a UDP listening port.  This allows scripts
 // and other programs to inject packets into Xastir via UDP
@@ -73,16 +155,12 @@
 // 
 //
 int main(int argc, char *argv[]) {
-    int sockfd, n;
-    socklen_t length;
-    struct sockaddr_in server, from;
-    struct hostent *hostinfo;
     char buffer[512];
     char callsign[10];
     char extra[100];
     int passcode;
     char message[256];
-    int ii;
+    int ii, success;
 
 
     if (argc < 6) {
@@ -95,29 +173,6 @@ int main(int argc, char *argv[]) {
             "\nExample: xastir_udp_client localhost 2023 ab7cd 1234 \"APRS packet goes here\"\n");
         return(1);
     }
-
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        fprintf(stderr, "socket\n");
-        return(1);
-    }
-
-    memset(&server, 0, sizeof(struct sockaddr_in));
-
-    server.sin_family = AF_INET;
-
-    hostinfo = gethostbyname(argv[1]);
-    if (hostinfo == NULL) {
-        fprintf(stderr, "Unknown host\n");
-        return(1);
-    }
-
-//    server.sin_addr.s_addr = inet_addr("127.0.0.1");
-    memcpy(&server.sin_addr, hostinfo->h_addr, hostinfo->h_length);
-
-    server.sin_port = htons(atoi(argv[2]));
-
-    length = (socklen_t)sizeof(struct sockaddr_in);
 
     // Fetch the callsign
     snprintf(callsign, sizeof(callsign), "%s", argv[3]);
@@ -170,28 +225,11 @@ int main(int argc, char *argv[]) {
 
 //fprintf(stderr, "%s", buffer);
 
-    n = sendto(sockfd,
-        buffer,
-        (size_t)strlen(buffer),
-        0,
-        (struct sockaddr *)&server,
-        length);
-    if (n < 0) {
-        fprintf(stderr, "Sendto\n");
+    success = exchange_packet(argv[1], argv[2], buffer, 256);
+    if(!success) {
+        fprintf(stdout, "No response received.\n");
         return(1);
     }
-
-    n = recvfrom(sockfd,
-        buffer,
-        256,
-        0,
-        (struct sockaddr *)&from,
-        &length);
-    if (n < 0) {
-        fprintf(stderr, "recvfrom\n");
-        return(1);
-    }
-
     fprintf(stdout,"Received: %s\n", buffer);
 
     if (strncmp(buffer, "NACK", 4) == 0) {
