@@ -133,6 +133,7 @@ int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
        }
     }
 
+    freeaddrinfo(res);
     return success;
 }
 
