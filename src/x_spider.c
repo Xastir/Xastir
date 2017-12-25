@@ -1035,6 +1035,21 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
    return nsock;
 }
 
+
+// Create a poll structure from an array of sockets
+struct pollfd* setup_poll_array(int nsock, int* sockfds) {
+   int i;
+   struct pollfd* polls;
+
+   polls = calloc(nsock, sizeof(struct pollfd));
+    for(i=0; i<nsock; i++) {
+        polls[i].fd = sockfds[i];
+        polls[i].events = POLLIN;
+    }
+    return polls;
+}
+
+
 // This TCP server provides a listening socket.  When a client
 // connects, the server forks off a separate process to handle it
 // and goes back to listening for new connects.  The initial code
@@ -1087,14 +1102,9 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         exit(1);
     }
 
-    // Setup socket polling array
-    polls = calloc(nsock, sizeof(struct pollfd));
-    for(i=0; i<nsock; i++) {
-        polls[i].fd = sockfds[i];
-        polls[i].events = POLLIN;
-    }
-
-    // Since we copied the FDs we are done with the array.
+    // Setup socket polling array and free the socket array
+    // (since the FDs were copied into the poll array)
+    polls = setup_poll_array(nsock, sockfds);
     free(sockfds);
 
     memset((char *)&cli_addr, 0, sizeof(cli_addr));
@@ -1158,7 +1168,10 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 
         if (newsockfd == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-
+                // Something unexpected is going on as poll() had said that we had a
+                // connection waiting.
+                fprintf(stderr, "x_spider: Weird, poll() said connection waiting but accept() failed.\n");
+                goto finis;
             }
             else if (newsockfd < 0) {
 
@@ -1333,14 +1346,14 @@ finis:
 
 
 // Send a nack back to the xastir_udp_client program 
-void send_udp_nack(int sock, struct sockaddr_in from, int fromlen) {
+void send_udp_nack(int sock, struct sockaddr *from, int fromlen) {
     int n;
 
     n = sendto(sock,
         "NACK", // Negative Acknowledgment
         5,
         0,
-        (struct sockaddr *)&from,
+        (struct sockaddr *)from,
         fromlen);
     if (n < 0) {
         fprintf(stderr, "Error: sendto");
@@ -1355,10 +1368,10 @@ void send_udp_nack(int sock, struct sockaddr_in from, int fromlen) {
 // programs to inject packets into Xastir via UDP protocol.
 //
 void UDP_Server(int argc, char *argv[], char *envp[]) {
-    int sock, length, n1, n2;
+    int sock, n1, n2;
     socklen_t fromlen;
-    struct sockaddr_in server;
-    struct sockaddr_in from;
+    struct sockaddr_storage from;
+    struct pollfd *polls;
     char buf[1024];
     char buf2[512];
     char *callsign;
@@ -1368,32 +1381,45 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
     char message2[1024];
     int send_to_inet;
     int send_to_rf;
+    int *sockfds;
+    int nsock;
+    int i, rc;
+    char addrstring[ADDR_STR_LEN+1];
 
 
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (sock < 0) {
-        fprintf(stderr, "Error: Opening socket");
+    nsock = open_spider_server_sockets(SOCK_DGRAM, SERV_UDP_PORT, &sockfds);
+    if(!nsock) {
+        fprintf(stderr, "Unable to setup any x_spider UDP server sockets.\n");
         fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         return;
     }
 
-    length = sizeof(server);
-    memset(&server, 0, length);
-
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(SERV_UDP_PORT);
-
-    if (bind(sock, (struct sockaddr *)&server, length) < 0) {
-        fprintf(stderr, "Error: Binding");
-        fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
-        return;
-    }
-
-    fromlen = sizeof(struct sockaddr_in);
+    // Setup socket polling array and free the socket array
+    // (since the FDs were copied into the poll array)
+    polls = setup_poll_array(nsock, sockfds);
+    free(sockfds);
 
     while (1) {
+        rc = poll(polls, nsock, -1); // Wait for data
+        if(rc == -1) {
+            fprintf(stderr, "x_spider: UDP poll() returned error %d: %s.\n",
+                    errno, strerror(errno));
+            continue;
+        }
+
+        // Data should be waiting. Scan the poll set for an FD that has one waiting and use that.
+        sock = -1;
+        for(i=0; i<nsock; i++) {
+            if(polls[i].revents == POLLIN) sock = polls[i].fd;
+        }
+
+        if(sock == -1) {
+            // Something unexpected is going on as we didn't find a socket with data waiting.
+            fprintf(stderr, "x_spider: Weird, poll() said data waiting but none found.\n");
+            continue;
+        }
+
+        fromlen = sizeof(struct sockaddr_storage);
         n1 = recvfrom(sock,
             buf,
             1024,
@@ -1410,7 +1436,8 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
             buf[n1] = '\0';    // Terminate the buffer
         }
 
-fprintf(stderr, "Received datagram: %s", buf);
+        fprintf(stderr, "Received datagram from %s: %s",
+                addr_str((struct sockaddr*)&from, addrstring), buf);
 
 
         send_to_inet = 0;
@@ -1430,14 +1457,14 @@ fprintf(stderr, "Received datagram: %s", buf);
         split_string(buf2, cptr, 10, ',');
 
         if (cptr[0] == NULL || cptr[0][0] == '\0') {    // callsign
-            send_udp_nack(sock, from, fromlen);
+            send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
 
         callsign = cptr[0];
 
         if (cptr[1] == NULL || cptr[1][0] == '\0') {    // passcode
-            send_udp_nack(sock, from, fromlen);
+            send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
 
@@ -1460,7 +1487,7 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
             fprintf(stderr,
                 "UDP Packet: %s\n",
                 buf);
-            send_udp_nack(sock, from, fromlen);
+            send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
 
@@ -1515,7 +1542,7 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
 
         if (message == NULL || message[0] == '\0') {
 //fprintf(stderr,"Empty message field\n");
-            send_udp_nack(sock, from, fromlen);
+            send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
 
