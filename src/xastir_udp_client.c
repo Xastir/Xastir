@@ -104,6 +104,10 @@ int try_exchange(struct addrinfo *addr, char *buffer, int buflen)
     return 1;
 }
 
+#ifndef AI_DEFAULT
+#define AI_DEFAULT (AI_V4MAPPED|AI_ADDRCONFIG)
+#endif
+
 // Loop through the possible addresses for hostname (probably IPv6 and IPv4)
 // Tries until we are successful (get a reponse) or we run out of addresses
 int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
