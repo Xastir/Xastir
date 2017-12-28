@@ -212,9 +212,9 @@ void reverse_path(char *input_string) {
             }
 
             // Add temp to the end of our path:
-            strncat(reverse_path,temp,sizeof(reverse_path)-strlen(reverse_path));
+            strncat(reverse_path,temp,sizeof(reverse_path)-strlen(reverse_path)-1);
 
-            strncat(reverse_path,",",sizeof(reverse_path)-strlen(reverse_path));
+            strncat(reverse_path,",",sizeof(reverse_path)-strlen(reverse_path)-1);
         }
     }
 
