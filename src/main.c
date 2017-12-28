@@ -3895,7 +3895,6 @@ void clear_all_tactical(void) {
  *  out the active records in the log file.
  */
 void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    char *ptr;
     char file[200];
     char file_temp[200];
     FILE *f;
@@ -12080,7 +12079,7 @@ fprintf(stderr,"main, initializing connections");
 
 
 // Check the TCP pipe
-                    line[0] = "\0"; // Start with line empty
+                    line[0] = '\0'; // Start with line empty
                     n = readline(pipe_tcp_server_to_xastir, line, MAX_LINE_SIZE);
                     if (n == 0) {
                         // Do nothing, empty packet
@@ -12124,7 +12123,7 @@ fprintf(stderr,"main, initializing connections");
 
 
 // Check the UDP pipe
-                    line[0] = "\0"; // Start with line empty
+                    line[0] = '\0'; // Start with line empty
                     n = readline(pipe_udp_server_to_xastir, line, MAX_LINE_SIZE);
                     if (n == 0) {
                         // Do nothing, empty packet

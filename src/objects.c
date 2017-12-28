@@ -10840,7 +10840,6 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
 // which is currently set to 4096.
 //
 void disown_object_item(char *call_sign, char *new_owner) {
-    char *ptr;
     char file[200];
     char file_temp[200];
     FILE *f;

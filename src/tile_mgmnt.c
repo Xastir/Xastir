@@ -336,7 +336,7 @@ void mkOSMmapDirs (char *baseDir,
                 fprintf(stderr, "%s: %s\n", errmsg, fullPath);
 #else
                 fprintf(stderr, "%s: %s\n",
-                        strerror_r(errno, errmsg, sizeof(errmsg)), fullPath);
+                        strerror(errno), fullPath);
 #endif
             }
             else if ((sb.st_mode & S_IWUSR) != S_IWUSR) {

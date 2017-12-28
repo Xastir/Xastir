@@ -2553,15 +2553,15 @@ int ok_to_draw_station(DataRow *p_station) {
         }
        // Check if aircraft and we wish to see it
         else if (p_station->aprs_symbol.aprs_type == '/'
-                 && (p_station->aprs_symbol.aprs_symbol == '^') 
-                 || (p_station->aprs_symbol.aprs_symbol == '\'') 
-                 || (p_station->aprs_symbol.aprs_symbol == 'X') ) {
+                 && ((p_station->aprs_symbol.aprs_symbol == '^') 
+                     || (p_station->aprs_symbol.aprs_symbol == '\'') 
+                     || (p_station->aprs_symbol.aprs_symbol == 'X')) ) {
             return Select_.aircraft_objects;
         }
         // Check if vessel and we wish to see it
         else if (p_station->aprs_symbol.aprs_type == '/'
                  && ((p_station->aprs_symbol.aprs_symbol == 's') 
-                 || (p_station->aprs_symbol.aprs_symbol == 'Y')) ) {
+                     || (p_station->aprs_symbol.aprs_symbol == 'Y')) ) {
             return Select_.vessel_objects;
         }
         // Check if we wish to see other objects/items

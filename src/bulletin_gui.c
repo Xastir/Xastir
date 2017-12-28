@@ -116,7 +116,7 @@ void bulletin_gui_init(void)
 // database to make sure that the new bulletins received are still
 // within our range.
 void popup_bulletins(void) {
-    if ((Display_bulletins_dialog == NULL)) {   // Dialog not up
+    if ( Display_bulletins_dialog == NULL ) {   // Dialog not up
 
         // Bring up the dialog
         Bulletins( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );

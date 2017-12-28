@@ -2579,7 +2579,6 @@ long get_text_width(Widget w,char *text) {
 
     GContext gcontext;
     XFontStruct *xfs_ptr;
-    int font_width, font_height;
     int dir, asc, desc;   // parameters returned by XTextExtents, but not used here.
     XCharStruct overall;  // description of the space occupied by the string.
 
@@ -3622,7 +3621,7 @@ void draw_deadreckoning_features(DataRow *p_station,
             symbol_orient(p_station->course),
             p_station->aprs_symbol.area_object.type,
             p_station->signpost,
-            (char) 0x00,
+            NULL,
             0);  // Don't bump the station count
     }
 }
