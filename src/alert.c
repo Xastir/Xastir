@@ -2020,9 +2020,9 @@ if (debug_level & 2)
                     xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 61);
                 }
 
-                strncat(date_time,temp,2);  // Concatenate the strings
+                strncat(date_time,temp,sizeof(date_time)-strlen(date_time)-1);  // Concatenate the strings
             }
-            strncat(date_time,"z",1);   // Add a 'z' on the end.
+            strncat(date_time,"z",sizeof(date_time)-strlen(date_time)-1);   // Add a 'z' on the end.
 
             if (debug_level & 2)
                 fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);

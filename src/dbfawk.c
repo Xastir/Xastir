@@ -340,7 +340,8 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
     dbfawk_sig_info *result = NULL;
 
     if (file) {
-        char *dot, *perfile = calloc(1,strlen(file)+7);
+        int perfilesize=strlen(file)+8; 
+        char *dot, *perfile = calloc(1,perfilesize);
         dbfawk_sig_info *info;
 
         if (!perfile) {
@@ -349,7 +350,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
         }
 
         xastir_snprintf(perfile,
-            strlen(file)+7,
+            perfilesize-1,
             "%s",
             file);
 
@@ -358,7 +359,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
         if (dot)
             *dot = '\0';
 
-        strncat(perfile, ".dbfawk", 8);
+        strncat(perfile, ".dbfawk", perfilesize-1);
 
         info = calloc(1,sizeof(*info));
  
