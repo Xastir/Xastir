@@ -100,7 +100,8 @@ typedef struct {
     int    status;                                /* current status (up or down)             */
     char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
     char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
-    unsigned long int address;                    /* socket address for network              */
+    struct addrinfo *addr_list;                   /* possible network addresses              */
+    unsigned long int address;                    /* XXX Delete this                         */
     int    thread_status;                         /* thread status for connect thread        */
     int    connect_status;                        /* connect status for connect thread       */
     int    decode_errors;                         /* decode error count, used for data type  */
