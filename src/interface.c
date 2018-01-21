@@ -95,7 +95,7 @@
 #include "interface.h"
 #include "util.h"
 #include "wx.h"
-#include "hostname.h"
+#include "forked_getaddrinfo.h"
 #include "x_spider.h"
 #include "db_gis.h"
 
@@ -4832,11 +4832,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
 static void* net_connect_thread(void *arg) {
     int port;
     volatile int ok = -1;
-    int len;
     int result;
     int flag;
     //int stat;
-    struct sockaddr_in address;
+    struct addrinfo *res;
 
     // Some messiness necessary because we're using
     // xastir_mutex's instead of pthread_mutex_t's.
@@ -4851,27 +4850,21 @@ static void* net_connect_thread(void *arg) {
     // use pthread_join() later.  Makes threading more efficient.
     (void)pthread_detach(pthread_self());
 
-//if (begin_critical_section(&port_data_lock, "interface.c:net_connect_thread(1)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port);
+    for (res = port_data[port].addr_list; res; res = res->ai_next) {
 
-    /* set address */
-    address.sin_addr.s_addr = (port_data[port].address);
-
-    // Create a socket if we don't have one yet for this channel
-    if (port_data[port].channel == -1) {
         pthread_testcancel();   // Check for thread termination request
-        port_data[port].channel = socket(PF_INET, SOCK_STREAM, 0);
+        port_data[port].channel = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
         pthread_testcancel();   // Check for thread termination request
-    }
 
-    if (port_data[port].channel != -1) {
+        if (port_data[port].channel == -1) {
+            fprintf(stderr, "Socket creation for type (%d, %d, %d) failed: %s\n",
+                    res->ai_family, res->ai_socktype, res->ai_protocol, strerror(errno) );
+            fprintf(stderr, "This may be OK if we have more to try.\n");
+            continue;
+        }
+
         if (debug_level & 2)
             fprintf(stderr,"We have a socket to use\n");
-        address.sin_family = AF_INET;
-        address.sin_port = htons(port_data[port].socket_port);
-        if (debug_level & 2)
-            fprintf(stderr,"after htons\n");
-        len = (int)sizeof(address);
         flag = 1;
 
         // Turn on the socket keepalive option
@@ -4885,64 +4878,44 @@ static void* net_connect_thread(void *arg) {
         pthread_testcancel();  // Check for thread termination request
         if (debug_level & 2)
             fprintf(stderr,"calling connect(), port: %d\n", port_data[port].socket_port);
-        result = connect(port_data[port].channel, (struct sockaddr *)&address, len);
+        result = connect(port_data[port].channel, res->ai_addr, res->ai_addrlen);
         if (debug_level & 2)
             fprintf(stderr,"connect result was: %d\n", result);
-        ok = 0;
-        pthread_testcancel();  // Check for thread termination request
-        if (result != -1){
-            /* connection up */
-            if (debug_level & 2)
-                fprintf(stderr,"net_connect_thread():Net up, port %d\n",port);
-
-            port_data[port].status = DEVICE_UP;
-            ok = 1;
-
-            // Show the latest status in the interface control dialog
-            update_interface_list();
+        if(result == -1) {
+            fprintf(stderr, "Socket connection for interface %d type (%d, %d, %d) failed: %s\n",
+                    port, res->ai_family, res->ai_socktype, res->ai_protocol, strerror(errno) );
+            if(res->ai_next)
+            {
+                fprintf(stderr, "This is OK since we have more to try.\n");
+            }
+            close(port_data[port].channel);
+            continue;
         }
-        else {    /* net connection failed */
-            ok = 0;
-            if (debug_level & 2)
-                fprintf(stderr,"net_connect_thread():net connection failed, port %d, DEVICE_ERROR ***\n",port);
-            port_data[port].status = DEVICE_ERROR;
-
-            // Show the latest status in the interface control dialog
-            update_interface_list();
-
-            // Shut down and close the socket
-
-            //pthread_testcancel();   // Check for thread termination request
-            //
-            // Don't do a shutdown!  The socket wasn't connected.  This causes
-            // problems due to the same socket number getting recycled.  It can
-            // shut down another socket.
-            //
-            //stat = shutdown(port_data[port].channel,2);
-            //pthread_testcancel();   // Check for thread termination request
-            //if (debug_level & 2)
-            //    fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
-
-            usleep(100000); // 100ms
-            //pthread_testcancel();   // Check for thread termination request
-            //stat = close(port_data[port].channel);
-            //pthread_testcancel();   // Check for thread termination request
-            //if (debug_level & 2)
-            //    fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
-
-            //if (debug_level & 2)
-            //    fprintf(stderr,"net_connect_thread():Net connection 1 failed, port %d\n",port);
-        }
-    } else { /* Could not bind socket */
-        ok = -1;
+    }
+    ok = 0;
+    pthread_testcancel();  // Check for thread termination request
+    if (result != -1){
+        /* connection up */
         if (debug_level & 2)
-            fprintf(stderr,"net_connect_thread():could not bind socket, port %d, DEVICE_ERROR ***\n",port);
+            fprintf(stderr,"net_connect_thread():Net up, port %d\n",port);
+
+        port_data[port].status = DEVICE_UP;
+        ok = 1;
+
+        // Show the latest status in the interface control dialog
+        update_interface_list();
+    }
+    else {    /* net connection failed */
+        ok = 0;
+        if (debug_level & 2)
+            fprintf(stderr,"net_connect_thread():net connection failed, port %d, DEVICE_ERROR ***\n",port);
         port_data[port].status = DEVICE_ERROR;
 
         // Show the latest status in the interface control dialog
         update_interface_list();
 
         // Shut down and close the socket
+
         //pthread_testcancel();   // Check for thread termination request
         //
         // Don't do a shutdown!  The socket wasn't connected.  This causes
@@ -4952,19 +4925,18 @@ static void* net_connect_thread(void *arg) {
         //stat = shutdown(port_data[port].channel,2);
         //pthread_testcancel();   // Check for thread termination request
         //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Net Shutdown 2 Returned %d, port %d\n",stat,port);
+        //    fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
 
         usleep(100000); // 100ms
         //pthread_testcancel();   // Check for thread termination request
         //stat = close(port_data[port].channel);
         //pthread_testcancel();   // Check for thread termination request
         //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Net Close 2 Returned %d, port %d\n",stat,port);
+        //    fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
 
         //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Could not bind socket, port %d\n",port);
+        //    fprintf(stderr,"net_connect_thread():Net connection 1 failed, port %d\n",port);
     }
-
 
     // Install the cleanup routine for the case where this thread
     // gets killed while the mutex is locked.  The cleanup routine
@@ -5021,15 +4993,14 @@ static void* net_connect_thread(void *arg) {
 //**************************************************************
 int net_init(int port) {
     int ok;
-    int have_address = 0;
-    char ip_addrs[400];
-    char ip_addr[40];
     char st[200];
     pthread_t connect_thread;
     int stat;
     int wait_on_connect;
     time_t wait_time;
-    struct in_addr ip_test;
+    int gai_rc;     // Return code from get address info
+    char port_num[16];
+    struct addrinfo hints;
  
     if (begin_critical_section(&port_data_lock, "interface.c:net_init(1)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -5048,220 +5019,179 @@ int net_init(int port) {
 
     ok = -1;
 
-    // Check whether we were passed an IPv4/IPv6 address or a
-    // hostname.  If an address, skip the host_lookup.
-    if (inet_aton(port_data[port].device_host_name, &ip_test)) {
-        // We have an IPv4 or IPv6 address already.  Set a flag so
-        // that the code below can directly use it.
-        have_address = 1;
+
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = 0;
+    hints.ai_flags = AI_NUMERICSERV|AI_ADDRCONFIG;
+    xastir_snprintf(port_num, sizeof(port_num), "%d", port_data[port].socket_port);
+
+    xastir_snprintf(st, sizeof(st), langcode("BBARSTA019"), port_data[port].device_host_name);
+    statusline(st,1);   // Looking up host
+
+    if(port_data[port].addr_list) {
+        forked_freeaddrinfo(port_data[port].addr_list);
+        port_data[port].addr_list = NULL;
     }
+    gai_rc = forked_getaddrinfo(port_data[port].device_host_name, port_num, &hints, &port_data[port].addr_list, 13);
 
-    if (!have_address) {
-        xastir_snprintf(st, sizeof(st), langcode("BBARSTA019"), port_data[port].device_host_name);
-        statusline(st,1);   // Looking up host
+    if(gai_rc == 0) {
+        /* ok try to connect */
 
-        //fprintf(stderr,"Hostname Lookup\n");
+        if (begin_critical_section(&connect_lock, "interface.c:net_init(2)" ) > 0)
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
 
-        // We currently give 13 seconds to look up the hostname
-        (void)host_lookup(port_data[port].device_host_name,
-            ip_addrs,
-            sizeof(ip_addrs),
-            13);
-    }
-    else {
-        //fprintf(stderr,"Skipping Hostname Lookup\n");
-    }
+        port_data[port].thread_status = 1;
+        port_data[port].connect_status = -1;
 
-    if (have_address || strcmp(ip_addrs,"NOIP") != 0) {
-        if (have_address || strcmp(ip_addrs,"NOHOST") != 0) {
-            if (have_address || strcmp(ip_addrs,"TIMEOUT") != 0) {    // We found an IP address
+        // If channel is != -1, we have a socket remaining from a previous
+        // connect attempt.  Shutdown and close that socket, then create
+        // a new one.
+        if (port_data[port].channel != -1) {    // We have a socket already
 
-                if (have_address) {
-                    // Stuff the address passed to us into our
-                    // working variable.
-                    xastir_snprintf(ip_addr,
-                        sizeof(ip_addr),
-                        "%s",
-                        port_data[port].device_host_name);
-                }
-                else {
-                    // Get the first IP address from the lookup.
-                    if (1 != sscanf(ip_addrs,"%39s",ip_addr)) {
-                        fprintf(stderr,"net_init: sscanf parsing error\n");
-                    }
-                }
-                if (debug_level & 2)
-                    fprintf(stderr,"IP Address: %s\n",ip_addr);
-                /* set address for connection */
-                port_data[port].address = inet_addr(ip_addr);
+            // Shut down and close the socket
+            pthread_testcancel();   // Check for thread termination request
+            stat = shutdown(port_data[port].channel,2);
+            pthread_testcancel();   // Check for thread termination request
+            if (debug_level & 2)
+                fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
+            usleep(100000);         // 100ms
+            pthread_testcancel();   // Check for thread termination request
+            stat = close(port_data[port].channel);
+            pthread_testcancel();   // Check for thread termination request
+            if (debug_level & 2)
+                fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
+            usleep(100000);         // 100ms
+            port_data[port].channel = -1;
+       }
 
-                /* ok try to connect */
+        if (end_critical_section(&connect_lock, "interface.c:net_init(3)" ) > 0)
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
 
-                if (begin_critical_section(&connect_lock, "interface.c:net_init(2)" ) > 0)
-                    fprintf(stderr,"connect_lock, Port = %d\n", port);
+        if (debug_level & 2)
+            fprintf(stderr,"Creating new thread\n");
+        if (pthread_create(&connect_thread, NULL, net_connect_thread, &port)){
+            /* error starting thread*/
+            ok = -1;
+            fprintf(stderr,"Error creating net_connect thread, port %d\n",port);
+        }
 
-                port_data[port].thread_status = 1;
-                port_data[port].connect_status = -1;
+        busy_cursor(appshell);
+        wait_time = sec_now() + NETWORK_WAITTIME;  // Set ending time for wait
+        wait_on_connect = 1;
+        while (wait_on_connect && (sec_now() < wait_time)) {
 
-                // If channel is != -1, we have a socket remaining from a previous
-                // connect attempt.  Shutdown and close that socket, then create
-                // a new one.
-                if (port_data[port].channel != -1) {    // We have a socket already
+            if (begin_critical_section(&connect_lock, "interface.c:net_init(4)" ) > 0)
+                fprintf(stderr,"connect_lock, Port = %d\n", port);
 
-                    // Shut down and close the socket
-                    pthread_testcancel();   // Check for thread termination request
-                    stat = shutdown(port_data[port].channel,2);
-                    pthread_testcancel();   // Check for thread termination request
-                    if (debug_level & 2)
-                        fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
-                    usleep(100000);         // 100ms
-                    pthread_testcancel();   // Check for thread termination request
-                    stat = close(port_data[port].channel);
-                    pthread_testcancel();   // Check for thread termination request
-                    if (debug_level & 2)
-                        fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
-                    usleep(100000);         // 100ms
-                    port_data[port].channel = -1;
-               }
+            wait_on_connect = port_data[port].thread_status;
 
-                if (end_critical_section(&connect_lock, "interface.c:net_init(3)" ) > 0)
-                    fprintf(stderr,"connect_lock, Port = %d\n", port);
+            if (end_critical_section(&connect_lock, "interface.c:net_init(5)" ) > 0)
+                fprintf(stderr,"connect_lock, Port = %d\n", port);
 
-                if (debug_level & 2)
-                    fprintf(stderr,"Creating new thread\n");
-                if (pthread_create(&connect_thread, NULL, net_connect_thread, &port)){
-                    /* error starting thread*/
-                    ok = -1;
-                    fprintf(stderr,"Error creating net_connect thread, port %d\n",port);
-                }
+            xastir_snprintf(st, sizeof(st), langcode("BBARSTA025"), wait_time - sec_now() );
+            statusline(st,1);           // Host found, connecting n
+            if (debug_level & 2)
+                fprintf(stderr,"%d\n", (int)(wait_time - sec_now()) );
 
-                busy_cursor(appshell);
-                wait_time = sec_now() + NETWORK_WAITTIME;  // Set ending time for wait
-                wait_on_connect = 1;
-                while (wait_on_connect && (sec_now() < wait_time)) {
+            /* update display while waiting */
+            // XmUpdateDisplay(XtParent(da));
+            usleep(250000);      // 250mS
+            //sched_yield();    // Too fast!
+        }
 
-                    if (begin_critical_section(&connect_lock, "interface.c:net_init(4)" ) > 0)
-                        fprintf(stderr,"connect_lock, Port = %d\n", port);
+        ok = port_data[port].connect_status;
 
-                    wait_on_connect = port_data[port].thread_status;
+        /* thread did not return! kill it */
+        if ( (sec_now() >= wait_time)      // Timed out
+                || (ok != 1) ) {            // or connection failure of another type
+            if (debug_level & 2)
+                fprintf(stderr,"Thread exceeded it's time limit or failed to connect! Port %d\n",port);
 
-                    if (end_critical_section(&connect_lock, "interface.c:net_init(5)" ) > 0)
-                        fprintf(stderr,"connect_lock, Port = %d\n", port);
+            if (begin_critical_section(&connect_lock, "interface.c:net_init(6)" ) > 0)
+                fprintf(stderr,"connect_lock, Port = %d\n", port);
 
-                    xastir_snprintf(st, sizeof(st), langcode("BBARSTA025"), wait_time - sec_now() );
-                    statusline(st,1);           // Host found, connecting n
-                    if (debug_level & 2)
-                        fprintf(stderr,"%d\n", (int)(wait_time - sec_now()) );
-
-                    /* update display while waiting */
-                    // XmUpdateDisplay(XtParent(da));
-                    usleep(250000);      // 250mS
-                    //sched_yield();    // Too fast!
-                }
-
-                ok = port_data[port].connect_status;
-                /* thread did not return! kill it */
-                if ( (sec_now() >= wait_time)      // Timed out
-                        || (ok != 1) ) {            // or connection failure of another type
-                    if (debug_level & 2)
-                        fprintf(stderr,"Thread exceeded it's time limit or failed to connect! Port %d\n",port);
-
-                    if (begin_critical_section(&connect_lock, "interface.c:net_init(6)" ) > 0)
-                        fprintf(stderr,"connect_lock, Port = %d\n", port);
-
-                    if (debug_level & 2)
-                        fprintf(stderr,"Killing thread\n");
-                    if (pthread_cancel(connect_thread)) {
-                        // The only error code we can get here is ESRCH, which means
-                        // that the thread number wasn't found.  The thread is already
-                        // dead, so let's not print out an error code.
-                        //fprintf(stderr,"Error on termination of connect thread!\n");
-                    }
-
-                    if (sec_now() >= wait_time) {  // Timed out
-                        port_data[port].connect_status = -2;
-                        if (debug_level & 2)
-                            fprintf(stderr,"It was a timeout.\n");
-                    }
-
-                    if (end_critical_section(&connect_lock, "interface.c:net_init(7)" ) > 0)
-                        fprintf(stderr,"connect_lock, Port = %d\n", port);
-
-                    port_data[port].status = DEVICE_ERROR;
-                    if (debug_level & 2)
-                        fprintf(stderr,"Thread did not return, port %d, DEVICE_ERROR ***\n",port);
-
-                    // Show the latest status in the interface control dialog
-                    update_interface_list();
-                }
-                if (begin_critical_section(&connect_lock, "interface.c:net_init(8)" ) > 0)
-                    fprintf(stderr,"connect_lock, Port = %d\n", port);
-
-                ok = port_data[port].connect_status;
-
-                if (end_critical_section(&connect_lock, "interface.c:net_init(9)" ) > 0)
-                    fprintf(stderr,"connect_lock, Port = %d\n", port);
-
-                if (debug_level & 2)
-                    fprintf(stderr,"Net ok: %d, port %d\n", ok, port);
-
-                switch (ok) {
-
-                    case 1: /* connection up */
-                        xastir_snprintf(st, sizeof(st), langcode("BBARSTA020"), port_data[port].device_host_name);
-                        statusline(st,1);               // Connected to ...
-                        break;
-
-                    case 0:
-                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA021"));
-                        statusline(st,1);               // Net Connection Failed!
-                        ok = -1;
-                        break;
-
-                    case -1:
-                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA022"));
-                        statusline(st,1);               // Could not bind socket
-                        break;
-
-                    case -2:
-                        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
-                        statusline(st,1);               // Net Connection timed out
-                        ok = 0;
-                        break;
-
-                    default:
-                        break;
-                        /*break;*/
-                }
-            } else { /* host lookup time out */
-                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
-                statusline(st,1);                       // Net Connection timed out
-                port_data[port].status = DEVICE_ERROR;
-                if (debug_level & 2)
-                    fprintf(stderr,"Host lookup timeout, port %d, DEVICE_ERROR ***\n",port);
-
-                // Show the latest status in the interface control dialog
-                update_interface_list();
-
-                ok = 0;
+            if (debug_level & 2)
+                fprintf(stderr,"Killing thread\n");
+            if (pthread_cancel(connect_thread)) {
+                // The only error code we can get here is ESRCH, which means
+                // that the thread number wasn't found.  The thread is already
+                // dead, so let's not print out an error code.
+                //fprintf(stderr,"Error on termination of connect thread!\n");
             }
-        } else {    /* Host ip look up failure (no ip address for that host) */
-            xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA023"));
-            statusline(st,1);                           // No IP for Host
+
+            if (sec_now() >= wait_time) {  // Timed out
+                port_data[port].connect_status = -2;
+                if (debug_level & 2)
+                    fprintf(stderr,"It was a timeout.\n");
+            }
+
+            if (end_critical_section(&connect_lock, "interface.c:net_init(7)" ) > 0)
+                fprintf(stderr,"connect_lock, Port = %d\n", port);
+
             port_data[port].status = DEVICE_ERROR;
             if (debug_level & 2)
-                fprintf(stderr,"Host IP lookup failure, port %d, DEVICE_ERROR ***\n",port);
+                fprintf(stderr,"Thread did not return, port %d, DEVICE_ERROR ***\n",port);
 
             // Show the latest status in the interface control dialog
             update_interface_list();
         }
+        if (begin_critical_section(&connect_lock, "interface.c:net_init(8)" ) > 0)
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
+
+        ok = port_data[port].connect_status;
+
+        if (end_critical_section(&connect_lock, "interface.c:net_init(9)" ) > 0)
+            fprintf(stderr,"connect_lock, Port = %d\n", port);
+
+        if (debug_level & 2)
+            fprintf(stderr,"Net ok: %d, port %d\n", ok, port);
+
+        switch (ok) {
+            case 1: /* connection up */
+                xastir_snprintf(st, sizeof(st), langcode("BBARSTA020"), port_data[port].device_host_name);
+                statusline(st,1);               // Connected to ...
+                break;
+
+            case 0:
+                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA021"));
+                statusline(st,1);               // Net Connection Failed!
+                ok = -1;
+                break;
+
+            case -1:
+                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA022"));
+                statusline(st,1);               // Could not bind socket
+                break;
+
+            case -2:
+                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
+                statusline(st,1);               // Net Connection timed out
+                ok = 0;
+                break;
+
+            default:
+                break;
+                /*break;*/
+        }
     }
-    else {    /* Host look up failure (no host by that name) */
-        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA023"));
-        statusline(st,1);                               // No IP for Host
+    else if (gai_rc == FAI_TIMEOUT) { /* host lookup time out */
+        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
+        statusline(st,1);                       // Net Connection timed out
         port_data[port].status = DEVICE_ERROR;
         if (debug_level & 2)
-            fprintf(stderr,"Host lookup failure, port %d, DEVICE_ERROR ***\n",port);
+            fprintf(stderr,"Host lookup timeout, port %d, DEVICE_ERROR ***\n",port);
+
+        // Show the latest status in the interface control dialog
+        update_interface_list();
+
+        ok = 0;
+    } else {    /* Host ip look up failure (no ip address for that host) */
+        xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA023"));
+        statusline(st,1);                           // No IP for Host
+        port_data[port].status = DEVICE_ERROR;
+        if (debug_level & 2)
+            fprintf(stderr,"Host IP lookup failure, port %d, rc %d, DEVICE_ERROR ***\n",port, gai_rc);
 
         // Show the latest status in the interface control dialog
         update_interface_list();
@@ -6933,6 +6863,7 @@ void clear_port_data(int port, int clear_more) {
 
     port_data[port].device_name[0] = '\0';
     port_data[port].device_host_name[0] = '\0';
+    port_data[port].addr_list = NULL;
 
     if (begin_critical_section(&connect_lock, "interface.c:clear_port_data(2)" ) > 0)
         fprintf(stderr,"connect_lock, Port = %d\n", port);

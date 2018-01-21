@@ -22,11 +22,13 @@
  */
 
 
-#ifndef __XASTIR_HOSTNAME_H
-#define __XASTIR_HOSTNAME_H
+#ifndef __XASTIR_GETAADDRINFO_H
+#define __XASTIR_GETAADDRINFO_H
 
-extern char *host_lookup(char *host, char *ip, int ip_size, int time);
+int forked_getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *hints, struct addrinfo **resout, int time);
+void forked_freeaddrinfo(struct addrinfo *ai);
 
-#endif  // __XASTIR_HOSTNAME_H
+#define FAI_TIMEOUT -55
+#endif  // __XASTIR_GETAADDRINFO_H
 
 
