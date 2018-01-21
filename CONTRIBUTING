@@ -41,48 +41,183 @@ to the language files.  If you don't know a particular language, add
 it to all of the language files in English.  It will be translated
 by others later.
 
-*) Put your patches into either "context diff" or "unified diff"
-format.  Don't submit complete files.  Make sure your diff is
-against the latest Git sources, as that is the version that the
-developers work from.  Create the diff file against the directories
-recursively if more than one file has been changed:
+*) While it is always possible to create a patch set and email the
+result to Xastir developers, this is no longer a desirable way to
+proceed.  The preferred method of contributing source changes is
+through GitHub "pull requests."  (See
+https://help.github.com/articles/about-pull-requests/)
 
-    diff -ur xastir-1.7.0 xastir-modified-directory > mypatch
+In a (rather large) nutshell this process goes like this:
 
-Here's a shorthand method if you're doing all this against the Git
-version.  Do this from the top-level Xastir directory:
+  - Log in to Xastir's github repo at
+    https://github.com/Xastir/Xastir.git and click the "Fork" button.
+    This will create a copy of the repo that you have full control of.
+    Once you have created a fork, here's a general approach you can use:
 
-    git diff -u > mypatch
+  - Clone your repo:
+    cd <some place other than where your other Xastir clone lives>
+    git clone https://github.com/<you>/Xastir.git
+    cd Xastir
 
-*) By compressing the patch and attaching it to an e-mail you
-preserve the lines exactly so that the "patch" program will have no
-trouble with it:
+    The result of this step is that you will have a primary remote
+    named "origin" that points at your forked repository.
 
-    gzip mypatch
+  - Add the official repo as a second remote called "upstream":
+    git remote add upstream https://github.com/Xastir/Xastir.git
 
-This creates mypatch.gz, which you can attach to an e-mail or put up
-on an ftp or http site for download.
+    Now your local repo knows about two remote repos -- yours, and the official
+    project repo.
 
-*) Contribute patches either directly to one of the active
-developers or to the Xastir-Dev mailing list (you must be subscribed
-in order to post messages there).
+  - Create a topic branch to work on:
+     git checkout -b <branchname>
 
-*) To apply a patch I typically do this:
+  - Do all your work while checked out in this branch.  As you work,
+    use git add/git commit commands to save your changes in logical
+    chunks.  Staging your changes in multiple commits this way helps
+    keep the project history readable.
 
-    gzip -d mypatch.gz
+    See the notes below regarding formatting of commit messages, please.
 
-Check the path listed inside the patch:
+  - When you have finished your work (or when you think you have) and are
+    ready to ask for it to be reviewed and accepted, you will need to
+    publish your changes to GitHub and initiate a pull request.
 
-    head mypatch
+    - First, make sure your repo has an up-to-date master branch:
+      git fetch upstream            # This fetches changes in the official repo
+      git checkout master           # go back to the master branch
+      git merge upstream/master     # brings your local master up to date
+      git push origin                 # this brings your GitHub fork up to date
+      git checkout <branchname>       # get your branch back
 
-Based on the paths listed inside the patch and the directory at
-which you're currently sitting, adjust the "p" number below so that
-the proper number of directories are stripped from the patch.  This
-example strips off the first two directories:
+    - Always rebase your feature branch so that it branches off of the
+      current head of the master branch:
+      git rebase master               # makes sure that your branch is based
+                                      # on the most recent version of master
 
-    patch -p2 <mypatch
+    - Now publish your branch in your GitHub fork (your "origin" remote).
+      git push -u origin <branchname>
+
+    Now your changes exist on the named branch in your GitHub repo, and may
+    be shared with others.
+
+    NOTE: If you have refrained from touching the code on the master
+    branch, the merge of upstream master will always be as simple as
+    shown here, with no conflicts possible --- all you're doing is
+    grabbing what others have done while you were working.  In times
+    of great activity on master (there are seldom such times) it is
+    possible, though, that the rebase operation can show conflicts
+    between upstream changes and your changes that you will have to
+    fix yourself.  Resolving these conflicts requires editing your
+    code, fixing the conflict markers, then doing additional git
+    add/git commit operations and a third command to tell git rebase
+    to continue after the conflict resolution.  Please see the Pro Git
+    book at https://git-scm.com/book/en/v2 for guidance should this
+    happen to you.
+
+  - A good practice at this point, before you've asked the Xastir developers
+    to merge your work, is to send an email to the xastir-dev mailing list
+    and ask others to test out your work.  They can easily check out your
+    fork and make sure there are no hidden issues you hadn't detected.
+    See below for a suggestion of the easiest way to check out other people's
+    topic branches.
+
+  - Now you are ready to ask for your code to be reviewed and accepted.
+
+    - Open your web browser to your GitHub repo for your fork at
+      https://github.com/<you>/Xastir.git.
+
+    - Using the pull-down menu, select your feature branch name.
+
+    - To the right, you'll see a button marked "Pull request."  Click it
+      to begin the process of creating an automated request to pull your
+      code into the main repo.  Fill out all of the form and create
+      a pull request.
+
+    - A member of the Xastir project will review your changes and
+      comment on the pull request.  If the changes are
+      straightforward, your request may be accepted directly, or you
+      may be requested to make further changes.
 
 
+    - If you need to add more commits to address concerns brought up in the
+      review of your pull request, just make them on your topic branch and
+      push them again:
+         git checkout <topic branch>
+         git add <files>
+         git commit
+         git push
+
+      Since you have already associated your topic branch with your
+      forked remote in a previous step, it is no longer necessary to
+      say "-u origin <branchname>" here.
+
+    - If this goes on for very long, it could come to pass that master has
+      changed again.  If so, you may need to rebase and force-push your
+      topic branch.  Ideally, you should endeavor to make your pull requests
+      as easy to test and review as possible, so that it doesn't take forever
+      for developers to get around to testing them and merging them.
+
+  There are lots of guidelines out there about how to make good pull
+  requests.  Please read
+  https://github.com/blog/1943-how-to-write-the-perfect-pull-request
+  for one such article.
+
+  There is also a pretty nice tutorial on how to do your first pull request
+  at https://www.thinkful.com/learn/github-pull-request-tutorial/
+
+Important: Git Commit Message Format
+------------------------------------
+ Git commit messages need to be in a certain format to make the best use
+ of the "git log" commands. In particular the first line needs to be 50
+ chars or less, then a BLANK LINE, then a detailed commit message. See
+ this link for more info:
+
+    http://chris.beams.io/posts/git-commit/
+
+Checking out other people's work
+--------------------------------
+
+It was mentioned above that sometimes it is a good practice to ask other
+people to check out your code changes before a pull request is opened.
+This section contains some simple ways for Xastir users and developers
+to check out code in other people's repos with a minimum of fuss.
+
+Say user "sumgai" has a topic branch named "sumnufeetyur" in a fork of Xastir
+at "https://github.com/sumgai/Xastir.git".  You want to pull those changes
+and test them out.  This can always be done just by cloning the entire fork,
+but that is not necessary, since most of the fork is a straight copy of the
+official repo.   You can instead just grab sumgai's changes:
+
+  - I'm assuming you're already checked out from the master branch, but
+    let's make sure:
+     git checkout master
+
+  - In your regular Xastir clone directory, create a new branch to hold
+    sumgai's work, and switch to it:
+
+     git checkout -b sumgai-sumnufeetyur
+
+    When you do this, all you've done so far is to create a new name for
+    a copy of master.
+
+  - Now pull sumgai's branch into yours:
+    git pull https://github.com/sumgai/Xastir.git sumnufeetuyr
+
+    Your sumgai-sumnufeetyur branch will now match sumgai's sumnufeetur branch
+    exactly.  This does generally work best if sumgai has kept his branch
+    rebased off of master, which is why we recommend that approach.
+
+  - You can now build the code and test it as usual.
+
+  - When you're done testing sumgai's code, you can go back to the
+    unmodified Xastir just by doing "git checkout master," and
+    rebuilding the code.  If you no longer want to keep a copy of
+    sumgai's work around, you can delete the branch with
+       git branch -D sumgai-sumnufeetyur
+
+Note to developers:  The process of doing this checkout of others' branches
+is exactly what GitHub recommends as the first steps to resolving pull
+requests manually through the CLI instead of through github's web interface.
 
 DEBUGGING HINTS:
 ----------------
