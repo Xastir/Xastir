@@ -108,7 +108,7 @@ int forked_getaddrinfo(const char *hostname, const char *servname, const struct 
 
 #ifdef RETSIGTYPE
     RETSIGTYPE * previous_loc;
-#else 
+#else
 #error RETSIGTYPE not defined
 #endif
 
