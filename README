@@ -1,25 +1,25 @@
 # README
 ------------------------------------------------------------------------
 
-    Please at least SKIM this document before asking questions. In fact,
-    READ IT if you've never successfully set up Xastir before. PLEASE!
-    READ IT! If you haven't read this file, and ask for help
-    expect to be told to READ the README file first! or RTFM :)
+ Please at least SKIM this document before asking questions. In fact,
+ READ IT if you've never successfully set up Xastir before. PLEASE!
+ READ IT! If you haven't read this file, and ask for help
+ expect to be told to READ the README file first! or RTFM :)
 
-    Contents
+ Contents:
 
-    0    Important notice
-    1    What is Xastir?
-    2    How do I get Xastir & Git usage
-    3    Quick startup
-    4    Upgrading
-    5    Identification notes
-    6    OS-specific notes
-    7    Gating weather alerts
-    8    Boring legal stuff
-    9    Mailing list
-   10    Documentation
-   11    Obtaining help
+ 0.    Important notice
+ 1.    What is Xastir?
+ 2.    How do I get Xastir & Git usage
+ 3.    Quick startup
+ 4.    Upgrading
+ 5.    Identification notes
+ 6.    OS-specific notes
+ 7.    Gating weather alerts
+ 8.    Boring legal stuff
+ 9.    Mailing list
+ 10.   Documentation
+ 11.   Obtaining help
 
 ------------------------------------------------------------------------
 
