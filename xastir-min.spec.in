@@ -44,7 +44,7 @@ rm -rf ${RPM_BUILD_ROOT}
 # Documents:  Go into special doc area at /usr/share/doc/xastir/ or
 # /usr/share/doc/packages/xastir/
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
-%doc README CONTRIBUTING README.GIT README.Getting-Started
+%doc README CONTRIBUTING.md README.GIT README.Getting-Started
 %doc README.MAPS README.sudo UPGRADE
 
 
