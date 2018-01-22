@@ -547,5 +547,5 @@ be expanded in this document.  Thanks!
 
 APRS(tm) is a Trademark of Bob Bruninga
 
-Copyright (C) 2006-2018 The Xastir Group
+Copyright (C) 2000-2018 The Xastir Group
 

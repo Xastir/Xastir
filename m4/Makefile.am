@@ -1,4 +1,4 @@
 #
-# Copyright (C) 2000-2012  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 #
 EXTRA_DIST=     xmhtml.m4

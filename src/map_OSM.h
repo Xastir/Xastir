@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2012 The Xastir Group
+ * Copyright (C) 2000-2018 The Xastir Group
  *
  * This file was contributed by Jerry Dunmire, KA6HLD.
  *

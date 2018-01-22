@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #
-# Copyright (C) 2003-2012  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 #
 # fix up a user's .xastir/config/xastir.cnf to rewrite /usr/local/xastir
 # to ${prefix}/share/${name}.

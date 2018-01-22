@@ -1,7 +1,7 @@
 #!/usr/bin/perl -W
 #
 # XASTIR, Amateur Station Tracking and Information Reporting
-# Copyright (C) 2016  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 #
 # Converts "dump1090" telnet port output to Xastir UDP input, for decoding
 # packets directly from aircraft.  This script will parse packets containing

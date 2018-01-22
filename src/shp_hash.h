@@ -1,5 +1,5 @@
 
-// Copyright (C) 2004-2012  The Xastir Group
+// Copyright (C) 2000-2018 The Xastir Group
 
 
 #ifndef __XASTIR_SHP_HASH_H

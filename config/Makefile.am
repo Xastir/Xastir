@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2000-2014  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 #
 
 configdir = ${pkgdatadir}/config

@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
- * Copyright (C) 2007-2012  The Xastir Group
+ * Copyright (C) 2000-2018 The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

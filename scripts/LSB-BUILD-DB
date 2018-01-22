@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2006-2012  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 # <http://www.sleepycat.com>
 
 # Compile Berkely db-4.4.20 under Linux Standard Base 3.0.  Install

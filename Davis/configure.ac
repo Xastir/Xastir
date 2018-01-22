@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
-# Portions Copyright (C) 2004-2012  The Xastir Group
+# Portions Copyright (C) 2000-2018 The Xastir Group
 # (Modified for the Xastir project under GPL license)
 #
 #
@@ -36,7 +36,6 @@ else
     AC_MSG_CHECKING(if there at least are the needed MySQL client libs)
     AC_CHECK_LIB(mysqlclient,mysql_close)
     if test $ac_cv_lib_mysqlclient_mysql_close = no; then
-    
         AC_MSG_ERROR(*** No MySQL client library found - See README ***)
     else
         AC_MSG_RESULT(found a usable libmysqlclient)

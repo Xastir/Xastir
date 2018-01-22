@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2006-2016  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 
 # TODO:
 # Check for a link at /opt/Xastir/share/xastir.  If found, remove it

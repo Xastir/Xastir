@@ -1,6 +1,6 @@
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
- * Portions Copyright (C) 2004-2012  The Xastir Group
+ * Portions Copyright (C) 2000-2018 The Xastir Group
  */
 
 #ifdef HAVE_CONFIG_H

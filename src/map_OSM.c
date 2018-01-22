@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
  *
- * Copyright (C) 2010-2012 The Xastir Group
+ * Copyright (C) 2000-2018 The Xastir Group
  *
  * This file was contributed by Jerry Dunmire, KA6HLD.
  *
@@ -23,7 +23,7 @@
  *
  * This file derived from map_tiger.c which has the following copyrights:
  *    Copyright (C) 1999,2000  Frank Giannandrea
- *    Copyright (C) 2000-2012  The Xastir Group
+ *    Copyright (C) 2000-2018 The Xastir Group
  */
 
 

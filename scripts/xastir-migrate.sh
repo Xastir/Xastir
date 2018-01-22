@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2003-2012  The Xastir Group
+# Copyright (C) 2000-2018 The Xastir Group
 #
 # migrate from old xastir USER FILES to new directory structure.
 # Stuff that was under /usr/local/xastir is now under ${prefix}/share/xastir/
