@@ -53,8 +53,6 @@
 
    * http://xastir.org
    * http://github.com/Xastir
-   * http://xastir.sourceforge.net
-   * http://sourceforge.net/projects/xastir/
 
    including the latest releases, Git access (lets you
    download the latest developers' code), and information on how to join
