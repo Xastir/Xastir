@@ -1,628 +1,268 @@
+# README
+------------------------------------------------------------------------
 
-README
-  ------------------------------------------------------------------------
+    Please at least SKIM this document before asking questions. In fact,
+    READ IT if you've never successfully set up Xastir before. PLEASE!
+    READ IT! If you haven't read this file, and ask for help
+    expect to be told to READ the README file first! or RTFM :)
 
-     Please at least SKIM this document before asking questions. In fact,
-     READ IT if you've never successfully set up Xastir before. PLEASE!
-     READ IT! If you haven't read this file, and ask for help
-     expect to be told to READ the README file first! or RTFM :)
+    Contents
 
-     Contents
+    0    Important notice
+    1    What is Xastir?
+    2    How do I get Xastir & Git usage
+    3    Quick startup
+    4    Upgrading
+    5    Identification notes
+    6    OS-specific notes
+    7    Gating weather alerts
+    8    Boring legal stuff
+    9    Mailing list
+   10    Documentation
+   11    Obtaining help
 
-     0    Important notice
-     1    What is Xastir?
-     2    How do I get Xastir
-     2a   Git usage
-     3    Quick startup
-     4    Upgrading
-     5    Identification notes
-     6    OS-specific notes
-     7    Gating weather alerts
-     8    Boring legal stuff
-     9    Mailing list
-    10    Documentation
-    11    Obtaining help
+------------------------------------------------------------------------
 
-  ------------------------------------------------------------------------
+0. NOTICE
 
-     (0) NOTICE
+   Please read this file carefully before trying to set up Xastir.
+   This software was developed to be used by licensed amateur radio
+   operators.  You are responsible for any information transmitted
+   or propagated on any network.
 
-          Please read this file carefully before trying to set up Xastir.
-          This software was developed to be used by licensed amateur radio
-          operators.  You are responsible for any information transmitted
-          or propagated on any network.
+1. WHAT IS XASTIR?
 
-     (1) WHAT IS XASTIR?
+   Xastir is an open-source project to create a free X11 graphical
+   APRS(tm) client. APRS(tm) use amateur radio and Internet services to
+   convey GPS mapping, weather, and positional data in a graphical
+   application.  It has been developed by and for amateur radio
+   enthusiasts to provide real-time data in an easy to use package.
 
-          Xastir is an open-source project to create a free X11 graphical
-          APRS(tm) client. APRS(tm) use amateur radio and Internet services to
-          convey GPS mapping, weather, and positional data in a graphical
-          application.  It has been developed by and for amateur radio
-          enthusiasts to provide real-time data in an easy to use package.
+   Xastir currently runs under several flavors of Linux and BSD Unix.
+   A few people are running Xastir on Solaris Unix, FreeBSD, Lindows
+   and Mac OS X, but there may be small changes necessary in order to
+   get Xastir to configure/compile on some systems.  There are a few
+   notes below which may help in this task.  Most of the developers use
+   Linux which makes it the best supported platform at the moment.
 
-          Xastir currently runs under several flavors of Linux and BSD Unix.
-          A few people are running Xastir on Solaris Unix, FreeBSD, Lindows
-          and Mac OS X, but there may be small changes necessary in order to
-          get Xastir to configure/compile on some systems.  There are a few
-          notes below which may help in this task.  Most of the developers use
-          Linux which makes it the best supported platform at the moment.
+   Xastir is an open-source project: Most sources, documentation, and
+   binaries are available under the GPL license, with a few modules
+   available under other open-source or public domain licenses.
 
-          Xastir is an open-source project: Most sources, documentation, and
-          binaries are available under the GPL license, with a few modules
-          available under other open-source or public domain licenses.
+   More information on Xastir can be found here:
 
-          More information on Xastir can be found here:
+   * http://xastir.org
+   * http://github.com/Xastir
+   * http://xastir.sourceforge.net
+   * http://sourceforge.net/projects/xastir/
 
-            http://xastir.org
-            http://github.com/Xastir
-            http://xastir.sourceforge.net
-            http://sourceforge.net/projects/xastir/
+   including the latest releases, Git access (lets you
+   download the latest developers' code), and information on how to join
+   Xastir mailing lists.  Note that you must be subscribed in order to
+   post to the mailing lists.
 
-          including the latest releases, Git access (lets you
-          download the latest developers' code), and information on how to join
-          Xastir mailing lists.  Note that you must be subscribed in order to
-          post to the mailing lists.
+   SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
+   Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
+   other authors as long as proper credit is given and the term
+   SmartBeaconing(tm) is used.  Thanks to Tony and Steve for that
+   contribution!
 
-          SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
-          Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
-          other authors as long as proper credit is given and the term
-          SmartBeaconing(tm) is used.  Thanks to Tony and Steve for that
-          contribution!
+   -- The Xastir Group.
 
-             -- The Xastir Group.
+2. HOW TO GET XASTIR
 
-     (2) HOW TO GET XASTIR
+   Xastir is currently developed at
+   <http://github.com/Xastir/Xastir>
+   You can get the latest version of Xastir from there.
 
-          Xastir is currently developed at
-          <http://github.com/Xastir/Xastir>
-          You can get the latest version of Xastir from there.
+   You might try <http://xastir.org> for help and information,
+   particularly the Xastir mailing list (listed near the bottom
+   of the page).
 
-          You might try <http://xastir.org> for help and information,
-          particularly the Xastir mailing list (listed near the bottom
-          of the page).
-
-
-     (2a) Git USAGE
-
-          Obtain the *very latest* version of Xastir under development by
-          using Git. 
+   At this time the Xastir team has not yet done any formal
+   releases of the code since we migrated from CVS to git, so
+   there are no tarballs we can recommend that you download.
+   We hope to start doing releases again sometime in early
+   2018, at which point this README will be updated.
           
-          See the file README.GIT for more details.
+   * Git USAGE
 
-     (3) QUICK STARTUP
+     Obtain the *very latest* version of Xastir under development by
+     using Git. 
+          
+     See the file README.GIT for more details.
 
-           INCLUDED IN 'INSTALL'
-           WINDOWS USERS:  Please refer to the "README.CYGWIN" file for specific
-           instructions.
+3. QUICK STARTUP
 
-     (4) UPGRADING
+   Check the Xastir wiki (http://xastir.org) for OS-specific guidance
+   for building Xastir on your system.
 
-           INCLUDED IN 'UPGRADE'
+   See the 'INSTALL' file in the Xastir source tree for detailed
+   information about configure.
 
-     (5) IDENTIFICATION NOTES
-          Packet radio modes, by their very nature, typically identify
-          themselves with every transmission. Xastir has a few features
-          targeted to people who used Xastir in demonstrations and other
-          broadcasts where Xastir itself is used over radio.
+   WINDOWS USERS:  Please refer to the "README.CYGWIN" file for
+   specific instructions.
 
-          Xastir can auto-ID via voice if Festival is compiled in and/or via a
-          message splashed across the screen. It does this identification
-          every 9.5 minutes if enabled. These identification modes were
-          designed for broadcasting Xastir across fast-scan television (for
-          events perhaps). Set the "ATV_SCREEN_ID" variable to 1 to enable the
-          screen message, and "SPEAK_ID" variable to 1 to enable festival to
-          speak the message. These variables are in the
-          ~/.xastir/config/xastir.cnf file.
+4. UPGRADING
+
+   Upgrading Xastir that has been built from a recent Git clone
+   is as simple as running "git pull" in the source tree and
+   recompiling.
+
+5. IDENTIFICATION NOTES
+
+   Packet radio modes, by their very nature, typically identify
+   themselves with every transmission. Xastir has a few features
+   targeted to people who used Xastir in demonstrations and other
+   broadcasts where Xastir itself is used over radio.
+
+   Xastir can auto-ID via voice if Festival is compiled in and/or via a
+   message splashed across the screen. It does this identification
+   every 9.5 minutes if enabled. These identification modes were
+   designed for broadcasting Xastir across fast-scan television (for
+   events perhaps). Set the "ATV_SCREEN_ID" variable to 1 to enable the
+   screen message, and "SPEAK_ID" variable to 1 to enable festival to
+   speak the message. These variables are in the
+   ~/.xastir/config/xastir.cnf file.
+
+6. OS SPECIFIC NOTES
+
+   [The OS-specific notes that were here were horribly outdated
+   and not maintained.  That text has been removed.  Please
+   see the Xastir wiki at http://xastir.org in the "Installation Notes"
+   section for OS-specific build guidance.]
 
 
-     (6) OS SPECIFIC NOTES
-      ----------------------------------------------------------------------
-      MAC OSX NOTES:
 
-     No changes necessary now for Mac OS X!
+7. GATING WEATHER ALERTS, STATIONS, OBJECTS/ITEMS TO RF
 
-     If you intend to run with GDAL installed, you may find that geotiff
-     projection doesn't work. To avoid this, install libtiff, libproj,
-     and libgeotiff first, then configure GDAL with 
-     --with-libtiff=/path/to/libtiff --with-geotiff=/path/to/geotiff
-     It's important to not choose "yes" or "internal". You may also want
-     --with-libz=yes
-
-     If you have trouble building GDAL you may need this patch:
-     --- GDALmake.opt.in     7 Jan 2004 20:52:29 -0000       1.130
-     +++ GDALmake.opt.in     30 Jan 2004 22:08:58 -0000
-     @@ -78,8 +78,8 @@
-      endif
+   ## Gating NWS Weather Alerts to RF:
  
-      CPPFLAGS       = @CPPFLAGS@ -I$(GDAL_ROOT)/port
-     -CFLAGS         = @C_WFLAGS@ @C_PIC@ $(C_ODFLAGS) @EXTRA_INCLUDES@ $(USER_DEFS)
-     -CXXFLAGS       = @CXX_WFLAGS@ @CXX_PIC@ $(CXX_ODFLAGS) \
-     +CFLAGS         = @C_WFLAGS@ @C_PIC@ $(GDAL_INCLUDE) $(C_ODFLAGS) @EXTRA_INCLUDES@ $(USER_DEFS)
-     +CXXFLAGS       = @CXX_WFLAGS@ @CXX_PIC@ $(GDAL_INCLUDE) $(CXX_ODFLAGS) \
-                       @EXTRA_INCLUDES@ $(USER_DEFS)
- 
-      RANLIB         =       @RANLIB@
-
-
-     You may want to install everything to /sw though, so that the normal
-     user can find it easily and add maps.  To do this, run this instead:
-
-        mkdir -p build
-        cd build
-        ../configure --prefix=/sw
-
-     That will cause Xastir to be installed in /sw/xastir/* directories, and
-     the executable will go into /sw/bin/xastir.
-
-     Ports have been contributed to DarwinPorts. This will be updated with
-     instructions when those are committed.
-
-     Here's a web page which has specific instructions for installing on OSX,
-     including a binary version of Xastir (no compiling necessary):
-
-          http://n1ofz.connares.org/software/Xastir
-
-       END OF MAC OSX NOTES.
-     -----------------------------------------------------------------------
-
-
-     -----------------------------------------------------------------------
-       FreeBSD NOTES:
-
-     There are both a binary package and a port available as part of the
-     official FreeBSD ports system.  Most FreeBSD users can either type
-     "pkg_add -r xastir" which will fetch the relevant binary for their
-     release, or preferably update their ports tree and use the port to get
-     the latest version.
-
-     Other options:
-
-     The FreeBSD port of xastir uses a development snapshot, and not
-     necessarily the latest snapshot, depending on how busy the port
-     maintainer is.  If you wish to be on the bleeding edge you can build
-     xastir yourself from the latest development snapshot or from Git,
-     without much more difficulty than Linux users have.  There are a few
-     caveats, though.
-
-     The version of autoconf used to generate configuration files for
-     Xastir is 2.57 or later.  If you have autoconf 2.13 installed,
-     there will be difficulties if you try to run "bootstrap.sh."  It
-     is best to install recent, matching versions of autoconf and automake
-     directly from sources into a separate binary directory other than
-     /usr/local/bin, without relying on the FreeBSD ports system.  The 
-     ports system installs autoconf and automake with odd suffixes that
-     can interfere with the xastir build process.
-
-     Contact Jack Twilley <jmt@twilley.org> or Tom Russo <russo@bogodyn.org> 
-     for more help in getting Xastir configured and built under FreeBSD.
-
-       END OF FreeBSD NOTES.
-     -----------------------------------------------------------------------
-
-
-     -----------------------------------------------------------------------
-       SOLARIS NOTES:
-
-     Changes required for Solaris 2.5 -> 7.0.  Other versions may require
-     slightly different changes.
-
-     After running "configure", edit src/Makefile and make these changes:
-
-       Solaris 2.5 -> 2.6:
-         NOTE: Solaris 2.5 -> 2.6 do not install Xpm.  If you've installed it
-         you'll need to delete "-DNO_XPM" from src/Makefile, make sure the
-         headers are in the search path, and add "-lXpm" to the LIBS or
-         LDFLAGS line in src/Makefile.
-
-       Solaris 7.0 notes from Chris Bell:
-       ----------------------------------
-         Date: Fri, 11 Jan 2002 16:38:57 -0800
-         From: Chris Bell <cbell@junknet.com>
-         To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
-         Cc: xastir-dev
-         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS's 
-
-         YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
-         geotiff and ImageMagick) I still have to tweak the geotiff detection
-         to avoid the system libtiff: 
-
-         ===================================================================
-         RCS file: /usr/local/cvs/xastir/configure,v
-         retrieving revision 1.51
-         diff -c -r1.51 configure
-         *** configure   2002/01/11 21:33:54     1.51
-         --- configure   2002/01/12 00:28:01
-         ***************
-         *** 4986,4992 ****
-             echo $ac_n "(cached) $ac_c" 1>&6
-           else
-             ac_save_LIBS="$LIBS"
-         ! LIBS="-lgeotiff  $LIBS"
-           cat > conftest.$ac_ext <<EOF
-           #line 4992 "configure"
-           #include "confdefs.h"
-         --- 4986,4992 ----
-             echo $ac_n "(cached) $ac_c" 1>&6
-           else
-             ac_save_LIBS="$LIBS"
-         ! LIBS="-L/usr/local/lib -R/usr/local/lib -lgeotiff -ltiff $LIBS"
-           cat > conftest.$ac_ext <<EOF
-           #line 4992 "configure"
-           #include "confdefs.h"
- 
-         Also, the generated Makefile needs the -L/usr/local/lib
-         -R/usr/local/lib added, and -lposix4 added to the link lib line.
- 
-         It is compiling now, I will let you know if there are any runtime
-         problems.  
- 
-         I also installed the latest patches for the OS... the latest
-         Openwindows patch finally fixes the X header warnings, so we don't
-         have to fear turning -Wall back on.  (patch # 108376-33) Probably a
-         good tidbit for the README...
- 
-         I am trying to get enough parts to build more systems for testing
-         solaris 8.   I tried it on my brother's system over the holidays, and
-         it worked just like 7.  
-       -----------------------------------------------------------------------
-
-     Note that Solaris 2.5 doesn't have support for snprintf().  The code
-     has been tweaked to switch to sprintf() for these calls in this case,
-     which allows more places for buffer overflow problems (this is a
-     security issue as well as a stability issue).  Solaris 2.6 and later
-     has support for snprintf().
-
-     Solaris 7.0 has Xpm support built into Motif, so you'll be able to
-     use Xpm map files within Xastir.
-
-     You need BSD-make installed on your system in order to compile Xastir.
-     Type "gmake" instead of "make" to build Xastir, and substitute "gmake"
-     for "make" in the following instructions.
-
-     ---
-     From: Chris Bell
-
-     A note to add, the auto* tools from sunfreeware (precompiled packages)
-     need the environment variable M4 set to gnu m4 (M4=/usr/local/bin/m4)
-     to work.  I also set LDFLAGS to '-L/usr/local/lib -R/usr/local/lib' (to
-     avoid the ancient libtiff in /usr/openwin/lib) before running configure,
-     then the tests (and final link) work properly.
-
-     Chris.
-
-     ---
-     Solaris 9/AEA PK232MBX notes from Alan Shackelford:
-
-     Thanks to the advice of several of you both on the list and in private 
-     email, the NG3B Xastir install is up and running. For future reference, 
-     here are the steps I took, based on your advice combined with my 
-     knowledge of Solaris and the AEA PK232MBX.
-
-     First, use admintool to set up the serial port at 8N1 9600.
-
-     Have a look at the /etc/uucp/Devices file and ensure you have the 
-     following in there someplace (like at the very bottom):
-
-        ACU cua/b - Any hayes
-        Direct cua/b - Any direct
-
-
-     Then use 'cu' (solaris-ese for call unix) to send a '*' to the TNC.
-     You will receive a response from the TNC with copyright info, etc.
-
-     Close the 'cu' session and start Xastir from a terminal window.
-
-     Set the Interface to 9600 8N1 in the configuration screen. Start the 
-     interface using the Interface Start/Stop window. The data will begin to
-     flow.
-
-     Alan NG3B
-     ---
-
-
-        END OF SOLARIS NOTES.
-      ----------------------------------------------------------------------- 
-
-
-      -----------------------------------------------------------------------
-        MANDRAKE LINUX NOTES:
-
-      With Mandrake Linux 8.x? you may get linker errors when it tries to
-      link in the "Xp" library.  To fix this, edit xastir/src/Makefile,
-      adding "-lXp" to the LIBS line, then type "make" again.
-
-        END OF MANDRAKE LINUX NOTES.
-      -----------------------------------------------------------------------
-
-
-      -----------------------------------------------------------------------
-        OpenSuSE LINUX 10.0/10.1 NOTES:
-
-        Bring up YaST2 and add more download sites via:
-
-            Software->Installation Source
-
-        For OpenSuSE 10.0:
-
-        ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.0-OSS/inst-source/suse
-        ftp://ftp.suse.com/pub/projects/ham/10.0-i386
-
-        For OpenSuSE 10.1:
-
-        ftp://suse.mirrors.tds.net/pub/opensuse/distribution/SL-10.1/inst-source/suse
-        http://dg7gt.osth.de/suse-10.1-ham/
-
-        For OpenSuSE 11.x (Use the one that matches your installation):
-
-        http://download.opensuse.org/repositories/hamradio/openSUSE_11.0/
-        http://download.opensuse.org/repositories/hamradio/openSUSE_11.1/
-        http://download.opensuse.org/repositories/hamradio/openSUSE_11.2/
-        http://download.opensuse.org/repositories/hamradio/openSUSE_11.3/
-
-        Adding these sites will allow you to find and install the ax25
-        libraries/devel headers, the OpenMotif development headers, and the
-        libcurl headers.
-
-        You'll see this warning if you run ./bootstrap.sh:
-
-            4... Running aclocal
-            /usr/share/aclocal/pstoedit.m4:7: warning: underquoted definition of
-            AM_PATH_PSTOEDIT
-              run info '(automake)Extending aclocal'
-              or see
-            http://sources.redhat.com/automake/automake.html#Extending-aclocal
-
-        You may safely ignore this warning.
-
-        I've found that I need to do this when configuring for OpenSUSE in
-        order to pick up the libgeotiff include files:
-
-            mkdir -p build
-            cd build
-            ../configure CPPFLAGS="-I/usr/include/libgeotiff"
-
-        I just put it into a script called "configure.suse" so that I don't
-        have to remember it each time.  Here are the complete contents of
-        the script (run it from the "build" directory):
-
-            #!/bin/sh
-            ../Xastir/configure CPPFLAGS="-I/usr/include/libgeotiff"
-
-        then do "chmod 755 configure.suse", and run it like this from the "build"
-        directory:
-
-            ./configure.suse
-
-        You'll may also see these when compiling the code:
-
-        map_tif.c: In function `my_GTIFProj4FromLatLong':
-        map_tif.c:391: warning: implicit declaration of function `CSLTokenizeStringComplex'
-        map_tif.c:391: warning: assignment makes pointer from integer without a cast
-        map_tif.c:394: warning: implicit declaration of function `CSLCount'
-        map_tif.c:396: warning: implicit declaration of function `CSLDestroy'
-        x_spider.c: In function `UDP_Server':
-        x_spider.c:1203: warning: pointer targets in passing argument 6 of `recvfrom' differ in signedness
-
-        You may safely ignore them as well.
-
-        Optional but highly recommended:  Install the colorgcc package, then go
-        into /usr/share/doc/packages/colorgcc and "cp colorgccrc ~/.colorgccrc"
-        This will cause any GCC warnings or errors to show up in a different
-        color in your Xterm window.  VERY handy.
-
-        Please note that the AX.25 kernel support in SuSE 10.0 doesn't work.
-        There are patches being discussed on the linux-hams list, but these
-        patches are not currently part of SuSE.  Use the Serial KISS TNC
-        interface in Xastir instead if you're using a KISS TNC with this
-        version of SuSE.
-
-        Note that you may see this warning when running bootstrap.sh:
-            "warning: underquoted definition of AM_PATH_PSTOEDIT"
-        but it is totally harmless.  It bothered me enough during my software
-        development that I figured out how to get rid of it, but please note
-        that the following step is totally unnecessary:  Remove the "pstoedit"
-        and "pstoedit-devel" packages plus packages that depend on them, like
-        inkscape.  Remove via YaST2 or by typing:
-            "rpm -e pstoedit pstoedit-devel inkscape" as root.
-
-        END OF OpenSuSE LINUX 10.0 NOTES.
-      -----------------------------------------------------------------------
-
-
-      -----------------------------------------------------------------------
-        HP/UX NOTES:
-
-      - Installed various needed packages and libraries downloaded from:
-
-      http://hpux.cs.utah.edu/
-
-      I'm not sure all of the following are needed, and, this leaves out a few
-      like ImageMagick, but here's a list of the HPUX depot files I've
-      collected:
-
-        X11R6incs-4.3.0-sd-11.11.depot
-        XR6built-6.11-sd-9.03.tar
-        autoconf-2.59-sd-11.11.depot
-        automake-1.9-sd-11.11.depot
-        bash-3.0-sd-11.00.depot
-        bison-1.875-sd-11.11.depot
-        cvs-1.11.17-sd-11.11.depot
-        db-4.2.52-sd-11.11.depot
-        flex-2.5.4a-sd-11.11.depot
-        gawk-3.1.4-sd-11.11.depot
-        lesstif-0.93.94-sd-11.11.depot
-        libiconv-1.9.2-sd-11.11.depot
-        lsof-4.72-sd-11.11.depot
-        m4-1.4.2-sd-11.11.depot
-        make-3.80-sd-11.11.depot
-        perl-5.8.5-sd-11.11.depot
-        sudo-1.6.7p5-sd-11.00.depot
-        tusc-7.7-sd-11.11.depot
-        wget-1.9.1-sd-11.11.depot
-
-      - Installed HP's version of binutils and gcc off of:
-
-      http://h21007.www2.hp.com/dspp/tech/tech_TechDocumentDetailPage_IDX/1,1701,4682,00.html
-
-        binutils_2.15a_hppa-hp-hpux11.11_depot
-        gcc_3.4.2_hppa-hp-hpux11.11_depot
-
-      HPUX 11.11 doesn't seem to have seteuid and setegid calls so:
-
-      - Installed and linked against HP's Linux libraries:
-
-      http://devrsrc1.external.hp.com/LPK/
-
-      - Changed a couple #include <strings.h>  to:
-
-        #ifdef HAVE_STRING_H
-        #  include <string.h>
-        #else
-        #  include <strings.h>
-        #endif
-
-      - added  #include <sys/modem.h> to interface.h
-
-
-      Current status:  It runs, but it seg-faults when connected to an APRS(tm)
-      IS server.
-
-        END OF HP/UX NOTES.
-      -----------------------------------------------------------------------
-
-
-
-     (7) GATING WEATHER ALERTS, STATIONS, OBJECTS/ITEMS TO RF
-
-      Gating NWS Weather Alerts to RF:
-      --------------------------------
-      If you wish to gate NWS weather alerts from the Internet onto RF, you'll
-      need to create a text file in the users directory as 
-      ~/.xastir/data/nws-stations.txt
-      List each NWS station that you would like to transmit via RF. Wildcards
-      are implied for lengths of 3 or greater. Here's what an example file
-      looks like:
-
-      ------------- Cut Here -------------
-      #
-      # Seattle, WA
-      SEANPW
-      #
-      # Portland, OR (any alert type)
-      PDX
-      #
-      # Pendleton, OR
-      PDTNPW
-      #
-      # Medford, OR
-      MFRNPW
-      #
-      ------------- Cut Here -------------
-
-      All text should start at the beginning of the line.
-
-      Once that file is in place, you'll need to hook up to at least one
-      Internet server that is feeding you the weather alerts. You'll also need
-      to have at least one RF interface up and running with transmit enabled on
-      that interface. Make sure that "Interfaces->Disable Transmit: All" is not
-      selected.  You should now be gating NWS weather messages to RF.
-
-      Turn on igate logging and look at that log file to view what you're
-      sending out via RF. Don't forget to turn off logging or set up
-      auto-rollover of the log files, else your hard drive might fill up with
-      logging info. Auto-rollover of log files is typically accomplished via
-      CRON.
-
-      Gating Stations, Objects/Items to RF:
-      -------------------------------------
-      The latest code also allows gating packets from specific stations to RF
-      using the above method (except object/item packets).  You can also gate
-      objects/items to RF by name.  The same wildcarding rules apply as listed
-      above.  Callsigns or object/item names listed in this file are
-      case-insensitive, so they'll match any case in received packets.
-
-      Bob Bruninga, WB4APR, recommends gating these calls to RF:
+   If you wish to gate NWS weather alerts from the Internet onto RF, you'll
+   need to create a text file in the users directory as 
+   ~/.xastir/data/nws-stations.txt
+   List each NWS station that you would like to transmit via RF. Wildcards
+   are implied for lengths of 3 or greater. Here's what an example file
+   looks like:
+
+       #
+       # Seattle, WA
+       SEANPW
+       #
+       # Portland, OR (any alert type)
+       PDX
+       #
+       # Pendleton, OR
+       PDTNPW
+       #
+       # Medford, OR
+       MFRNPW
+       #
+
+   All text should start at the beginning of the line.
+
+   Once that file is in place, you'll need to hook up to at least one
+   Internet server that is feeding you the weather alerts. You'll also need
+   to have at least one RF interface up and running with transmit enabled on
+   that interface. Make sure that "Interfaces->Disable Transmit: All" is not
+   selected.  You should now be gating NWS weather messages to RF.
+
+   Turn on igate logging and look at that log file to view what you're
+   sending out via RF. Don't forget to turn off logging or set up
+   auto-rollover of the log files, else your hard drive might fill up with
+   logging info. Auto-rollover of log files is typically accomplished via
+   CRON.
+
+   ## Gating Stations, Objects/Items to RF:
+
+   The latest code also allows gating packets from specific stations to RF
+   using the above method (except object/item packets).  You can also gate
+   objects/items to RF by name.  The same wildcarding rules apply as listed
+   above.  Callsigns or object/item names listed in this file are
+   case-insensitive, so they'll match any case in received packets.
+
+   Bob Bruninga, WB4APR, recommends gating these calls to RF:
         
-        SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD, MARS, JOTA
+    SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD, MARS, JOTA
 
-      See his link: "Generic Callsigns for National Events" off this web page
-      for his current list of recommended callsigns:
+   See his link: "Generic Callsigns for National Events" off this web page
+   for his current list of recommended callsigns:
 
-        http://www.ew.usna.edu/~bruninga/aprs.html
-
-
-     (8) BORING LEGAL STUFF
-
-          Xastir is Copyright © by Frank Giannandrea. Xastir is
-          distributed according to the GNU General Public
-          License. There should be a copy of this license in the
-          file COPYING. If not, write to the Free Software
-          Foundation, Inc., 675 Mass Ave, Cambridge, MA
-          02139, USA.
-
-          As of Xastir 0.4.0 all changes made by the Xastir
-          development team to the Xastir source code and any related
-          files are Copyright (C) 2000-2018 The Xastir Group. The source
-          code will still be distributed according to the GNU General
-          Public License as Frank Giannandrea did in the past.
-
-          There is no warranty, implied or whatever. You use this
-          software at your own risk, no matter what purpose you put
-          it to.
-
-          You didn't pay for it, so don't expect magic.
+  http://www.aprs.org/aprs-jota.txt
 
 
-     (9) MAILING LIST
+8. BORING LEGAL STUFF
 
-          There are currently a couple of mailing lists about Xastir.
-          xastir@xastir.org is the one relevant for posts about
-          Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
-          You must be subscribed to the list in order to post messages.
+   Xastir is Copyright © by Frank Giannandrea. Xastir is
+   distributed according to the GNU General Public
+   License. There should be a copy of this license in the
+   file COPYING. If not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA
+   02139, USA.
 
-          To subscribe to the Xastir mailing list, send email to:
-          xastir-request@xastir.org In the body of the message,
-          put "subscribe xastir"; or go to
-          http://xastir.org and click on "XASTIR MAILING LISTS" (in the
-          "Resources" section near the bottom) to subscribe.
+   As of Xastir 0.4.0 all changes made by the Xastir
+   development team to the Xastir source code and any related
+   files are Copyright (C) 2000-2018 The Xastir Group. The source
+   code will still be distributed according to the GNU General
+   Public License as Frank Giannandrea did in the past.
 
-               ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
+   There is no warranty, implied or whatever. You use this
+   software at your own risk, no matter what purpose you put
+   it to.
 
-          Frank is no longer developing the Xastir code (although
-          he does put a word in every now and then) so don't bother
-          e-mailing him. If you have a serious problem, email the
-          Xastir mailing list and it will get to the coders.
+   You didn't pay for it, so don't expect magic.
 
-          Please, before posting to this list, see what things are
-          like, and when you do post, read over your post for
-          readability, spelling, and grammar mistakes. Obviously,
-          we're all human (or are we?) and we all make mistakes (heck,
-          look at this document! ;).
 
-          Open discussion and debate is integral to change and
-          progress. Don't flame others over mere form (grammar and
-          spelling), or even substantive issues either for that
-          matter. Please read and follow the mailing list rules.
+9. MAILING LIST
 
-          The xastir@xastir.org mail-list is dedicated to Bug
-          reports, technical questions, your thoughts or
-          suggestions on new features being added to Xastir, things
-          that should be removed or fixed, amazing problems that even
-          stump the guru's, etc... are what we want to see here.  You
-          must be subscribed to the list in order to post messages.
+   There are currently a couple of mailing lists about Xastir.
+   xastir@xastir.org is the one relevant for posts about
+   Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
+   You must be subscribed to the list in order to post messages.
 
-     (10) DOCUMENTATION
+   To subscribe to the Xastir mailing list, send email to:
+   xastir-request@xastir.org In the body of the message,
+   put "subscribe xastir"; or go to
+   http://xastir.org and click on "XASTIR MAILING LISTS" (in the
+   "Resources" section near the bottom) to subscribe.
 
-          We're trying to keep the documentation up to date. If you
-          feel that anything is missing here, or that anything should
-          be added etc, please email xastir@xastir.org about it,
-          thank you.
+        ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 
-     (11) OBTAINING HELP
+   Frank is no longer developing the Xastir code (although
+   he does put a word in every now and then) so don't bother
+   e-mailing him. If you have a serious problem, email the
+   Xastir mailing list and it will get to the coders.
 
-          Please read the file FAQ, and make sure you've followed any relevant
-          instructions in INSTALL. If the problem still exists, feel free to
-          ask on the Xastir mailing-list, as described above.
+   Please, before posting to this list, see what things are
+   like, and when you do post, read over your post for
+   readability, spelling, and grammar mistakes. Obviously,
+   we're all human (or are we?) and we all make mistakes (heck,
+   look at this document! ;).
+
+   Open discussion and debate is integral to change and
+   progress. Don't flame others over mere form (grammar and
+   spelling), or even substantive issues either for that
+   matter. Please read and follow the mailing list rules.
+
+   The xastir@xastir.org mail-list is dedicated to Bug
+   reports, technical questions, your thoughts or
+   suggestions on new features being added to Xastir, things
+   that should be removed or fixed, amazing problems that even
+   stump the guru's, etc... are what we want to see here.  You
+   must be subscribed to the list in order to post messages.
+
+10. DOCUMENTATION
+
+    We're trying to get the documentation up to date. If you
+    feel that anything is missing here, or that anything should
+    be added etc, please email xastir@xastir.org about it,
+    thank you.
+
+11. OBTAINING HELP
+
+    Please read the file FAQ, and make sure you've followed any relevant
+    instructions in INSTALL. If the problem still exists, feel free to
+    ask on the Xastir mailing-list, as described above.
 
 
   ------------------------------------------------------------------------
