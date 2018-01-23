@@ -66,6 +66,38 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir 2.0.9
+
+The "What's New" section of this help file has been long neglected,
+and has not been updated in every release.
+
+In general, the best way to see what has changed in Xastir is to view
+the git log.  What follows is an abbreviated summary, long after the
+fact, of what has changed since the last time this "What's New" was
+updated for release 2.0.1 (which was in 2012!).
+
+The Xastir project has migrated from SourceForge and CVS to Github and
+git.  This changes how Xastir releases are distributed, and also how
+one accesses the latest development code.  The Xastir project is now hosted at
+https://github.com/Xastir/Xastir, and the wiki is still at http://xastir.org.
+
+-Added support for IPv6 in both Xastir server code and APRS-IS connection code.
+-Added "wxnowsrv.pl" script to support feeding Xastir weather data via the
+ WXNOW.TXT mechanism.
+-Fixed compressed weather alert handling.
+-Added correct dbfawk files for most recent NWS shapefiles.
+-Added a few on line maps from geograits.gc.ca.
+-Fixed area computation of CAD objects.
+-Added support for proportional fonts in map labels.
+-New scripts added to support feeding ADS-B and AIS data into Xastir.
+-Many old GEO files for online maps stopped working when servers they
+ referenced were taken down.  Most of these have been removed.  If you
+ find other .geos that don't work, please report this on the xastir
+ mailing list.
+-Added new fosm OpenStreetmaps tile server GEO.
+-Map cache code updated to work with any version of Berkeley db after 4.1
+ (including the 5.x series).
+
 HELP-INDEX>What's new in Xastir 2.0.1
 (Changes between 1.7 and 2.0.0 were never recorded here,this block
 describes a few of the changes from 1.9.8 to 2.0.0 that occured right

@@ -60,6 +60,257 @@ Frank Giannandrea
 APRS[tm] est une marque déposée de Bob Bruninga, 
 Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
 
+HELP-INDEX>What's new in Xastir 2.0.9
+
+The "What's New" section of this help file has been long neglected,
+and has not been updated in every release.
+
+In general, the best way to see what has changed in Xastir is to view
+the git log.  What follows is an abbreviated summary, long after the
+fact, of what has changed since the last time this "What's New" was
+updated for release 2.0.1 (which was in 2012!).
+
+The Xastir project has migrated from SourceForge and CVS to Github and
+git.  This changes how Xastir releases are distributed, and also how
+one accesses the latest development code.  The Xastir project is now hosted at
+https://github.com/Xastir/Xastir, and the wiki is still at http://xastir.org.
+
+-Added support for IPv6 in both Xastir server code and APRS-IS connection code.
+-Added "wxnowsrv.pl" script to support feeding Xastir weather data via the
+ WXNOW.TXT mechanism.
+-Fixed compressed weather alert handling.
+-Added correct dbfawk files for most recent NWS shapefiles.
+-Added a few on line maps from geograits.gc.ca.
+-Fixed area computation of CAD objects.
+-Added support for proportional fonts in map labels.
+-New scripts added to support feeding ADS-B and AIS data into Xastir.
+-Many old GEO files for online maps stopped working when servers they
+ referenced were taken down.  Most of these have been removed.  If you
+ find other .geos that don't work, please report this on the xastir
+ mailing list.
+-Added new fosm OpenStreetmaps tile server GEO.
+-Map cache code updated to work with any version of Berkeley db after 4.1
+ (including the 5.x series).
+
+HELP-INDEX>What's new in Xastir 2.0.1
+(Changes between 1.7 and 2.0.0 were never recorded here,this block
+describes a few of the changes from 1.9.8 to 2.0.0 that occured right
+before release of 2.0.0, but otherwise documents only changes from 2.0.0 
+to 2.0.1)
+
+Added tiling for OpenStreetMaps (2.0.0).
+Added "setlocale()" calls to assure we aren't confused by user 
+LANG variable settings.
+Improved speed of config file processing.
+Fixes for new One-Wire-Daemon protocol, allowing both old and 
+new to work with Xastir.
+Fixed segfaults that could happen when closing list dialogs.
+Fix OSM code to support 16-bit quanta in Graphics/ImageMagick.
+Fixed broken makefile that was ignoring DESTDIR.
+Fixed broken build so internal shapelib builds correctly when
+proj.4 is not installed.
+Add dbfawk files for several generations of new NWS shapefiles.
+Update get-NWSdata to pull current NWS shapefiles.
+Add start/stop files for Kenwood D72 and D710 radios.
+Added a script to convert GeoPDF files to usable GeoTIFF files.
+Make the command to set a TNC into CONVERSE mode a run-time
+configurable option in the TNC Interface Properties dialog.
+Add support for Australian Bureau of Metrology weather alerts.
+Fixes for Davis APRS Data Logger, Davis Meteo and LaCrosse 
+support so it gets rain totals correct.
+Allow "posit interval" in File->Configure->Timing to go all the
+way to zero, meaning "never send posits on a schedule."
+Add signal support so that Xastir will emit a posit when it 
+receives SIGUSR2.  Combined with zero "posit interval," this
+allows Xastir to emit a posit only when told to by an external
+script.
+Fixed error in logic for band-opening alerts (speech and audio
+alarms) so it does not incorrectly report third party traffic
+as a band opening.
+Add "Send Control-E to get GPS data?" to TNC interface 
+properties for the "Serial TNC w/ GPS on AUX port" interface
+type.  Defaults to enabled, which is correct for KPC-3+ TNCs,
+but should be turned off for any TNC that automatically
+streams GPS NMEA strings, such as Kenwood APRS radios.
+Update GPSMAN support to reflect changes in the gpsman command 
+line.
+Add a small delay between sending the converse-mode command
+and sending data for transmission, because KAM TNCs don't
+work if you send the data immediately.
+Fix a bug in the OSM tile download loop that could prevent
+further downloading of tiles if any one tile download fails.
+Fixed a thread-unsafeness bug that could cause Xastir to start
+using corrupted file names when multiple logging options
+(TNC, NET, WX, IGATE, etc.) selected simultaneously.
+Fixed get-fcc-rac.pl script to reflect changes in RAC download
+site.
+
+
+
+
+HELP-INDEX>What's new in Xastir 1.7
+Added REGRESSION_TESTS in order to test interoperability of the
+configure-time flags.
+Added a replacement for malloc() for those cases where the OS
+provides a faulty one.
+Added more to the summary.log file:  The tests and results from
+config.log.
+GDAL configure probe now uses gdal-config if it's in the user's
+path.
+Tweaked configure so that dependent libraries cause other library
+searches to fail, and to provide more user output.
+Added ASCII-art drawing to INSTALL showing most of the library
+dependencies.
+Updated symbols.dat to more closely correspond to the current spec.
+Implemented EMERGENCY BEACON transmit capability under the Help
+menu.
+Added decoding for "EMERGENCY" anywhere in the packet plus any of
+these in the TO: field:  ALARM, ALERT, WARNING, WXALARM, EM.  Any of
+these will invoke the normal emergency popup dialog.
+Waypoint symbols now have a line drawn between them and the station
+transmitting them, per the spec.
+Now using font metrics to determine size of font.  We use that to
+determine size of black rectangle to draw underneath.
+Fixed the Fetch Findu Trail function so that it matches what Findu
+can provide.
+Fixed track->shapefile function so that it works on Cygwin too.
+Added reset button to Change Debug Levels dialog.
+Enable WX Alerts menu item is now grey'ed out if Shapelib isn't
+installed.
+RINO Download timing slider is now visible but grey'ed out if gpsman
+isn't installed.
+Added a custom zoom option to the right-click zoom levels menu.
+Moved the center & zoom dialog to the map menu.
+Changed a memcpy() to an xastir_snprintf() function in alert.c to
+assure that a string is terminated.
+Free'ing some malloc'ed space for cases where hash inserts fail.
+Added probe for sighandler_t definition.
+Changed includes, added leak_detector.h.
+A few small changes here and there to get rid of compiler warnings.
+Freeing some malloc'ed space for the cases where hash inserts fail.
+Fixed initializers for awk_rule[].
+Changed hash add functions so that they do a delete first instead of
+replacing hash values.
+Moved some wx-alert related code to debug level 2.
+Changed leak detect interval from 5 minutes to 60 seconds.
+Fixed a big memory leak in draw_nice_string() function.
+Changed include files around so memory leak detection stuff is in
+leak_detection.h.
+Added new compiler flags and cleaned up the code to eliminate many
+warnings created.
+Fixed Incoming Data dialog code so that packets transmitted to local
+interfaces would appear there.
+TNC/NET toggles work for those now too.
+Fixed memory leak in font metrics code.
+Simplfied get_long()  and get_int() functions and callouts.
+Tweaks for sighandler_t and sigjmp_buf.
+Added a sign-on message for server connects.
+FCC/RAC lookup or Locate Now buttons don't destroy the dialog
+anymore.
+Fixing up strings.h includes.
+Added a new popup for EMERGENCY packets.
+Changed signal() with SIG_IGN to sigignore for some cases.
+Added a test for sigignore() to configure.ac.
+Changes to allow different versions of "gv" to be used.
+Moved "-lgdal" to end of link line to avoid conflict with other
+libraries.
+Added UDP server and client.
+Added more language strings for previously hard-coded values.
+Changed config file get_int and get_long functions to provide better
+output when config file entries are missing or out-of-range.
+We now allow gating to the internet and to RF for user-defined
+packets and telemetry packets.
+Changing to <CR><LF> for the TCP server signon message.
+Changing to timestamp per packet for log files, with long int
+seconds at the beginning.
+Added icon.
+Added support for -geometry command-line parameter.
+Added fast creation of standard SAR objects via mouse menu,
+including adding digits to the end of the object name if name would
+conflict with pre-existing objects.
+
+
+
+HELP-INDEX>What's new in Xastir 1.6
+Fix for DF lines having incorrect angles at times.
+Configurable display of layers for USGS topo maps.
+Better Map Feature Search:  Shows up to 50 matches, user selects
+which one to center map on.
+Configurable "relay" digipeater calls:  Up to 50 callsigns can be
+specified in the Xastir config file to use for relay digipeating.
+"WIDE1-1" is now the default.
+Added support for Web Map Service (WMS).
+Tweaked the GPGGA and GPRMC GPS sentence decoding.
+Added speed-ups for lat/long geotiff's.
+Added Aloha circle.
+Added new #defines in interface.h for specifying "conv" or 'k'
+command to TNC.
+Added new tnc-startup file for TAPR-2 style TNC's.
+Added transparency capability to WMS.
+Fixed digpeating code for "wide1-1,wide2-1" case.
+Fixed some compile errors that are seen on FC4 and OSX Tiger.
+Added new terraserver .geo file options.
+Changed Map Properties "fill" option to allow NO/YES/AUTO.
+Auto uses dbfawk if present, no/yes force fill to that state.
+Fixed some #ifdefs here and there so that compiles will work if
+some libraries aren't present.
+Added map caching for nearly all internet maps, plus two new toggles
+on the map menu for clearing out current-view maps or all maps from
+the cache.
+Moved Tigermap timeout slider to main timing dialog, renamed it, and
+made it function for ALL internet map fetches.
+Added timestamps to x_spider log messages.
+A fix for the emacs tempfile bug w.r.t. dbfawk files went in, but
+hasn't been verified to have fixed the problem yet.
+More bulletproofing added to the map_cache code.
+Fixed a compile problem that happens if ImageMagick isn't installed.
+Changed stipple style to solid for polygons drawn with dbfawk.
+Another fix so that linking works without map caching. 
+
+
+
+HELP-INDEX>What's new in Xastir 1.5
+Optional Rtree shapefile extent caching
+Optional berkelydb-based internet map caching
+Modifier keys fix
+Improvements to the message GUI
+Tactical call support re-written, hashtable based
+Warnings on crazy paths
+Hashtable weather alert speedups
+Dead-reconing for Objects/items
+Igate of specific stations (in the nws-stations.txt)
+Fixed DF object properties
+Measure function more accurate
+Decoding for "Position with Timestamp no APRS messaging" packets.
+More thorough checking for scanf/sscanf/fscanf function calls
+Fixing 100% humidity for some weather stations, plus added more data for Davis stations
+Changed active internet connection check from 1 min to 5 minutes
+Fixed decoding of compressed DF objects
+Fixes to allow new WHO-IS server to be used from Xastir
+Got rid of extra 0x00 byts between transmitted KISS frames
+Tweak to not start an interface upon changing its properties
+Tweaks to allow use of http proxy servers for online map accesses (.netrc file)
+
+
+
+HELP-INDEX>What's new in Xastir 1.4
+Comment fields for interfaces
+split_gnis and ozi2geo scripts, need to add to section on scripts
+serial mkiss interface
+move objects without confirm
+new timing params w.r.t. trails, need to add to config|timing part
+geo-coder (already in docs)
+exponential/random back-off for almost everything
+dbfawk default, memory leaks fixed
+click+drag zoom boxes
+tactical callsign support
+numerous small memory leaks, uninitialized data uses, and similar bugs fixed. 
+GPS quality info
+RINO waypoints downloading
+label trackpoints
+comment/status timestamps
+listener socket/ability to act like a limited internet server
+
 HELP-INDEX>Débuter
                                Débuter
                                
