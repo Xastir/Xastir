@@ -4881,6 +4881,9 @@ static void* net_connect_thread(void *arg) {
         result = connect(port_data[port].channel, res->ai_addr, res->ai_addrlen);
         if (debug_level & 2)
             fprintf(stderr,"connect result was: %d\n", result);
+        if(result == 0 ) {
+            break;
+        }
         if(result == -1) {
             fprintf(stderr, "Socket connection for interface %d type (%d, %d, %d) failed: %s\n",
                     port, res->ai_family, res->ai_socktype, res->ai_protocol, strerror(errno) );
