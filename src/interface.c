@@ -4892,6 +4892,7 @@ static void* net_connect_thread(void *arg) {
                 fprintf(stderr, "This is OK since we have more to try.\n");
             }
             close(port_data[port].channel);
+            port_data[port].channel = -1;
             continue;
         }
     }
