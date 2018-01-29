@@ -4027,11 +4027,15 @@ int ax25_init(int port) {
 //    if (port_data[port].channel == -1) {
 
     ENABLE_SETUID_PRIVILEGE;
-#if __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
-    port_data[port].channel = socket(PF_INET, SOCK_DGRAM, htons(proto));   // proto = AF_AX25
-#else   // __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
+#if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 3
+      // proto = AF_PACKET for GLIBC version 2.3 and later
+    port_data[port].channel = socket(AF_PACKET, SOCK_RAW, htons(proto));  
+#else   // __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 3
+      // Prior to that, PF_INET and SOCK_PACKET were the right thing to do
+      // This still works as recently as GLIBC 2.19,  but some systems
+      // spit warnings into the syslog about an obsolete usage.
     port_data[port].channel = socket(PF_INET, SOCK_PACKET, htons(proto));
-#endif      // __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
+#endif      // __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 3
     DISABLE_SETUID_PRIVILEGE;
 
     if (port_data[port].channel == -1) {
