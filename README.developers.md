@@ -50,8 +50,8 @@ available as a tar.gz or zip download without using git.
   The new tag will appear on the "Releases" page in the "Tags" tab:
   https://github.com/Xastir/Xastir/tags where one can click on a link
   to get a tar or zip file.  It may also be downloaded by the direct
-  link https://github.com/Xastir/Xastir/releases/tag/<tagname> where
-  <tagname> is whatever you used for the tag you just created.
+  link https://github.com/Xastir/Xastir/releases/tag/tagname where
+  tagname is whatever you used for the tag you just created.
 
 ## Stable Releases
 
@@ -138,7 +138,7 @@ script (and to have automake and autoconf installed).
       mkdir build
       cd build
       ../configure [options]
-      make -j<whatever>
+      make
       cd ..
 
   For safety's sake, you should remove the build directory now, too.
@@ -206,7 +206,7 @@ script (and to have automake and autoconf installed).
       mkdir build
       cd build
       ../configure [options]
-      make -j<whatever>
+      make
     
 
 - If the sanity check above worked, you can throw away the testing
