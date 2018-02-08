@@ -1,3 +1,13 @@
+2012-11-02
+	* ChangeLog
+	Xastir project stopped updating the ChangeLogs in 2012, and
+	until then the changelog was generated manually from CVS
+	history.  The project no longer uses CVS, and  now relies on git
+	history to show the history of the project.  Please see the output
+	of "git log" if you want to know what has happened to the code and
+	why, and add the "--name-status" option if you want to know
+	what files were changed.
+
 2012-11-01 11:57  we7u
 
 	* .cvsignore, AUTHORS, ChangeLog, DEBUG_LEVELS, FAQ, INSTALL,
