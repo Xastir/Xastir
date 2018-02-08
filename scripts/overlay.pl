@@ -227,7 +227,7 @@ sub create_items {
 
 
 
-# Parse CVS line into an array, removing double-quotes and such if
+# Parse CSV line into an array, removing double-quotes and such if
 # found.
 #
 sub parse_csv {
