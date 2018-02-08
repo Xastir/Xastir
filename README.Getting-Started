@@ -23,18 +23,25 @@ only the options you wish in order to come up with your own custom
 configuration of Xastir.
 
 These instructions are written for Linux users.  Windows users
-should refer to the README.win32 document instead.
-MacOSX/Solaris/FreeBSD users should refer to the README document
+should refer to the README.CYGWIN document instead.
+
+Users of other operating systems should refer to the README document
 first, then the INSTALL document and the below instructions for
-further notes.
+further notes, and finally the Installation Notes section of the
+Xastir wiki at http://xastir.org/.  Linux users may also benefit from
+reading the Installation Notes section of the wiki, because each
+distro of Linux has its own quirks, and many of those quirks are
+documented on the wiki.
 
 One question you might ask is whether you can just find a binary on
 the 'net somewhere and install it instead of compiling Xastir from
-sources.  Yes, this is possible.  Xastir changes so often (bug fixes
-and of course adding new features) that you're really limiting
-yourself by using pre-compiled binaries.  Binaries are typically not
-updated all that often, if at all, so you'll forever be behind the
-curve.
+sources.  Yes, this is possible, but not what most Xastir users
+ultimately want.  Xastir changes often enough (bug fixes and of course
+adding new features) that you're really limiting yourself by using
+pre-compiled binaries.  Binaries are typically not updated all that
+often, if at all, so you'll forever be behind the curve.  Most
+packaged versions of Xastir in package management systems tend to be a
+couple of years out of date, or even worse.
 
 Another reason to compile from sources is to customize it to use all
 of the features you have available on your system.  As you add more
@@ -113,9 +120,9 @@ Sources of help you may find useful:
 *) "INSTALL" file:  Non-Windows instructions for installing Xastir
    and optional map libraries may be found here.
 
-*) "README" file:  General info and some OS-specific notes.
+*) "README.md" file:  General info and some OS-specific notes.
 
-*) "CONTRIBUTING" file:  Info on how to contribute to the
+*) "CONTRIBUTING.md" file:  Info on how to contribute to the
    Xastir project.
 
 *) "README.GIT" file:  Info on a more advanced way to keep up-to-date
@@ -127,7 +134,7 @@ Sources of help you may find useful:
    them may be found here.  Also see the Xastir Documentation
    section, the Wiki pages, at <http://xastir.org>
 
-*) "README.win32" file:  For Windows/Cygwin users.
+*) "README.CYGWIN" file:  For Windows/Cygwin users.
 
 *) "UPGRADE" file:  Useful info for updating some old versions of
    Xastir.
@@ -139,7 +146,7 @@ Sources of help you may find useful:
    Unix-like system.  This page is a bit out-of-date.
 
 *) "Help->Help Index" in the Xastir program itself.  Note that only
-   the English language variation of this is somewhat up-to-date.
+   the English language variation of this is even approximately up-to-date.
 
 *) Mailing lists at <http://xastir.org>
 
@@ -161,13 +168,15 @@ libraries and other cool features later.
 
 Getting the package:
 --------------------
-*) Option 1:  Download one of stable or development snapshots from
-http://xastir.org.  There are links from that page or you can go
-to the Sourceforge page and click on Files to see the entire set
-that is available.
 
-Once you have the file, create a subdirectory for it to reside.  I
-usually do this:
+*) Option 1: Download one of release tarballs from
+http://xastir.org.  There are links from that page or you can go to
+the github site (https://github.com/Xastir/Xastir) and click on "Releases"
+to see the entire set that is available.
+
+Once you have the file (whcih will generally be called
+"Xastir-Release-<number>.tar.gz," create a subdirectory for it to
+reside.  I usually do this:
 
     cd                      # Go to my home directory
     mkdir src               # Make a "src" subdirectory
@@ -177,26 +186,27 @@ usually do this:
     cp /path/filename .     # Copy the downloaded file here
     tar xzvf filename       # Un-archive the sources
 
-That last step will create yet another xastir directory underneath
-the first one but will have the version number in it, so your full
-path might be something like (starting at your home directory):
-~/src/xastir/xastir-1.7.0
+That last step will create a directory called
+Xastir-Xastir-Release-<release number> underneath the first one, so
+your full path might be something like (starting at your home
+directory): ~/src/xastir/Xastir-Xastir-Release-2.1.0
 
 The path just listed is where you'll go in order to run the
 configure and make commands listed below.
 
-    cd  ~/src/xastir/xastir-1.7.0
+    cd  ~/src/xastir/Xastir-Xastir-Release-2.1.0
 
 from an xterm window should take you there.
 
-*) Option 2:  An alternative is to use Git to snag the sources for
-you.  Using this method you can periodically update to the latest
-released version, the latest "stable" version, or the latest
-development sources.  See README.GIT for info about that option.
-One of the advantages of Git is that you only pull down the changes
-since you last updated, instead of doing very large file downloads
-each time.  Another advantage is that you can keep up with the
-latest features on a daily basis if you wish, nearly effortlessly.
+*) Option 2: An alternative is to use Git to snag the sources for you.
+Using this method you can periodically update to the latest released
+version, the latest "stable" version, or the latest development
+sources, and even switch back and forth between them at will.  See README.GIT
+for info about that option.  One of the advantages of Git is that you
+only pull down the changes since you last updated, instead of doing
+very large file downloads each time.  Another advantage is that you
+can keep up with the latest features on a daily basis if you wish,
+nearly effortlessly.
 
 
 Configure:
@@ -282,21 +292,43 @@ to list some of it's dependencies (ImageMagick is known for that).
 In that case you may have to rely on the compiler to tell you what
 is missing, then go back and re-install a package or two.
 
-When you run the "./configure" step from the "xastir" directory, the
+You will then create a "build" directory in which to run the
+compilation of Xastir, and run Xastir's configure script in that
+directory.  In the instructions below we describe making this build
+directory inside the Xastir source tree, so it would be
+
+    mkdir -p ~/src/xastir/Xastir-Xastir-Release-2.1.0/build
+    cd  ~/src/xastir/Xastir-Xastir-Release-2.1.0/build
+    ../configure
+
+If you do this, then the simplest path to Xastir's configure script is
+just "../configure".  You could create this build directory anywhere,
+though, so long as you remember to replace "../configure" with the
+full path to Xastir's script, e.g,
+~/src/xastir/Xastir-Xastir-Release-2.1.0/configure.
+
+When you run the "../configure" step from the "build" directory, the
 script will attempt to figure out what facilities are available that
 Xastir can take advantage of.  Sometimes the script guesses wrong
 and you must disable an option and try again.  The correct way to do
 this is (Festival speech synthesizer is used as an example, not that
 I'm picking on Festival or anything):
 
-    mkdir -p build
+    mkdir build
     cd build
     ../configure --without-festival
 
 That will guarantee that configure will skip Festival entirely,
 which will set up the Makefiles to skip it, and the Xastir binary
-will be created without any support for it.  Other configure options
-are:
+will be created without any support for it.
+
+Some operating systems place their packaged third-party libraries into places
+where configure won't find them by default.  In that case you may need to add
+additional options the help it out.  Please look at the Installation Notes
+section of the Xastir wiki, where it is likely you'll find special instructions
+for your operating system.
+
+Other configure options are:
 
     --without-ax25
     --without-festival
@@ -314,7 +346,7 @@ are:
 
 
 That said, you probably won't have to use any of these!  Type
-"./configure" all by itself and the script should eventually give
+"../configure" all by itself and the script should eventually give
 you a summary of the packages that it will try to compile support
 into Xastir for.  The only time you may want to add some of the
 above options is if the compile hangs up because of one of them.
@@ -328,7 +360,7 @@ like/expect to appear, as long as you get to the "Type 'make' to
 build Xastir" message, you're doing fine.  You can work on getting
 more things in there later.
 
-This is what you'd like to see at the end of the "./configure" run
+This is what you'd like to see at the end of the "../configure" run
 (minimum, there may be more "yes" answers):
 
   AX25.......... : no
@@ -338,7 +370,7 @@ This is what you'd like to see at the end of the "./configure" run
   libproj....... : no
   GeoTiff....... : no
   GDAL/OGR...... : no
-  ShapeLib...... : no
+  ShapeLib...... : yes (internal)
   pcre.......... : no
   dbfawk........ : no
   libgc (Debug). : no
