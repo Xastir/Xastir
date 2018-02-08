@@ -77,12 +77,6 @@
    particularly the Xastir mailing list (listed near the bottom
    of the page).
 
-   At this time the Xastir team has not yet done any formal
-   releases of the code since we migrated from CVS to git, so
-   there are no tarballs we can recommend that you download.
-   We hope to start doing releases again sometime in early
-   2018, at which point this README will be updated.
-          
    * Git USAGE
 
      Obtain the *very latest* version of Xastir under development by
@@ -90,16 +84,27 @@
           
      See the file README.GIT for more details.
 
+   * Release version tarballs
+
+     You can get the latest packaged release source code without git
+     at https://github.com/Xastir/Xastir/releases.  Be warned that packaged
+     source tarballs may be quite old and not representative of the current
+     state of the project.  We highly recommend not using this method unless
+     you have a specific reason to stick to official releases.
+
 3. QUICK STARTUP
+
+   See README.Getting-Started for a relatively quick overview of how
+   to build and use Xastir.
 
    Check the Xastir wiki (http://xastir.org) for OS-specific guidance
    for building Xastir on your system.
 
-   See the 'INSTALL' file in the Xastir source tree for detailed
-   information about configure.
-
    WINDOWS USERS:  Please refer to the "README.CYGWIN" file for
    specific instructions.
+
+   See the 'INSTALL' file in the Xastir source tree for detailed
+   information about configure.
 
 4. UPGRADING
 
@@ -129,8 +134,6 @@
    and not maintained.  That text has been removed.  Please
    see the Xastir wiki at http://xastir.org in the "Installation Notes"
    section for OS-specific build guidance.]
-
-
 
 7. GATING WEATHER ALERTS, STATIONS, OBJECTS/ITEMS TO RF
 

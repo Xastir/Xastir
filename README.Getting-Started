@@ -174,7 +174,7 @@ http://xastir.org.  There are links from that page or you can go to
 the github site (https://github.com/Xastir/Xastir) and click on "Releases"
 to see the entire set that is available.
 
-Once you have the file (whcih will generally be called
+Once you have the file (which will generally be called
 "Xastir-Release-<number>.tar.gz," create a subdirectory for it to
 reside.  I usually do this:
 
