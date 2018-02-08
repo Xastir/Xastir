@@ -217,9 +217,14 @@
 9. MAILING LIST
 
    There are currently a couple of mailing lists about Xastir.
-   xastir@xastir.org is the one relevant for posts about
-   Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
-   You must be subscribed to the list in order to post messages.
+   xastir@xastir.org is the one relevant for most users.
+
+   The xastir@xastir.org mail-list is dedicated to Bug
+   reports, technical questions, your thoughts or
+   suggestions on new features being added to Xastir, things
+   that should be removed or fixed, amazing problems that even
+   stump the guru's, etc... are what we want to see here.  You
+   must be subscribed to the list in order to post messages.
 
    To subscribe to the Xastir mailing list, send email to:
    xastir-request@xastir.org In the body of the message,
@@ -245,12 +250,8 @@
    spelling), or even substantive issues either for that
    matter. Please read and follow the mailing list rules.
 
-   The xastir@xastir.org mail-list is dedicated to Bug
-   reports, technical questions, your thoughts or
-   suggestions on new features being added to Xastir, things
-   that should be removed or fixed, amazing problems that even
-   stump the guru's, etc... are what we want to see here.  You
-   must be subscribed to the list in order to post messages.
+   A second mailing list, xastir-dev@xastir.org is intended for
+   developer's discussion.
 
 10. DOCUMENTATION
 
