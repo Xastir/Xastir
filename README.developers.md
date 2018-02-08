@@ -182,7 +182,8 @@ script (and to have automake and autoconf installed).
 
   This is just what we want, so commit it:
 
-      git add .  git commit
+      git add .
+      git commit
 
   Mention why you're doing this in the commit message (e.g., "Commit
   bootstraped files for release").  Follow our commit log message
@@ -259,14 +260,21 @@ script (and to have automake and autoconf installed).
   the Xastir wiki does recommend sending notification of all releases
   (both development and stable) to:
 
-    - xastir at xastir.org nwaprssig at nwaprs.info aprssig at
-    - tapr.org aprsnews at tapr.org macaprs at yahoogroups.com aprs at
-    - yahoogroups.com
+      - xastir at xastir.org
+      - nwaprssig at nwaprs.info
+      - aprssig at  tapr.org
+      - aprsnews at tapr.org
+      - macaprs at yahoogroups.com
+      - aprs at yahoogroups.com
 
-  and stable releases to: - SAR_APRS at yahoogroups.com - CSAR at
-  yahoogroups.com - aprs at mailman.qth.net - linux-hams at
-  vger.kernel.org - linux at tapr.org - linux-hams-using-ax25 at
-  yahoogroups.com
+  and stable releases to:
+
+      - SAR_APRS at yahoogroups.com
+      - CSAR at yahoogroups.com
+      - aprs at mailman.qth.net
+      - linux-hams at vger.kernel.org
+      - linux at tapr.org
+      - linux-hams-using-ax25 at yahoogroups.com
 
   This list is probably excessive nowadays, and probably contains a
   lot of groups that are long gone.
@@ -279,6 +287,22 @@ script (and to have automake and autoconf installed).
       git worktree prune      # not really necessary, as git will do this itself
                               # eventually
 
+
+#### NEVER MERGE RELEASE BRANCHES BACK TO MASTER
+
+The steps we took above are almost all done this way because in general we
+ignore all the files bootstrap.sh produces and never commit them to the
+master branch of the repository.
+
+Github releases are not just static copies of release tarballs we
+upload the way they were with SourceForge --- they're taken directly
+out of the repo using something very similar to the "git archive"
+command we used testing out our release.  It was therefore necessary
+to change .gitignore so it doesn't ignore those files, then commit
+them.
+
+Because of this, we never want to do a release branch to master merge.
+Just don't do it.  Leave the release branch unmerged forever.  
 
 #### Getting master ready to move on
 
