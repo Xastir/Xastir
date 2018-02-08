@@ -36,7 +36,7 @@ available as a tar.gz or zip download without using git.
   
 - First create an "annotated tag" for the snapshot
 
-      git tag -a -m "Xastir development snapshot" dev-snapshot-DD/MM/YY
+      git tag -a -m "Xastir development snapshot" dev-snapshot-DD-MM-YY
 
   In the past, we used odd numbered versions for the development
   snapshot releases, and even for stable releases, but by using a tag
@@ -45,7 +45,7 @@ available as a tar.gz or zip download without using git.
   
 - Push the tag to github
 
-      git push origin stable-DD/MM/YY
+      git push origin stable-DD-MM-YY
 
   The new tag will appear on the "Releases" page in the "Tags" tab:
   https://github.com/Xastir/Xastir/tags where one can click on a link
