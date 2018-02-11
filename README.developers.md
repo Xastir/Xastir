@@ -196,14 +196,14 @@ script (and to have automake and autoconf installed).
   somewhere other than in your git checkout directory:
 
 
-      git archive --format=tar.gz --prefix=Xastir-Xastir-Release-2.1.0/ branch-release-2.1.0 > ~/src/Xastir-Release-2.1.0.tar.gz
+      git archive --format=tar.gz --prefix=Xastir-Release-2.1.0/ branch-release-2.1.0 > ~/src/Xastir-Release-2.1.0.tar.gz
 
   This process will exactly reproduce what Github will be doing when
   we're finished and actually create the release.  Now make sure it builds:
 
       cd ~/src
       tar xzf Xastir-Release-2.1.0.tar.gz
-      cd Xastir-Xastir-Release-2.1.0
+      cd Xastir-Release-2.1.0
       mkdir build
       cd build
       ../configure [options]
@@ -214,19 +214,19 @@ script (and to have automake and autoconf installed).
   tarball and unpacked code:
 
       cd ~/src
-      rm -rf Xastir-Xastir-Release-2.1.0 Xastir-Release-2.1.0.tar.gz
+      rm -rf Xastir-Release-2.1.0 Xastir-Release-2.1.0.tar.gz
 
 - Now go back to your worktree and finish up by creating a new tag for
   the release and pushing the release branch and tag to Github:
 
       cd ~/src/Xastir-2.1.0
       git push -u origin branch-release-2.1.0
-      git tag -a -m "Xastir Release 2.1.0" Xastir-Release-2.1.0
-      git push Xastir-Release-2.1.0
+      git tag -a -m "Xastir Release 2.1.0" Release-2.1.0
+      git push Release-2.1.0
 
 - Log in to github and go to the Xastir project releases page at
   http://github.com/Xastir/Xastir/releases.  Click the "Draft a new
-  release" button.  Put your tag name (Xastir-Release-2.1.0) into the
+  release" button.  Put your tag name (Release-2.1.0) into the
   dialog box that says "Tag version" and Github will display a note
   that it found a matching, existing tag.  Fill in the rest of the
   form:
@@ -249,9 +249,10 @@ script (and to have automake and autoconf installed).
   you just created.  The fixed URL
   https://github.com/Xastir/Xastir/releases/latest will always point
   to the most recent release.  The source code download link will be
-  https://github.com/Xastir/Xastir/archive/Xastir-Release-2.1.0.tar.gz
-  (the file name will always be the tag name you used above), with the
-  obvious change for the zip version.
+
+    https://github.com/Xastir/Xastir/archive/Release-2.1.0/Xastir-Release-2.1.0.tar.gz
+
+  with the obvious change for the zip version.
 
 - The last step here is to announce the new release in all the usual
   places.  These days it is probably enough to announce it on the
