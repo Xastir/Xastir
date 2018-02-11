@@ -7,7 +7,7 @@ License   : GPL
 Group     : Applications/Networking
 Packager  : dranch@trinnet.net
 # Icon    : src/@PACKAGE@.xpm
-Source    : https://github.com/Xastir/Xastir/archive/Xastir-Release-@VERSION@.tar.gz
+Source    : https://github.com/Xastir/Xastir/archive/Release-@VERSION@/Xastir-Release-@VERSION@.tar.gz
 URL       : http://xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
 #BuildRequires reflect Centos/RHEL naming conventions - edit package names to suit other RPM-based distros
