@@ -3,12 +3,14 @@ General steps to configure/compile/install Xastir:
 (See detailed steps and library installation instructions below)
 ----------------------------------------------------------------------
 
-1) Get one of the source releases and explode it.
+1) Get one of the source releases from Github at
+      https://github.com/Xastir/Xastir/releases
+   and explode it.  (Replace X.Y.Z with the release number below)
 
   mkdir Xastir
-  cp xastir*.tgz Xastir
+  cp Xastir-Release-X.Y.Z.tar.gz Xastir
   cd Xastir
-  tar xzvf xastir*
+  tar xzvf Xastir-Release-X.Y.Z.tar.gz
 
 An alternative to the above steps is to use git to download the
 Xastir sources.  See README.GIT for those instructions. Git allows
@@ -19,7 +21,9 @@ you to easily keep up to date with the developers.
   cd Xastir
 
 If you used Git to fetch the sources, you need one more step here
-before you run configure:  "./bootstrap.sh"
+before you run the following steps:  "./bootstrap.sh"
+
+Then create a build directory, configure and build the code:
 
   mkdir -p build
   cd build
@@ -213,77 +217,69 @@ Things you need for this version:
  * OpenMotif: www.openmotif.org
 
  * AX25 packages: (if you want support for kernel AX25 interfaces)
-    Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.7.tar.gz
-    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.4.tar.gz
-    AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
-    The apps package is not required, but strongly suggested. These versions
-     are current as of the writing of this document; feel free to use newer
-     versions.  Make sure the versions you choose match your kernel version.
-    Also note that there are patches required to the 2.4 kernel for AX.25
-    kernel networking.  See the linux-hams mailing list for details.
+    Lib AX25
+    AX25 apps
+    AX25 tools
+    The apps package is not required, but strongly suggested.
+
+     These packages are in most Linux distributions but may be out
+     of date.  See the linux-hams mailing list for details.
 
  * You should have glibc on your system that supports threads!
 
 
 For geoTIFF support (such as USGS DRG topo maps) you also need:
 
-    libtiff (should be on your distribution's CD's):
+    libtiff (should be in the package set of most distributions):
     ------------------------------------------------
-        http://www.libtiff.org
+        http://www.simplesystems.org/libtiff/
 
-    libproj (proj-4.4.9):
+    libproj (proj-4.4.9 or later):
     ---------------------
-        http://proj.maptools.org/
-        http://www.remotesensing.org/proj/
-        http://we7u.wetnet.net/xastir/
+        http://proj4.org/
 
     Datum translations (proj-nad27 or proj-datumgrid):
     --------------------------------------------------
-        http://proj.maptools.org/
-        ftp://ftp.remotesensing.org/pub/proj/
-        http://we7u.wetnet.net/xastir/
+        http://proj4.org/
 
-    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.4):
+    libgeotiff (any version later than libgeotiff-1.1.5):
     --------------------------------------------------
-        http://dl.maptools.org/dl/geotiff/libgeotiff/
-        http://www.remotesensing.org/geotiff/geotiff.html
-        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
-        http://we7u.wetnet.net/xastir/
+        http://geotiff.osgeo.org/
 
     Please note that the order of installation for the above libraries is
     critical.  Follow the instructions below carefully.  Also, the particular
     libgeotiff you use depends on the version of libtiff you have installed.
 
 For Linux kernel AX.25 interfaces, you require these packages:
-    Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.11.tar.gz
-    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.6.tar.gz
-    AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
-    The apps package is not required, but strongly suggested. These versions
-     are current as of the writing of this document; feel free to use newer
-     versions.  Make sure the versions you choose are compatible with your
-     kernel version. See the AX.25 HOWTO and the linux-hams mailing list for
+    Lib AX25
+    AX25 apps
+    AX25 tools
+
+    These packages are in most Linux distros.  Source code and other
+    information about them can be found at:
+        http://www.linux-ax25.org/wiki/Main_Page
+    The apps package is not required, but strongly suggested.
+
+    See the AX.25 HOWTO and the linux-hams mailing list for
      details.
 
 For speech support via the festival speech synthesis software you need:
-    festival:
-       http://www.speech.cs.cmu.edu/festival/
-       http://at.rpmfind.net/opsys/linux/RPM/redhat/7.0/powertools/i386/festival-1.4.1-5.i386.html
+    festival.  Many package management systems have it already
+    but source and documentation are at:
 
-    If you're running a slightly older version of Linux you'll need to install 
-    festival from sources to make it work properly.
+       http://www.cstr.ed.ac.uk/projects/festival/
+
+
+ 
 
 For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
         http://shapelib.maptools.org/
-        http://we7u.wetnet.net/xastir/
     pcre:
         http://www.pcre.org
 
 For GDAL/OGR:
     http://www.gdal.org/
-    http://remotesensing.org/gdal/
-    http://www.maptools.org
-    http://we7u.wetnet.net/xastir/
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
