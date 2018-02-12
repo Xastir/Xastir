@@ -222,7 +222,7 @@ script (and to have automake and autoconf installed).
       cd ~/src/Xastir-2.1.0
       git push -u origin branch-release-2.1.0
       git tag -a -m "Xastir Release 2.1.0" Release-2.1.0
-      git push Release-2.1.0
+      git push origin Release-2.1.0
 
 - Log in to github and go to the Xastir project releases page at
   http://github.com/Xastir/Xastir/releases.  Click the "Draft a new
