@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
@@ -58,7 +58,7 @@ Pixmap select_icons[(126-32)*2];    //33 to 126 with both '/' and '\' symbols (9
 int symbol_change_requested_from = 0;
 
 
- 
+
 
 
 void draw_symbols_init(void)
@@ -385,7 +385,6 @@ void draw_WP_line(DataRow *p_station,
 //
 void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where, int sec_heard) {
     double diameter;
-    double a,b;
 
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
 
@@ -412,9 +411,6 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
             // If less than 4 pixels across, skip drawing it.
             if (diameter <= 4.0)
                 return;
-
-            a = diameter;
-            b = diameter / 2;
 
             //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
@@ -515,175 +511,155 @@ void draw_precision_rectangle(long x_long,
 void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap where) {
     double range, diameter;
     int offx,offy;
-    long xx,yy,xx1,yy1,fxx,fyy;
     double tilt;
-    double a,b;
     char is_rng;
     char *strp;
 
 
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
+        tilt=0.0;
+        is_rng=0;
+        offx=0;
+        offy=0;
 
-// Prevents it from being drawn when the symbol is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
+        if (phg[0] == 'R' && phg[1] == 'N' && phg[2] == 'G')
+            is_rng = 1;
 
-//        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
 
-//            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
+        if (is_rng) {
+            strp = &phg[3];
+            range = atof(strp);
+        }
+        else {
+            range = phg_range(phg[3],phg[4],phg[5]);
+        }
 
-                xx=0l;
-                yy=0l;
-                xx1=0l;
-                yy1=0l;
-                fxx=0l;
-                fyy=0l;
-                tilt=0.0;
-                is_rng=0;
+        // Range is in miles.  Bottom term is in meters before the 0.0006214
+        // multiplication factor which converts it to miles.
+        // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+        diameter = 2.0 * ( range/
+                           (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
+
+        // If less than 4 pixels across, skip drawing it.
+        if (diameter <= 4.0)
+            return;
+
+        if (!is_rng) {  // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
+
+            switch (phg[6]-'0') {
+
+            case(0):
                 offx=0;
                 offy=0;
+                break;
 
-                if (phg[0] == 'R' && phg[1] == 'N' && phg[2] == 'G')
-                    is_rng = 1;
+            case(1):    //  45
+                offx=-1*(diameter/6);
+                offy=diameter/6;
+                tilt=5.49778;
+                break;
 
-//                if ((x_long < 0) || (x_long > 129600000l))
-//                    return;
+            case(2):    //  90
+                offx=-1*(diameter/6);
+                offy=0;
+                tilt=0;
+                break;
 
-//                if ((y_lat < 0) || (y_lat > 64800000l))
-//                    return;
+            case(3):    // 135
+                offx=-1*(diameter/6);
+                offy=-1*(diameter/6);
+                tilt=.78539;
+                break;
 
-                if (is_rng) {
-                    strp = &phg[3];
-                    range = atof(strp);
-                }
-                else {
-                    range = phg_range(phg[3],phg[4],phg[5]);
-                }
+            case(4):    // 180
+                offx=0;
+                offy=-1*(diameter/6);
+                tilt=1.5707;
+                break;
 
-                // Range is in miles.  Bottom term is in meters before the 0.0006214
-                // multiplication factor which converts it to miles.
-                // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                diameter = 2.0 * ( range/
-                    (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
+            case(5):    // 225
+                offx=diameter/6;
+                offy=-1*(diameter/6);
+                tilt=2.3561;
+                break;
 
-                // If less than 4 pixels across, skip drawing it.
-                if (diameter <= 4.0)
-                    return;
+            case(6):    // 270
+                offx=diameter/6;
+                offy=0;
+                tilt=3.14159;
+                break;
 
-                //fprintf(stderr,"PHG: %s, Diameter: %f\n", phg, diameter);
+            case(7):    // 315
+                offx=diameter/6;
+                offy=diameter/6;
+                tilt=3.92699;
+                break;
 
-                a = diameter;
-                b = diameter / 2;
+            case(8):    // 360
+                offx=0;
+                offy=diameter/6;
+                tilt=4.71238;
+                break;
 
-                if (!is_rng) {  // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
+            default:
+                offx=0;
+                offy=0;
+                break;
+            }   // End of switch
+        }
 
-                    switch (phg[6]-'0') {
+        (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
 
-                        case(0):
-                            offx=0;
-                            offy=0;
-                            break;
+        if ((sec_old+sec_heard)>sec_now())
+            (void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+        else
+            (void)XSetForeground(XtDisplay(da),gc,colors[0x52]);
 
-                        case(1):    //  45
-                            offx=-1*(diameter/6);
-                            offy=diameter/6;
-                            tilt=5.49778;
-                            break;
+        if (is_rng || phg[6]=='0') {    // Draw circl
 
-                        case(2):    //  90
-                            offx=-1*(diameter/6);
-                            offy=0;
-                            tilt=0;
-                            break;
+            // Check that our parameters are within spec for XDrawArc.  Tricky
+            // 'cuz the XArc struct has short's and unsigned short's, while
+            // XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+            // just to make sure.
 
-                        case(3):    // 135
-                            offx=-1*(diameter/6);
-                            offy=-1*(diameter/6);
-                            tilt=.78539;
-                            break;
+            (void)XDrawArc(XtDisplay(da),where,gc,
+                           l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
+                           l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),   // int
+                           lu16(diameter), // unsigned int
+                           lu16(diameter), // unsigned int
+                           l16(0),         // int
+                           l16(64*360));   // int
+        }
+        else {    // Draw oval to depict beam heading
 
-                        case(4):    // 180
-                            offx=0;
-                            offy=-1*(diameter/6);
-                            tilt=1.5707;
-                            break;
+            // If phg[6] != '0' we still draw a circle, but the center
+            // is offset in the indicated direction by 1/3 the radius.
 
-                        case(5):    // 225
-                            offx=diameter/6;
-                            offy=-1*(diameter/6);
-                            tilt=2.3561;
-                            break;
+            // This debug statement will almost never wind
+            // up selected, because 4095 means "all possible debugging"
+            //  It is being placed here SOLELY so that I can
+            // leave the setting of "tilt" (which should determine
+            // how an oval would be tilted to indicate directivity)
+            // without having GCC 6.x whine about it not being used.
+            if (debug_level == 4095) {
+                fprintf(stderr,"If we had tilted ovals implemented, would have tilted one by %lf\n",tilt);
+            }
 
-                        case(6):    // 270
-                            offx=diameter/6;
-                            offy=0;
-                            tilt=3.14159;
-                            break;
+            // Draw Circle
 
-                        case(7):    // 315
-                            offx=diameter/6;
-                            offy=diameter/6;
-                            tilt=3.92699;
-                            break;
+            // Check that our parameters are within spec for XDrawArc.  Tricky
+            // 'cuz the XArc struct has short's and unsigned short's, while
+            // XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+            // just to make sure.
 
-                        case(8):    // 360
-                            offx=0;
-                            offy=diameter/6;
-                            tilt=4.71238;
-                            break;
-
-                        default:
-                            offx=0;
-                            offy=0;
-                            break;
-                    }   // End of switch
-                }
-
-                //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
-
-                (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
-
-                if ((sec_old+sec_heard)>sec_now())
-                    (void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                else
-                    (void)XSetForeground(XtDisplay(da),gc,colors[0x52]);
-
-                if (is_rng || phg[6]=='0') {    // Draw circl
-
-// Check that our parameters are within spec for XDrawArc.  Tricky
-// 'cuz the XArc struct has short's and unsigned short's, while
-// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
-// just to make sure.
-
-                    (void)XDrawArc(XtDisplay(da),where,gc,
-                        l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2)), // int
-                        l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2)),   // int
-                        lu16(diameter), // unsigned int
-                        lu16(diameter), // unsigned int
-                        l16(0),         // int
-                        l16(64*360));   // int
-                }
-                else {    // Draw oval to depict beam heading
-
-                    // If phg[6] != '0' we still draw a circle, but the center
-                    // is offset in the indicated direction by 1/3 the radius.
-                                
-                    // Draw Circle
-
-// Check that our parameters are within spec for XDrawArc.  Tricky
-// 'cuz the XArc struct has short's and unsigned short's, while
-// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
-// just to make sure.
-
-                    (void)XDrawArc(XtDisplay(da),where,gc,
-                        l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
-                        l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
-                        lu16(diameter), // unsigned int
-                        lu16(diameter), // unsigned int
-                        l16(0),         // int
-                        l16(64*360));   // int
-                }
-//            }
-//        }
+            (void)XDrawArc(XtDisplay(da),where,gc,
+                           l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                           l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                           lu16(diameter), // unsigned int
+                           lu16(diameter), // unsigned int
+                           l16(0),         // int
+                           l16(64*360));   // int
+        }
     }
 }
 
@@ -698,246 +674,223 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
 void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixmap where) {
     double range, diameter;
     int offx,offy;
-    long xx,yy,xx1,yy1,fxx,fyy;
     double tilt;
-    double a,b;
 
 
     if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
+        tilt=0.0;
+        offx=0;
+        offy=0;
 
+        range = shg_range(shgd[3],shgd[4],shgd[5]);
 
-// Prevents it from being drawn when the symbol is off-screen.
-// It'd be better to check for lat/long +/- range to see if it's on the screen.
+        // Range is in miles.  Bottom term is in meters before the 0.0006214
+        // multiplication factor which converts it to miles.
+        // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+        //
+        diameter = 2.0 * ( range/
+                           (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
-//        if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude)) {
+        // If less than 4 pixels across, skip drawing it.
+        if (diameter <= 4.0)
+            return;
 
-//            if ((y_lat>NW_corner_latitude) && (y_lat<SE_corner_latitude)) {
+        // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
+        switch (shgd[6]-'0') {
+        case(0):
+            offx=0;
+            offy=0;
+            break;
 
-//                if ((x_long < 0) || (x_long > 129600000l))
-//                    return;
+        case(1):    //  45
+            offx=-1*(diameter/6);
+            offy=diameter/6;
+            tilt=5.49778;
+            break;
 
-//                if ((y_lat < 0) || (y_lat > 64800000l))
-//                    return;
+        case(2):    //  90
+            offx=-1*(diameter/6);
+            offy=0;
+            tilt=0;
+            break;
 
-                xx=0l;
-                yy=0l;
-                xx1=0l;
-                yy1=0l;
-                fxx=0l;
-                fyy=0l;
-                tilt=0.0;
-                offx=0;
-                offy=0;
+        case(3):    // 135
+            offx=-1*(diameter/6);
+            offy=-1*(diameter/6);
+            tilt=.78539;
+            break;
 
-                range = shg_range(shgd[3],shgd[4],shgd[5]);
+        case(4):    // 180
+            offx=0;
+            offy=-1*(diameter/6);
+            tilt=1.5707;
+            break;
 
-                // Range is in miles.  Bottom term is in meters before the 0.0006214
-                // multiplication factor which converts it to miles.
-                // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
-                //
-                diameter = 2.0 * ( range/
-                    (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
+        case(5):    // 225
+            offx=diameter/6;
+            offy=-1*(diameter/6);
+            tilt=2.3561;
+            break;
 
-                // If less than 4 pixels across, skip drawing it.
-                if (diameter <= 4.0)
-                    return;
+        case(6):    // 270
+            offx=diameter/6;
+            offy=0;
+            tilt=3.14159;
+            break;
 
-                //fprintf(stderr,"PHG: %s, Diameter: %f\n", shgd, diameter);
+        case(7):    // 315
+            offx=diameter/6;
+            offy=diameter/6;
+            tilt=3.92699;
+            break;
 
-                a = diameter;
-                b = diameter / 2;
+        case(8):    // 360
+            offx=0;
+            offy=diameter/6;
+            tilt=4.71238;
+            break;
 
-                // Figure out the directivity, if outside range of 0-8 it's declared to be an omni
-                switch (shgd[6]-'0') {
-                    case(0):
-                        offx=0;
-                        offy=0;
-                        break;
+        default:
+            offx=0;
+            offy=0;
+            break;
+        }
 
-                    case(1):    //  45
-                        offx=-1*(diameter/6);
-                        offy=diameter/6;
-                        tilt=5.49778;
-                        break;
+        if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
+            (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 1, LineSolid, CapButt,JoinMiter);
+        }
+        else {
+            (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 8, LineSolid, CapButt,JoinMiter);
+        }
 
-                    case(2):    //  90
-                        offx=-1*(diameter/6);
-                        offy=0;
-                        tilt=0;
-                        break;
+        // Stipple the area instead of obscuring the map underneath
+        (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_50pct_stipple);
+        (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillStippled);
 
-                    case(3):    // 135
-                        offx=-1*(diameter/6);
-                        offy=-1*(diameter/6);
-                        tilt=.78539;
-                        break;
+        // Choose the color for the DF'ing circle
+        // We try to choose similar colors to those used in DOSaprs,
+        // which are qbasic or gwbasic colors.
+        switch (shgd[3]) {
 
-                    case(4):    // 180
-                        offx=0;
-                        offy=-1*(diameter/6);
-                        tilt=1.5707;
-                        break;
+        case '9':   // Light Red
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
+            break;
 
-                    case(5):    // 225
-                        offx=diameter/6;
-                        offy=-1*(diameter/6);
-                        tilt=2.3561;
-                        break;
+        case '8':   // Red
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
+            break;
 
-                    case(6):    // 270
-                        offx=diameter/6;
-                        offy=0;
-                        tilt=3.14159;
-                        break;
+        case '7':   // Light Magenta
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
+            break;
 
-                    case(7):    // 315
-                        offx=diameter/6;
-                        offy=diameter/6;
-                        tilt=3.92699;
-                        break;
+        case '6':   // Magenta
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
+            break;
 
-                    case(8):    // 360
-                        offx=0;
-                        offy=diameter/6;
-                        tilt=4.71238;
-                        break;
+        case '5':   // Light Cyan
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
+            break;
 
-                    default:
-                        offx=0;
-                        offy=0;
-                        break;
-                }
-                //fprintf(stderr,"PHG=%02f %0.2f %0.2f %0.2f pix %0.2f\n",range,power,height,gain,diameter);
+        case '4':   // Cyan
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
+            break;
 
-                //fprintf(stderr,"scale_y: %u\n",scale_y);
+        case '3':   // White
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
+            break;
 
-                if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
-                    (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 1, LineSolid, CapButt,JoinMiter);
-                }
-                else {
-                    (void)XSetLineAttributes(XtDisplay(da), gc_stipple, 8, LineSolid, CapButt,JoinMiter);
-                }
+        case '2':   // Light Blue
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
+            break;
 
-                // Stipple the area instead of obscuring the map underneath
-                (void)XSetStipple(XtDisplay(da), gc_stipple, pixmap_50pct_stipple);
-                (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillStippled);
+        case '1':   // Blue
+            if ((sec_old+sec_heard)>sec_now())  // New
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
+            break;
 
-                // Choose the color for the DF'ing circle
-                // We try to choose similar colors to those used in DOSaprs,
-                // which are qbasic or gwbasic colors.
-                switch (shgd[3]) {
+        case '0':   // DarkGray (APRSdos) or Black (looks better). We use Black.
+        default:
+            if ((sec_old+sec_heard)>sec_now())  // New (was 0x30)
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
+            else                                // Old
+                (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
+            break;
+        }
 
-                    case '9':   // Light Red
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x25]);
-                        break;
+        // If shgd[6] != '0' we still draw a circle, but the center
+        // is offset in the indicated direction by 1/3 the radius.
 
-                    case '8':   // Red
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2d]);
-                        break;
+        // This debug statement will almost never wind
+        // up selected, because 4095 means "all possible debugging"
+        //  It is being placed here SOLELY so that I can
+        // leave the setting of "tilt" (which should determine
+        // how an oval would be tilted to indicate directivity)
+        // without having GCC 6.x whine about it not being used.
+        if (debug_level & 4095) {
+            fprintf(stderr,"If we had tilted ovals implemented, would have tilted one by %lf\n",tilt);
+        }
 
-                    case '7':   // Light Magenta
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x26]);
-                        break;
+        // Draw Circle
 
-                    case '6':   // Magenta
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2e]);
-                        break;
+        // Check that our parameters are within spec for XDrawArc.  Tricky
+        // 'cuz the XArc struct has short's and unsigned short's, while
+        // XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+        // just to make sure.
 
-                    case '5':   // Light Cyan
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x24]);
-                        break;
+        (void)XDrawArc(XtDisplay(da),where,gc_stipple,
+                       l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                       l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                       lu16(diameter), // unsigned int
+                       lu16(diameter), // unsigned int
+                       l16(0),         // int
+                       l16(64*360));   // int
 
-                    case '4':   // Cyan
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2c]);
-                        break;
+        if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
 
-                    case '3':   // White
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x0f]);
-                        break;
+            while (diameter > 1.0) {
+                diameter = diameter - 1.0;
 
-                    case '2':   // Light Blue
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x22]);
-                        break;
-
-                    case '1':   // Blue
-                        if ((sec_old+sec_heard)>sec_now())  // New
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x2a]);
-                        break;
-
-                    case '0':   // DarkGray (APRSdos) or Black (looks better). We use Black.
-                    default:
-                        if ((sec_old+sec_heard)>sec_now())  // New (was 0x30)
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
-                        else                                // Old
-                            (void)XSetForeground(XtDisplay(da),gc_stipple,colors[0x08]);
-                        break;
-                }
-
-                // If shgd[6] != '0' we still draw a circle, but the center
-                // is offset in the indicated direction by 1/3 the radius.
-                                
-                // Draw Circle
-
-// Check that our parameters are within spec for XDrawArc.  Tricky
-// 'cuz the XArc struct has short's and unsigned short's, while
-// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
-// just to make sure.
+                // Check that our parameters are within spec for XDrawArc.  Tricky
+                // 'cuz the XArc struct has short's and unsigned short's, while
+                // XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+                // just to make sure.
 
                 (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                    l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
-                    l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
-                    lu16(diameter), // unsigned int
-                    lu16(diameter), // unsigned int
-                    l16(0),         // int
-                    l16(64*360));   // int
-
-                if (scale_y > 128) { // Don't fill in circle if zoomed in too far (too slow!)
-
-                    while (diameter > 1.0) {
-                        diameter = diameter - 1.0;
-
-// Check that our parameters are within spec for XDrawArc.  Tricky
-// 'cuz the XArc struct has short's and unsigned short's, while
-// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
-// just to make sure.
-
-                        (void)XDrawArc(XtDisplay(da),where,gc_stipple,
-                            l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
-                            l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
-                            lu16(diameter),  // unsigned int
-                            lu16(diameter),  // unsigned int
-                            l16(0),         // int
-                            l16(64*360));   // int
-                    }
-                }
-//            }
-//        }
+                               l16(((x_long-NW_corner_longitude)/scale_x)-(diameter/2) - offx),  // int
+                               l16(((y_lat-NW_corner_latitude)/scale_y)-(diameter/2) - offy),    // int
+                               lu16(diameter),  // unsigned int
+                               lu16(diameter),  // unsigned int
+                               l16(0),         // int
+                               l16(64*360));   // int
+            }
+        }
     }
     // Change back to non-stipple for whatever drawing occurs after this
     (void)XSetFillStyle(XtDisplay(da), gc_stipple, FillSolid);
@@ -952,7 +905,6 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 // just in case that POD functionality ever changes per the comments in it
 void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
     double diameter;
-    double a,b;
     long width, height;
 
 
@@ -960,51 +912,30 @@ void draw_aloha_circle(long x_long, long y_lat, double range, int color, Pixmap 
     // 0.0006214 multiplication factor which converts it to miles.
     // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
     diameter = 2.0 * ( range/
-        (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
+                       (scale_x * calc_dscale_x(center_longitude,center_latitude) * 0.0006214 ) );
 
     // If less than 4 pixels across, skip drawing it.
     if (diameter <= 4.0)
         return;
 
-    a = diameter;
-    b = diameter / 2;
-
-
-    // Check for the center of the circle being off the edge of the
-    // earth (that's _our_ station position by the way!).
-    //
-//    if ((x_long < 0) || (x_long > 129600000l))
-//        return;
-
-//        if ((y_lat < 0) || (y_lat > 64800000l))
-//            return;
-
-    //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
-
     width = (((x_long-NW_corner_longitude)/scale_x)-(diameter/2));
     height = (((y_lat-NW_corner_latitude)/scale_y)-(diameter/2));
 
-//    if (width < 0 || width > 32767 || height < 0 || height > 32767) {
-//        return;
-//    }
-
     (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
-    //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-    //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
     (void)XSetForeground(XtDisplay(da),gc,color);
 
-// Check that our parameters are within spec for XDrawArc.  Tricky
-// 'cuz the XArc struct has short's and unsigned short's, while
-// XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
-// just to make sure.
+    // Check that our parameters are within spec for XDrawArc.  Tricky
+    // 'cuz the XArc struct has short's and unsigned short's, while
+    // XDrawArc man-page says int's/unsigned int's.  We'll stick to 16-bit
+    // just to make sure.
 
     (void)XDrawArc(XtDisplay(da),where,gc,
-        l16(width),     // int
-        l16(height),    // int
-        lu16(diameter), // unsigned int
-        lu16(diameter), // unsigned int
-        l16(0),         // int
-        l16(64*360));   // int
+                   l16(width),     // int
+                   l16(height),    // int
+                   lu16(diameter), // unsigned int
+                   lu16(diameter), // unsigned int
+                   l16(0),         // int
+                   l16(64*360));   // int
 }
 
 
@@ -3184,7 +3115,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
 void Select_symbol( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, my_form2, my_form3, button_cancel,
-            frame, frame2, label1, label2, b1;
+            frame, frame2, b1;
     int i;
     Atom delw;
 
@@ -3232,7 +3163,9 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        label1 = XtVaCreateManagedWidget(langcode("SYMSEL0002"),
+        // Discard the return value of this function, we're not using it.
+        // GCC 6.x *hates* when we assign to variables we never use.
+        XtVaCreateManagedWidget(langcode("SYMSEL0002"),
                 xmLabelWidgetClass,
                 frame,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -3256,7 +3189,9 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("SYMSEL0003"),
+        // Discard the return value of this function call, we're not using it.
+        // GCC 6.x *hates* when we assign to variables we never use.
+        XtVaCreateManagedWidget(langcode("SYMSEL0003"),
                 xmLabelWidgetClass,
                 frame2,
                 XmNchildType, XmFRAME_TITLE_CHILD,
