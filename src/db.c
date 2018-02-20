@@ -17546,7 +17546,6 @@ void decode_info_field(char *call,
         //
         if (!done && !ignore) {         // Other Packets        [APRS Reference, chapter 19]
             done = data_add(OTHER_DATA,call,path,message-1,from,port,origin,third_party, station_is_mine, 0);
-            ok_igate_net = 0;           // don't put data on internet       ????
             if (debug_level & 1)
                 fprintf(stderr,"decode_info_field: done with data_add(OTHER_DATA)\n");
         }
