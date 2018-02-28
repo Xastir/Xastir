@@ -1,30 +1,22 @@
+-----------
+Xastir Source
+-----------
+*) The majority of the Xastir source code is under the GPLv2 license.  This
+   applies also to all supporting files, images, and configure files
+   distributed in the Xastir source repository.
 
+   See the file named "COPYING" for details about the GPLv2.
 
-*) The majority of the Xastir source code is under the GPL license.
-See the file named "COPYING" for details.
+   There are a few exceptions, noted here:
 
+   *) src/datum.h and src/datum.c were derived from public domain source code.
+      The name and copyright are listed in that file.
 
--------------------------------
--------------------------------
-
-
-*) Some of the programs in the scripts directory may contain other
-licensing information.  See the individual files for details.
-
-
--------------------------------
--------------------------------
-
-
-*) datum.h and datum.c were derived from public domain source code.
-The name and copyright are listed in that file.
-
-
--------------------------------
--------------------------------
-
-
-*) rotated.h and rotated.c are available under the following license:
+   *) src/rotated.h and src/rotated.c are available under a permissive license
+      to "use, copy, modify, and distribute ... for any purpose and without
+      fee" provided a copyright notice and acknowledgement appears in all
+      copies.  The license text, copyright notice, and required
+      acknowledgement are:
 
 /* xvertext 5.0, Copyright (c) 1993 Alan Richardson (mppa3@uk.ac.sussex.syma)
  *
@@ -39,11 +31,13 @@ The name and copyright are listed in that file.
  */
 
 
--------------------------------
--------------------------------
+   *) src/festival.h and src/festival.c are available under a license
+      that permits unrestricted use and distribution, so long as the
+      copyright notice is included and attributions maintained.  The required
+      list of enumerated Xastir modifications is in src/festival.c
 
-
-*) festival.h and festival.c are available under the following license:
+      That license, the required copyright notice, and attribution
+      are:
 
 /*************************************************************************/
 /*                                                                       */
@@ -77,27 +71,63 @@ The name and copyright are listed in that file.
 /*  THIS SOFTWARE.                                                       */
 /*                                                                       */
 /*************************************************************************/
+/*             Author :  Alan W Black (awb@cstr.ed.ac.uk)                */
+/*             Date   :  March 1999                                      */
+/*-----------------------------------------------------------------------*/
 
+   *) The code in the src/shapelib directory is an old version of shapelib
+      that is built and used by Xastir only if an external shapelib is not
+      already installed on the system.  This code is licensed under the LGPLv2.
+      The LGPL terms are in src/shapelib/LICENSE.LGPL
 
 -------------------------------
+Xastir scripts
 -------------------------------
 
+
+*) Except where explicitly noted in comments, the scripts in the scripts
+   directory are all licensed under the GPLv2.  Any script without
+   explicit license information in its comments should be presumed to be GPLv2.
+   Some of the programs in the scripts directory are provided under other
+   open source licenses, and the licensing information will be present
+   in script comments, which should be consulted for details:
+      Xastir_tigerpoly.py --- An open source license by Frank Warmerdam
+                              requiring only that attribution and copyright
+                              notice be included
+      inf2geo.pl, mapfgd.pl, overlay.pl, ozi2geo.pl, permutations.pl,
+      ridge_radar.pl, split_gnis.bash
+          --- These are stated to be "Released into the Public Domain" by
+              their respective authors.
+
+-------------------------------
+Additional license terms
+-------------------------------
+
+Some scripts in the scripts directory use the term "LSB."  These scripts
+are all GPLv2 licensed, and contain the following caveats in their headers:
 
 *) "Free Standards Group, FSG, Linux Standard Base, LSB, Free
-Standards Certified, LSB Certified and the Free Standards Certified
-logo are trademarks, service marks and certification marks, as
-appropriate, of Free Standards Group in the United States and in
-other countries."
+   Standards Certified, LSB Certified and the Free Standards Certified
+   logo are trademarks, service marks and certification marks, as
+   appropriate, of Free Standards Group in the United States and in
+   other countries."
 
-We are in no way representing that Xastir has been certified by the
-FSG.  To do so costs real money.  We do intend some Xastir binaries
-to install and run properly on LSB-3.0 compliant x86 Linux systems
-though...
+   We are in no way representing that Xastir has been certified by the
+   FSG.  To do so costs real money.  We do intend some Xastir binaries
+   to install and run properly on LSB-3.0 compliant x86 Linux systems
+   though.
 
 
 -------------------------------
+Third party library licenses
 -------------------------------
 
+Xastir may be built optionally with a number of third party libraries.
+The licenses to these third party libraries are only relevant when
+distributing a binary that has been built to include those libraries.
+
+The remainder of this document consists of the license terms of these
+various third party libraries.
 
 *) libcurl (<http://curl.haxx.se/> is available under the following
 license.  Note that this license is only applicable to a distributed
