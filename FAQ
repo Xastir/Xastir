@@ -384,6 +384,11 @@ The Answers
     3.7 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
 
+    Xastir's configure script looks for a program called Magick-config in
+    your default PATH.  If it cannot find this program, it will skip building
+    with Magick support.  The first thing you should check is whether this
+    program exists, and whether the directory where it lives is in your PATH.
+
     You might have forgotten to install both ImageMagick and the
     ImageMagick-devel RPM.  Another possibility is that your particular RPM's
     might not contain all of the library dependencies that you need, like
