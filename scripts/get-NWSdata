@@ -29,6 +29,7 @@
 #
 # MAINTAINERS:  Go here to find out what the latest versions are:
 # <http://www.nws.noaa.gov/geodata/>
+# <http://www.weather.gov/gis/AWIPSShapefiles>
 
 
 
@@ -37,19 +38,19 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="w_11au16"    # NWSM Libraries: County Warning Area Boundaries
+FILE1="w_11au16"    # GREEN: NWSM Library: County Warning Area Boundaries
 
-FILE2="z_05de17"    # NWSM Libraries: Public Zone Boundaries
+FILE2="z_10jl18"    # GREEN: NWSM Library: Public Forecast Zone Boundaries
 
-FILE3="mz05de17"    # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE3="mz05de17"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
-FILE4="oz01ap14"   # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE4="oz01ap14"   # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
-FILE5="hz04jn14"    # NWSM Libraries: Coastal and Offshore Marine Zones
+FILE5="hz04jn14"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
-FILE6="fz05de17"    # NWSM Libraries: Fire Weather Zone Boundaries
+FILE6="fz25jn18"    # GREEN: NWSM Library: Fire Weather Zone Boundaries
 
-FILE7="c_11au16"    # AWIPS County Libraries (under "States, Provinces & Counties", "U.S. Counties")
+FILE7="c_11au16"    # RED: Counties, States, Provinces: U.S. Counties
 
 
 
