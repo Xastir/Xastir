@@ -115,6 +115,11 @@
 #define SIGRET  void
 #endif  // SIGRET
 
+// Older versions of glibc <= 2.3.0 and <= OS X 10.5 do not have this
+// constant defined
+#ifndef AI_NUMERICSERV
+#define AI_NUMERICSERV 0
+#endif
 
 //extern pid_t getpgid(pid_t pid);
 extern void port_write_binary(int port, unsigned char *data, int length);
