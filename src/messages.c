@@ -408,7 +408,7 @@ void clear_outgoing_message(int i) {
     message_pool[i].message_line[0] = '\0';
     message_pool[i].seq[0] = '\0';
     message_pool[i].active_time=0;;
-    message_pool[i].next_time=0l;
+    message_pool[i].next_time=0L;
     message_pool[i].tries=0;
 }
 
@@ -449,7 +449,7 @@ void clear_outgoing_messages_to(char *callsign) {
             message_pool[ii].message_line[0] = '\0';
             message_pool[ii].seq[0] = '\0';
             message_pool[ii].active_time=0;;
-            message_pool[ii].next_time=0l;
+            message_pool[ii].next_time=0L;
             message_pool[ii].tries=0;
         }
     }
@@ -506,7 +506,7 @@ void change_path_outgoing_messages_to(char *callsign, char *new_path) {
 
 
 
-time_t last_check_and_transmit = (time_t)0l;
+time_t last_check_and_transmit = (time_t)0L;
 
 
 // Kick the interval timer back to 7 and tries back to 1 for
@@ -525,14 +525,14 @@ void kick_outgoing_timer(char *callsign) {
 
         // If it matches the callsign we're talking to
         if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
-            message_pool[ii].next_time = (time_t)7l;
+            message_pool[ii].next_time = (time_t)7L;
             message_pool[ii].tries = 0;
-            message_pool[ii].active_time = (time_t)0l;
+            message_pool[ii].active_time = (time_t)0L;
         }
     }
 
     // Cause the transmit routine to get called again
-    last_check_and_transmit = (time_t)0l;
+    last_check_and_transmit = (time_t)0L;
 }
 
 
@@ -766,7 +766,7 @@ void output_message(char *from, char *to, char *message, char *path) {
                     message_counter[1]);
 
                 message_pool[i].active_time=0;
-                message_pool[i].next_time = (time_t)7l;
+                message_pool[i].next_time = (time_t)7L;
 
                 if (strcmp(from,"***")!= 0)
                     message_pool[i].tries = 0;
@@ -1281,8 +1281,8 @@ fprintf(stderr,
                     message_pool[i].next_time = message_pool[i].next_time * 2;
 
                     // Limit the max interval to 10 minutes
-                    if (message_pool[i].next_time > (time_t)600l)
-                        message_pool[i].next_time = (time_t)600l;
+                    if (message_pool[i].next_time > (time_t)600L)
+                        message_pool[i].next_time = (time_t)600L;
 
                     message_pool[i].tries++;
 
