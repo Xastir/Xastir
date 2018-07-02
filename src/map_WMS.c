@@ -751,7 +751,7 @@ void draw_WMS_map (Widget w,
             // of image files
             temp_pack = image->colormap[l];
             if (debug_level & 512)
-                fprintf(stderr,"Colormap color is %i  %i  %i \n",
+                fprintf(stderr,"Colormap color is %1.2f  %1.2f  %1.2f \n",
                        temp_pack.red, temp_pack.green, temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
@@ -769,9 +769,9 @@ void draw_WMS_map (Widget w,
             else {  // QuantumDepth = 8
                 if (debug_level & 512)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -981,11 +981,11 @@ void draw_WMS_map (Widget w,
                         trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
                             if ( c_trans_color_head &&
-                                    check_trans(my_colors[index_pack[l]],c_trans_color_head)) {
+                                    check_trans(my_colors[(int)index_pack[l]],c_trans_color_head)) {
                                 trans_skip = 1; // skip it
                             }
                             else {
-                                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                                XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
                                 trans_skip = 0; // draw it
                             }
                         }
@@ -1001,9 +1001,9 @@ void draw_WMS_map (Widget w,
                             else { // QuantumDepth=8
                                 // shift the bits of the 8-bit quantity so that
                                 // they become the high bigs of my_colors.*
-                                my_colors[0].red=pixel_pack[l].red<<8;
-                                my_colors[0].green=pixel_pack[l].green<<8;
-                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                                my_colors[0].red=pixel_pack[l].red*256;
+                                my_colors[0].green=pixel_pack[l].green*256;
+                                my_colors[0].blue=pixel_pack[l].blue*256;
                             }
                             // NOW my_colors has the right r,g,b range for
                             // pack_pixel_bits

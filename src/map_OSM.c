@@ -518,13 +518,21 @@ static void draw_image(
     }
 
 
+#if (MagickLibVersion < 0x0669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         return;
     }
 
+#if (MagickLibVersion < 0x0669)
     index_pack = GetIndexes(image);
+#else
+    index_pack = GetAuthenticIndexQueue(image);
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         return;
@@ -557,9 +565,9 @@ static void draw_image(
             else {  // QuantumDepth = 8
                 if (debug_level & 512)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -609,7 +617,7 @@ static void draw_image(
                 if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
                     continue;
                 }
-                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
             }
             else {
                 // Skip transparent pixels
@@ -628,9 +636,9 @@ static void draw_image(
                 else { // QuantumDepth=8
                     // shift the bits of the 8-bit quantity so that
                     // they become the high bigs of my_colors.*
-                    my_colors[0].red=pixel_pack[l].red<<8;
-                    my_colors[0].green=pixel_pack[l].green<<8;
-                    my_colors[0].blue=pixel_pack[l].blue<<8;
+                    my_colors[0].red=pixel_pack[l].red*256;
+                    my_colors[0].green=pixel_pack[l].green*256;
+                    my_colors[0].blue=pixel_pack[l].blue*256;
                 }
                 // NOW my_colors has the right r,g,b range for
                 // pack_pixel_bits
@@ -711,13 +719,21 @@ static void draw_OSM_image(
     }
 
 
+#if (MagickLibVersion < 0x669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         return;
     }
 
+#if (MagickLibVersion <0x669)
     index_pack = GetIndexes(image);
+#else
+    index_pack = GetAuthenticIndexQueue(image);
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         return;
@@ -750,9 +766,9 @@ static void draw_OSM_image(
             else {  // QuantumDepth = 8
                 //if (debug_level & 512)
                 //    fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -888,7 +904,7 @@ static void draw_OSM_image(
                             if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
                                 continue;
                             }
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
                         }
                         else {
                             // Skip transparent pixels and make matte
@@ -909,9 +925,9 @@ static void draw_OSM_image(
                             else { // QuantumDepth=8
                                 // shift the bits of the 8-bit quantity so that
                                 // they become the high bigs of my_colors.*
-                                my_colors[0].red=pixel_pack[l].red<<8;
-                                my_colors[0].green=pixel_pack[l].green<<8;
-                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                                my_colors[0].red=pixel_pack[l].red*256;
+                                my_colors[0].green=pixel_pack[l].green*256;
+                                my_colors[0].blue=pixel_pack[l].blue*256;
                             }
                             // NOW my_colors has the right r,g,b range for
                             // pack_pixel_bits
@@ -1218,7 +1234,12 @@ void draw_OSM_tiles (Widget w,
         canvas->background_color.green = MATTE_GREEN;
         canvas->background_color.blue = MATTE_BLUE;
         canvas->background_color.opacity = MATTE_OPACITY;
+#if (MagickLibVersion < 0x0669)
         SetImage(canvas, MATTE_OPACITY);
+#else
+        SetImageBackgroundColor(canvas);
+        SetImageOpacity(canvas, MATTE_OPACITY);
+#endif
 
         xastir_snprintf(map_it, sizeof(map_it), "%s",
                 langcode ("BBARSTA049")); // Reading tiles...
@@ -1272,7 +1293,11 @@ void draw_OSM_tiles (Widget w,
         canvas->matte_color.blue = MATTE_BLUE;
 
         if (debug_level & 512) {
+#if (MagickLibVersion < 0x0669)
             DescribeImage(canvas, stderr, 0);
+#else
+            IdentifyImage(canvas, stderr, 0);
+#endif
             WriteImages(canvas_info, canvas, "/tmp/xastirOSMTiledMap.png", &exception);
         }
 
