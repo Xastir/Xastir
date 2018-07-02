@@ -466,6 +466,7 @@ static long pixelLon2xastirLon(long osm_lon, int osm_zoom) {
 
 
 #ifdef HAVE_MAGICK
+
 /**********************************************************
  * draw_image() - copy a image onto the display
  **********************************************************/
@@ -489,8 +490,9 @@ static void draw_image(
 
 /*
     if (image->colorspace != RGBColorspace) {
-        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
-        return;
+        TransformImageColorspace(image, RGBColorspace);
+        //fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        //return;
     }
 */
 
@@ -681,8 +683,9 @@ static void draw_OSM_image(
 
 /*
     if (image->colorspace != RGBColorspace) {
-        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
-        return;
+        TransformImageColorspace(image, RGBColorspace);
+        //fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        //return;
     }
 */
 
@@ -928,6 +931,7 @@ static void draw_OSM_image(
 
             if (map_seen && !map_act)
                 map_done = 1;
+            (void)map_done; // map_done is never used, but this takes away the compile warning.
         } // don't do a screen row twice.
     } // loop over map pixel rows
 }  // end draw_OSM_image()
@@ -1191,11 +1195,13 @@ void draw_OSM_tiles (Widget w,
          * transparent when the completed OSM map gets copied to the X
          * display.
          */
-        FormatString(canvas_info->filename, "%s", MATTE_COLOR_STRING);
+        xastir_snprintf(canvas_info->filename, sizeof(canvas_info->filename),
+                 "%s", MATTE_COLOR_STRING);
         canvas = ReadImage(canvas_info, &exception);
         if (exception.severity != UndefinedException) {
             CatchException(&exception);
             fprintf(stderr, "Could not allocate canvas to hold tiles.\n");
+
             if (canvas_info != NULL) {
                 DestroyImageInfo(canvas_info);
             }
