@@ -77,6 +77,7 @@
 #include "map_cache.h"
 
 #include "tile_mgmnt.h"
+#include "dlm.h"
 #include "map_OSM.h"
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
@@ -990,11 +991,6 @@ void draw_OSM_tiles (Widget w,
     unsigned int offset_x, offset_y;
     char tmpString[MAX_TMPSTRING];
 
-#ifdef HAVE_LIBCURL
-    CURL *mySession;
-    char errBuf[CURL_ERROR_SIZE];
-    int curl_result;
-#endif // HAVE_LIBCURL
     char temp_file_path[MAX_VALUE];
 
     // Check whether we're indexing or drawing the map
@@ -1109,10 +1105,6 @@ void draw_OSM_tiles (Widget w,
                             tiles.endy, osm_zl, tileRootDir,
                             tileExt[0] != '\0' ? tileExt : "png");
 
-#ifdef HAVE_LIBCURL
-    mySession = xastir_curl_init(errBuf);
-#endif // HAVE_LIBCURL
-
     // get the tiles
     tileCnt = 1;
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
@@ -1124,37 +1116,17 @@ void draw_OSM_tiles (Widget w,
                 XmUpdateDisplay(text);
             }
 
-#ifdef HAVE_LIBCURL
-            curl_result = getOneTile(mySession, serverURL, tilex, tiley,
+            DLM_queue_tile(serverURL, tilex, tiley,
                     osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
-            if (curl_result < 0) {
-               fprintf(stderr, "Download error for tile: %s/%i/%li/%li.%s\n",
-                       serverURL, osm_zl, tilex, tiley,
-                       tileExt[0] != '\0' ? tileExt : "png");
-               fprintf(stderr, "curl told us %d\n", -1 * curl_result);
-               fprintf(stderr, "curlerr: %s\n", errBuf);
-            } else {
-                tileCnt += curl_result;
-            }
-#else
-            tileCnt += getOneTile(serverURL, tilex, tiley,
-                    osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
-#endif // HAVE_LIBCURL
 
-            HandlePendingEvents(app_context);
-            if (interrupt_drawing_now) {
-                interrupted = 1;
-                break;
-            }
-        }
-        if (interrupted == 1) {
-            break;
         }
     }
 
-#ifdef HAVE_LIBCURL
-    curl_easy_cleanup(mySession);
-#endif // HAVE_LIBCURL
+    // if the Download Manager is not using threaded (background) mode,
+    // we need this to actually do the downloads.
+    // In threaded mode, it does nothing
+    DLM_do_transfers();
+    if (interrupt_drawing_now) interrupted = 1;
 
     if (interrupted != 1) {
         // calculate tie points
@@ -1255,22 +1227,30 @@ void draw_OSM_tiles (Widget w,
             for (row = tiles.startx, offset_x = 0;
                  row <= tiles.endx;
                  row++, offset_x += 256) {
+
                 xastir_snprintf(tmpString, sizeof(tmpString),
                         "%s/%d/%d/%d.%s", tileRootDir, osm_zl, row, col,
                         tileExt[0] != '\0' ? tileExt : "png");
                 strncpy(tile_info->filename, tmpString, MaxTextExtent);
 
                 tile = ReadImage(tile_info,&exception);
+
                 if (exception.severity != UndefinedException) {
-                    CatchException(&exception);
-                    xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
+                    //fprintf(stderr,"Exception severity:%d\n", exception.severity);
+                    if (exception.severity==FileOpenError) {
+                       //fprintf(stderr, "%s NOT available\n", tile_info->filename);
+                       ClearMagickException(&exception);
+                    } else {
+                       xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
                             tileRootDir, osm_zl, row, col,
                             tileExt[0] != '\0' ? tileExt : "png");
-                    if (debug_level & 512) {
-                        fprintf(stderr, "%s NOT removed.\n", tmpString);
-                    } else {
-                        fprintf(stderr, "Removing %s\n", tmpString);
-                        unlink(tmpString);
+                       if (debug_level & 512) {
+                           fprintf(stderr, "%s NOT removed.\n", tmpString);
+                       } else {
+                           fprintf(stderr, "Removing %s\n", tmpString);
+                           unlink(tmpString);
+                       }
+                       CatchException(&exception);
                     }
                     // clear exception so next iteration doesn't fail
                     GetExceptionInfo(&exception);
