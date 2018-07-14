@@ -519,7 +519,7 @@ static void draw_image(
     }
 
 
-#if (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion < 0x0669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
 #else
     pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
@@ -529,7 +529,7 @@ static void draw_image(
         return;
     }
 
-#if (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion < 0x0669)
     index_pack = GetIndexes(image);
 #else
     index_pack = GetAuthenticIndexQueue(image);
@@ -720,7 +720,7 @@ static void draw_OSM_image(
     }
 
 
-#if (MagickLibVersion < 0x669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion < 0x669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
 #else
     pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
@@ -730,7 +730,7 @@ static void draw_OSM_image(
         return;
     }
 
-#if (MagickLibVersion <0x669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion <0x669)
     index_pack = GetIndexes(image);
 #else
     index_pack = GetAuthenticIndexQueue(image);
@@ -1206,7 +1206,7 @@ void draw_OSM_tiles (Widget w,
         canvas->background_color.green = MATTE_GREEN;
         canvas->background_color.blue = MATTE_BLUE;
         canvas->background_color.opacity = MATTE_OPACITY;
-#if (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion < 0x0669)
         SetImage(canvas, MATTE_OPACITY);
 #else
         SetImageBackgroundColor(canvas);
@@ -1273,7 +1273,7 @@ void draw_OSM_tiles (Widget w,
         canvas->matte_color.blue = MATTE_BLUE;
 
         if (debug_level & 512) {
-#if (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICS_MAGICK) || (MagickLibVersion < 0x0669)
             DescribeImage(canvas, stderr, 0);
 #else
             IdentifyImage(canvas, stderr, 0);
