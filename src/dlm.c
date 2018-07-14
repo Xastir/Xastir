@@ -1,8 +1,8 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
- * $Id: dlm.c,v 1.10 2011/12/24 02:24:27 jedunmire Exp $
+ * $Id: dlm.c,v 1.10 2018/07/14 21:32:43 MikeNix Exp $
  *
- * Copyright (C) 2010 The Xastir Group
+ * Copyright (C) 2018 The Xastir Group
  *
  * This file was contributed by Mike Nix.
  *
@@ -22,10 +22,6 @@
  *
  * Look at the README for more information on the program.
  *
- * This file derived from map_OSM.c, tile_mgmt.c and fetch_remote.c which
- * have the following copyrights:
- *    Copyright (C) 1999,2000  Frank Giannandrea
- *    Copyright (C) 2000-2010  The Xastir Group
  */
 
 

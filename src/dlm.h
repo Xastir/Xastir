@@ -1,9 +1,9 @@
 /*
- * $Id: dlm.h,v 1.5 2011/12/24 21:32:43 MikeNix Exp $
+ * $Id: dlm.h,v 1.5 2018/07/14 21:32:43 MikeNix Exp $
  *
- * Copyright (C) 2010 The Xastir Group
+ * Copyright (C) 2018 The Xastir Group
  *
- * This file was contributed by Jerry Dunmire, KA6HLD.
+ * This file was contributed by Mike Nix.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
