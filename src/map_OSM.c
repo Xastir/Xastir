@@ -1235,7 +1235,9 @@ void draw_OSM_tiles (Widget w,
                     //fprintf(stderr,"Exception severity:%d\n", exception.severity);
                     if (exception.severity==FileOpenError) {
                        //fprintf(stderr, "%s NOT available\n", tile_info->filename);
+#if !defined(HAVE_GRAPHICS_MAGICK) && (MagickLibVersion > 0x0669)
                        ClearMagickException(&exception);
+#endif
                     } else {
                        xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
                             tileRootDir, osm_zl, row, col,
