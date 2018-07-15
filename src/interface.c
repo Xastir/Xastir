@@ -8552,9 +8552,6 @@ void output_my_aprs_data(void) {
     if (debug_level & 128)
         fprintf(stderr,"OUT LONG <%s>\n",my_output_long);
 
-    // default to none
-    output_net[0]='\0';
-
 begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
     // Iterate across the ports, set up each device's headers/paths/handshakes,
@@ -8569,6 +8566,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 //            case DEVICE_NET_DATABASE:
 
             case DEVICE_NET_AGWPE:
+
+                output_net[0] = '\0';   // We don't need this header for AGWPE
                 break;
 
             case DEVICE_NET_STREAM:
@@ -8581,6 +8580,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 break;
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
+
                 /* make dtr normal (talk to TNC) */
                 if (port_data[port].status == DEVICE_UP) {
                     port_dtr(port,0);
@@ -8591,6 +8591,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_SERIAL_MKISS_TNC:
             case DEVICE_SERIAL_TNC:
             case DEVICE_AX25_TNC:
+
+                /* clear this for a TNC */
+                output_net[0] = '\0';
 
                 /* Set my call sign */
                 xastir_snprintf(header_txt,
