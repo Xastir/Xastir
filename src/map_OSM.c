@@ -529,7 +529,7 @@ static void draw_image(
     }
 
 #if defined(HAVE_GRAPHICSMAGICK)
-  #if (MagickLibVersion < 0x211801)
+  #if (MagickLibVersion < 0x201702)
     index_pack = GetIndexes(image);
   #else
     index_pack = AccessMutableIndexes(image);
@@ -738,7 +738,7 @@ static void draw_OSM_image(
     }
 
 #if defined(HAVE_GRAPHICSMAGICK)
-  #if (MagickLibVersion < 0x211801)
+  #if (MagickLibVersion < 0x201702)
     index_pack = GetIndexes(image);
   #else
     index_pack = AccessMutableIndexes(image);
