@@ -767,8 +767,8 @@ void draw_WMS_map (Widget w,
             // of image files
             temp_pack = image->colormap[l];
             if (debug_level & 512)
-                fprintf(stderr,"Colormap color is %1.2f  %1.2f  %1.2f \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
+                fprintf(stderr,"Colormap color is %i  %i  %i \n",
+                       (int)temp_pack.red, (int)temp_pack.green, (int)temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
             // is defined in /usr/include/magick/image.h as either an unsigned short or an
