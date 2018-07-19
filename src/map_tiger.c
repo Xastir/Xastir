@@ -666,7 +666,11 @@ void draw_tiger_map (Widget w,
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, &exception);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         if (image)
@@ -678,7 +682,19 @@ void draw_tiger_map (Widget w,
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK)
+  #if (MagickLibVersion < 0x211801)
     index_pack = GetIndexes(image);
+  #else
+    index_pack = AccessMutableIndexes(image);
+  #endif
+#else
+  #if (MagickLibVersion < 0x0669)
+    index_pack = GetIndexes(image);
+  #else
+    index_pack = GetAuthenticIndexQueue(image);
+  #endif
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         if (image)
