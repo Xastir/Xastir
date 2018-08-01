@@ -24,8 +24,8 @@
 # Look at the README for more information on the program.
 #
 
-GNIS_SITE=http://geonames.usgs.gov/docs/stategaz
-SUFFIX=_Features_20090401
+GNIS_SITE=https://geonames.usgs.gov/docs/stategaz
+SUFFIX=_Features_20180601
 
 x=`dirname $0`
 . $x/values
