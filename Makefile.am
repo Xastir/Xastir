@@ -42,7 +42,7 @@ map_DATA=worldhi.map CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-        OSM_tiled_fosm.geo
+        OSM_tiled_fosm.geo USTigermap.geo USTigermapBorders.geo
 
 nationalmapdir=${pkgdatadir}/maps/Online/nationalmap.gov
 nationalmap_DATA=Aerial.geo Contours.geo Hydrography.geo ShadedRelief.geo \
