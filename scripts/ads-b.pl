@@ -198,7 +198,7 @@ $dump1090_port = 30003;     # 30003 is dump1090 default port
 $xastir_host = "localhost"; # Server where Xastir is running
 $xastir_port = 2023;        # 2023 is Xastir default UDP port
 
-$plane_TTL = 15;            # Secs after which posits too old to create APRS packets from
+$plane_TTL = 1;            # Secs after which posits too old to create APRS packets from
 
 $log_file = "~/.xastir/logs/planes.log";
 
