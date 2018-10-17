@@ -943,19 +943,21 @@ while (<$socket>)
     }
 
     # Save new tail number or flight number, assign tactical call
-    $tail{$plane_id} = $fields[10];
+    $temp_tail = $fields[10];
+    $temp_tail =~ s/[^a-zA-Z0-9,]//g; # Filter out all but alphanumeric chars
+    $tail{$plane_id} = $temp_tail;
     $tail{$plane_id} =~ s/\s//g;    # Remove spaces
 
     if ($old ne $tail{$plane_id}) {
-      $print6 = sprintf("%-18s", $fields[10]);
+      $print6 = sprintf("%-18s", $temp_tail);
       $newdata{$plane_id}++;    # Found a new tail or flight number!
  
       # Assign tactical call = tail number or flight number + registry (if defined)
       # Max tactical call in Xastir is 57 chars (56 + terminator?)
       #
-      $tactical{$plane_id} = $fields[10];
+      $tactical{$plane_id} = $temp_tail;
       if ($registry ne "Registry?") {
-        $tactical{$plane_id} = $fields[10] . " (" . $registry . ")";
+        $tactical{$plane_id} = $temp_tail . " (" . $registry . ")";
         $tactical{$plane_id} =~ s/\s+/ /g; # Change multiple spaces to one
       }
       $aprs = $xastir_user . '>' . "APRS::TACTICAL :" . $plane_id . "=" . $tactical{$plane_id};
