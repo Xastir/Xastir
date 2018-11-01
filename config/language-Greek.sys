@@ -1,0 +1,1356 @@
+#
+# Copyright (C) 2000-2018 The Xastir Group
+#
+# This is the Greek Language file used for all the prompts in xastir
+# 
+# Creator        : Konstantina Stamopoulou <kstamop@gmail.com>
+# Maintained by  : The Xastir Group <xastir@xastir.org>
+#
+# comment lines with pound signs in front are ignored
+# File format as follows:
+# ID (10 chars alpha+numeric)|(String associated with id)|QuickKeys|#comment
+# The ID is a unique uppercase char string for each block followed by a nummer
+#
+# WARNING:
+# Some strings contain formatting commands like %s and %d, you should not
+# change these. Wrong format strings could produce a segfault!
+#
+# Main Menu
+MENUTB0001|Αρχείο|F|
+MENUTB0002|Προβολή|V|
+MENUTB0004|Χάρτης|M|
+MENUTB0005|Σταθμός|S|
+MENUTB0006|Μήνυμα|e|
+MENUTB0010|Διεπαφή|I|
+MENUTB0009|Βοήθεια|H|
+#
+# Menu "File"
+PULDNFI001|Ρυθμίσεις|C|
+PULDNFI002|Ανοιγμα Αρχείο Καταγραφής|O|
+PULDNFI003|Τεστ|T|
+PULDNFI004|Έξοδος|x|
+PULDNFI007|Αλλαγή Βαθμού Debug|D|
+PULDNFI010|TNC Καταγραφή||
+PULDNFI011|Net Καταγραφή||
+PULDNFI012|IGate Καταγραφή||
+PULDNFI013|WX Καταγραφή||
+PULDNFI014|PNG Στιγμιότυπα||
+PULDNFI015|Εκτύπωση|P|
+PULDNFI016|KML Στιγμιότυπα||
+#
+# Menu "View"
+PULDNVI001|Ανακοινώσεις|B|
+PULDNVI002|Εισερχόμενα Δεδομένα|I|
+PULDNVI003|Κινητοί Σταθμοί|M|
+PULDNVI004|Σύνολο Σταθμών|A|
+PULDNVI009|Τοπικοί Σταθμοί|S|
+PULDNVI012|Τελευταίοι Σταθμοί|L|
+PULDNVI005|Σταθμοί Καιρού|W|
+PULDNVI008|Προσωπικοί Σταθ. Καιρού|D|
+PULDNVI007|Καιρικές Ειδοποιήσεις|e|
+PULDNVI011|Κίνηση Μηνυμάτων|T|
+PULDNVI013|Χρόνος Λειτουργίας|U|
+PULDNVI014|Προγραμματισμός Uptime||
+PULDNVI015|Κατάσταση GPS||
+PULDNVI016|Στατιστικά ALOHA||
+#
+# Menu "Configure"
+PULDNCF004|Σταθμός|S|
+PULDNCF001||Προεπιλογή|
+PULDNCF003|Χρονοπρογραμματισμός|T|
+PULDNCF002|Συντεταγμένες Συστήματος|o|
+PULDNCF006|Ειδοποιήσεις Audio|A|
+PULDNCF007|Ομιλία|p|
+PULDNCF008|Αποθήκευση Ρυθμίσεων!|C|
+# (Units see PULDNDP006)
+#
+#Map Chooser
+# Menu "Maps"
+PULDNMP001|Επιλογέας Χάρτη|M|
+PULDNMP012|Απεικόνιση Bookmarks|B|
+PULDNMP014|Εντοπισμός Χρακτηριστικών|F|
+PULDNMP016|Απενεργοποίηση Γρήγορου Zoom/Pan/Home||
+PULDNMP013|Απενεργοποίηση Συνόλου Χαρτών||
+PULDNMP002|Ενεργοποίηση Αυτόματου Χάρτη||
+PULDNMP003|Ενεργοποίηση Πλέγματος Χάρτη||
+PULDNMP004|Ενεργοποίηση Επιπέδων Χάρτη||
+PULDNMP010|Ενεργοποίηση Ετικετών Χάρτη||
+PULDNMP009|Ενεργοποίηση Χρωματικού Γεμισματος Περιοχής||
+PULDNMP007|Ενεργοποίηση Ειδοποιήσεων Καιρού||
+PULDNMP005|Χρώμα Φόντου|C|
+PULDNMP006|Γραμματοσειρά Σταθμού|T|
+PULDNMP026|Στυλ Εικονιδίου|O|
+PULDNMP011|Μενού Δεικτών Ποντικιού |P|
+PULDNMP008|Απεικόνιση Έντασης|I|
+PULDNMP020|Ρύθμιση Tigermap||
+PULDNMP021|Αυτόματος Χάρτης - Απενεργοποίηση Raster Χαρτών||
+PULDNMP022|Ευρετήριο Νέων Χαρτών στο Ξεκίνημα||
+PULDNMP023|Ευρετήριο: Προσθήκη Νέων Χαρτών|N|
+PULDNMP024|Ευρετήριο: Επανακατάταξη ΣΥΝΟΛΟΥ Χαρτών!|R|
+PULDNMP025|Γραμματοσειρές||
+PULDNMP015|Xfontsel||
+PULDNMP027|Επαναφόρτωση Χαρτών (Εκτός Μνήμης)||
+PULDNMP028|Καθαριμός Συνόλου Χαρτών από Μνήμη!||
+PULDNMP029|Αναζήτηση Δνσης||
+PULDNMP030|Ρύθμιση USGS DRG||
+PULDNMP031|Ενεργοποίηση Περιγράμματος Χάρτη||
+#
+# PopUp "Configure Tigermap"
+MPUPTGR001|Πλέγμα||
+MPUPTGR002|Χώρες||
+MPUPTGR003|Ετικέτες Πόλεων||
+MPUPTGR004|Αστικές Περιοχές||
+MPUPTGR005|Λεωφόροι||
+MPUPTGR006|Δρόμοι||
+MPUPTGR007|Σιδηρόδρομοι||
+MPUPTGR008|Πόλεις||
+MPUPTGR009|Περιοχές Πόλεων||
+MPUPTGR010|Ετικέτες US Hwy||
+MPUPTGR011|Εθνικές Οδοί||
+MPUPTGR012|Επιλογή για Εμφάνιση:||
+MPUPTGR013|Ποτάμια||
+MPUPTGR014|Λίμνες||
+MPUPTGR015|Αεροδρόμια, Πάρκα, κτλ||
+MPUPTGR016|Ένταση Χάρτη||
+MPUPTGR017|Timeout Χάρτη απο Ιντερνετ(sec)||
+MPUPTGR018|Ενεργοποίηση Χαρτών Tiger||
+#
+# PopUp "Configure USGS DRG"
+MPUPDRG001|Επιλογή για Εμφάνιση:||
+MPUPDRG002|Απόχρωση Χάρτη(XOR)||
+MPUPDRG003|Μαύρο||
+MPUPDRG004|’σπρο||
+MPUPDRG005|Μπλε||
+MPUPDRG006|Κόκκινο||
+MPUPDRG007|Καφέ||
+MPUPDRG008|Πράσινο||
+MPUPDRG009|Μωβ||
+MPUPDRG010|Κίτρινο||
+MPUPDRG011|Γαλάζιο||
+MPUPDRG012|Ανοιχτό Κόκκινο||
+MPUPDRG013|Λιλά||
+MPUPDRG014|Ανοιχτό Γκρι||
+MPUPDRG015|Ανοιχτό Καφέ||
+#
+# PopUp "Map Chooser"
+WPUPMCP001|Επιλογέας Χάρτη||
+PULDNMMC01|Καθαρισμός|C|
+PULDNMMC02|Πίνακας|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
+PULDNMMC06|Ανάπτυξη Καταλόγου||
+PULDNMMC07|Επιλεγμένοι Dirs/Χάρτες:||
+PULDNMMC08|Καθαρισμα Dirs|C
+PULDNMMC09|Επιλογή Όλων|S|
+#
+# PullDown "Map Background Color"
+PULDNMBC01|Γκρι||
+PULDNMBC02|Σκούρο Ροζ||
+PULDNMBC03|Σκούρο Μπλε||
+PULDNMBC04|Μπλε||
+PULDNMBC05|Πράσινο||
+PULDNMBC06|Ανοιχτό Πράσινο||
+PULDNMBC07|Ανοιχτό Πορτοκαλοκίτρινο||
+PULDNMBC08|ΧρυσοΚίτρινο||
+PULDNMBC09|ΡοζΧρυσό||
+PULDNMBC10|Έντονο Κόκκινο||
+PULDNMBC11|’σπρο||
+PULDNMBC12|Μαύρο||
+#
+# PullDown "Station text Style"
+PULDNMSL01|Μαύρο Περίγραμμα|B|
+PULDNMSL02|Μαύρη Σκιά|S|
+PULDNMSL03|Μαύρο Κείμενο|T|
+PULDNMSL04|Εφε Σκιάς||
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|Χωρίς Περίγραμμα |N|
+PULDNMIO02|Μαύρο Περίγραμμα|B|
+PULDNMIO03|Γκρι Περίγραμμα|G|
+PULDNMIO04|’σπρο Περίγραμμα|W|
+#
+# Switches
+PULDNOT001|Ανοιχτό||
+PULDNOT002|Κλειστό||
+PULDNOT003|Βραχύ||
+#
+# Menu "Stations"
+PULDNDP014|Αναζήτηση Σταθμού|F|
+PULDNDP001|Εντοπισμός Σταθμού|T|
+PULDNDP022|Εντοπισμός Διαδρομής|u|
+PULDNDP032|Φίλτρο Δεδομένων||
+PULDNDP040|Καμία Επιλογή||
+PULDNDP041|Επέλεξε Εμένα||
+PULDNDP042|Επιλογή TNC||
+PULDNDP027|- Απευθείας Επιλογή||
+PULDNDP043|- Επιλογή Μέσω Digi||
+PULDNDP034|Επιλογή Δικτύου||
+PULDNDP019|Συμπεριέλαβε Παλιά Δεδομένα||
+PULDNDP044|Επιλογή Σταθμών||
+PULDNDP028|- Επιλογή Σταθερού Σταθμών||
+PULDNDP029|- Επιλογή Κινητών Σταθμών||
+PULDNDP030|- Επιλογή WX Σταθμών||
+PULDNDP053|  - Επιλογή CWOP WX Σταθμών||
+PULDNDP045|Επιλογή Αντικειμένων/Θεμάτων||
+PULDNDP026|- Επιλογή WX Αντικειμένων/Θεμάτων||
+PULDNDP039|- Επιλογή Πίεση Νερού Αντικειμένων/Θεμάτων||
+PULDNDP057|- Επιλογή Εναέριων Αντικειμένων/Θεμάτων||
+PULDNDP058|- Επιλογή Πλεούμενων Αντικειμένων/Θεμάτων||
+PULDNDP031|- Επιλογή ’λλων Αντικειμένων/Θεμάτων||
+PULDNDP033|Φιλτράρισμα Απεικόνισης||
+PULDNDP010|Απεικόνιση Κλήσης||
+PULDNDP012|Απεικόνιση Συμβόλου||
+PULDNDP011|- Περιστροφή Συμβόλου||
+PULDNDP007|Απεικόνιση Διαδρομής||
+PULDNDP003|Απεικόνιση Πορείας||
+PULDNDP004|Απεικόνιση Ταχύτητας|S|
+PULDNDP017|- Απεικόνισης Χαμηλής Ταχύτητας||
+PULDNDP002|Απεικόνιση Υψομέτρου||
+PULDNDP009|Απεικόνιση Πληροφοριών Καιρού||
+PULDNDP046|- Απεικόνιση Κειμένου Καιρού||
+PULDNDP018|-- Μόνο Θερμοκρασία||
+PULDNDP047|- Κατεύθυνση Ανέμου||
+PULDNDP054|Απεικόνιση Κύκλου Aloha||
+PULDNDP013|Απεικόνιση Αποκλισης Θέσης||
+PULDNDP008|Απεικόνιση Ισχύος||
+PULDNDP021|- Χρήση Προεπιλεγμένης Ισχύος||
+PULDNDP020|- Απεικόνιση Κινητής Ισχύος||
+PULDNDP023|Απεικόνιση DF Παραμέτρων||
+PULDNDP123|Απεικόνιση DF Φάσματος||
+PULDNDP223|Απεικόνιση DF Bearing||
+PULDNDP035|Ενεργοποίηση Dead-Reckoning||
+PULDNDP036|- Απεικόνιση Arc||
+PULDNDP037|- Απεικόνιση Πορείας||
+PULDNDP038|- Απεικόνιση Συμβόλου||
+PULDNDP005|Απεικόνιση Dist/Bearing||
+PULDNDP024|Απεικόνιση Χρονοσήμανσης Τελευταιας Αναφοράς||
+PULDNDP015|Καθαρισμός Συνόλου Σταθμών!!!|A|
+PULDNDP016|Καθαρισμός Συνόλου Διαδρομών!!!|C|
+PULDNDP025|Καθαρισμός Αντικειμένου/Ιστορικού||
+PULDNDP048|Επαναφόρτωση Αντικειμένου/Ιστορικού||
+PULDNDP049|Καθαρισμός Συνόλου Τακτικών Κλήσεων||
+PULDNDP050|Καθαρισμός Ιστορικού Τακτικών Κλήσεων||
+PULDNDP051|Επιλογή Τακτικών Κλησεων Μόνο||
+PULDNDP052|- Ετικετες Σημείων Διαδρομής||
+PULDNDP055|Εξαγωγή Όλων|E|
+PULDNDP056|Εξαγωγή KML Αρχείου||
+#
+# Units
+PULDNUT001|Ενεργοποίση Αγγλικών Μονάδων|E|
+PULDNUT002|Μετρική|M|
+#
+# Menu "Messages"
+PULDNMG001|Μήνυμα Προς|S|
+PULDNMG002|’νοιγμα Ομαδικών Μηνυμάτων|O|
+PULDNMG003|Καθαρισμός Συνόλου Εξερχόμενων Μηνυμάτων|C|
+PULDQUS001|Σήμα Προς Σύνολο Σταθμών|G|
+PULDQUS002|Σήμα προς IGate Σταθμούς|I|
+PULDQUS003|Σήμα προς WX Σταθμούς|W|
+PULDNMG004|Τροποποίηση Αυτόματης Απάντησης|A|
+PULDNMG005|Ενεργοποίηση Αυτόματης Απάντησης||
+PULDNMG006|Δορυφορική Ack Mode|M|
+PULDNMG007|Εμφάνιση Εκκρεμούντων Μηνυμάτων|P|
+#
+# Menu "Interfaces"
+PULDNTNT04|Διαχείριση Διεπαφής|C|
+PULDNTNT03|Απενεροποίηση Εκπομπής:ΟΛΑ||
+PULDNTNT05|Απενεροποίηση Εκπομπής: Θεσης Μου||
+PULDNTNT06|Απενεροποίηση Εκπομπής: Αντικειμένων||
+PULDNTNT11|Ενεργοποίηση Server Ports|P|
+PULDNTNT01|Εκπομπή Τωρα!|T|
+PULDNTNT07|Συλλογή Ίχνους GPS|F|
+PULDNTNT08|Συλλογή Διαδρομών GPS|R|
+PULDNTNT09|Συλλογή Ενδιαμέσων Σταθμών GPS|W|
+PULDNTNT10|Συλλογή Ενδιαμέσων Σταθμών Garmin RINO|G|
+#
+# Menu "Help"
+PULDNHEL01|Σχετικά|A|
+PULDNHEL02|Ευρετήριο Βοήθειας|I|
+PULDNHEL03|ΕΝΕΡΓΟΠΟΙΗΣΗ ΕΚΤΑΚΤΗΣ ΑΝΑΓΚΗΣ|E|
+PULDNHEL04|!!! ΕΚΤΑΚΤΗ ΑΝΑΓΚΗ !!!||
+PULDNHEL05|Σχετικά Xastir||
+#
+#
+# Mouse Menu Popup
+POPUPMA001|Επιλογές||
+POPUPMA00c|Κέντρο|C|
+POPUPMA015|Πληροφορίες Σταθμού|S|
+POPUPMA002|Μέσα|I|
+POPUPMA003|Έξω|O|
+POPUPMA004|Επίπεδο Ζουμ|L|
+POPUPMA005|Επίπεδο 1|1|
+POPUPMA006|Επίπεδο 16|6|
+POPUPMA007|Επίπεδο 64|4|
+POPUPMA008|Επίπεδο 256|2|
+POPUPMA009|Επίπεδο 1024|0|
+POPUPMA010|Επίπεδο 8192|8|
+POPUPMA017|Κόσμος|E|
+POPUPMA016|Τελευταια Θεση/Ζουμ Χαρτη|P|
+POPUPMA018|Αντικείμενο->Δημιουργία|b|
+POPUPMA019|Αντικείμενο->Τροποποίηση|M|
+POPUPMA025|Μετακίνηση Σταθμού Εδώ|H|
+POPUPMA011|Δορ.Πιάτο Πάνω|u|
+POPUPMA012|Δορ.Πιάτο Κάτω|d|
+POPUPMA013|Δορ.Πιάτο Αριστερά|l|
+POPUPMA014|Δορ.Πιάτο Δεξιά|r|
+POPUPMA020|Μέτρηση||
+POPUPMA021|Μετακίνηση||
+POPUPMA022|Εντοπισμός Μου||
+POPUPMA023|Τροποποιητές Βρέθηκαν!||
+POPUPMA024|Παρακληση απενεργοποίησης CapsLock/NumLock/ScrollLock/άλλους τροποποιητές||
+POPUPMA026|Κεντράρισμα & Ζουμ||
+POPUPMA027|  Γεωγραφικό Πλάτος||
+POPUPMA028| Γεωγραφικό Μήκος||
+POPUPMA029|Σχεδίαση CAD Αντικειμένων||
+POPUPMA030|Σχεδίαση||
+POPUPMA031|Κλείσιμο Polygon||
+POPUPMA032|Διαγραφή CAD Polygons||
+POPUPMA033|**ΔΕΝ ΧΡΗΣΙΜΟΠΟΙΕΙΤΑΙ**||
+POPUPMA034|Προσαρμοσμένο Επίπεδο Ζουμ||
+POPUPMA035|10% Ζουμ-out||
+POPUPMA036|10% Ζουμ-in||
+POPUPMA037|Περιοχή||
+POPUPMA038|τετράγωνο||
+POPUPMA039|τετραγωνικά πόδια||
+POPUPMA040|τετραγωνικά μέτρα||
+POPUPMA041|Bearing||
+POPUPMA042|μοίρες||
+POPUPMA043|Τροποποίηση Αποκλισης Θέσης||
+POPUPMA044|Η απόκλιση θέσης έχει ενεγοποιηθει, η νέα θέση μπορεί να εμφανίζεται κινούμενη.||
+POPUPMA045|Προκαθορισμένα Αντικείμενα||
+POPUPMA046|CAD Polygons||
+POPUPMA047|Ενεργοποίηση CAD αντικειμένων||
+POPUPMA048|Ενεργοποίηση CAD ετικετών||
+POPUPMA049|Ενεργοποίηση CAD σχολίων||
+POPUPMA050|Ενεργοποίηση CAD πιθανοτήτων||
+POPUPMA051|Ενεργοποίηση CAD μεγέθους περιοχής||
+POPUPMA052|τετράγωνα||
+POPUPMA053|πόδια||
+POPUPMA054|μέτρα||
+POPUPMA055|μίλια|
+#
+#
+# Status line labels
+BBARZM0001|Ζουμ %s||
+BBARZM0002|Ζουμ %s Tr||
+BBARSTH001|%d/%d Σταθμού||
+BBARSTA000|%-9s Νέο Αντικείμενο!||
+BBARSTA001|%-9s Νέος Σταθμός!||
+BBARSTA002|%-9s||# νέα δεδομένα (εμφάνιση μόνο της κλήσης)
+BBARSTA003|Φόρτωμα Χαρτών...||
+BBARSTA004|Οι χάρτες φορτώθηκαν||
+BBARSTA005|Πλέγμα Γεωγ.Πλ/Γεωγ.Μηκ On|O|
+BBARSTA006|Πλέγμα Γεωγ.Πλ/Γεωγ.Μηκ Off|f|
+BBARSTA007|Η χρήση Αυτόματων Χαρτών, είναι ON||
+BBARSTA008|Η χρήση Αυτόματων Χαρτών, είναι OFF||
+BBARSTA009|Η χρήση Επιπέδων Χαρτών, είναι ON||
+BBARSTA010|Η χρήση Επιπέδων Χαρτών, είναι OFF||
+BBARSTA011|Η Αυτόματη Απάντηση είναι OFF!||
+BBARSTA012|Ολοκλήρωση Αρχείου..||
+BBARSTA013|’νοιγμα GPS Port||
+BBARSTA014|Κλεισιμο GPS Port||
+BBARSTA015|Βρέθηκε GPS RMC String||
+BBARSTA016|Βρέθηκε GPS GGA String||
+BBARSTA017|Αποσύνδεση από το δικτυο||
+BBARSTA018|Λήξη χρόνου δικτύου!||
+BBARSTA019|Αναζήτηση host %s||
+BBARSTA020|Σύνδεση με τον %s||
+BBARSTA021|Αποτυχία Δικτύου!||
+BBARSTA022|Αποτυχία σύνδεσης σε socket!||
+BBARSTA023|Δεν Βρεθηκε IP γαι τον Host!||
+BBARSTA024|Δεν ορίστηκε Host||
+BBARSTA025|Ο Host βρέθηκε, σύνδεση %d||
+BBARSTA026|Αναμονή για GPS δεδομένα μέσω HSP..||
+BBARSTA027|Καθαρισμός HSP λήψη TNC δεδομένων..||
+BBARSTA028|Φόρτωση %s||
+BBARSTA029|’νοιγμα WX Port||
+BBARSTA030|Κλεισιμο WX Port||
+BBARSTA031|Αναζήτηση hostname %d||
+BBARSTA032|Αποκωδικοποίηση WX Δεδομένων||
+BBARSTA033|Echo από digipeater||
+BBARSTA034|Φόρτωση Χαρτών Καιρικών Ειδοποιήσεων||
+BBARSTA035|Αναμονή για GPS δεδομένα μέσω AUX..||
+BBARSTA036|Καθαρισμός AUX Λήψη TNC δεδομένων..||
+BBARSTA037|Ολοκλήρωση GPS Δεδομένων||
+BBARSTA038|Αλλαγή Θέσης του Σταθμού μου||
+BBARSTA039|Ευρετήριο %s||
+BBARSTA040|Ερασιτεχνικός APRS(tm) Σταθμός %s||
+BBARSTA041|Αναμονή για GPS δεδομένα..||
+BBARSTA042|Μετάδοση αντικειμένων||
+BBARSTA043|Καταγραφή log||
+BBARSTA044|ALOHA απόσταση %d%s||
+BBARSTA045|Φόρτωμα συμβόλων...||
+BBARSTA046|Επαναφόρτωση συμβόλων...||
+BBARSTA047|Αρχικοποίηση του σταθμού μου...||
+BBARSTA048|Εκκίνηση διεπαφών...||
+BBARSTA049|Δίαβασμα τίτλων...||
+BBARSTA050|Κατέβασμα τίτλων...||
+BBARSTA051|Κατεβασμα του %li τίτλου από  %li||
+#
+#
+# PopUp "View - Incoming Packet Data"
+WPUPDPD001|Εμφάνιση Πακετου Δεδομένων||
+WPUPDPD002|TNC Δεδομένα Μονο|T|
+WPUPDPD003|Net Δεδομένα Μονο|N|
+WPUPDPD004|TNC & Δικτυακά Δεδομένα|a|
+WPUPDPD005|TNC||
+WPUPDPD006|NET||
+WPUPDPD007|Δυνατότητες Σταθμού||
+WPUPDPD008|Μόνο τα δικά μου||
+#
+# PopUp "View - Find Station"
+WPUPLSP001|Εντοπισμός Σταθμού||
+WPUPLSP002|Εντοπισμός Σήματος Κλήσης||
+WPUPLSP003|Ταιριασμα Αγνοηση Κεφαλαια-Μικρα|C|
+WPUPLSP004|Ακριβές Ταίριασμα|E|
+WPUPLSP005|Εντοπισμός Τώρα!|N|
+WPUPLSP006|Εκτακτος Εντοπισμός!||
+WPUPLSP007|FCC/RAC Αναζήτηση||
+#
+# PopUp "Configure - Defaults"
+WPUPCFD001|Ρύθμιση Προκαθορισμένων||
+WPUPCFD002|Μετά από πόσο χρόνο ένας σταθμός θεωρείται παλιός;||
+WPUPCFD003|15 λεπτά|1|
+WPUPCFD004|30 λεπτά|3|
+WPUPCFD005|45 λεπτά|4|
+WPUPCFD006|1 ώρα|H|
+WPUPCFD007|90 λεπτά|9|
+WPUPCFD008|2 ώρες|2|
+WPUPCFD009|Μετά από πόσο χρόνο ένας σταθμός δε θα εμφανίζεται;||
+WPUPCFD010|6 ώρες|6|
+WPUPCFD011|12 ώρες|o|
+WPUPCFD012|1 μέρα|D|
+WPUPCFD013|2 μέρες|y|
+WPUPCFD014|1 εβδομάδα|W|
+WPUPCFD015|Επιλογές εκπομπής Σταθμού||
+WPUPCFD016|Σταθερός Σταθμός|F|
+WPUPCFD017|Κινητός Σταθμός w/local ώρα|l|
+WPUPCFD018|Κινητός Σταθμός w/Zulu ημερομηνά-ώρα|Z|
+WPUPCFD019|Κινητός Σταθμός w/Zulu ώρα-δευτερόλεπτα|u|
+WPUPCFD021|Θέση Σταθμού w/καιρός|S|
+WPUPCFD022|Θέση Σταθμού, Zulu ημερομηνία-ώρα, και καιρός|t|
+WPUPCFD023|Εκπομπή Raw WX Δεδομένων?|R|
+WPUPCFD024|Εκπομπη συμπιεσμένων αντικειμένων/θεμάτων?|C|
+WPUPCFD025|Ενεργοποίηση Εναλλακτικού Δικτύου;|A|
+WPUPCFD026|Ανα ποιο διάστημα να γίνεται η εκπομπή αναφοράς θέσης;||
+WPUPCFD027|Εμφάνιση νέων ανακοινώσεων||
+WPUPCFD028|Προειδοποιητικά Κλειδιά if Modifier||
+WPUPCFD029|Προβολή zero-distance bulletins||
+WPUPCFD030|Απενεργοποίηση Posit Dupe-Checks||
+WPUPCFD031|Φόρτωση προκαθορισμένων αντικειμένων από αρχείο||
+WPUPCFD032|Οι διαδρομές μου με ένα χρώμα||
+WPUPCFD033|ALTNET:||
+#
+# PopUp "Configure - Timing"
+WPUPCFTM01|Διαχείριση Χρονισμού||
+WPUPCFTM02|Posit TX Interval (λεπτά)||
+WPUPCFTM03|Station Ghosting Time (λεπτά)||
+WPUPCFTM04|Object/Item Max TX Interval (λεπτά)||
+WPUPCFTM05|Station Clear Time (ώρες)||
+WPUPCFTM06|GPS Check Interval (δευτ)||
+WPUPCFTM07|Station Delete Time (μέρες)||
+WPUPCFTM08|Dead-Reckoning Timeout (λεπτά)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM10|New Track Time (λεπτά)||
+WPUPCFTM11|New Track Interval (μοίρες)||
+WPUPCFTM12|RINO -> Objects Interval (min), 0 = Απενεργοποιημένο||
+WPUPCFTM13|Snapshot Interval (λεπτά)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (λεπτά), 0 = Απενεργοποιημένο||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Διαχείριση Συστήματος Συντεταγμένων||
+WPUPCFC002|Επιλογή Συστήματος Συντεταγμένων||
+WPUPCFC003|dd.ddddd|d|
+WPUPCFC004|dd mm.mmm|m|
+WPUPCFC005|dd mm ss.s|s|
+WPUPCFC006|UTM|U|
+WPUPCFC007|USNG/MGRS2||
+WPUPCFC008|UTM w/special zones||
+#
+# PopUp "Configure GPS"
+WPUPCFG001|Ρύθμιση GPS||
+WPUPCFG003|Stand alone GPS port||
+WPUPCFG002|Να γίνει χρήση GPS θέσης;||
+WPUPCFG004|GPS Επιλογές||
+WPUPCFG005|Stand-alone GPS||
+WPUPCFG006|TNC Συνδεδεμένο GPS (HSP Cable)||
+WPUPCFG007|TNC Συνδεδεμένο GPS using CTL-E||
+WPUPCFG008|GPS Χρόνος (Δείγμα καθε)||
+WPUPCFG009|5 δευτ||
+WPUPCFG010|15 δευτ||
+WPUPCFG011|30 δευτ||
+WPUPCFG012|1 λεπτά||
+WPUPCFG013|2 λεπτά||
+WPUPCFG014|5 λεπτά||
+WPUPCFG015|10 λεπτά||
+WPUPCFG016|Δικτυακά Συνδεδεμένο GPS||
+WPUPCFG017|GPSD Host||
+WPUPCFG018|GPSD Port||
+WPUPCFG019|Network GPS μέσω GPSD||
+WPUPCFG020|Να γίνει επανασύνδεση σε περίπτωση Αποτυχίας;||
+WPUPCFG021|Διασυδενδεμένο σε δίκτυο WX||
+WPUPCFG022|WX Host||
+WPUPCFG023|WX Port||
+#
+# Configure TNC (baud/style are also for WX)
+WPUPCFT001|Ρύθμιση TNC||
+WPUPCFT002|Να γίνει χρήση TNC?||
+WPUPCFT003|TNC Port||
+WPUPCFT004|Port Settings||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT011|UnProto Paths||
+WPUPCFT012|Path 1: %s μέσω ||
+WPUPCFT013|Path 2: %s μέσω ||
+WPUPCFT014|Path 3: %s μέσω ||
+WPUPCFT015|Port Style||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT023|Ρύθμιση TNC w/HSP GPS||
+WPUPCFT024|Τύπος Δεδομένων||
+WPUPCFT025|Αυτόματος Εντοπισμός||
+WPUPCFT026|Binary Type||
+WPUPCFT027|ASCII Type||
+WPUPCFT028|Ρύθμιση TNC w/AUX GPS||
+WPUPCFT029|Ρύθμιση TNC w/INVALID ENUM||
+WPUPCFT030|Ρύθμιση KISS TNC||
+WPUPCFT031|TNC Αρχεια Ρύθμισης||
+WPUPCFT032|TNC Ορισμός Αρχείου|| 
+WPUPCFT033|TNC Κλείσιμο Αρχείου||
+WPUPCFT034|KISS Παράμετροι||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
+WPUPCFT040|Ρύθμιση Multi-Port KISS TNC||
+WPUPCFT041|Radio Port||
+WPUPCFT042|Παράμετροι Διεπαφής: Dubious UNPROTO Path!||
+WPUPCFT043|Παρακαλώ ορίστε ένα μικρότερο μονοπάτι όπως WIDE2-2 or WIDE1-1,WIDE2-2||
+WPUPCFT044|Παράμετροι Διεπαφής: Dubious IGATE Path!||
+WPUPCFT045|Εκπομπή w/Dubious UNPROTO Path!||
+WPUPCFT046|Εκπομπή  w/Dubious IGATE Path!||
+WPUPCFT047|Αρχική KISS-mode στην έναρξη||
+#
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|Ρύθμιση WX Port||
+WPUPCFWX02|Συσκευή Σταθμού Καιρού||
+WPUPCFWX03|Rain Gauge Correction (Global Setting)||
+WPUPCFWX04|.1 inch/2.5mm||
+WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX06|.1mm||
+WPUPCFWX07|Καμία Διόρθωση||
+#
+# PopUp "Configure - Station"
+WPUPCFS001|Ρύθμιση Σταθμού||
+WPUPCFS002|Callsign||
+WPUPCFS003|LAT||
+WPUPCFS004|deg||
+WPUPCFS005|min||
+WPUPCFS006|(N/S)||
+WPUPCFS007|LONG||
+WPUPCFS008|(E/W)||
+WPUPCFS009|Σύμβολο Σταθμού||
+WPUPCFS010|Ομαδοποίηση/επικάλυψη||
+WPUPCFS011|Σύμβολο||
+WPUPCFS028|Επιλογή||
+WPUPCFS012|Power - Height (HAAT) - Gain - Directivity||
+WPUPCFS013|Disable PHG||
+WPUPCFS014|Antenna Height||
+WPUPCFS015|Antenna Gain||
+WPUPCFS016|Omni||
+WPUPCFS017|Comment:||
+WPUPCFS018|Position Ambiguity||
+WPUPCFS019|None||
+WPUPCFS020|.11 miles||
+WPUPCFS021|1.15 miles||
+WPUPCFS022|11.51 miles||
+WPUPCFS023|69.09 miles||
+WPUPCFS024|.18 kilometres||
+WPUPCFS025|1.85 kilometres||
+WPUPCFS026|18.53 kilometres||
+WPUPCFS027|111.19 kilometres||
+WPUPCFS029|Send compressed posits|C|
+#
+# PopUp "Object/Item"
+POPUPOB001|Αντικείμενο/Θέμα||
+POPUPOB002|Όνομα:||
+POPUPOB003|Δημιουργία νέου αντικειμένου||
+POPUPOB004|Διαγραφή αντικειμένου||
+POPUPOB005|Τροποποίηση αντικειμένου||
+POPUPOB006|Δημιουργία νέου Θέματος||
+POPUPOB007|Περιοχή Αντικειμένου||
+POPUPOB008|Περιοχή Αντικειμένου||
+POPUPOB009|Ανοιχτόχρωμος||
+POPUPOB010|Χρωματικό Γέμισμα||
+POPUPOB011|Κύκλος||
+POPUPOB012|Γραμμή-Δεξια '/'||
+POPUPOB013|Γραμμή-Αριστερά '\'||
+POPUPOB014|Τρίγωνο||
+POPUPOB015|Παραλληλογραμμο||
+POPUPOB016|Μαύρο||
+POPUPOB017|Μπλέ||
+POPUPOB018|Πράσινο||
+POPUPOB019|Γαλάζιο||
+POPUPOB020|Κόκκινο||
+POPUPOB021|Βιολετί||
+POPUPOB022|Κίτρινο||
+POPUPOB023|Γκρι||
+POPUPOB024|Offset Up:||
+POPUPOB025|Offset Left (Except '/'):||
+POPUPOB026|Corridor:||
+POPUPOB027|Γενικές Επιλογές||
+POPUPOB028|Τοποθεσία||
+POPUPOB029|Signpost||
+POPUPOB030|Signpost Text||
+POPUPOB031|Signpost Object||
+POPUPOB032|Ενεργοποίηση Συμπίεσης||
+POPUPOB033|Διαγραφή Θέματος||
+POPUPOB034|Τροποποίηση Θέματος||
+POPUPOB035|Υψόμετρο(ft):||
+POPUPOB036|Ταχύτητα (knots):||
+POPUPOB037|Πορεία:||
+POPUPOB038|DF Object||
+POPUPOB039|Signal - Height(HAAT) - Gain - Directivity||
+POPUPOB040|Beam Width - Bearing||
+POPUPOB041|Omni Antenna||
+POPUPOB042|Beam Antenna||
+POPUPOB043|Useless||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
+POPUPOB046|DF Bearing:||
+POPUPOB047|Κύκλοι Πιθανοτήτων||
+POPUPOB048|Map View Object||
+POPUPOB049|Min (mi):||
+POPUPOB050|Max (mi):||
+#
+# PopUp "Configure Internet"
+WPUPCFI001|Ρύθμίσεις Ιντερνετ||
+WPUPCFI002|Host ||
+WPUPCFI003|Port ||
+WPUPCFI004|(Secondary hosts)||
+WPUPCFI005|Host1||
+WPUPCFI006|Port1||
+WPUPCFI007|Host2||
+WPUPCFI008|Port2||
+WPUPCFI009|Pass-code||
+WPUPCFI010|(Αφήστε κενό αν δεν υπάρχει)||
+WPUPCFI011|Επανασύνδεση σε αποτυχία δικτύου;||
+WPUPCFI012|Εκτέλεση σαν I-Gate?||
+WPUPCFI013|Μετάδοση μέσω TNC σε περίπτωση I-Gate?||
+WPUPCFI014|Καταγραφή I-Gate συναλλαγές;||
+WPUPCFI015|Φιλτράριμα Παραμέτρων||
+#
+# PopUp "Configure Database"
+WPUPCFID01|Ρυθμίσεις Βάσης Δεδομένων (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Port ||
+WPUPCFID04|(Secondary hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Port1||
+WPUPCFID07|Host2||
+WPUPCFID08|Port2||
+WPUPCFID09|Pass-code||
+WPUPCFID10|(Αφήστε κενό αν δεν υπάρχει)||
+WPUPCFID11|Επανασύνδεση σε αποτυχία δικτύου;||
+WPUPCFID12|Εκτέλεση σαν I-Gate?||
+WPUPCFID13|Μετάδοση μέσω TNC σε περίπτωση I-Gate?||
+WPUPCFID14|Καταγραφή I-Gate συναλλαγές;||
+WPUPCFID15|Φιλτράριμα Παραμέτρων||
+#
+# PopUp "Configure AGWPE"
+WPUPCFIA01|Ρυθμίσεις AGWPE||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Αφήστε κενό αν δεν υπάρχει)||
+WPUPCFIA11|Επανασύνδεση σε αποτυχία δικτύου;||
+WPUPCFIA12|Εκτέλεση σαν I-Gate?||
+WPUPCFIA13|Μετάδοση μέσω TNC σε περίπτωση I-Gate?||
+WPUPCFIA14|Καταγραφή I-Gate συναλλαγές;||
+WPUPCFIA15|Εκπομπή RadioPort||
+#
+# PopUp "Configure Audio Alarms"
+WPUPCFA001|Ρύθμιση Ακουστικών Ειδοποιήσεων||
+WPUPCFA002|Audio Play Εντολή||
+WPUPCFA003|Ενεργοποίηση Ειδοποιήσεων||
+WPUPCFA004|Ακουστικό Αρχείο που χρησιμοποιείται||
+WPUPCFA005|Νεος Σταθμός||
+WPUPCFA006|Νέο Μήνυμα||
+WPUPCFA007|Εγγυτητα||
+WPUPCFA008|Band Opening||
+WPUPCFA009|Ελάχιστη Απόσταση||
+WPUPCFA010|Μέγιστη Απόσταση||
+WPUPCFA011|Ειδοποιήσεις Καιρού||
+#
+# PopUp "Configure Speech"
+WPUPCFSP01|Ρυθμίσεις Ομιλίας||
+WPUPCFSP02|Ενεργοποίηση Εξόδου Ομιλίας:||
+WPUPCFSP03|Νεος Σταθμός||
+WPUPCFSP04|Nέα Ειδοποίηση Μηνύματος||
+WPUPCFSP05|Νέο Περιεχόμενο Μηνύματος||
+WPUPCFSP06|Ειδοποίηση Εγγύτητας||
+WPUPCFSP07|Band Opening||
+WPUPCFSP08|Νέα Ειδοποίηση Καιρού||
+WPUPCFSP09|Ειδοποίηση Εγγύτητας Εντοπισμένου Σταθμού||
+#
+# PopUp "Track Station"
+WPUPTSP001|Εντοπισμός Σταθμού|| 
+WPUPTSP002|Εντοπισμός Σήματος Κλήσης|| 
+WPUPTSP003|Ταίριασμα Αγνόηση Κεφαλαία-Μικρά|| 
+WPUPTSP004|Ακριβές Ταίριασμα|| 
+WPUPTSP005|Εντοπισμός Τώρα!|| 
+WPUPTSP006|Καθαρισμός Εντοπισμού|| 
+WPUPTSP007|Κατέβασμα Διαδρομής||
+WPUPTSP008|Callsign||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
+#
+# PopUp "Messages..."
+WPUPMSB001|Αποστολή Μηνύματος %d||
+WPUPMSB002|Αποστολή Ομαδικού Μηνύματος %d||
+WPUPMSB003|Κληση Σταθμού:||
+WPUPMSB004|Κλήση Ομάδας:||
+WPUPMSB005|Νέα/Ανανέωση Κλήση||
+WPUPMSB006|Νέα Ομάδα||
+WPUPMSB007|Καθαριμός Ιστορικού Μηνυμάτων||
+WPUPMSB008|Μήνυμα:||
+WPUPMSB009|Αποστολή Τώρα!||
+WPUPMSB010|Path:||
+WPUPMSB011|Ακύρωση Εκκρεμούντων Μνμ||
+WPUPMSB012|Kick Timer||
+WPUPMSB013|seq||
+WPUPMSB014|type||
+WPUPMSB015|Broadcast||
+WPUPMSB016|*ΛΗΞΗ ΧΡΟΝΟΥ ΑΝΑΜΟΝΗΣ*||
+WPUPMSB017|*ΑΚΥΡΩΘΗΚΕ*||
+WPUPMSB018|*ΑΠΟΡΡΙΦΘΗΚΕ*||
+WPUPMSB019|Αλλαγή Path||
+WPUPMSB020|Χρήση Προκαθορισμένου Path(s)||
+WPUPMSB021|Απευθείας  (No path)||
+WPUPMSB022|Αντεστραμένο Path (Hint):||
+#
+# PopUp "Auto Reply"
+WPUPARM001|Αλλαγή Αυτόματης Απάντησης||
+WPUPARM002|Απάντηση:||
+#
+# PopUp "Help Index"
+WPUPHPI001|Ευρετήριο Βοήθειας||
+WPUPHPI002|Προβολή||
+#
+# PopUp "Station Info"
+WPUPSTI000|Αντικείμενο Από: %s||
+WPUPSTI001|Πληροφορία Σταθμού||
+WPUPSTI002|Αποστολή Μηνύματος||
+WPUPSTI003|Αναζήτηση FCC Βάσης||
+WPUPSTI004|Αναζήτηση RAC Βάσης||
+WPUPSTI005|Λήφθηκαν Πακέτα: %d     Τελευταίο: ||
+WPUPSTI006|Λήφθηκε από TNC στη συσκευή %d, ||
+WPUPSTI007|Ληφθηκε ||
+WPUPSTI008|τελευταία από τοπικό||
+WPUPSTI009|τελευταία μέσω TNC στη συσκευή %d||
+WPUPSTI010|τελευταία μέσω Ιντερνετ στη συσκευή %d||
+WPUPSTI011|τελευταία μέσω Αρχείου||
+WPUPSTI012|τελευταία μέσω ’γνωστο||
+WPUPSTI013|, και έχει μετακινηθεί||
+WPUPSTI014|Current Power Gain:||
+WPUPSTI016|Υψόμετρο: %.0f%s ||
+WPUPSTI017|Πορεία: %s° ||
+WPUPSTI018|Ταχύτητα: %.1f km/h||
+WPUPSTI019|Ταχύτητα: %.1f mph||
+WPUPSTI020|%0.1f miles||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|απόσταση από το Σταθμό μου: %s  Bearing from my station: %s||
+WPUPSTI023|Τελευταία Θέση: ||
+WPUPSTI024|Δεδομένα Καιρού %c:%s||
+WPUPSTI025|Πορεία Ανέμου: %s°    Ταχύτητα: %03d km/h||
+WPUPSTI026|Πορεία Ανέμου: %s°    Ταχύτητα: %s mph||
+WPUPSTI027|   Gust: %03d km/h||
+WPUPSTI028|   Gust: %s mph||
+WPUPSTI029|Θερμοκρασία: %02.1f°C  ||
+WPUPSTI030|Θερμοκρασία: %s°F   ||
+WPUPSTI031|Υγρασία: %s%%   ||
+WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI033|Baro: %s hPa||
+WPUPSTI034|Χιόνι: %0.1f (cm/24h)||
+WPUPSTI035|Χιόνι: %0.0f (inch/24h)||
+WPUPSTI036|Βροχή: ||
+WPUPSTI037|%0.2f (mm/h)    ||
+WPUPSTI038|%0.2f (inch/h)  ||
+WPUPSTI039|%0.2f (mm/day)     ||
+WPUPSTI040|%0.2f (inch/day)  ||
+WPUPSTI041|%0.2f (mm/since midnight)||
+WPUPSTI042|%0.2f (inch/since midnight)||
+WPUPSTI043|Data path: %s||
+WPUPSTI044|Comment %02d/%02d %02d:%02d : %s||
+WPUPSTI045|Clear Track||
+WPUPSTI046|Total Rain: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (inch)||
+WPUPSTI049|Trace Query||
+WPUPSTI050|Un-Acked Messages Query||
+WPUPSTI051|Direct Stations Query||
+WPUPSTI052|Station Version Query||
+WPUPSTI053|Modify Object/Item||
+WPUPSTI054|Store Track||
+WPUPSTI055|Echoed from:||
+WPUPSTI056|Ενεργοποίηση Αυτόματων Ενημερώσεων||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|DF Bearing: %s||
+WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
+WPUPSTI060|Fuel Temp: %02.1f°C  ||
+WPUPSTI061|Fuel Temp: %s°F   ||
+WPUPSTI062|Fuel Moisture: %s%%   ||
+WPUPSTI063|Baro: %0.2f in Hg||
+WPUPSTI064|Fetch NWS Alert||
+WPUPSTI065|Tactical Call: %s||
+WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
+WPUPSTI068|none||
+WPUPSTI069|default||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|range||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Range||
+WPUPSTI076|Δεν Εντοπίστηκε Σήμα||
+WPUPSTI077|Aνισχνεύσιμo Σήμα (Πιθανόν)||
+WPUPSTI078|Aνισχνεύσιμo Σήμα Αλλα χώρις Δυνατότητα αντιγραφής)||
+WPUPSTI079|Αδύναμο Σήμα, οριακά αναγνώσιμο||
+WPUPSTI080|Σήμα Θορυβώδες με δυνατότητα αντιγραφής||
+WPUPSTI081|Μερικός θόρυβος, με δυνατότητα αντιγραφής του σήματος||
+WPUPSTI082|Καλό σήμα w/Aνισχνεύσιμoς θόρυβος ||
+WPUPSTI083|Σχετικά καθαρό σήμα||
+WPUPSTI084|Καθαρό Σήμα||
+WPUPSTI085|Δυνατό & καθαρό signal||
+WPUPSTI086|BAD BEARING||
+WPUPSTI087|BAD NRQ||
+WPUPSTI088|DF Beamwidth||
+WPUPSTI089|DF Length||
+WPUPSTI090|Not Valid||
+WPUPSTI091|Change Trail Color||
+WPUPSTI092|Clear DF Bearing||
+#
+#
+# PopUp "ALOHA Statistics"
+WPUPALO001|ALOHA radius: %d %s||
+WPUPALO002|Stations inside ALOHA circle: %d||
+WPUPALO003| Digis:               %d||
+WPUPALO004| Mobiles (in motion): %d||
+WPUPALO005| Mobiles (other):     %d||
+WPUPALO006| WX stations:         %d||
+WPUPALO007| Home stations:       %d||
+WPUPALO008|Τελευταία υπολογίστηκε %d %s %d %s πριν.||
+WPUPALO666|ALOHA radius δεν έχει υπολογιστεί ακόμα||
+#
+#
+# FCC-RAC Call Look up
+STIFCC0001|FCC Αναζήτηση στη Βαση||
+STIFCC0002|RAC Αναζήτηση στη Βαση||
+STIFCC0003|Όνομα:||
+STIFCC0004|Οδός:||
+STIFCC0005|Πόλη:||
+STIFCC0006|Πολιτεία:||
+STIFCC0007|Τ.Κ:||
+STIFCC0008|Βασικά ||
+STIFCC0009|Προχωρημένο ||
+STIFCC0010|5 wpm ||
+STIFCC0011|12 wpm ||
+#
+#
+# FCC-RAC indexing/searching
+STIFCC0100|FCC index old, rebuilding||
+STIFCC0101|Callsign Αναζήτηση||
+STIFCC0102|Callsign Δεν Βρέθηκε!||
+STIFCC0103|RAC index old, rebuilding||
+#
+#
+# Band open message 
+UMBNDO0001|σε απόσταση των||
+#
+#
+# Universal Options
+UNIOP00001|OK||
+UNIOP00002|Ακύρωση||
+UNIOP00003|Κλείσιμο||
+UNIOP00004|miles||
+UNIOP00005|km||
+UNIOP00006|Συσκευή||
+UNIOP00007|Προσθήκη||
+UNIOP00008|Διαγραφή||
+UNIOP00009|Παραμετροι||
+UNIOP00010|Να επιτραπεί η μετάδοση?||
+UNIOP00011|Ενεργοποίηση στην εκκίνηση?||
+UNIOP00012|km/h||
+UNIOP00013|mph||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|inch||
+UNIOP00018|mm/day||
+UNIOP00019|inch/day||
+UNIOP00020|mm/hr||
+UNIOP00021|inch/hr||
+UNIOP00022|mm/mid||
+UNIOP00023|inch/mid||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|in Hg||
+UNIOP00028|mm Hg||
+UNIOP00029|Set System Clock from GPS Data?||
+UNIOP00030|Digipeat?||
+UNIOP00031|m||
+UNIOP00032|Apply||
+UNIOP00033|Reset||
+UNIOP00034|min||
+UNIOP00035|hr||
+UNIOP00036|day||
+UNIOP00037|Send Control-E to get GPS data?||
+UNIOP00038|Προσθήκη Καθυστέρησης||
+#
+# PopUp "Station Chooser"
+STCHO00001|Επιλογέας Σταθμού||
+#
+# DISPLAY WX ALERT 
+WPUPWXA001|Wx Alerts||
+WPUPWXA002|Wx Alert List||
+#
+# PopUp "Configure - Interfaces"
+WPUPCIF001|Εγκατεστημένες Διεπαφές||
+WPUPCIF002|Επιλογή Τύπου Διεπαφής||
+#
+# PopUp "Configure AX.25 TNC"
+WPUPCAX001|Ρύθμιση AX.25 TNC||
+WPUPCAX002|AX.25 όνομα Συσκευής||
+#
+# Interface device names 
+IFDNL00000|None||
+IFDNL00001|Serial TNC||
+IFDNL00002|Serial TNC w/GPS on a HSP cable||
+IFDNL00003|Serial GPS||
+IFDNL00004|Serial WX||
+IFDNL00005|Internet Server||
+IFDNL00006|AX25 TNC||
+IFDNL00007|Networked GPS (via gpsd)||
+IFDNL00008|Networked WX||
+IFDNL00009|Serial TNC w/GPS on AUX port||
+IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Δεν έχει υλοποιηθεί ακόμα)||
+IFDNL00012|Networked AGWPE||
+IFDNL00013|Serial Multi-Port KISS TNC||
+IFDNL00014|SQL Database (Experimental)||
+#
+# Interface device info 
+IFDIN00000|%s %2d %s %s   %s||
+IFDIN00001|%s %2d %s %s:%d   %s||
+IFDIN00002|%s %2d %s device %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
+IFDIN00006| ΚΑΤΩ ||
+IFDIN00007|  ΠΑΝΩ  ||
+IFDIN00008|ΣΦΑΛΜΑ ||
+IFDIN00009|ΑΓΝΩΣΤΟ||
+#
+# PopUp "Interface control"
+IFPUPCT000|Interface Control||
+IFPUPCT001|Εκκινηση||
+IFPUPCT002|Διακοπή||
+IFPUPCT003|Εκκίνηση Όλων||
+IFPUPCT004|Διακοπή Όλων||
+#
+# IGate control
+IGPUPCF000|IGate Options||
+IGPUPCF001|Disable all IGate traffic||
+IGPUPCF002|Allow RF to Inet traffic ONLY||
+IGPUPCF003|Allow RF->Inet and Inet->RF traffic||
+IGPUPCF004|Igate -> RF Path   ||
+#
+# WX Station
+WXPUPSI000|WX Station||
+WXPUPSI001|WX Station Type||
+WXPUPSI002|Current Data||
+WXPUPSI003|Wind Course||
+WXPUPSI004|Wind Speed||
+WXPUPSI005|Wind Gust||
+WXPUPSI006|Temp||
+WXPUPSI007|Total Rain||
+WXPUPSI008|Today's Rain Total||
+WXPUPSI009|Baro||
+WXPUPSI010|Humidity||
+WXPUPSI011|Peet Bros ULTIMETER 2000 Type (Data Logging Mode)||
+WXPUPSI012|Peet Bros ULTIMETER II Type||
+WXPUPSI013|Peet Bros ULTIMETER 2000 Type (Packet Mode)||
+WXPUPSI014|Current HR Rain Tot.||
+WXPUPSI015|Last 24 Rain Total||
+WXPUPSI016|Qualimetrics Q-Net||
+WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Mode)||
+WXPUPSI018|Dew Point||
+WXPUPSI019|High Wind||
+WXPUPSI020|Wind Chill||
+WXPUPSI021|Heat Index||
+WXPUPSI022|3-Hr Baro||
+WXPUPSI023|High Temp.||
+WXPUPSI024|Low Temp.||
+WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
+WXPUPSI027|LaCrosse WX-23xx||
+WXPUPSI028|Davis APRS Data Logger||
+#
+# Station Lists
+LHPUPNI000|Σύνολο Σταθμών||
+LHPUPNI001|Κινητοί Σταθμοί||
+LHPUPNI002|Σταθμοί Καιρού||
+LHPUPNI003|Τοπικοί Σταθμοί (μέσω TNC)||
+LHPUPNI004|Τελευταίοι Σταθμοί||
+LHPUPNI005|Objects & Items||
+LHPUPNI006|Own Objects & Items||
+LHPUPNI010|#||
+LHPUPNI011|Call Sign||
+LHPUPNI012|#Pack||
+LHPUPNI013|Pos Time||
+LHPUPNI014|Path||
+LHPUPNI015|PHG||
+LHPUPNI016|Comments||
+LHPUPNI100|CSE||
+LHPUPNI101|SPD||
+LHPUPNI102|ALT.||
+LHPUPNI103|Lat||
+LHPUPNI104|Long||
+LHPUPNI105|#Pack||
+LHPUPNI106|LSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|CSE||
+LHPUPNI201|SPD||
+LHPUPNI202|GST||
+LHPUPNI203|Temp||
+LHPUPNI204|Hum||
+LHPUPNI205|Baro||
+LHPUPNI206|RN-H||
+LHPUPNI207|RNSM||
+LHPUPNI208|RN24||
+LHPUPNI209|Lat/Lon or UTM||
+#
+# Maps WX Alert styles
+PULDNMAT01|Προβολή χαρτών Ειδοποιήσων πάνω απο κάθε χάρτη||
+PULDNMAT02|Προβολή χαρτών Ειδοποιήσων κάτω απο κάθε χάρτη||
+#
+# Error/popup messages 
+POPEM00001|Σφαλμα Εντοπισμού!||
+POPEM00002|Ο Σταθμός %s δεν βρέθηκε!||
+POPEM00003|Σφαλμα Εντοπισμού!||
+POPEM00004|Σφαλμα Διεπαφής!||
+POPEM00005|Μη Αποδεκτό AX.25 port όνομα %s||
+POPEM00006|Μη Αποδεκτό AX.25 port name %s||
+POPEM00007|Μη Αποδεκτό callsign %s||
+POPEM00008|Μη Αποδεκτό AX.25 destination callsign or digipeater||
+POPEM00009|Αδυναμία να ανοιγματος AX.25 socket, %s||
+POPEM00010|Αδυναμια bind AX.25 socket, %s||
+POPEM00011|Αδυναμία σύνδεσης to AX.25 callsign, %s||
+POPEM00012|AX.25 error on output of UI||
+POPEM00013|AX.25 problem with axports file||
+POPEM00014|AX.25 μη αποδεκτό Port όνομα %s||
+POPEM00015|Σφάλμα κατά το άνοιγμα %d Hard Fail||
+POPEM00016|Σφάλμα κατά το άνοιγμα interface %d Time Out||
+POPEM00017|Δεν υπάρχουν άλλες διεπαφές διαθέσιμες!||
+POPEM00018|Data Query - Single Message Line||
+POPEM00019|Port transmitting is off for port %d||
+POPEM00020|Σφάλμα Βασης!||
+POPEM00021|AX.25 support not compiled into Xastir!||
+POPEM00022|Input Error!||
+POPEM00023|Δεν προσδιορίστηκε όνομα τοποθεσίας!||
+POPEM00024|Το όνομα τοποθεσίας που δόθηκε χρησιμοποιείται!||
+POPEM00025|Δεν Βρέθηκε!||
+POPEM00026|Η παρακολούθηση θα ξεκινήσει όταν εμφανιστεί||
+POPEM00027|Ακατάλληλη πληροφορία. Μερικά πεδία είναι κενά?||
+POPEM00028|Δεν ανοίγει το αρχείο||
+POPEM00029|Βρέθηκε!||
+POPEM00030|Σύμβολο Σταθμού Καιρού||
+POPEM00031|Αλλαγή σε  WX σύμβολο '/_', άλλες επιλογές:  '\_'  '/W'  and  '\W'||
+POPEM00032|Προειδοποίηση: Χρήση Συμβόλου Εθνικής Υπηρεσίας Καιρού!||
+POPEM00033|Δεν υπάρχουν GPS Δεδομένα!||
+POPEM00034|Απενεργοποίηση της θέσης μου TX μέχρι την να βρεθούν έγκυρα GPS δεδομένα!||
+POPEM00035|Προειδοποίηση||
+POPEM00036|Πληροφορία||
+POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00038|Name Conflicts With Existing Object/Item/Station||
+POPEM00039|Μη αποδεκτοί χαρακτήρες βρέθηκαν, αντικατάστασή τους με τελείες||
+POPEM00040|Custom outgoing path was lost||
+POPEM00041|Επεξεργασία άλλου αρχείου. Παρακαλώ, δοκιμάστε ξανά||
+POPEM00042|Το αντικείμενο δεν μου ανήκει. Προσπαθείστε να υιοθετήσετε το αντικείμενο πρώτα.||
+POPEM00043|Not an Object/Item!||
+POPEM00044|Fetch Findu Trail: Failed||
+POPEM00045|Fetch Findu Trail: Complete||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disabling map cache.||
+POPEM00047|Global transmit is DISABLED. Emergency beacons are NOT going out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting every 60 seconds!||
+POPEM00050|Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!||
+POPEM00051|Altnet is enabled (Configure->Defaults dialog)||
+POPEM00052|Callsign is EMPTY!||
+POPEM00053|Message is EMPTY!||
+POPEM00054|We're trying to talk to ourselves!||
+#
+# Jump Location 
+JMLPO00001|Map Display Bookmarks||
+JMLPO00002|Ενεργοποίηση!||
+JMLPO00003|Νέο Όνομα:||
+#
+# Bulletins
+BULMW00001|Bulletins||
+BULMW00002|Limit Range to (0, is no limit)||
+BULMW00003|Change Range||
+#
+# All Message Traffic
+AMTMW00001|All Message Traffic||
+AMTMW00002|Limit Range to (0, is no limit)||
+#
+# Speech Strings
+SPCHSTR001|χιλιομετρα||
+SPCHSTR002|μέτρα||
+SPCHSTR003|μίλια||
+SPCHSTR004|yards||
+SPCHSTR005|%s, η απόσταση είναι %d %s.||
+SPCHSTR006|%s, η απόσταση είναι %.1f %s.||
+SPCHSTR007|%s, η απόσταση είναι %d %s %s %s.||
+SPCHSTR008|%s, η απόσταση είναι %.1f %s %s %s.||
+SPCHSTR009|Νεα Ειδοποίηση Καιρού||
+SPCHSTR010|Νέος Σταθμός||
+SPCHSTR011|Heard, D X, %s, at distance of %.1f %s||
+#
+#
+SPCHDIRN00|βόρεια από||
+SPCHDIRS00|νότια από||
+SPCHDIRE00|ανατολικά απο||
+SPCHDIRW00|δυτικά από||
+SPCHDIRNE0|βορειοανατολικά από||
+SPCHDIRNW0|βορειοδυτικά από||
+SPCHDIRSE0|νοτιοανατολικά από||
+SPCHDIRSW0|νοτιοδυτικά από||
+#
+# Symbol Selection Dialog
+SYMSEL0001|Επιλογή Συμβόλου||
+SYMSEL0002|Πρωταρχικός Πίνακας Συμβόλου||
+SYMSEL0003|Δευτερεύον Πίνακας Συμβόλου||
+#
+# Print Properties Dialog
+PRINT0001|Παράμετροι Εκτύπωσης||
+PRINT0002|Μέγεθος Χαρτιού||
+PRINT0003|Αυτόματη Περιστροφή Εικόνας||
+PRINT0004|Περιστροφή Εικόνας 90° CCW||
+PRINT0005|Αυτοματο Μεγεθος Εικόνας||
+PRINT0006|Κλίμακα:||
+PRINT0007|Προεπιλεγμένο Χρωμα Φόντου Λευκό||
+PRINT0008|Εκτύπωση σε Μαυρο-Ασπρο||
+PRINT0016|Αντιστροφή Χρωμάτων||
+PRINT0009|Postscript Resolution:||
+PRINT0010|Προεπισκόπηση||
+PRINT0011|Εκτύπωση σε Αρχείο||
+PRINT0012|Dumping image to file...||
+PRINT0013|Converting to Postscript...||
+PRINT0014|Finished creating print file||
+PRINT0015|Κατάσταση Εκτύπωσης||
+#
+# Print Dialog
+PRINT1001|Direct to:||
+PRINT1002|Via Previewer:||
+#
+# Locate Feature and Find Address Dialogs
+FEATURE001|Όνομα:||
+FEATURE002|Πολιτεία/Province:||
+FEATURE003|Χώρα:||
+FEATURE004|Map Quad:||
+FEATURE005|Type:||
+FEATURE006|GNIS File:||
+FEATURE007|Δνση:||
+FEATURE008|Πόλη:||
+FEATURE009|Μαρκαρισμα Προορισμού||
+FEATURE010|ΤΚ:||
+FEATURE011|Geocoding File||
+#
+# Coordinate Calculator Dialog
+COORD001|Υπολογισμός Συντεταγμένων||
+COORD002|Calc||
+COORD003|Υπολογισμός||
+COORD004|Καθαρισμός||
+COORD005|UTM||
+COORD006|Γεωγραφικό Πλάτος ή||
+COORD007|Γεωγραφικό Μήκος ή||
+COORD008|Zone||
+COORD009|UTM Easting||
+COORD010|UTM Northing||
+COORD011|               Decimal Degrees:  ||
+COORD012|       Degrees/Decimal Minutes:  ||
+COORD013|  Degrees/Minutes/Dec. Seconds:  ||
+COORD014| Universal Transverse Mercator:  ||
+COORD015|Military Grid Reference System:  ||
+COORD016|       Maidenhead Grid Locator:  ||
+COORD017| **       Sorry, your input was not recognized!        **||
+COORD018| **   Please use one of the following input formats:   **||
+#
+#
+# Smart Beaconing Dialog
+SMARTB001|Smart Beaconing||
+SMARTB002|High Rate (secs):||
+SMARTB003|High Speed (mph):||
+SMARTB004|High Speed (kph):||
+SMARTB005|Low Rate (mins):||
+SMARTB006|Low Speed (mph):||
+SMARTB007|Low Speed (kph):||
+SMARTB008|Minimum Turn (deg):||
+SMARTB009|Turn Slope:||
+SMARTB010|Wait Time (secs):||
+SMARTB011|Enable SmartBeaconing(tm)||
+#
+#
+#
+# Gamma Adjust Dialog
+GAMMA001|Adjust Gamma Correction||
+GAMMA002|Gamma Correction||
+#
+#
+# 
+# Map labels font Dialog
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Tiny||
+MAPFONT004|Map Font Small||
+MAPFONT005|Map Font Medium||
+MAPFONT006|Map Font Large||
+MAPFONT007|Map Font Huge||
+MAPFONT008|Map Font Border||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
+#
+#
+#
+# Distance/Bearing on status line
+PULDNDB001|Dist/Bearing Status||
+#
+#
+# GPS Transfer Operations
+GPS001|GPS Transfer||
+GPS002|Filename||
+GPS003|Select Color||
+GPS004|Red||
+GPS005|Green||
+GPS006|Black||
+GPS007|White||
+GPS008|Orange||
+GPS009|Blue||
+GPS010|Yellow||
+GPS011|Violet||
+#
+#
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002|Max   Min    Map         USGS  Auto||
+MAPP003|Zoom  Zoom  Layer  Fill  DRG   Map   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
+MAPP011|Auto||
+MAPP012|USGS DRG->||
+#
+#
+# Time Strings
+TIME001|Day||
+TIME002|Days||
+TIME003|Hour||
+TIME004|Hours||
+TIME005|Minute||
+TIME006|Minutes||
+TIME007|Second||
+TIME008|Seconds||
+#
+#
+# Map Caching
+CACHE001|Map now cached||
+CACHE002|Loading Cached Map||
+CACHE003|Map not found in cache...||
+#
+#
+# Map Screen Misc
+RANGE001|RANGE SCALE||
+#
+#
+# GPS Status
+GPSS001|WAAS or PPS||
+GPSS002|DGPS||
+GPSS003|Valid SPS||
+GPSS004|Invalid||
+GPSS005|Sats/View||
+GPSS006|Fix||
+GPSS007|!GPS data is older than 30 seconds!||
+GPSS008|Simulation||
+GPSS009|Manual||
+GPSS010|Estimated||
+GPSS011|Float RTK||
+GPSS012|RTK||
+#
+#
+# Popup cad_dialog to obtain CAD object data and other CAD dialogs
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability (%):||
+CADPUD005|OK||
+CADPUD006|CAD Dialog||
+CADPUD007|Show/Edit Details||
+CADPUD008|Cancel||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete All||
+CADPUD011|Delete Selected||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
+#
+#
+# Format strings for map metadata in top border
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM <grid_size> m grid, <wgs84> datum. ",
+MDATA001|XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ||
+#"XASTIR Map of <lat/long> (upper left) to <lat/long> (lower right).  Lat/Long grid, <wgs84> datum. ",
+MDATA002|XASTIR Map of %s (upper left) to %s %s (lower right).  Lat/Long grid, %s datum.||
+#"XASTIR Map of <utm_coord> (upper left) to <utm_coord> (lower right).  UTM zones, <wgs84> datum. ",
+MDATA003|XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum.||
+#
+# Text interpretation of integer values of database type and schema type
+# used for sql database configuration in interface_gui.c
+# DB_MYSQL 
+XADBMST001|MySQL (lat/long)||
+# DB_POSTGIS 
+XADBMST002|Postgreql with Postgis||
+# DB_MYSQL_SPATIAL
+XADBMST003|MySQL (spatial)||
+# XASTIR_SCHEMA_SIMPLE]
+XASCHEMA01|Xastir Simple Schema||
+#XASTIR_SCHEMA_CAD
+XASCHEMA02|Xastir CAD Schema||
+#XASTIR_SCHEMA_COMPLEX
+XASCHEMA03|Xastir full Schema||
+#XASTIR_SCHEMA_APRSWORLD
+XASCHEMA04|APRSWorld Schema||

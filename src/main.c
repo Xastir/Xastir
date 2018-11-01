@@ -27599,29 +27599,31 @@ int main(int argc, char *argv[], char *envp[]) {
                 fprintf(stderr,"Language is");
                 if (optarg) {
                     lang_to_use_or[0] = '\0';
-                    if        (strncasecmp(optarg,"ENGLISH",    7) == 0) {
+                    if        (strncasecmp(optarg,"ENGLISH",       7) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "English");
-                    } else if (strncasecmp(optarg,"DUTCH",      5) == 0) {
+                    } else if (strncasecmp(optarg,"DUTCH",         5) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Dutch");
-                    } else if (strncasecmp(optarg,"FRENCH",     6) == 0) {
+                    } else if (strncasecmp(optarg,"FRENCH",        6) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "French");
-                    } else if (strncasecmp(optarg,"GERMAN",     6) == 0) {
+                    } else if (strncasecmp(optarg,"GERMAN",        6) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "German");
-                    } else if (strncasecmp(optarg,"SPANISH",    7) == 0) {
+                    } else if (strncasecmp(optarg,"GREEK",         5) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Greek");
+                    } else if (strncasecmp(optarg,"SPANISH",       7) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Spanish");
-                    } else if (strncasecmp(optarg,"ITALIAN",    7) == 0) {
+                    } else if (strncasecmp(optarg,"ITALIAN",       7) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Italian");
-                    } else if (strncasecmp(optarg,"PORTUGUESE",10) == 0) {
+                    } else if (strncasecmp(optarg,"PORTUGUESE",   10) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Portuguese");
-                    } else if (strncasecmp(optarg,"ELMERFUDD",10) == 0) {
+                    } else if (strncasecmp(optarg,"ELMERFUDD",     9) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "ElmerFudd");
-                    } else if (strncasecmp(optarg,"MUPPETSCHEF",10) == 0) {
+                    } else if (strncasecmp(optarg,"MUPPETSCHEF",  11) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "MuppetsChef");
-                    } else if (strncasecmp(optarg,"OLDEENGLISH",10) == 0) {
+                    } else if (strncasecmp(optarg,"OLDEENGLISH",  11) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "OldeEnglish");
-                    } else if (strncasecmp(optarg,"PIGLATIN",10) == 0) {
+                    } else if (strncasecmp(optarg,"PIGLATIN",      8) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "PigLatin");
-                    } else if (strncasecmp(optarg,"PIRATEENGLISH",10) == 0) {
+                    } else if (strncasecmp(optarg,"PIRATEENGLISH",13) == 0) {
                         xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "PirateEnglish");
                     } else {
                         ag_error++;
@@ -27675,6 +27677,7 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"-l English         Set the language to English\n");
         fprintf(stderr,"-l French          Set the language to French\n");
         fprintf(stderr,"-l German          Set the language to German\n");
+        fprintf(stderr,"-l Greek           Set the language to Greek\n");
         fprintf(stderr,"-l Italian         Set the language to Italian\n");
         fprintf(stderr,"-l Portuguese      Set the language to Portuguese\n");
         fprintf(stderr,"-l Spanish         Set the language to Spanish\n");
