@@ -9,6 +9,7 @@ EXTRA_DIST = \
     language-English.sys \
     language-French.sys \
     language-German.sys \
+    language-Greek.sys \
     language-Italian.sys \
     language-Portuguese.sys \
     language-Spanish.sys \
