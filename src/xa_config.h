@@ -26,6 +26,8 @@
 
 extern time_t next_time;
 
+void set_to_C_locale(void);
+void restore_from_C_locale(void);
 char *get_user_base_dir(char *dir, char *dest, size_t dest_size);
 char *get_data_base_dir(char *dir);
 void save_data(void);
