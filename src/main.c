@@ -27461,13 +27461,15 @@ int main(int argc, char *argv[], char *envp[]) {
 
     program_start_time = sec_now(); // For use by "Display Uptime"
 
-    (void)setlocale(LC_NUMERIC, "C");
-    (void)setlocale(LC_CTYPE, "C");
+//    (void)setlocale(LC_NUMERIC, "C");
+//    (void)setlocale(LC_CTYPE, "C");
+    set_to_C_locale();
 
 #ifdef HAVE_LIBCURL
     curl_global_init(CURL_GLOBAL_ALL);
 #endif
 
+    restore_from_C_locale();
 
 #ifdef HAVE_GRAPHICSMAGICK
     InitializeMagick(*argv);
@@ -28048,11 +28050,15 @@ int main(int argc, char *argv[], char *envp[]) {
             // DK7IN: inserted next line here for avoiding scanf
             // errors during init!
             //
-//            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
-            (void)setlocale(LC_CTYPE, "C");         // K4INT: Make sure strings work OK.
+////            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
+//            (void)setlocale(LC_CTYPE, "C");         // K4INT: Make sure strings work OK.
+            set_to_C_locale();
 
 
             setup_visual_info(display, DefaultScreen(display));
+
+
+            restore_from_C_locale();
 
 
             // Get colormap (N7TAP: do we need this if the screen
@@ -28089,8 +28095,9 @@ int main(int argc, char *argv[], char *envp[]) {
 
             // reset language attribs for numeric, program needs
             // decimal in US for all data!
-            (void)setlocale(LC_NUMERIC, "C");
-            (void)setlocale(LC_CTYPE, "C");
+//            (void)setlocale(LC_NUMERIC, "C");
+//            (void)setlocale(LC_CTYPE, "C");
+            set_to_C_locale();
             // DK7IN: now scanf and printf work as wanted...
 
 
@@ -28099,6 +28106,7 @@ int main(int argc, char *argv[], char *envp[]) {
             /* check for ham databases */
             (void)check_rac_data();
             (void)check_fcc_data();
+
 
 
             // Find the extents of every map we have.  Use the smart
@@ -28135,6 +28143,9 @@ int main(int argc, char *argv[], char *envp[]) {
             // Mark the "selected" field in the in-memory map index
             // to correspond to the selected_maps.sys file.
             map_chooser_init();
+
+
+            restore_from_C_locale();
 
 
             // Warn the user if altnet is enabled on startup.  This
