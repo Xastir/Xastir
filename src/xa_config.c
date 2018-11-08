@@ -2415,7 +2415,7 @@ void load_data_or_default(void) {
     festival_speak_new_message_alert = get_int ("SPEAK_MESSAGE_ALERT",0,1,0);
     festival_speak_new_message_body = get_int ("SPEAK_MESSAGE_BODY",0,1,0);
     festival_speak_new_weather_alert = get_int ("SPEAK_WEATHER_ALERT",0,1,0);
-    festival_speak_new_station = get_int ("SPEAK_ID",0,1,0);
+    festival_speak_ID = get_int ("SPEAK_ID",0,1,0);
 #endif  // HAVE_FESTIVAL
 
     ATV_screen_ID = get_int ("ATV_SCREEN_ID",0,1,0);
