@@ -18828,8 +18828,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         // dump it to our console so that we can see who logged in
         // to us.
         if (strncasecmp(line,"user",4) == 0
-                || strncasecmp(line,"pass",4 == 0)
-                || strncasecmp(line,"filter",6 == 0)) {
+            || strncasecmp(line,"pass",4) == 0
+            || strncasecmp(line,"filter",6) == 0) {
             fprintf(stderr,"\tLogged on: %s\n", line);
 
 // If the line has a "filter" parameter in it, we need to remove it,
