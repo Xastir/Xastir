@@ -2,26 +2,20 @@ PROJ_DIR = 	D:\warmerda\proj
 
 CFLAGS	=	/I.. /I$(PROJ_DIR)\src /D_LITTLE_ENDIAN -DPROJ4 
 
-LINKARGS =	shpgeo.obj ..\shpopen.obj ..\dbfopen.obj \
+LINKARGS =	..\shpopen.obj ..\dbfopen.obj \
 		D:\warmerda\proj\src\proj_i.lib
 
 default:	all
 
-all:	shpcat.exe shpcentrd.exe shpdxf.exe shpinfo.exe shpproj.exe
+all:	shpcat.exe shpdxf.exe shpinfo.exe
 
-shpcat.exe:	shpcat.obj shpgeo.obj 
+shpcat.exe:	shpcat.obj
 	$(CC) $(CFLAGS) shpcat.obj  $(LINKARGS) 
 
-shpcentrd.exe:	shpcentrd.obj shpgeo.obj 
-	$(CC) $(CFLAGS) shpcentrd.obj  $(LINKARGS) 
-
-shpproj.exe:	shpproj.obj shpgeo.obj 
-	$(CC) $(CFLAGS) shpproj.obj  $(LINKARGS) 
-
-shpdxf.exe:	shpdxf.obj shpgeo.obj 
+shpdxf.exe:	shpdxf.obj
 	$(CC) $(CFLAGS) shpdxf.obj  $(LINKARGS) 
 
-shpinfo.exe:	shpinfo.obj shpgeo.obj 
+shpinfo.exe:	shpinfo.obj
 	$(CC) $(CFLAGS) shpinfo.obj  $(LINKARGS) 
 
 clean:

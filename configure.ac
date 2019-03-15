@@ -422,14 +422,8 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
-
- if  test  $use_proj = "yes" 
- then
-   CONTSHP="shpcentrd$(EXEEXT) shpproj$(EXEEXT) shpdata$(EXEEXT) shpwkb$(EXEEXT)"
- fi
 fi
 AC_SUBST(SUBSHP)
-AC_SUBST(CONTSHP)
 AC_SUBST(LIBSHP)
 
 
