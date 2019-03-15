@@ -61,7 +61,6 @@ rm -rf autom4te.cache
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -86,7 +85,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -111,7 +109,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -136,7 +133,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -161,7 +157,6 @@ rm regression.log
     --without-gpsman \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -186,7 +181,6 @@ rm regression.log
     --without-gpsman \
     --without-imagemagick \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -211,7 +205,6 @@ rm regression.log
     --without-gpsman \
     --without-imagemagick \
     --without-libproj \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -235,7 +228,6 @@ rm regression.log
     --without-festival \
     --without-gpsman \
     --without-imagemagick \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -246,35 +238,6 @@ head -1 summary.log
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
-
-
-
-# Test sparse + gdal
-#echo
-echo -n "  47 TEST: Sparse + gdal:                 "
-rm -rf autom4te.cache
-rm regression.log
-(nice ./configure \
-    --without-ax25 \
-    --without-festival \
-    --without-gpsman \
-    --without-imagemagick \
-    --without-libproj \
-    --without-geotiff \
-    --without-shapelib \
-    --without-pcre \
-    --without-dbfawk \
-    --without-map-cache 2>&1) >> regression.log
-#echo -n "        "
-head -1 summary.log
-(nice make clean 2>&1) >/dev/null
-(nice make 2>&1) >> regression.log
-grep -i warning regression.log
-grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
 
 # Test sparse + shapelib
 #echo
@@ -288,7 +251,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-pcre \
     --without-dbfawk \
     --without-map-cache 2>&1) >> regression.log
@@ -313,7 +275,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-dbfawk \
     --without-map-cache 2>&1) >> regression.log
@@ -338,7 +299,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-map-cache 2>&1) >> regression.log
@@ -363,7 +323,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-map-cache 2>&1) >> regression.log
 #echo -n "        "
 head -1 summary.log
@@ -386,7 +345,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk 2>&1) >> regression.log
@@ -411,7 +369,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -438,7 +395,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -465,7 +421,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -492,7 +447,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -519,7 +473,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-pcre \
     --without-dbfawk \
     --without-map-cache \
@@ -545,7 +498,6 @@ rm regression.log
     --without-imagemagick \
     --without-libproj \
     --without-geotiff \
-    --without-gdal \
     --without-shapelib \
     --without-pcre \
     --without-dbfawk \
@@ -661,21 +613,6 @@ echo -n "  29 TEST: --without-geotiff:             "
 rm -rf autom4te.cache
 rm regression.log
 (nice ./configure --without-geotiff 2>&1) >> regression.log
-#echo -n "        "
-head -1 summary.log
-(nice make clean 2>&1) >/dev/null
-(nice make 2>&1) >> regression.log
-grep -i warning regression.log
-grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
-
-# Test with each flag in turn, one flag at a time
-#echo
-echo -n "  28 TEST: --without-gdal:                "
-rm -rf autom4te.cache
-rm regression.log
-(nice ./configure --without-gdal 2>&1) >> regression.log
 #echo -n "        "
 head -1 summary.log
 (nice make clean 2>&1) >/dev/null
@@ -937,28 +874,6 @@ head -1 summary.log
 (nice make 2>&1) >> regression.log
 grep -i warning regression.log
 grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
-
-# Test with all but one option enabled
-#echo
-echo -n "  12 TEST: ALL --without-gdal:            "
-rm -rf autom4te.cache
-rm regression.log
-(nice ./configure --without-gdal \
-    --with-errorpopups \
-    --with-libgc \
-    --with-profiling \
-    --with-rtree \
-    --with-lsb 2>&1) >> regression.log
-#echo -n "        "
-head -1 summary.log
-(nice make clean 2>&1) >/dev/null
-(nice make 2>&1) >> regression.log
-grep -i warning regression.log
-grep -i error regression.log | grep -vi errorpopups | grep -v "checking for strerror"
-
-
 
 # Test with all but one option enabled
 #echo

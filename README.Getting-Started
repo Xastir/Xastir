@@ -337,7 +337,6 @@ Other configure options are:
     --without-imagemagick
     --without-libproj
     --without-geotiff
-    --without-gdal
     --without-pcre
     --without-dbfawk
     --without-map-cache
@@ -369,7 +368,6 @@ This is what you'd like to see at the end of the "../configure" run
   ImageMagick... : no
   libproj....... : no
   GeoTiff....... : no
-  GDAL/OGR...... : no
   ShapeLib...... : yes (internal)
   pcre.......... : no
   dbfawk........ : no
@@ -463,7 +461,6 @@ This is what you'd like to see at the end of the "./configure" run
     libproj (USGS Topos & Aerial Photos) ... : no
     GeoTiff (USGS Topos & Aerial Photos) ... : no
     Festival (Text-to-speech) .............. : no
-    GDAL/OGR (Obtuse map formats) .......... : no
     GPSMan/gpsmanshp (GPS downloads) ....... : no 
 -------------------------------------------------------------------
 
@@ -512,7 +509,6 @@ This is what you'd like to see at the end of the "./configure" run:
     libproj (USGS Topos & Aerial Photos) ... : yes
     GeoTiff (USGS Topos & Aerial Photos) ... : yes
     Festival (Text-to-speech) .............. : yes
-    GDAL/OGR (Obtuse map formats) .......... : yes
     GPSMan/gpsmanshp (GPS downloads) ....... : yes
 -------------------------------------------------------------------
 

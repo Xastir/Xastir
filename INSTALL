@@ -53,7 +53,6 @@ AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
 libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
-GDAL/OGR                        Optional  Many formats (coming soon)
 libdb (4.0 or newer)            Optional  Internet map caching (fast!)
 libpq                           Experimental Persistent data with Postgis
 libmysqlclient                  Experimental Persistent data with MySQL
@@ -62,8 +61,6 @@ Library/Option Heirarchy:
 -------------------------
 
     ImageMagick (Usually requires additional libraries)
-
-    GDAL/OGR (Usually requires additional libraries)
 
     error_popups (Annoying popups, turned off by default)
 
@@ -194,7 +191,6 @@ differences in how ImageMagick was compiled:
     libtiff.so.3 => /usr/lib/libtiff.so.3 (0x407e2000)
     libgeotiff.so => /usr/local/lib/libgeotiff.so (0x4082b000)
     libax25.so.0 => /usr/lib/libax25.so.0 (0x4084d000)
-    libgdal.so.1 => /usr/local/lib/libgdal.so.1 (0x40856000)
     libc.so.6 => /lib/i686/libc.so.6 (0x40b64000)
     libdl.so.2 => /lib/libdl.so.2 (0x40c97000)
     /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
@@ -278,9 +274,6 @@ For ESRI Shapefile format maps/weather alert maps:
     pcre:
         http://www.pcre.org
 
-For GDAL/OGR:
-    http://www.gdal.org/
-
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
     ImageMagick:
@@ -321,7 +314,6 @@ features, you can add any of the following flags to configure:
     --without-imagemagick
     --without-libproj
     --without-geotiff
-    --without-gdal
     --without-shapelib
     --without-pcre
     --without-dbfawk
@@ -815,64 +807,7 @@ First Time Install:
 
       To exit, press control-] and then type "quit".
 
-   9. OPTIONAL:  Install GDAL/OGR for support of many more map formats.
-
-      NOTE:  There are some cases where adding GDAL can mess up support for a
-      few of the other libraries, like Shapelib, libproj, or libgeotiff.  GDAL
-      may be compiled with support these libraries internally and it is
-      possible to have Xastir linked against some of GDAL's internal libraries
-      but using the external library headers.  If the versions of each are
-      sufficiently different, things may not work right.  If you run into such
-      problems you can either reconfigure GDAL to use external libraries for
-      these three or configure Xastir without GDAL support.  Also see the note
-      below about libtiff-3.8.0.
-
-      NOTE:  This is currently being added to Xastir:  Some support is there
-      now for the vector formats, but it isn't "pretty" yet.  Should you wish
-      to see what map formats your system will support once GDAL/OGR are fully
-      integrated into Xastir, proceed with the following:
-
-        cd ~src (or wherever you keep your sources)
-        export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
-        cvs login
-        Password: <ENTER>
-        cvs checkout gdal
-
-      Optionally you can also use one of the newer GDAL releases, so in that
-      case just download that instead of the above instructions, then do the
-      following instructions for either:
-
-        cd gdal
-        ./configure --without-mysql 
-        make
-        su (root)
-        make install
-        /sbin/ldconfig
-        exit (from root)
-
-      A configure line that worked with older GDAL code was:
-
-        ./configure --without-jasper --without-ld-shared
-
-      Here's another GDAL configure command which forces GDAL to use its own
-      internal libraries for some of the formats:
-
-      ./configure --without-mysql --with-libz=internal --with-png=internal \
-      --with-jpeg=internal --with-geotiff=internal --with-libtiff=internal \
-      --with-gif=internal 
-
-      Also note that as of Dec 11, 2003, a major memory leak bug in the OGR
-      code was fixed, having to do with Shapefiles.  Please run a version of
-      GDAL/OGR that is newer than that date (or use the CVS version as
-      described above).
-
-      In one case linking in GDAL caused some GTIFProj4ToLatLong calls to break
-      in an odd manner due to Xastir linking in libgeotiff functions from the
-      GDAL library in that case instead of the libgeotiff library:  GeoTIFF's
-      with UTM coordinates stop working.  Configuring Xastir without GDAL
-      support -or- upgrading libtiff to 3.8.0 fixes the problem.
-
-   10. OPTIONAL:  Install Berkely DB Library to enable map caching
+   9. OPTIONAL:  Install Berkely DB Library to enable map caching
       of internet maps.
 
       Please note that segfaults (crashes) in Berkeley DB calls can be caused
@@ -942,7 +877,7 @@ First Time Install:
       > and
       > --with-bdb-incdir=/usr/local/BerkeleyDB4.3/include
 
-   11. OPTIONAL:  Compile db2APRS and install MySQL and Meteo to
+   10. OPTIONAL:  Compile db2APRS and install MySQL and Meteo to
       allow Davis weather station support.
 
       Install MySQL and Meteo. 
@@ -957,7 +892,7 @@ First Time Install:
       the Davis weather station data.  See further instructions in the Davis
       directory.
 
-   12. OPTIONAL: Experimental.  Add GIS database support.  
+   11. OPTIONAL: Experimental.  Add GIS database support.  
 
       Note: Database support is experimental and any aspect may change at
       any time, including database structures.  Scripts to create database
@@ -1031,7 +966,7 @@ First Time Install:
       run a delete query to eliminate the problematic row(s).  
      
  
-   13. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   12. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using Git)
@@ -1134,7 +1069,7 @@ First Time Install:
      see the notes above about /sbin/ldconfig.
 
 
-   14. Kernel AX.25 Interfaces
+   13. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -1207,7 +1142,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   15. Serially-Connected TNC's
+   14. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -1335,7 +1270,7 @@ file that are useful for debugging in case Xastir crashes.
      >    being yet another root exploit-in-waiting.
 
 
-   16. Serially-Connected Garmin RINO Radio/GPS
+   15. Serially-Connected Garmin RINO Radio/GPS
 
      If you have a Garmin RINO attached to a serial port, have GPSMan
      installed, and have support for GPSMan compiled into Xastir, then Xastir
@@ -1380,7 +1315,7 @@ file that are useful for debugging in case Xastir crashes.
      (ie kerchunk) to send a position."
 
 
-   17. Start up XASTIR and read the help files to configure it. If you have 
+   16. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in

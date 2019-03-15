@@ -546,21 +546,6 @@ if test "${use_dbfawk}" = "yes"; then
 fi
 
 
-# Check for GDAL.  Make sure that the GDAL check is towards the
-# last, as it can mess up shapelib and libgeotiff currently.
-use_gdal=yes
-AC_ARG_WITH(gdal,[  --without-gdal            Disable gdal features.],use_gdal=$withval)
-if test "${use_gdal}" = "yes"; then
-  if test "${use_lsb}" = "no"; then 
-    XASTIR_CHECK_GDAL
-  else
-    CPPFLAGS="$CPPFLAGS -I/opt/lsb-tmp/include"
-    LDFLAGS="$LDFLAGS -L/opt/lsb-tmp/lib -lgdal"
-    LIBS="$LIBS -lgdal"
-    AC_DEFINE(HAVE_LIBGDAL, , [Define to 1 if you have the `gdal' library (-lgdaal).])
-  fi
-fi
-
 use_rtree=yes
 LIBRTREE=""
 SUBRTREE=""
@@ -797,11 +782,6 @@ if test "${use_geotiff}" = "yes"; then
 else
   ILIBS="$ILIBS        "
 fi
-if test "${use_gdal}" = "yes"; then
-  ILIBS="$ILIBS GDAL/OGR"
-else
-  ILIBS="$ILIBS         "
-fi
 if test "${use_shapelib}" = "yes"; then
   ILIBS="$ILIBS ShapeLib"
 else
@@ -987,7 +967,6 @@ echo "  AX25 (Linux Kernel I/O Drivers) ........ : $use_ax25"
 echo "  libproj (USGS Topos & Aerial Photos) ... : $use_proj"
 echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
 echo "  Festival (Text-to-speech) .............. : $use_festival"
-echo "  GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
 #echo "  GPSD Client (libgps) ................... : $use_libgps"
 
