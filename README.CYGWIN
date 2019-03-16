@@ -276,13 +276,6 @@ Support for these additional map types has been compiled in:
        shp   ESRI Shapefile Maps (Shapelib library)
        tif   USGS DRG Geotiff Topographic Maps (libgeotiff/libproj)
        xpm   X Pixmap Maps (XPM library)
-       tab   MapInfo TAB
-       mid   MapInfo MID
-       mif   MapInfo MIF
-       ddf   Spatial Data Transfer Standard (SDTS)
-       s57   International Hydrographic Organization (IHO) S-57
-       dgn   MicroStation DGN
-       rt1   US Census Bureau TIGER/Line
 
 The README.MAPS file has instructions for where to get maps and where
 to put them under the Xastir hierarchy.
