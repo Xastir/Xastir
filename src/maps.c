@@ -21,7 +21,6 @@
  * Look at the README for more information on the program.
  */
 
-//#define GDAL_SHAPEFILES
 //#define MAP_SCALE_CHECK
 
 
@@ -418,16 +417,9 @@ void maps_init(void)
 #endif  // NO_GRAPHICS
 
 
-//#define GDAL_SHAPEFILES
-#ifdef GDAL_SHAPEFILES
-  #ifdef HAVE_LIBGDAL
-    fprintf(stderr,"%10s   ESRI Shapefile Maps (GDAL/OGR library)\n","shp");
-  #endif    // HAVE_LIBGDAL
-#else   // GDAL_SHAPEFILES
-  #ifdef HAVE_LIBSHP
-    fprintf(stderr,"%10s   ESRI Shapefile Maps (Shapelib library)\n","shp");
-  #endif  // HAVE_LIBSHP
-#endif  // GDAL_SHAPEFILES
+#ifdef HAVE_LIBSHP
+  fprintf(stderr,"%10s   ESRI Shapefile Maps (Shapelib library)\n","shp");
+#endif  // HAVE_LIBSHP
 
 
 #ifdef HAVE_LIBGEOTIFF
@@ -5697,24 +5689,6 @@ extern void draw_pop_map(Widget w,
                           int destination_pixmap,
                           map_draw_flags *draw_flags);
 
-#ifdef HAVE_LIBGDAL
-extern void draw_gdal_map(Widget w,
-                   char *dir,
-                   char *filenm,
-                   alert_entry *alert,
-                   u_char alert_color,
-                   int destination_pixmap,
-                   map_draw_flags *draw_flags);
-
-extern void draw_ogr_map(Widget w,
-                   char *dir,
-                   char *filenm,
-                   alert_entry *alert,
-                   u_char alert_color,
-                   int destination_pixmap,
-                   map_draw_flags *draw_flags);
-#endif /* HAVE_LIBGDAL */
-
 struct {
     char *ext;
     enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts, s57, pop} type;
@@ -5738,40 +5712,8 @@ struct {
   {"pop",pop,draw_pop_map},
 
 #ifdef HAVE_LIBSHP
-#ifndef GDAL_SHAPEFILES
   {"shp",shp,draw_shapefile_map},
-#endif  // GDAL_SHAPEFILES
 #endif /* HAVE_LIBSHP */
-
-#ifdef HAVE_LIBGDAL
-
-#ifdef GDAL_SHAPEFILES
-  {"shp",shp,draw_ogr_map},
-#endif  // GDAL_SHAPEFILES
-
-  {"rt1",tiger,draw_ogr_map},
-//  {"rt2",tiger,draw_ogr_map},
-//  {"rt4",tiger,draw_ogr_map},
-//  {"rt5",tiger,draw_ogr_map},
-//  {"rt6",tiger,draw_ogr_map},
-//  {"rt7",tiger,draw_ogr_map},
-//  {"rt8",tiger,draw_ogr_map},
-//  {"rta",tiger,draw_ogr_map},
-//  {"rtc",tiger,draw_ogr_map},
-//  {"rth",tiger,draw_ogr_map},
-//  {"rti",tiger,draw_ogr_map},
-//  {"rtp",tiger,draw_ogr_map},
-//  {"rtr",tiger,draw_ogr_map},
-//  {"rts",tiger,draw_ogr_map},
-//  {"rtt",tiger,draw_ogr_map},
-//  {"rtz",tiger,draw_ogr_map},
-  {"tab",mapinfo,draw_ogr_map}, // MapInfo
-  {"mid",mapinfo,draw_ogr_map}, // MapInfo
-  {"mif",mapinfo,draw_ogr_map}, // MapInfo
-  {"dgn",dgn,draw_ogr_map},     // DGN
-  {"ddf",sdts,draw_ogr_map},    // SDTS
-  {"s57",s57,draw_ogr_map},     // S57
-#endif  // HAVE_LIBGDAL
 
   {NULL,none,NULL}
 }, *map_driver_ptr;

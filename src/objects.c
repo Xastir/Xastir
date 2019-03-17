@@ -28,28 +28,9 @@
 
 #include "snprintf.h"
 
-//#include <stdio.h>
-//#include <stdlib.h>
 #include <stdint.h>
-//#include <assert.h>
 #include <ctype.h>
 #include <math.h>
-//#include <sys/stat.h>
-//#include <sys/file.h>
-//#include <unistd.h>
-//#include <dirent.h>
-//#include <signal.h>
-//#include <termios.h>
-//#include <pwd.h>
-//#include <locale.h>
-
-// Needed for Solaris
-//#ifdef HAVE_STRINGS_H
-//#include <strings.h>
-//#endif  // HAVE_STRINGS_H
-
-//#include <sys/wait.h>
-//#include <errno.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -62,119 +43,15 @@
 # endif // HAVE_SYS_TIME_H
 #endif  // TIME_WITH_SYS_TIME
 
-//#ifdef HAVE_MAGICK
-//#include <sys/types.h>
-//#undef RETSIGTYPE
-///* JMT - stupid ImageMagick */
-//#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
-//#undef PACKAGE_BUGREPORT
-//#define XASTIR_PACKAGE_NAME PACKAGE_NAME
-//#undef PACKAGE_NAME
-//#define XASTIR_PACKAGE_STRING PACKAGE_STRING
-//#undef PACKAGE_STRING
-//#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
-//#undef PACKAGE_TARNAME
-//#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
-//#undef PACKAGE_VERSION
-//#ifdef HAVE_GRAPHICSMAGICK
-//#include <GraphicsMagick/magick/api.h>
-//#else   // HAVE_GRAPHICSMAGICK
-//#include <magick/api.h>
-//#endif  // HAVE_GRAPHICSMAGICK 
-//#undef PACKAGE_BUGREPORT
-//#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
-//#undef XASTIR_PACKAGE_BUGREPORT
-//#undef PACKAGE_NAME
-//#define PACKAGE_NAME XASTIR_PACKAGE_NAME
-//#undef XASTIR_PACKAGE_NAME
-//#undef PACKAGE_STRING
-//#define PACKAGE_STRING XASTIR_PACKAGE_STRING
-//#undef XASTIR_PACKAGE_STRING
-//#undef PACKAGE_TARNAME
-//#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
-//#undef XASTIR_PACKAGE_TARNAME
-//#undef PACKAGE_VERSION
-//#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
-//#undef XASTIR_PACKAGE_VERSION
-//#endif // HAVE_MAGICK
-
-//#ifdef  HAVE_LIBINTL_H
-//#include <libintl.h>
-//#define _(x)        gettext(x)
-//#else   // HAVE_LIBINTL_H
-//#define _(x)        (x)
-//#endif  // HAVE_LIBINTL_H
-
-//#ifdef HAVE_NETAX25_AXLIB_H
-//#include <netax25/axlib.h>
-//#endif    // HAVE_NETAX25_AXLIB_H
-
-//#ifdef HAVE_LIBCURL
-//#include <curl/curl.h>
-//#endif
-
-//#ifdef HAVE_LIBGDAL
-//// WE7U - stupid ImageMagick
-//#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
-//#undef PACKAGE_BUGREPORT
-//#define XASTIR_PACKAGE_NAME PACKAGE_NAME
-//#undef PACKAGE_NAME
-//#define XASTIR_PACKAGE_STRING PACKAGE_STRING
-//#undef PACKAGE_STRING
-//#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
-//#undef PACKAGE_TARNAME
-//#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
-//#undef PACKAGE_VERSION
-//#include <ogr_api.h>
-//#undef PACKAGE_BUGREPORT
-//#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
-//#undef XASTIR_PACKAGE_BUGREPORT
-//#undef PACKAGE_NAME
-//#define PACKAGE_NAME XASTIR_PACKAGE_NAME
-//#undef XASTIR_PACKAGE_NAME
-//#undef PACKAGE_STRING
-//#define PACKAGE_STRING XASTIR_PACKAGE_STRING
-//#undef XASTIR_PACKAGE_STRING
-//#undef PACKAGE_TARNAME
-//#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
-//#undef XASTIR_PACKAGE_TARNAME
-//#undef PACKAGE_VERSION
-//#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
-//#undef XASTIR_PACKAGE_VERSION
-//#include <gdal.h>
-//#endif
-
 #include "xastir.h"
 #include "draw_symbols.h"
 #include "main.h"
 #include "xa_config.h"
 #include "maps.h"
-//#include "alert.h"
 #include "interface.h"
-//#include "wx.h"
-//#include "popup.h"
-//#include "track_gui.h"
-//#include "list_gui.h"
-//#include "util.h"
-//#include "color.h"
-//#include "gps.h"
-//#include "bulletin_gui.h"
-//#include "rotated.h"
-//#include "datum.h"
-//#include "igate.h"
 #include "objects.h"
 
-//#include "database.h"
-// in lieu of the above, just declare one function:
 void move_station_time(DataRow *p_curr, DataRow *p_time);
-
-//#ifdef HAVE_LIBSHP
-//  #include "shp_hash.h"
-//#endif  // HAVE_LIBSHP
-
-//#include "x_spider.h"
-//#include "map_cache.h"
-
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>

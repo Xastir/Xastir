@@ -123,37 +123,6 @@ char *xastir_version=VERSION;
 #include <curl/curl.h>
 #endif
 
-#ifdef HAVE_LIBGDAL
-// WE7U - stupid ImageMagick
-#define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
-#undef PACKAGE_BUGREPORT
-#define XASTIR_PACKAGE_NAME PACKAGE_NAME
-#undef PACKAGE_NAME
-#define XASTIR_PACKAGE_STRING PACKAGE_STRING
-#undef PACKAGE_STRING
-#define XASTIR_PACKAGE_TARNAME PACKAGE_TARNAME
-#undef PACKAGE_TARNAME
-#define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
-#undef PACKAGE_VERSION
-#include <ogr_api.h>
-#undef PACKAGE_BUGREPORT
-#define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
-#undef XASTIR_PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#define PACKAGE_NAME XASTIR_PACKAGE_NAME
-#undef XASTIR_PACKAGE_NAME
-#undef PACKAGE_STRING
-#define PACKAGE_STRING XASTIR_PACKAGE_STRING
-#undef XASTIR_PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#define PACKAGE_TARNAME XASTIR_PACKAGE_TARNAME
-#undef XASTIR_PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#define PACKAGE_VERSION XASTIR_PACKAGE_VERSION
-#undef XASTIR_PACKAGE_VERSION
-#include <gdal.h>
-#endif
-
 #include "xastir.h"
 #include "draw_symbols.h"
 #include "main.h"
@@ -27888,7 +27857,6 @@ int main(int argc, char *argv[], char *envp[]) {
     (void)geocoder_gui_init();
     (void)location_gui_init();
     (void)maps_init();
-    (void)map_gdal_init();
     (void)messages_gui_init();
     (void)popup_gui_init();
     (void)track_gui_init();

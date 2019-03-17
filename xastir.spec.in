@@ -12,7 +12,7 @@ URL       : http://xastir.org
 BuildRoot : %{_tmppath}/%{name}-buildroot
 #BuildRequires reflect Centos/RHEL naming conventions - edit package names to suit other RPM-based distros
 BuildRequires : tk, tkimg, lesstif, libXp, libXp-devel
-BuildRequires : geos, giflib, unixODBC, netcdf, gdal, gdal-devel
+BuildRequires : geos, giflib, unixODBC, netcdf
 BuildRequires : GraphicsMagick, pcre-devel, proj-devel, shapelib-devel
 BuildRequires : db4-devel, perl-HTTP-Lite, perl-Device-SerialPort, perl-Test-Simple
 BuildRequires : perl-Module-Build, perl-Image-Size, perl-perl-GPS, perl-Tree-R,

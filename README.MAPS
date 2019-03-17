@@ -22,12 +22,6 @@ Recommended Configurations for:
 
       Allows use of all the above plus USGS topo maps.
 
-    Bleeding edge:  GDAL/OGR
-    --------------
-      Adds more map types, but they're not fully supported yet.  You
-      can certainly get some use out of them though, like overlaying
-      SDTS contour vectors on top of terraserver satellite images.
-
   Rest of World:
   --------------
 
@@ -41,10 +35,10 @@ Recommended Configurations for:
 
       Allows use of all the above plus ESRI Shapefile maps.
 
-    Maximum:  libproj/libtiff/libgeotiff/GDAL/OGR
+    Maximum:  libproj/libtiff/libgeotiff
     --------
       Adds more map types.  Some of these may not be useful in your
-      part of the world.  GDAL/OGR stuff is not fully supported yet.
+      part of the world.
 
 
 Map Type:           Libraries Required/Notes:
@@ -75,11 +69,6 @@ UI-View Maps        Convert from .INF to .GEO format using
 OziExplorer Maps    Convert some maps to .GEO format using
                     xastir/scripts/ozi2geo.pl
 USGS DRG Topo       libtiff, libtiff-devel, libproj, libgeotiff
-USGS SDTS           GDAL/OGR.  Preliminary.
-MapInfo             GDAL/OGR.  Preliminary.
-Tiger/Line Raw      GDAL/OGR.  Preliminary.
-Microstation DGN    GDAL/OGR.  Preliminary.
-S57                 GDAL/OGR.  Preliminary.
 APRS Overlays       Convert to Shapefile maps with scripts/pos2shp.pl
 
 
@@ -1257,38 +1246,6 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
 	Australian rules Weather Alerts
 
 		http://wxsvr.aprs.net.au/implementation.html
-
-     Raw Tiger/Line format maps (requires GDAL/OGR):
-
-      If you have GDAL/OGR library added to Xastir, you should (very soon)
-      be able to use Tiger/Line maps.  The developers are working to add
-      this capability.
-
-      2002 map data can be found here:
-
-        http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
-
-      2003 map data can be found here:
-
-        http://www.census.gov/geo/www/tiger/tiger2003/tgr2003.html
-
-     SDTS format maps (requires GDAL/OGR):
-
-        http://edc.usgs.gov/geodata/
-
-      The "hypsography" maps contain topo lines.  They look very nice overlaid
-      on top of terraserver satellite images.  Note that for some types of maps
-      you also need to download a data dictionary file to go with them.
-
-      Also note that the various datasets appear to reuse filenames.  You may
-      need to separate each one into its own subdirectory in order to keep all
-      of the files from getting overwritten by new maps.
-
-     MapInfo TAB/MID/MIF format maps (requires GDAL/OGR):
-
-      http://www.mapinfo.com
-      http://research.umbc.edu/~roswell/mipage.html
-
 
      Download audio files:
 

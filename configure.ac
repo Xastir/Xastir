@@ -422,14 +422,8 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
-
- if  test  $use_proj = "yes" 
- then
-   CONTSHP="shpcentrd$(EXEEXT) shpproj$(EXEEXT) shpdata$(EXEEXT) shpwkb$(EXEEXT)"
- fi
 fi
 AC_SUBST(SUBSHP)
-AC_SUBST(CONTSHP)
 AC_SUBST(LIBSHP)
 
 
@@ -545,21 +539,6 @@ if test "${use_dbfawk}" = "yes"; then
   fi
 fi
 
-
-# Check for GDAL.  Make sure that the GDAL check is towards the
-# last, as it can mess up shapelib and libgeotiff currently.
-use_gdal=yes
-AC_ARG_WITH(gdal,[  --without-gdal            Disable gdal features.],use_gdal=$withval)
-if test "${use_gdal}" = "yes"; then
-  if test "${use_lsb}" = "no"; then 
-    XASTIR_CHECK_GDAL
-  else
-    CPPFLAGS="$CPPFLAGS -I/opt/lsb-tmp/include"
-    LDFLAGS="$LDFLAGS -L/opt/lsb-tmp/lib -lgdal"
-    LIBS="$LIBS -lgdal"
-    AC_DEFINE(HAVE_LIBGDAL, , [Define to 1 if you have the `gdal' library (-lgdaal).])
-  fi
-fi
 
 use_rtree=yes
 LIBRTREE=""
@@ -797,11 +776,6 @@ if test "${use_geotiff}" = "yes"; then
 else
   ILIBS="$ILIBS        "
 fi
-if test "${use_gdal}" = "yes"; then
-  ILIBS="$ILIBS GDAL/OGR"
-else
-  ILIBS="$ILIBS         "
-fi
 if test "${use_shapelib}" = "yes"; then
   ILIBS="$ILIBS ShapeLib"
 else
@@ -987,7 +961,6 @@ echo "  AX25 (Linux Kernel I/O Drivers) ........ : $use_ax25"
 echo "  libproj (USGS Topos & Aerial Photos) ... : $use_proj"
 echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
 echo "  Festival (Text-to-speech) .............. : $use_festival"
-echo "  GDAL/OGR (Obtuse map formats) .......... : $use_gdal"
 echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
 #echo "  GPSD Client (libgps) ................... : $use_libgps"
 
