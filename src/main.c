@@ -17496,16 +17496,10 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     float version;
     char string1[200];
     char string2[200];
-    extern char compiledate[];
     extern char gitstring[];
    
     xastir_snprintf(string2, sizeof(string2),"\nXastir V%s %s\n",xastir_version,gitstring);
-    xb = XmStringCreateLocalized(string2);
-    xa = XmStringCreateLocalized(compiledate);
-    xms = XmStringConcat(xb, xa);
-    XmStringFree(xa);
-    XmStringFree(xb);
-    //xms is still defined
+    xms = XmStringCreateLocalized(string2);
 
     xa = XmStringCreateLocalized("\n\n" ABOUT_MSG "\n\nLibraries used: " XASTIR_INSTALLED_LIBS "\n\n" ABOUT_OSM);  // Add some newlines
     xb = XmStringConcat(xms, xa);
