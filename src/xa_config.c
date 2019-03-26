@@ -69,46 +69,6 @@
 
 
 
-
-
-// Storage for the saved locale strings
-char *saved_locale_LC_NUMERIC;
-char *saved_locale_LC_CTYPE;
-
-
-void set_to_C_locale (void) {
-    char *old_locale;
-
-    // Get the names of the current locale
-    old_locale = setlocale (LC_NUMERIC, NULL);
-    // Copy the name so it won't get clobbered by setlocale later
-    saved_locale_LC_NUMERIC = strdup (old_locale);
-
-    // Repeat for LC_CTYPE
-    old_locale = setlocale (LC_CTYPE, NULL);
-    saved_locale_LC_CTYPE = strdup (old_locale);
-
-    // Set both locales to C locale
-    (void)setlocale (LC_NUMERIC, "C");
-    (void)setlocale (LC_CTYPE, "C");
-}
-
-
-
-
-
-void restore_from_C_locale (void) {
-    // Restore the original locales
-    (void)setlocale (LC_NUMERIC, saved_locale_LC_NUMERIC);
-    (void)free (saved_locale_LC_NUMERIC);
-    (void)setlocale (LC_CTYPE, saved_locale_LC_CTYPE);
-    (void)free (saved_locale_LC_CTYPE);
-}
-
-
-
-
-
 void store_string(FILE * fout, char *option, char *value) {
 
 //    if (debug_level & 1)
@@ -526,9 +486,8 @@ void save_data(void)  {
     // Force the locale to a default so that we don't have
     // conversion problems due to LANG/LC_ALL/LC_CTYPE/LC_NUMERIC
     // environment variables.
-//    (void)setlocale(LC_NUMERIC, "C");
-//    (void)setlocale(LC_CTYPE, "C");
-    set_to_C_locale();
+    (void)setlocale(LC_NUMERIC, "C");
+    (void)setlocale(LC_CTYPE, "C");
 
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
@@ -1368,7 +1327,6 @@ fprintf(stderr,"X:%d  y:%d\n", (int)x_return, (int)y_return);
             return;
         }
     }
-    restore_from_C_locale();
 }
 
 
@@ -1385,9 +1343,8 @@ void load_data_or_default(void) {
     // Force the locale to a default so that we don't have
     // conversion problems due to LANG/LC_ALL/LC_CTYPE/LC_NUMERIC
     // environment variables.
-//    (void)setlocale(LC_NUMERIC, "C");
-//    (void)setlocale(LC_CTYPE, "C");
-    set_to_C_locale();
+    (void)setlocale(LC_NUMERIC, "C");
+    (void)setlocale(LC_CTYPE, "C");
     
     /* language */
     if (!get_string ("LANGUAGE", lang_to_use, sizeof(lang_to_use))
@@ -2536,8 +2493,6 @@ void load_data_or_default(void) {
     snapshot_interval = get_int ("SNAPSHOT_INTERVAL", 1,30,5);
 
     input_close();
-
-    restore_from_C_locale();
 }
 
 
