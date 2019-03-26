@@ -3797,9 +3797,8 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
             temp_my_course,
             sizeof(my_text) - 1 - strlen(my_text));
     }
-    set_to_C_locale();
+
     XmTextFieldSetString(textarea, my_text);
-    restore_from_C_locale();
     XtManageChild(textarea);
 }
 

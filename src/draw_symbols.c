@@ -2700,9 +2700,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             if ( (!ghost || Select_.old_data) && length>0) {
                 x_offset=((x_long-NW_corner_longitude)/scale_x)+13;
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
-                set_to_C_locale();
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
-                restore_from_C_locale();
                 posyr += font_height;
             }
  
@@ -2736,9 +2734,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             if ( (!ghost || Select_.old_data) && length>0) {
                 x_offset=(((x_long-NW_corner_longitude)/scale_x)-(txt_width+9));
                 y_offset=((y_lat  -NW_corner_latitude) /scale_y)+posyl;
-                set_to_C_locale();
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
-                restore_from_C_locale();
                 posyl += font_height;
             }
             if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
@@ -2817,9 +2813,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             if ( (!ghost || Select_.old_data) && length>0) {
                 x_offset=((x_long-NW_corner_longitude)/scale_x)-(txt_width/2);
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
-                set_to_C_locale();
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
-                restore_from_C_locale();
                 posyr += font_height;
             }
 
@@ -2828,9 +2822,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
             if ( (!ghost || Select_.old_data) && length>0) {
                 x_offset=((x_long-NW_corner_longitude)/scale_x)-(txt_width/2);
                 y_offset=((y_lat -NW_corner_latitude) /scale_y)+posyr;
-                set_to_C_locale();
                 draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
-                restore_from_C_locale();
             }
 
             if (gauge_data != NULL) {
