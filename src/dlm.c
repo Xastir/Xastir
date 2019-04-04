@@ -169,8 +169,7 @@ void (*DLM_progress_callback)(void)=NULL;
  * DLM_wait_done - wait until the transfers are all complete
  * returns the number of items in the queue if it timed out
  **********************************************************/
-int DLM_wait_done(time_t timeout)
-{
+int DLM_wait_done(time_t timeout) {
 #ifdef DLM_QUEUE_THREADED
   while ((timeout > 0) && (DLM_queue_state == DLM_Q_RUN)) {
         sleep(1);
@@ -185,8 +184,8 @@ int DLM_wait_done(time_t timeout)
 /**********************************************************
  * DLM_check_progress - check if we have more tiles since last call
  **********************************************************/
-int DLM_check_progress(void)
-{ int p=DLM_queue_progress_flag;
+int DLM_check_progress(void) {
+  int p=DLM_queue_progress_flag;
   DLM_queue_progress_flag=0;
   return p;
 }
@@ -194,8 +193,7 @@ int DLM_check_progress(void)
 /**********************************************************
  * DLM_queue_progress - called when new tiles are available
  **********************************************************/
-static void DLM_queue_progress(int prog)
-{
+static void DLM_queue_progress(int prog) {
   if (prog) {
      DLM_queue_progress_flag=1;
 
@@ -209,13 +207,14 @@ static void DLM_queue_progress(int prog)
 /**********************************************************
  * DLM_queue_len - return number of tiles queued for download/check
  **********************************************************/
-int DLM_queue_len(void)
-{
+int DLM_queue_len(void) {
     struct DLM_queue_entry *q=DLM_queue;
     int count=0;
 
     begin_critical_section(&DLM_queue_lock, "DLM_queue_len");
-    while (q) { count++; q=q->next; }
+    while (q) {
+        count++; q=q->next;
+    }
     end_critical_section(&DLM_queue_lock, "DLM_queue_len");
     //fprintf(stderr,"DLM_queue_len is %d\n", count);
     return count;
@@ -224,8 +223,7 @@ int DLM_queue_len(void)
 /**********************************************************
  * abort_DLM_queue_abort() - stop the transfer thread
  **********************************************************/
-void DLM_queue_abort(void)
-{
+void DLM_queue_abort(void) {
    DLM_queue_state = DLM_Q_QUIT;
    //fprintf(stderr, "DLM_queue aborting\n");
 }
@@ -233,15 +231,14 @@ void DLM_queue_abort(void)
 /**********************************************************
  * DLM_queue_entry_alloc() - allocate a queue entry
  **********************************************************/
-static struct DLM_queue_entry *DLM_queue_entry_alloc(void)
-{ return malloc(sizeof(struct DLM_queue_entry));
+static struct DLM_queue_entry *DLM_queue_entry_alloc(void) {
+  return malloc(sizeof(struct DLM_queue_entry));
 }
 
 /**********************************************************
  * DLM_queue_entry_free() - free memory used by a tile queue entry
  **********************************************************/
-static void DLM_queue_entry_free(struct DLM_queue_entry *q)
-{
+static void DLM_queue_entry_free(struct DLM_queue_entry *q) {
   if (q) {
      begin_critical_section(&DLM_queue_lock, "DLM_queue_entry_free:Queue Lock");
      begin_critical_section(&(q->lock), "DLM_queue_entry_free:tile lock");
@@ -288,8 +285,7 @@ static void DLM_queue_entry_free(struct DLM_queue_entry *q)
 /**********************************************************
  * DLM_queue_destroy() - free all entries in the queue
  **********************************************************/
-static void DLM_queue_destroy(void)
-{
+static void DLM_queue_destroy(void) {
   struct DLM_queue_entry *next, *q;
   int count=0;
 
@@ -308,8 +304,7 @@ static void DLM_queue_destroy(void)
 /**********************************************************
  * DLM_queue_abort_tiles() - free all tiles in the queue
  **********************************************************/
-void DLM_queue_abort_tiles(void)
-{
+void DLM_queue_abort_tiles(void) {
   struct DLM_queue_entry *next, *q;
   int count=0;
 
@@ -328,8 +323,7 @@ void DLM_queue_abort_tiles(void)
 /**********************************************************
  * DLM_queue_abort_files() - free all non-tiles in the queue
  **********************************************************/
-void DLM_queue_abort_files(void)
-{
+void DLM_queue_abort_files(void) {
   struct DLM_queue_entry *next, *q;
   int count=0;
 
@@ -348,8 +342,7 @@ void DLM_queue_abort_files(void)
 /**********************************************************
  * DLM_store_file() - move the temp file into place if we used one
  **********************************************************/
-static int DLM_store_file(struct DLM_queue_entry *q)
-{
+static int DLM_store_file(struct DLM_queue_entry *q) {
    int rc;
    if (!q->tempName) return 0;
 
@@ -368,8 +361,7 @@ static int DLM_store_file(struct DLM_queue_entry *q)
  * DLM_get_next_tile() - find the next idle tile ready for download
  * also locks that tile
  **********************************************************/
-static struct DLM_queue_entry *DLM_get_next_tile(int state)
-{
+static struct DLM_queue_entry *DLM_get_next_tile(int state) {
   struct DLM_queue_entry *q;
   begin_critical_section(&DLM_queue_lock, "DLM_transfer_thread: queue lock");
   q = DLM_queue;
@@ -386,8 +378,7 @@ static struct DLM_queue_entry *DLM_get_next_tile(int state)
 /**********************************************************
  * DLM_curl_fwrite_callback() - callback for curl_multi
  **********************************************************/
-static size_t DLM_curl_fwrite_callback(void *buffer, size_t size, size_t nmemb, void *stream)
-{
+static size_t DLM_curl_fwrite_callback(void *buffer, size_t size, size_t nmemb, void *stream) {
    struct DLM_queue_entry *out = (struct DLM_queue_entry *)stream;
    if (out && !out->stream) {
       out->stream=fopen((out->tempName ? out->tempName : out->fileName), "wb");
@@ -402,8 +393,7 @@ static size_t DLM_curl_fwrite_callback(void *buffer, size_t size, size_t nmemb, 
  **********************************************************/
 static int DLM_curl_progress_callback(void *p,
                     double dltotal, double dlnow,
-                    double ultotal, double ulnow)
-{
+                    double ultotal, double ulnow) {
   struct DLM_queue_entry *tile = (struct DLM_queue_entry *)p;
   if (!tile) return 0;
 
@@ -416,8 +406,7 @@ static int DLM_curl_progress_callback(void *p,
  * DLM_curl_set_queue_entry() - curl session options we can't set
  * at initialization in some cases.
  **********************************************************/
-static void DLM_curl_set_queue_entry(CURL *mySession, struct DLM_queue_entry *qentry)
-{
+static void DLM_curl_set_queue_entry(CURL *mySession, struct DLM_queue_entry *qentry) {
   curl_easy_setopt(mySession, CURLOPT_FILE, qentry);
 
   curl_easy_setopt(mySession, CURLOPT_PROGRESSDATA, qentry);
@@ -492,8 +481,7 @@ static CURL *DLM_curl_init(char *errBuf) {
 /**********************************************************
  * DLM_transfer_thread() - retrieve item queued for download
  **********************************************************/
-static void *DLM_transfer_thread(void *arg)
-{
+static void *DLM_transfer_thread(void *arg) {
     char map_it[MAX_FILENAME];
     struct DLM_queue_entry *tile;
 #ifdef DLM_QUEUE_THREADED
@@ -630,7 +618,8 @@ static void *DLM_transfer_thread(void *arg)
 #else // HAVE_LIBCURL
 
                // We have no other option - use wget, one file at a time
-               { char cmd[500];
+               {
+                 char cmd[500];
                  xastir_snprintf(cmd, sizeof(cmd),
                       "%s --server-response --user-agent=Xastir --tries=1 --timeout=%d --output-document=\'%s\' \'%s\' 2> /dev/null\n",
                       "wget",
@@ -698,8 +687,7 @@ static void *DLM_transfer_thread(void *arg)
  * DLM_queue_start_if_needed()
  * Start the transfers if they need starting
  **********************************************************/
-static void DLM_queue_start_if_needed(void)
-{
+static void DLM_queue_start_if_needed(void) {
 #ifdef DLM_QUEUE_THREADED
      if (DLM_queue_state == DLM_Q_STOP) {
         // start the thread
@@ -716,8 +704,7 @@ static void DLM_queue_start_if_needed(void)
  * DLM_do_transfers() - download all tiles now
  * Does nothing if we are in threaded mode
  **********************************************************/
-void DLM_do_transfers(void)
-{
+void DLM_do_transfers(void) {
 #ifdef DLM_QUEUE_THREADED
   if (DLM_queue_len()>0)
      DLM_queue_start_if_needed();
@@ -731,8 +718,7 @@ void DLM_do_transfers(void)
  * Internal use only - no checking is done!
  **********************************************************/
 
-static void DLM_queue_add(struct DLM_queue_entry *ent)
-{
+static void DLM_queue_add(struct DLM_queue_entry *ent) {
   if (ent->url && ent->tempName) {
      // if the thread is quitting, wait till it's done
      while (DLM_queue_state == DLM_Q_QUIT);
@@ -763,9 +749,8 @@ void DLM_queue_tile(
     unsigned long	  y,
     int			  osm_zl,
     char		  *baseDir,
-    char		  *ext
-)
-{
+    char		  *ext ) {
+
   struct DLM_queue_entry *tile, *q;
   struct stat sb;
   int    len;
@@ -849,9 +834,8 @@ void DLM_queue_tile(
 void DLM_queue_file(
     char		  *url,
     char		  *filename,
-    time_t		  expiry
-)
-{
+    time_t		  expiry ) {
+
   struct DLM_queue_entry *tile, *q;
   struct stat sb;
   char   *p;
