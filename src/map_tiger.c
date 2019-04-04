@@ -666,7 +666,11 @@ void draw_tiger_map (Widget w,
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, &exception);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         if (image)
@@ -678,7 +682,19 @@ void draw_tiger_map (Widget w,
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK)
+  #if (MagickLibVersion < 0x201702)
     index_pack = GetIndexes(image);
+  #else
+    index_pack = AccessMutableIndexes(image);
+  #endif
+#else
+  #if (MagickLibVersion < 0x0669)
+    index_pack = GetIndexes(image);
+  #else
+    index_pack = GetAuthenticIndexQueue(image);
+  #endif
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         if (image)
@@ -697,7 +713,7 @@ void draw_tiger_map (Widget w,
             temp_pack = image->colormap[l];
             if (debug_level & 512)
                 fprintf(stderr,"Colormap color is %i  %i  %i \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
+                       (int)temp_pack.red, (int)temp_pack.green, (int)temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
             // is defined in /usr/include/magick/image.h as either an unsigned short or an
@@ -714,9 +730,9 @@ void draw_tiger_map (Widget w,
             else {  // QuantumDepth = 8
                 if (debug_level & 512)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -925,7 +941,7 @@ void draw_tiger_map (Widget w,
                         // now copy a pixel from the map image to the screen
                         l = map_x + map_y * image->columns;
                         if (image->storage_class == PseudoClass) {
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
                         }
                         else {
                             // It is not safe to assume that the red/green/blue
@@ -939,9 +955,9 @@ void draw_tiger_map (Widget w,
                             else { // QuantumDepth=8
                                 // shift the bits of the 8-bit quantity so that
                                 // they become the high bigs of my_colors.*
-                                my_colors[0].red=pixel_pack[l].red<<8;
-                                my_colors[0].green=pixel_pack[l].green<<8;
-                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                                my_colors[0].red=pixel_pack[l].red*256;
+                                my_colors[0].green=pixel_pack[l].green*256;
+                                my_colors[0].blue=pixel_pack[l].blue*256;
                             }
                             // NOW my_colors has the right r,g,b range for
                             // pack_pixel_bits

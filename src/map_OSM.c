@@ -77,6 +77,7 @@
 #include "map_cache.h"
 
 #include "tile_mgmnt.h"
+#include "dlm.h"
 #include "map_OSM.h"
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
@@ -490,8 +491,9 @@ static void draw_image(
 
 /*
     if (image->colorspace != RGBColorspace) {
-        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
-        return;
+        TransformImageColorspace(image, RGBColorspace);
+        //fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        //return;
     }
 */
 
@@ -517,13 +519,29 @@ static void draw_image(
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         return;
     }
 
+#if defined(HAVE_GRAPHICSMAGICK)
+  #if (MagickLibVersion < 0x201702)
     index_pack = GetIndexes(image);
+  #else
+    index_pack = AccessMutableIndexes(image);
+  #endif
+#else
+  #if (MagickLibVersion < 0x0669)
+    index_pack = GetIndexes(image);
+  #else
+    index_pack = GetAuthenticIndexQueue(image);
+  #endif
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         return;
@@ -556,9 +574,9 @@ static void draw_image(
             else {  // QuantumDepth = 8
                 if (debug_level & 512)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -608,7 +626,7 @@ static void draw_image(
                 if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
                     continue;
                 }
-                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
             }
             else {
                 // Skip transparent pixels
@@ -627,9 +645,9 @@ static void draw_image(
                 else { // QuantumDepth=8
                     // shift the bits of the 8-bit quantity so that
                     // they become the high bigs of my_colors.*
-                    my_colors[0].red=pixel_pack[l].red<<8;
-                    my_colors[0].green=pixel_pack[l].green<<8;
-                    my_colors[0].blue=pixel_pack[l].blue<<8;
+                    my_colors[0].red=pixel_pack[l].red*256;
+                    my_colors[0].green=pixel_pack[l].green*256;
+                    my_colors[0].blue=pixel_pack[l].blue*256;
                 }
                 // NOW my_colors has the right r,g,b range for
                 // pack_pixel_bits
@@ -682,8 +700,9 @@ static void draw_OSM_image(
 
 /*
     if (image->colorspace != RGBColorspace) {
-        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
-        return;
+        TransformImageColorspace(image, RGBColorspace);
+        //fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
+        //return;
     }
 */
 
@@ -709,13 +728,29 @@ static void draw_OSM_image(
     }
 
 
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x669)
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+    pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
+#endif
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
         return;
     }
 
+#if defined(HAVE_GRAPHICSMAGICK)
+  #if (MagickLibVersion < 0x201702)
     index_pack = GetIndexes(image);
+  #else
+    index_pack = AccessMutableIndexes(image);
+  #endif
+#else
+  #if (MagickLibVersion < 0x0669)
+    index_pack = GetIndexes(image);
+  #else
+    index_pack = GetAuthenticIndexQueue(image);
+  #endif
+#endif
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         return;
@@ -748,9 +783,9 @@ static void draw_OSM_image(
             else {  // QuantumDepth = 8
                 //if (debug_level & 512)
                 //    fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+                my_colors[l].red   = (temp_pack.red * 256) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green * 256) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue * 256) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -886,7 +921,7 @@ static void draw_OSM_image(
                             if (xastirColorsMatch(pixel_pack[l],image->matte_color)) {
                                 continue;
                             }
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                            XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
                         }
                         else {
                             // Skip transparent pixels and make matte
@@ -907,9 +942,9 @@ static void draw_OSM_image(
                             else { // QuantumDepth=8
                                 // shift the bits of the 8-bit quantity so that
                                 // they become the high bigs of my_colors.*
-                                my_colors[0].red=pixel_pack[l].red<<8;
-                                my_colors[0].green=pixel_pack[l].green<<8;
-                                my_colors[0].blue=pixel_pack[l].blue<<8;
+                                my_colors[0].red=pixel_pack[l].red*256;
+                                my_colors[0].green=pixel_pack[l].green*256;
+                                my_colors[0].blue=pixel_pack[l].blue*256;
                             }
                             // NOW my_colors has the right r,g,b range for
                             // pack_pixel_bits
@@ -972,11 +1007,6 @@ void draw_OSM_tiles (Widget w,
     unsigned int offset_x, offset_y;
     char tmpString[MAX_TMPSTRING];
 
-#ifdef HAVE_LIBCURL
-    CURL *mySession;
-    char errBuf[CURL_ERROR_SIZE];
-    int curl_result;
-#endif // HAVE_LIBCURL
     char temp_file_path[MAX_VALUE];
 
     // Check whether we're indexing or drawing the map
@@ -1091,10 +1121,6 @@ void draw_OSM_tiles (Widget w,
                             tiles.endy, osm_zl, tileRootDir,
                             tileExt[0] != '\0' ? tileExt : "png");
 
-#ifdef HAVE_LIBCURL
-    mySession = xastir_curl_init(errBuf);
-#endif // HAVE_LIBCURL
-
     // get the tiles
     tileCnt = 1;
     for (tilex = tiles.startx; tilex <= tiles.endx; tilex++) {
@@ -1106,37 +1132,17 @@ void draw_OSM_tiles (Widget w,
                 XmUpdateDisplay(text);
             }
 
-#ifdef HAVE_LIBCURL
-            curl_result = getOneTile(mySession, serverURL, tilex, tiley,
+            DLM_queue_tile(serverURL, tilex, tiley,
                     osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
-            if (curl_result < 0) {
-               fprintf(stderr, "Download error for tile: %s/%i/%li/%li.%s\n",
-                       serverURL, osm_zl, tilex, tiley,
-                       tileExt[0] != '\0' ? tileExt : "png");
-               fprintf(stderr, "curl told us %d\n", -1 * curl_result);
-               fprintf(stderr, "curlerr: %s\n", errBuf);
-            } else {
-                tileCnt += curl_result;
-            }
-#else
-            tileCnt += getOneTile(serverURL, tilex, tiley,
-                    osm_zl, tileRootDir, tileExt[0] != '\0' ? tileExt : "png");
-#endif // HAVE_LIBCURL
 
-            HandlePendingEvents(app_context);
-            if (interrupt_drawing_now) {
-                interrupted = 1;
-                break;
-            }
-        }
-        if (interrupted == 1) {
-            break;
         }
     }
 
-#ifdef HAVE_LIBCURL
-    curl_easy_cleanup(mySession);
-#endif // HAVE_LIBCURL
+    // if the Download Manager is not using threaded (background) mode,
+    // we need this to actually do the downloads.
+    // In threaded mode, it does nothing
+    DLM_do_transfers();
+    if (interrupt_drawing_now) interrupted = 1;
 
     if (interrupted != 1) {
         // calculate tie points
@@ -1216,7 +1222,12 @@ void draw_OSM_tiles (Widget w,
         canvas->background_color.green = MATTE_GREEN;
         canvas->background_color.blue = MATTE_BLUE;
         canvas->background_color.opacity = MATTE_OPACITY;
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
         SetImage(canvas, MATTE_OPACITY);
+#else
+        SetImageBackgroundColor(canvas);
+        SetImageOpacity(canvas, MATTE_OPACITY);
+#endif
 
         xastir_snprintf(map_it, sizeof(map_it), "%s",
                 langcode ("BBARSTA049")); // Reading tiles...
@@ -1232,22 +1243,32 @@ void draw_OSM_tiles (Widget w,
             for (row = tiles.startx, offset_x = 0;
                  row <= tiles.endx;
                  row++, offset_x += 256) {
+
                 xastir_snprintf(tmpString, sizeof(tmpString),
                         "%s/%d/%d/%d.%s", tileRootDir, osm_zl, row, col,
                         tileExt[0] != '\0' ? tileExt : "png");
                 strncpy(tile_info->filename, tmpString, MaxTextExtent);
 
                 tile = ReadImage(tile_info,&exception);
+
                 if (exception.severity != UndefinedException) {
-                    CatchException(&exception);
-                    xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
+                    //fprintf(stderr,"Exception severity:%d\n", exception.severity);
+                    if (exception.severity==FileOpenError) {
+                       //fprintf(stderr, "%s NOT available\n", tile_info->filename);
+#if !defined(HAVE_GRAPHICSMAGICK) && (MagickLibVersion > 0x0669)
+                       ClearMagickException(&exception);
+#endif
+                    } else {
+                       xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
                             tileRootDir, osm_zl, row, col,
                             tileExt[0] != '\0' ? tileExt : "png");
-                    if (debug_level & 512) {
-                        fprintf(stderr, "%s NOT removed.\n", tmpString);
-                    } else {
-                        fprintf(stderr, "Removing %s\n", tmpString);
-                        unlink(tmpString);
+                       if (debug_level & 512) {
+                           fprintf(stderr, "%s NOT removed.\n", tmpString);
+                       } else {
+                           fprintf(stderr, "Removing %s\n", tmpString);
+                           unlink(tmpString);
+                       }
+                       CatchException(&exception);
                     }
                     // clear exception so next iteration doesn't fail
                     GetExceptionInfo(&exception);
@@ -1270,7 +1291,11 @@ void draw_OSM_tiles (Widget w,
         canvas->matte_color.blue = MATTE_BLUE;
 
         if (debug_level & 512) {
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
             DescribeImage(canvas, stderr, 0);
+#else
+            IdentifyImage(canvas, stderr, 0);
+#endif
             WriteImages(canvas_info, canvas, "/tmp/xastirOSMTiledMap.png", &exception);
         }
 
