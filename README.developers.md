@@ -45,7 +45,7 @@ available as a tar.gz or zip download without using git.
   
 - Push the tag to github
 
-      git push origin stable-DD-MM-YY
+      git push origin dev-snapshot-DD-MM-YY
 
   The new tag will appear on the "Releases" page in the "Tags" tab:
   https://github.com/Xastir/Xastir/tags where one can click on a link
