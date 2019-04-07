@@ -160,10 +160,27 @@ xastir_mutex DLM_queue_lock = { .threadID=0, .lock=PTHREAD_MUTEX_INITIALIZER };
 pthread_t DLM_queue_thread;
 
 volatile int DLM_queue_progress_flag=0;
+
+/* DLM_queue_state is protected by a lock to ensure memory consistency
+ * between threads. It is held for every read or write of DLM_queue_state
+ */
+xastir_mutex DLM_state_lock = { .threadID=0, .lock=PTHREAD_MUTEX_INITIALIZER };
 volatile int DLM_queue_state=DLM_Q_STOP;
 struct DLM_queue_entry *DLM_queue=NULL;
 
 void (*DLM_progress_callback)(void)=NULL;
+
+/**********************************************************
+ * DLM_get_queue_state - Read DLM_queue_state while
+ * ensuring it is locked
+ **********************************************************/
+static int DLM_get_queue_state(void) {
+  int state;
+  begin_critical_section(&DLM_state_lock, "DLM_get_queue_state");
+  state = DLM_queue_state;
+  end_critical_section(&DLM_state_lock, "DLM_get_queue_state");
+  return state;
+}
 
 /**********************************************************
  * DLM_wait_done - wait until the transfers are all complete
@@ -171,7 +188,7 @@ void (*DLM_progress_callback)(void)=NULL;
  **********************************************************/
 int DLM_wait_done(time_t timeout) {
 #ifdef DLM_QUEUE_THREADED
-  while ((timeout > 0) && (DLM_queue_state == DLM_Q_RUN)) {
+  while ((timeout > 0) && (DLM_get_queue_state() == DLM_Q_RUN)) {
         sleep(1);
         timeout--;
   }
@@ -224,7 +241,9 @@ int DLM_queue_len(void) {
  * abort_DLM_queue_abort() - stop the transfer thread
  **********************************************************/
 void DLM_queue_abort(void) {
+   begin_critical_section(&DLM_state_lock, "DLM_queue_abort");
    DLM_queue_state = DLM_Q_QUIT;
+   end_critical_section(&DLM_state_lock, "DLM_queue_abort");
    //fprintf(stderr, "DLM_queue aborting\n");
 }
 
@@ -504,12 +523,14 @@ static void *DLM_transfer_thread(void *arg) {
     // detach - we don't care about the result, and won't be calling pthread_join()
     pthread_detach(pthread_self());
 
+    begin_critical_section(&DLM_state_lock, "DLM_transfer_thread set to run");
     DLM_queue_state = DLM_Q_RUN;
+    end_critical_section(&DLM_state_lock, "DLM_transfer_thread set to run");
 #ifdef DLM_QUEUE_THREADED
     idleCnt=0;
 #endif
 
-    fprintf(stderr, "DLM_transfer_thread started\n");
+    if (debug_level & 1) fprintf(stderr, "DLM_transfer_thread started\n");
 
 #ifdef HAVE_LIBCURL
 #ifdef USE_CURL_MULTI
@@ -521,7 +542,7 @@ static void *DLM_transfer_thread(void *arg) {
 #endif // HAVE_LIBCURL
 
     // get the tiles
-    while (DLM_queue_state != DLM_Q_QUIT) {
+    while (DLM_get_queue_state() != DLM_Q_QUIT) {
 
 #ifdef HAVE_LIBCURL
 #ifdef USE_CURL_MULTI
@@ -643,18 +664,24 @@ static void *DLM_transfer_thread(void *arg) {
 
 #ifdef DLM_QUEUE_THREADED
             } else if (idleCnt < 10) {
+               begin_critical_section(&DLM_state_lock, "DLM_transfer_thread idle check");
                DLM_queue_state = DLM_Q_IDLE;
+               end_critical_section(&DLM_state_lock, "DLM_transfer_thread idle check");
                //fprintf(stderr,"DLM_transfer_queue: idling\n");
                sleep(1);
                idleCnt++;
 #endif
             } else {
+               begin_critical_section(&DLM_state_lock, "DLM_transfer_thread set quit");
                DLM_queue_state = DLM_Q_QUIT;
+               end_critical_section(&DLM_state_lock, "DLM_transfer_thread set quit");
             }
 #ifndef DLM_QUEUE_THREADED
             HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
+               begin_critical_section(&DLM_state_lock, "DLM_transfer_thread interrupt quit");
                DLM_queue_state = DLM_Q_QUIT;
+               end_critical_section(&DLM_state_lock, "DLM_transfer_thread interrupt quit");
             }
 #endif
 #ifdef HAVE_LIBCURL
@@ -677,8 +704,10 @@ static void *DLM_transfer_thread(void *arg) {
 #endif // HAVE_LIBCURL
 
     DLM_queue_destroy();
-    fprintf(stderr,"DLM_transfer_thread stopped\n");
+    if (debug_level & 1) fprintf(stderr,"DLM_transfer_thread stopped\n");
+    begin_critical_section(&DLM_state_lock, "DLM_transfer_thread stop update");
     DLM_queue_state = DLM_Q_STOP;
+    end_critical_section(&DLM_state_lock, "DLM_transfer_thread stop update");
     return NULL;
 }
 
@@ -689,8 +718,9 @@ static void *DLM_transfer_thread(void *arg) {
  **********************************************************/
 static void DLM_queue_start_if_needed(void) {
 #ifdef DLM_QUEUE_THREADED
-     if (DLM_queue_state == DLM_Q_STOP) {
+     if (DLM_get_queue_state() == DLM_Q_STOP) {
         // start the thread
+        // Queue state lock not needed as there is no other thread running here
         DLM_queue_state = DLM_Q_STARTING;
         if (pthread_create(&DLM_queue_thread, NULL, DLM_transfer_thread, NULL)) {
            //fprintf(stderr,"Error creating OSM transfer thread\n");
@@ -721,7 +751,7 @@ void DLM_do_transfers(void) {
 static void DLM_queue_add(struct DLM_queue_entry *ent) {
   if (ent->url && ent->tempName) {
      // if the thread is quitting, wait till it's done
-     while (DLM_queue_state == DLM_Q_QUIT);
+     while (DLM_get_queue_state() == DLM_Q_QUIT);
 
      // queue this tile
      //fprintf(stderr,"OSM queueing %s, qlen=%d\n",tile->fileName,DLM_queue_len());
