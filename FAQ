@@ -41,7 +41,7 @@ The Questions
         user interface weirdness occurs.  Why?
     3.7 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
-    3.8 Why does compilation of map_geo, map_WMS or map_tiger fail with "invalid operands to binary <<" errors?
+    3.8 Why does compilation of map_geo or map_WMS fail with "invalid operands to binary <<" errors?
 
 4.  Running Xastir
 
@@ -402,7 +402,7 @@ The Answers
     ImageMagick RPM's.  Encourage your vendor to fix the "spec" files for those
     RPM's to include all dependencies.
 
-   3.8 Why does compilation of map_geo, map_WMS or map_tiger fail with "invalid operands to binary <<" errors?
+   3.8 Why does compilation of map_geo or map_WMS fail with "invalid operands to binary <<" errors?
 
    This is a problem with ImageMagick.  In short, your ImageMagick
    installation has been built with an option incompatible with

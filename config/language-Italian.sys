@@ -79,7 +79,6 @@ PULDNMP006|Etichette Stazione|S|
 PULDNMP026|Stile Bordo Icone|O|
 PULDNMP011|Menù sul puntatore del mouse|M|
 PULDNMP008|Intensità Mappa|I|
-PULDNMP020|Configura Tigermap||
 PULDNMP021|Mappe Automatche - Disabilita Mappe Raster||
 PULDNMP022|Indicizza Mappe all' Avvio||
 PULDNMP023|Indice: Aggiungi Nuove Mappe|N|
@@ -91,27 +90,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Find Address||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
-#
-#
-# PopUp "Configure Tigermap"
-MPUPTGR001|Griglia||
-MPUPTGR002|Contee||
-MPUPTGR003|Etichette Città||
-MPUPTGR004|Aree Urbane||
-MPUPTGR005|Strade Principali||
-MPUPTGR006|Strade||
-MPUPTGR007|Ferrovie||
-MPUPTGR008|Etichette Stato||
-MPUPTGR009|Etichette Strade Statali||
-MPUPTGR010|Etichette Autostrade USA||
-MPUPTGR011|Etichette Autostrade Nazionali||
-MPUPTGR012|Seleziona oggetti da visualizzare:||
-MPUPTGR013|Fiumi||
-MPUPTGR014|Laghi||
-MPUPTGR015|Aereoporti, Parchi, ecc||
-MPUPTGR016|Intensità Mappa||
 MPUPTGR017|Internet Map Timeout (sec)||
-MPUPTGR018|Abilita Mappe Tiger||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||

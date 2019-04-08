@@ -80,7 +80,6 @@ PULDNMP006|Estilo de texto da estacao|E|
 PULDNMP026|Estilo da linha de fora do icon|O|
 PULDNMP011|Menu indicador do rato|r|
 PULDNMP008|Intensidade do mapa|I|
-PULDNMP020|Configurar tigermap||
 PULDNMP021|Auto Map - desactivar raster mapas||
 PULDNMP022|Indexar mapas no comeco||
 PULDNMP023|Index: Acrescentar mapas novos|A|
@@ -92,26 +91,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Find Address||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
-#
-# PopUp "Configurar tigermap"
-MPUPTGR001|Grelha||
-MPUPTGR002|Freguesias||
-MPUPTGR003|Etiquetas citadinas||
-MPUPTGR004|Areas urbanas||
-MPUPTGR005|Vias principais||
-MPUPTGR006|Ruas||
-MPUPTGR007|Estradas||
-MPUPTGR008|Etiquetas de provincia||
-MPUPTGR009|Etiquetas inter-provincias||
-MPUPTGR010|Etiquetas Hwy de Portugal||
-MPUPTGR011|Etiquetas Hwy de provincia||
-MPUPTGR012|Seleccionar itens para mostrar:||
-MPUPTGR013|Rios||
-MPUPTGR014|Lagos||
-MPUPTGR015|Aeroportos, parques, etc||
-MPUPTGR016|Intensidade do mapa||
 MPUPTGR017|Internet Map Timeout (sec)||
-MPUPTGR018|Activar Tiger Maps||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||

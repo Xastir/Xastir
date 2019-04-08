@@ -88,7 +88,6 @@ PULDNMP006|Textdarstellung|T|
 PULDNMP026|Symbol Umrandung|U|
 PULDNMP011|Mauszeiger-Menü|M|
 PULDNMP008|Intensität|I|
-PULDNMP020|Einstellungen Tigermaps||
 PULDNMP021|Autom. Karten - PixelKarten aus||
 PULDNMP022|Neue Karten beim Start indizieren||
 PULDNMP023|Index: Neue Karten hinzufügen|N|
@@ -100,27 +99,7 @@ PULDNMP028|Lösche gesamten Karten-Cache!||
 PULDNMP029|Finde Adresse||
 PULDNMP030|Konfiguration USGS DRG||
 PULDNMP031|Kartenrand ein||
-#
-#
-# PopUp "Einstellungen Tigermaps"
-MPUPTGR001|Gitter||
-MPUPTGR002|Counties||
-MPUPTGR003|Orts-Beschr.||
-MPUPTGR004|Urbane Bereiche||
-MPUPTGR005|Hauptstrassen||
-MPUPTGR006|Strassen||
-MPUPTGR007|Eisenbahn||
-MPUPTGR008|State Beschr.||
-MPUPTGR009|Interstate Beschr||
-MPUPTGR010|US Hwy Beschr.||
-MPUPTGR011|State Hwy Beschr.||
-MPUPTGR012|Anzeigen von:||
-MPUPTGR013|Flüsse||
-MPUPTGR014|Seen||
-MPUPTGR015|Flughäfen, Parks, etc||
-MPUPTGR016|Karten Intensität||
 MPUPTGR017|Internet-Karten Timeout [Sek]||
-MPUPTGR018|Tiger Maps erlauben||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Wähle darzustellende Objekte:||

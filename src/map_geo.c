@@ -660,7 +660,6 @@ void draw_geo_image_map (Widget w,
 
     int terraserver_flag = 0;   // U.S. satellite images/topo/reflectivity/urban
                                 // areas via terraserver
-    int tigerserver_flag = 0;   // U.S. Street maps via census.gov
     int OSMserver_flag = 0;     // OpenStreetMaps server, 1 = static maps, 2 = tiled
     unsigned tmp_zl = 0;
 
@@ -805,9 +804,6 @@ void draw_geo_image_map (Widget w,
 
             if (strncasecmp (line, "TERRASERVER-SATELLITE", 21) == 0)
                 terraserver_flag = 1;
-
-            if (strncasecmp (line, "TIGERMAP", 8) == 0)
-                tigerserver_flag = 1;
 
             if (strncasecmp (line, "OSMSTATICMAP", 12) == 0)
             {
@@ -1059,25 +1055,6 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
-
-    // Check whether Tigermap has been selected.  If so, run off to
-    // another routine to service this request.
-    //
-    if (tigerserver_flag) {
-
-#ifdef HAVE_MAGICK
-
-        // We need to send the "nocache" parameter to this function
-        // for those instances when the tigermap received is bad.
-        // Later the GUI can implement a method for refreshing the
-        // latest map and replacing the bad map in the cache.
-        //
-        draw_tiger_map(w, filenm, destination_pixmap, nocache);
-
-#endif  // HAVE_MAGICK
-
-        return;
-    }
     //
     // Check whether OpenStreetMap has been selected.  If so, run off to
     // another routine to service this request.
