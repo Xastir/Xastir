@@ -5691,7 +5691,7 @@ extern void draw_pop_map(Widget w,
 
 struct {
     char *ext;
-    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts, s57, pop} type;
+    enum {none=0, map, pdb, tif, geo, gnis, shp, pop} type;
     void (*func)(Widget w,
                char *dir,
                char *filenm,

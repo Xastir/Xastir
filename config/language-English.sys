@@ -81,7 +81,6 @@ PULDNMP006|Station Text Style|T|
 PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Mouse Pointer Menu|P|
 PULDNMP008|Map Intensity|I|
-PULDNMP020|Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
 PULDNMP022|Index New Maps on Startup||
 PULDNMP023|Index: Add New Maps|N|
@@ -93,26 +92,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Find Address||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
-#
-# PopUp "Configure Tigermap"
-MPUPTGR001|Grid||
-MPUPTGR002|Counties||
-MPUPTGR003|City Labels||
-MPUPTGR004|Urban Areas||
-MPUPTGR005|Major Roads||
-MPUPTGR006|Streets||
-MPUPTGR007|Railroads||
-MPUPTGR008|State Labels||
-MPUPTGR009|Interstate Labels||
-MPUPTGR010|US Hwy Labels||
-MPUPTGR011|State Hwy Labels||
-MPUPTGR012|Select items to be displayed:||
-MPUPTGR013|Rivers||
-MPUPTGR014|Lakes||
-MPUPTGR015|Airports, Parks, etc||
-MPUPTGR016|Map Intensity||
 MPUPTGR017|Internet Map Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||

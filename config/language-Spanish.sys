@@ -79,7 +79,6 @@ PULDNMP006|Etiquetas de estiones|E|
 PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Menú Indicador del Ratón|R|
 PULDNMP008|Intensidad del Mapa|I|
-PULDNMP020|Configurar Tigermapa||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Indice: Agregar Nuevos Mapas|A|
@@ -91,26 +90,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Find Address||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
-#
-# Menú "Configurar Tigermapa"
-MPUPTGR001|Rejilla||
-MPUPTGR002|Condados||
-MPUPTGR003|Etiquetas de Ciudades||
-MPUPTGR004|Areas Urbanas||
-MPUPTGR005|Caminos Principales||
-MPUPTGR006|Calles||
-MPUPTGR007|Ferrocarriles||
-MPUPTGR008|Etiquetas de Estados||
-MPUPTGR009|Etiquetas de Inter-estatar||
-MPUPTGR010|Etiquetas de Carretera||
-MPUPTGR011|Etiquetas de Carretera en Estados||
-MPUPTGR012|Seleccionar artículos a ser desplegado:||
-MPUPTGR013|Rios||
-MPUPTGR014|Lagos||
-MPUPTGR015|Aereopuertos, Parqueos, etc||
-MPUPTGR016|Intensidad de Mapa||
 MPUPTGR017|Internet Map Timeout (segundo)||
-MPUPTGR018|Activar Tiger Mapas||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Select items to be displayed:||

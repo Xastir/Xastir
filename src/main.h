@@ -384,7 +384,6 @@ extern void on_off_switch(int switchpos, Widget first, Widget second);
 extern void busy_cursor(Widget w);
 extern void pos_dialog(Widget w);
 extern int create_image(Widget w);
-extern void draw_tiger_map (Widget w, char *filenm, int destination_pixmap, int nocache);
 
 typedef struct _transparent_color_record{
     unsigned long trans_color;

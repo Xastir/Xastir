@@ -82,7 +82,6 @@ PULDNMP006|Style du texte de station|S|
 PULDNMP026|Style du contour d'icône|O|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|
-PULDNMP020|Configurer Tigermap||
 PULDNMP021|Cartographie automatique - désactiver cartes tramées||
 PULDNMP022|Indexer nouvelles cartes au démarrage||
 PULDNMP023|Index: Ajouter nouvelles cartes|R|
@@ -94,26 +93,7 @@ PULDNMP028|Vider le cache des cartes||
 PULDNMP029|Trouver l'adresse||
 PULDNMP030|Configurer USGS DRG||
 PULDNMP031|Activer bordure des cartes||
-#
-# PopUp "Configure Tigermap"
-MPUPTGR001|Quadrillage||
-MPUPTGR002|Comtés||
-MPUPTGR003|Nom des villes||
-MPUPTGR004|Régions urbaines||
-MPUPTGR005|Routes principales||
-MPUPTGR006|Rues||
-MPUPTGR007|Voies ferrées||
-MPUPTGR008|Nom des états||
-MPUPTGR009|Nom des autoroutes||
-MPUPTGR010|Nom des routes US||
-MPUPTGR011|Nom des routes d'états||
-MPUPTGR012|Choisir les articles à afficher:||
-MPUPTGR013|Rivières||
-MPUPTGR014|Lacs||
-MPUPTGR015|Aéroports, parcs, etc||
-MPUPTGR016|Intensité de la carte||
 MPUPTGR017|Temporisation de carte Internet (sec)||
-MPUPTGR018|Activer cartes Tiger||
 #
 # PopUp "Configure USGS DRG"
 MPUPDRG001|Sélectionner ce qui doit être affiché :||

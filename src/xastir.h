@@ -148,7 +148,6 @@ extern Widget text;
 extern XtAppContext app_context;
 extern int redraw_on_new_data;
 //extern Widget hidden_shell;
-extern int tiger_flag;
 extern int index_maps_on_startup;
 #define MAX_LABEL_FONTNAME 256
 #define FONT_SYSTEM  0
@@ -164,23 +163,6 @@ extern int index_maps_on_startup;
 #define FONT_DEFAULT FONT_MEDIUM
 #define MAX_FONTNAME 256
 extern char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
-
-#ifdef HAVE_MAGICK  //N0VH
-extern int tiger_show_grid;
-extern int tiger_show_counties;
-extern int tiger_show_cities;
-extern int tiger_show_places;
-extern int tiger_show_majroads;
-extern int tiger_show_streets;
-extern int tiger_show_railroad;
-extern int tiger_show_states;
-extern int tiger_show_interstate;
-extern int tiger_show_ushwy;
-extern int tiger_show_statehwy;
-extern int tiger_show_water;
-extern int tiger_show_lakes;
-extern int tiger_show_misc;
-#endif  // HAVE_MAGICK
 
 #ifdef HAVE_LIBGEOTIFF
 extern int DRG_XOR_colors;

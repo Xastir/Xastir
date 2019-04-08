@@ -92,7 +92,6 @@ PULDNMP006|Station Tekst Stijl|S|
 PULDNMP026|Icon Omranding Stijl|O|
 PULDNMP011|Muis Menu|M|
 PULDNMP008|Kaart Intensiteit|I|
-PULDNMP020|Configureren Tigermap||
 PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
@@ -104,27 +103,7 @@ PULDNMP028|Leeg de gehele kaarten cache!||
 PULDNMP029|Zoek Adres||
 PULDNMP030|Configureer USGS DRG||
 PULDNMP031|Zet kaart begrenzing aan||
-#
-#
-# PopUp "Configure Tigermap"
-MPUPTGR001|Raster|
-MPUPTGR002|Provincies||
-MPUPTGR003|Stads Labels||
-MPUPTGR004|Bevolkte Gebieden||
-MPUPTGR005|Grote wegen||
-MPUPTGR006|Straten||
-MPUPTGR007|Spoorwegen||
-MPUPTGR008|Staat Labels||
-MPUPTGR009|Snelwegen Labels||
-MPUPTGR010|VS Hoofdwegen Labels||
-MPUPTGR011|Hoofd wegen Labels||
-MPUPTGR012|Selecteer weer te geven items:||
-MPUPTGR013|Rivieren||
-MPUPTGR014|Meren||
-MPUPTGR015|Vliegvelden, Parken, enz||
-MPUPTGR016|Kaart Intensiteit||
 MPUPTGR017|Internet Kaarten Timeout (sec)||
-MPUPTGR018|Zet Tiger Kaarten aan||
 #
 # PopUp "Configureer USGS DRG"
 MPUPDRG001|Selecteer weer te geven items:||

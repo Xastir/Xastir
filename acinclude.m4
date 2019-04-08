@@ -452,15 +452,6 @@ if test "${use_imagemagick}" = "yes"; then
     LIBS=$save_libs 
     LDFLAGS=$save_ldflags 
   fi 
-#
-#  if test "${magickold}" = "yes"; then 
-# This used to be important, as some versions didn't support the
-# Tigermap intensity slider.
-#    AC_MSG_WARN(*********************************************************)
-#    AC_MSG_WARN(***     Old ImageMagick version ($magickversion) found.        ***)
-#    AC_MSG_WARN(*** Upgrade to 5.4.9 or newer for full functionality. ***)
-#    AC_MSG_WARN(*********************************************************) 
-#  fi 
 fi
 # End of ImageMagick checks 
 
