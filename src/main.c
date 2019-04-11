@@ -26789,6 +26789,8 @@ int main(int argc, char *argv[], char *envp[]) {
     extern char *optarg;
 #endif  // optarg
 
+    extern char gitstring[];
+
 #ifdef USING_LIBGC
     GC_find_leak = 1;
     GC_INIT();
@@ -26905,7 +26907,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // used and x: to allow xt arguments, which is actually parsed out
     // by the XtIntrinsics code, not directly in Xastir code.
     //
-    while ((ag = getopt(argc, argv, "c:f:v:l:g:x:012346789timp")) != EOF) {
+    while ((ag = getopt(argc, argv, "c:f:v:l:g:x:012346789timpV")) != EOF) {
 
         switch (ag) {
             
@@ -26946,6 +26948,10 @@ int main(int argc, char *argv[], char *envp[]) {
                 fprintf(stderr,"\n");
                 break;
 
+            case 'V':
+                printf("\nXastir V%s %s\n",xastir_version, gitstring);
+                exit(0);
+                break;
             case 'l':
                 fprintf(stderr,"Language is");
                 if (optarg) {
@@ -27038,6 +27044,7 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"-p                 Disable popups\n");
         fprintf(stderr,"-t                 Internal SIGSEGV handler enabled\n");
         fprintf(stderr,"-v level           Set the debug level\n\n");
+        fprintf(stderr,"-V                 Print version number and exit\n\n");
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
     }
