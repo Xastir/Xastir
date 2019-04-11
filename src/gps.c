@@ -363,9 +363,9 @@ int decode_gps_rmc( char *data,
 // $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
 // $GPGGA,104438.833,4301.1439,N,08803.0338,W,1,05,1.8,185.8,M,-34.2,M,0.0,0000*40
 
-// NOTE:  GLONASS receivers can output GNGGA strings that are identical in
-// form to GPGGA, but with the second character being different (N instead of P)
-// Let's try to support those, too.
+// NOTE:  while the above specifically refers to $GP strings for the GPS
+// receivers, there are others such as GNSS, GLONASS, Beidou, and Gallileo
+// that differ only in the third character.  We support those, too.
 //
 int decode_gps_gga( char *data,
                     char *long_pos,
