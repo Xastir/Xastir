@@ -5770,16 +5770,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
                     port_write_string(port_avail,logon_txt);
 
-                    // Moved the below section to near the bottom of
-                    // the routine, after the read/write threads are
-                    // started.  The net effect is that the above
-                    // string gets sent, then the below string,
-                    // kick-starting either protocol into sending us
-                    // NMEA strings.
-                    //
-//                  // Post-2.90 GPSD protocol
-//                  xastir_snprintf(logon_txt, sizeof(logon_txt), "?WATCH={\"enable\":true,\"nmea\":true}\r\n");
-//                  port_write_string(port_avail,logon_txt);
+                    // Post-2.90 GPSD protocol is handled near the
+                    // bottom of this routine.
 
                     // Must wait for valid GPS parsing after sending
                     // one posit.
@@ -6041,6 +6033,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 case DEVICE_NET_GPSD:
  
                      // Post-2.90 GPSD protocol
+                     // (Pre-2.90 protocol handled in a prior section of
+                     // this routine)
                     xastir_snprintf(logon_txt, sizeof(logon_txt), "?WATCH={\"enable\":true,\"nmea\":true}\r\n");
                     port_write_string(port_avail,logon_txt);
                     break;
