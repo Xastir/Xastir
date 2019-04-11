@@ -138,13 +138,13 @@ int decode_gps_rmc( char *data,
     if ( (data == NULL) || (strlen(data) < 37) )
         return(0);  // Not enough data to parse position from.
 
-    if (strncmp(data,"$GPRMC,",7) != 0)   // No GPRMC found
+    if (!(isRMC(data)))   // No GxRMC found
         return(0);
 
     if(strchr(data,',') == NULL)  // No comma found
         return(0);
 
-    (void)strtok(data,",");   // get GPRMC and skip it
+    (void)strtok(data,",");   // get GxRMC and skip it
     temp_ptr=strtok(NULL,",");   // get time
 
     if (temp_ptr == NULL)   // No comma found
@@ -362,6 +362,10 @@ int decode_gps_rmc( char *data,
 //
 // $GPGGA,170834,4124.8963,N,08151.6838,W,1,05,1.5,280.2,M,-34.0,M,,,*75 
 // $GPGGA,104438.833,4301.1439,N,08803.0338,W,1,05,1.8,185.8,M,-34.2,M,0.0,0000*40
+
+// NOTE:  while the above specifically refers to $GP strings for the GPS
+// receivers, there are others such as GNSS, GLONASS, Beidou, and Gallileo
+// that differ only in the third character.  We support those, too.
 //
 int decode_gps_gga( char *data,
                     char *long_pos,
@@ -392,7 +396,7 @@ int decode_gps_gga( char *data,
     if ( (data == NULL) || (strlen(data) < 35) )  // Not enough data to parse position from.
         return(0);
 
-    if (strncmp(data,"$GPGGA,",7) != 0)
+    if (!(isGGA(data)))
         return(0);
 
     if (strchr(data,',') == NULL)
@@ -563,7 +567,7 @@ int gps_data_find(char *gps_line_data, int port) {
  
 
 
-    if (strncmp(gps_line_data,"$GPRMC,",7)==0) {
+    if (isRMC(gps_line_data)) {
 
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
@@ -572,7 +576,7 @@ int gps_data_find(char *gps_line_data, int port) {
                 sizeof(filtered_data),
                 "%s",
                 gps_line_data);
-            
+
             makePrintable(filtered_data);
             fprintf(stderr,"Got RMC %s\n", filtered_data);
         }
@@ -644,14 +648,14 @@ DISABLE_SETUID_PRIVILEGE;
     else {
         if (debug_level & 128) {
             int i;
-            fprintf(stderr,"Not $GPRMC: ");
+            fprintf(stderr,"Not $GxRMC: ");
             for (i = 0; i<7; i++)
                 fprintf(stderr,"%c", gps_line_data[i]);
             fprintf(stderr,"\n");
         }
     }
 
-    if (strncmp(gps_line_data,"$GPGGA,",7)==0) {
+    if (isGGA(gps_line_data)) {
 
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
@@ -870,4 +874,24 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
     //fprintf(stderr,"%s\n",out_string2);
 }
 
+// Test if this is a GGA string, irrespective of what constellation it
+// might be for.  This should allow us to support GPS, GLONASS, Gallileo,
+// Beidou, or GNSS receivers, and multi-constellation receivers.
+int isGGA(char *gps_line_data) {
+    int retval;
+    retval = (strncmp(gps_line_data,"$G",2)==0);
+    retval = retval && ((strlen(gps_line_data)>7)
+                        && strncmp(&(gps_line_data[3]),"GGA,",4)==0);
+    retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
+    return (retval);
+}
 
+// Test if this is an RMC string.   See comments for isGGA.
+int isRMC(char *gps_line_data) {
+    int retval;
+    retval = (strncmp(gps_line_data,"$G",2)==0);
+    retval = retval && ((strlen(gps_line_data)>7)
+                        && strncmp(&(gps_line_data[3]),"RMC,",4)==0);
+    retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
+    return (retval);
+}

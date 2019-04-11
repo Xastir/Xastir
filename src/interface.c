@@ -1474,7 +1474,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
                 // GPRMC and GPGGA strings into global variables.
                 // Drop other GPS strings on the floor.
                 //
-                if ( (length > 7) && (strncmp((char *)string,"$GPRMC,",7) == 0) ) {
+                if ( (length > 7) && (isRMC(string))) {
                     xastir_snprintf(gprmc_save_string,
                         sizeof(gprmc_save_string),
                         "%s",
@@ -1482,7 +1482,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
                     gps_port_save = port;
                     process_it = 0;
                 }
-                else if ( (length > 7) && (strncmp((char *)string,"$GPGGA,",7) == 0) ) {
+                else if ( (length > 7) && (isGGA(string))) {
                     xastir_snprintf(gpgga_save_string,
                         sizeof(gpgga_save_string),
                         "%s",
