@@ -11729,7 +11729,7 @@ fprintf(stderr,"main, initializing connections");
 
                                     xastir_snprintf(temp,
                                         sizeof(temp),
-                                        "GPS:GPRMC,GPGGA ");
+                                        "GPS:GxRMC,GxGGA ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - 1 - strlen(temp));
@@ -11740,7 +11740,7 @@ fprintf(stderr,"main, initializing connections");
  
                                     xastir_snprintf(temp,
                                         sizeof(temp),
-                                        "GPS:GPRMC ");
+                                        "GPS:GxRMC ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - 1 - strlen(temp));
@@ -11751,7 +11751,7 @@ fprintf(stderr,"main, initializing connections");
 
                                     xastir_snprintf(temp,
                                         sizeof(temp), 
-                                        "GPS:GPGGA ");
+                                        "GPS:GxGGA ");
                                     strncat(temp,
                                         report_gps_status(),
                                         sizeof(temp) - 1 - strlen(temp));
