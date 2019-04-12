@@ -27043,7 +27043,7 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"-m                 Deselect Maps\n");
         fprintf(stderr,"-p                 Disable popups\n");
         fprintf(stderr,"-t                 Internal SIGSEGV handler enabled\n");
-        fprintf(stderr,"-v level           Set the debug level\n\n");
+        fprintf(stderr,"-v level           Set the debug level\n");
         fprintf(stderr,"-V                 Print version number and exit\n\n");
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
