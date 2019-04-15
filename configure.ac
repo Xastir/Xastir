@@ -372,7 +372,6 @@ fi
 # Check for Shapelib
 use_shapelib=yes
 shapelib_desired=yes
-LIBSHP=""
 # This symbol will be blank if the proj library hasn't been found, and will
 # have the three programs that need proj if it has
 CONTSHP=""
@@ -386,7 +385,6 @@ if test "${shapelib_desired}" = "yes" ; then
     LIBS="$LIBS -lshp"
     AC_CHECK_LIB(shp,DBFGetFieldIndex,
       AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
-    AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
     break)])
 fi
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
@@ -394,14 +392,9 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_MSG_WARN([Your system does not have shapelib installed.                    ])
  AC_MSG_WARN([Install shapelib on your system to eliminate this warning.       ])
  AC_MSG_WARN([**************************************************************** ])  
- LIBSHP="-Lshapelib -lshape"
- CPPFLAGS="-I\$(top_srcdir)/src/shapelib $CPPFLAGS"
  use_shapelib=no
- AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
- AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
- AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
+ AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
 fi
-AC_SUBST(LIBSHP)
 
 
 # Check for pcre

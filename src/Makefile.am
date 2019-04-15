@@ -92,9 +92,9 @@ compiledate.c: $(XASTIR_SRC)
 remove_compiledate:
 	rm -f compiledate.c compiledate.o
 
-xastir_LDADD=@LIBRTREE@ @LIBSHP@
+xastir_LDADD=@LIBRTREE@
 
-testdbfawk_LDADD=@LIBSHP@
+testdbfawk_LDADD=
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
