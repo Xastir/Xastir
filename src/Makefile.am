@@ -94,8 +94,6 @@ remove_compiledate:
 
 xastir_LDADD=@LIBRTREE@
 
-testdbfawk_LDADD=
-
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@

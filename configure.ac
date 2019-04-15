@@ -385,6 +385,7 @@ if test "${shapelib_desired}" = "yes" ; then
     LIBS="$LIBS -lshp"
     AC_CHECK_LIB(shp,DBFGetFieldIndex,
       AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
+    AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
     break)])
 fi
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
@@ -393,7 +394,6 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_MSG_WARN([Install shapelib on your system to eliminate this warning.       ])
  AC_MSG_WARN([**************************************************************** ])  
  use_shapelib=no
- AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. )
 fi
 
 
