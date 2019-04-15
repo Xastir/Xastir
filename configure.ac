@@ -371,27 +371,16 @@ fi
 
 # Check for Shapelib
 use_shapelib=yes
-force_internal_shapelib=no
 shapelib_desired=yes
 LIBSHP=""
-SUBSHP=""
 # This symbol will be blank if the proj library hasn't been found, and will
 # have the three programs that need proj if it has
 CONTSHP=""
-AC_ARG_WITH(internal-shapelib,[  --with-internal-shapelib  Force use of internal shapelib library.],force_internal_shapelib=$withval)
 AC_ARG_WITH(shapelib,[  --without-shapelib        Disable shapelib features.],shapelib_desired=$withval)
 if test "${shapelib_desired}" = "no"; then
   use_shapelib=no
-  force_internal_shapelib=no
 fi
-if test "${force_internal_shapelib}" = "yes"; then
-  AC_MSG_WARN([***************************************************************** ])  
-  AC_MSG_WARN([Internal Shapelib library has been forced.                        ])
-  AC_MSG_WARN([***************************************************************** ])
-  # Temporary setting to get into if block below
-  use_shapelib=no
-fi
-if test "${shapelib_desired}" = "yes" -a "${force_internal_shapelib}" = "no"; then
+if test "${shapelib_desired}" = "yes" ; then
   use_shapelib=no
   AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
     LIBS="$LIBS -lshp"
@@ -402,20 +391,16 @@ if test "${shapelib_desired}" = "yes" -a "${force_internal_shapelib}" = "no"; th
 fi
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_MSG_WARN([**************************************************************** ])  
- AC_MSG_WARN([Your system does not have shapelib installed.  Using an internal ])
- AC_MSG_WARN([version.  This may lead to a larger filesize for the executable. ])
+ AC_MSG_WARN([Your system does not have shapelib installed.                    ])
  AC_MSG_WARN([Install shapelib on your system to eliminate this warning.       ])
  AC_MSG_WARN([**************************************************************** ])  
  LIBSHP="-Lshapelib -lshape"
  CPPFLAGS="-I\$(top_srcdir)/src/shapelib $CPPFLAGS"
- SUBSHP="shapelib" 
- use_shapelib=yes
- force_internal_shapelib=yes
+ use_shapelib=no
  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) 
  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
  AC_DEFINE(HAVE_SHAPEFIL_H, , Define to 1 if you have the `shapefil.h' header. )
 fi
-AC_SUBST(SUBSHP)
 AC_SUBST(LIBSHP)
 
 
@@ -848,15 +833,6 @@ MAGICK_DEP_LIBS=`echo $MAGICK_DEP_LIBS | sed -e 's/  */ /g'`
 LIBS=`echo $LIBS | sed -e 's/  */ /g'` 
 
 
-# Change the output text for Shapelib if we're using the internal
-# library.  The below will be used for the configure summary and for
-# the Help->About text in Xastir.
-if test "${force_internal_shapelib}" = "yes"; then
-  ILIBS=`echo $ILIBS | sed -e 's/ShapeLib/ShapeLib(internal)/g'`
-  use_shapelib="yes (internal)"
-fi
-
-
 
 tmp_path="$ac_default_prefix"
 tmp_bin_path="$ac_default_prefix"
@@ -894,8 +870,6 @@ AC_CONFIG_FILES([Makefile \
     scripts/values.pl \
     src/Makefile \
     src/rtree/Makefile \
-    src/shapelib/Makefile \
-    src/shapelib/contrib/Makefile \
     symbols/Makefile \
     xastir.spec \
     xastir-min.spec \

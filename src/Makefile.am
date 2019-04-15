@@ -4,8 +4,8 @@
 
 bin_PROGRAMS = xastir xastir_udp_client testdbfawk
 
-SUBDIRS = @SUBRTREE@ @SUBSHP@
-DIST_SUBDIRS = rtree shapelib
+SUBDIRS = @SUBRTREE@
+DIST_SUBDIRS = rtree
 
 EXTRA_DIST=icon.xbm
 
