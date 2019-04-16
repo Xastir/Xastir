@@ -94,8 +94,8 @@
 
 3. QUICK STARTUP
 
-   See README.Getting-Started for a relatively quick overview of how
-   to build and use Xastir.
+   See [README.Getting-Started](README.GettingStarted) for a
+   relatively quick overview of how to build and use Xastir.
 
    Check the Xastir wiki (http://xastir.org) for OS-specific guidance
    for building Xastir on your system.
