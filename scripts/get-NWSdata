@@ -3,6 +3,11 @@
 #
 # Script to retrieve NWS data files. 
 #
+# Run this from the INSTALLED location of the script, i.e.
+#    /usr/local/share/xastir/scripts
+# or /usr/share/xastir/scripts
+#
+#
 # Originally written 2006/03/07 by Steven, WM5Z, and Curt, WE7U.
 #
 # Copyright (C) 2000-2018 The Xastir Group
@@ -55,8 +60,8 @@ FILE7="c_02ap19"    # RED: Counties, States, Provinces: U.S. Counties
 
 
 x=`dirname $0`
-. $x/values
-cd ${prefix}/share/xastir/Counties
+. $x/values || exit 1
+cd ${prefix}/share/xastir/Counties || exit 1
 
 
 # Remove any old zip files hanging around in this directory
