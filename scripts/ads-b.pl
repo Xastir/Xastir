@@ -1,4 +1,4 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl -W
 #
 # XASTIR, Amateur Station Tracking and Information Reporting
 # Copyright (C) 2000-2018 The Xastir Group

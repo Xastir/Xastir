@@ -1,4 +1,4 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl -W
 
 # Enable various functions below.
 $start_xastir           = 0;

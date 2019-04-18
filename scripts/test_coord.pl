@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 
 
 # test_coord.pl:  Perl code to test out the Coordinate.pm
