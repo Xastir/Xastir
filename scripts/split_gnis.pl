@@ -1,4 +1,5 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
+use warnings;
 #
 #
 # split_gnis.pl -- 2004 Mar 15 -- jmt@twilley.org
