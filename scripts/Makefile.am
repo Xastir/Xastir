@@ -40,13 +40,9 @@ dist_scripts_DATA = \
     toporama250k.pl\
     track-get.pl \
     update_langfile.pl \
-    values \
-    values.pl \
     waypoint-get.pl \
     wms.pl \
     wxnowsrv.pl \
-    xastir-fixcfg.sh \
-    xastir-migrate.sh \
     Xastir_tigerpoly.py
 
 install-data-hook:

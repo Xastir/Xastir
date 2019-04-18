@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-#
 # Script to retrieve GNIS files by state. 
 #
 # Written 20041205 Dan Brown N8YSZ
@@ -19,18 +18,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 #
 # Look at the README for more information on the program.
 #
 
-#GNIS_SITE=ftp://aprs.tamu.edu/pub/GNIS
-GNIS_SITE=http://www.eng.uah.edu/pub/xastir
-SUFFIX=.gnis
+GNIS_SITE=https://geonames.usgs.gov/docs/stategaz
+SUFFIX=_Features_20180601
 
 x=`dirname $0`
-. $x/values
+prefix=@prefix@
 
 if [ $# -lt 1 ]
 then
@@ -48,28 +46,23 @@ do
 
     printf "Retrieving GNIS file for %s\n" ${MYSTATE}
 
-    rm -f ${MYSTATE}${SUFFIX}.bz2 ${MYSTATE}${SUFFIX}.txt ${MYSTATE}${SUFFIX}.gz
-    if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.bz2)
+    rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
+    if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.zip)
     then
-        bunzip2 ${MYSTATE}${SUFFIX}.bz2 
-    elif (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.gz)
-    then
-        gunzip ${MYSTATE}${SUFFIX}.gz
+        unzip ${MYSTATE}${SUFFIX}.zip 
     else 
-        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX} ${MYSTATE}${SUFFIX}.gz
-        wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}
+        rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
+        wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.txt
     fi
 
-    if ( [ -f ${MYSTATE}${SUFFIX}.txt ] ) then 
+    if ( [ -f ${MYSTATE}${SUFFIX}.txt ] )
+    then 
         printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
-        sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+        sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
 	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
-		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
+		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
 	fi
-    elif ( [ -f ${MYSTATE}${SUFFIX} ] ) then 
-        printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
-        sudo mv ${MYSTATE}${SUFFIX} ${prefix}/share/xastir/GNIS/${MYSTATE}.pop
-    else
+    else 
         printf "File for %s not successfully downloaded.\n" ${MYSTATE}
     fi 
 
