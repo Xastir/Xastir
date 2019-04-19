@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
-
+#!/usr/bin/env perl
+use warnings;
 # Update utility for XASTIR language files                  17.04.2001
 #  Copyright (C) 2001 Rolf Bleher                  http://www.dk7in.de
 
@@ -18,7 +18,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #  see file COPYING for details
-                                                                                
+
 #--------------------------------------------------------------------------
 
 # This program adds missing entries to the translated language files and

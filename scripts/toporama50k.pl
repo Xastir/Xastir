@@ -1,4 +1,5 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl
+use warnings;
 
 # Copyright (C) 2000-2018 The Xastir Group.
 #

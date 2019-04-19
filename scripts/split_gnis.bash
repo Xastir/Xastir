@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # script created 14-MAR-04 by William Baguhn, kc9asi
 # This script is in the public domain.

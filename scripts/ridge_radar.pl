@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 #
 # Contributed to the public domain.  Authored by Jeremy McDermond

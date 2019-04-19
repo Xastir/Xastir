@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Written by Curt Mills, WE7U
 # Released to the public domain.

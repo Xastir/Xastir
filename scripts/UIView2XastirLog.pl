@@ -1,4 +1,5 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl
+use warnings;
 #
 # Script to convert a UI-View log file to an Xastir log file.
 #

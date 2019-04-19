@@ -25,7 +25,7 @@
 # destination directory listed below, or change directory write access.
 use File::Basename;
 $dirname=dirname($0);
-require ($dirname."/values.pl");
+$prefix="@prefix@";
 
 my $XASTIR_BASE="${prefix}/share/xastir";
 

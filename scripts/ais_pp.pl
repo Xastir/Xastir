@@ -1,4 +1,5 @@
-#!/usr/bin/perl -W
+#!/usr/bin/env perl
+use warnings;
 ###########################################################################
 #
 # XASTIR, Amateur Station Tracking and Information Reporting

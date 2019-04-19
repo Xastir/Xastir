@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 #
 # Script to create a slideshow from Xastir snapshot images.  Note

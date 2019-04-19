@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This shell script copies Xastir snapshots from the directory in which 
 # they are created ~/.xastir/temp to a directory where a web server can deliver

@@ -1,4 +1,5 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
+use warnings;
 
 # listen_and_display.pl:  Create a listener port which dumps anything received to STDOUT
 

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # -*- perl -*-
 # Written by Derrick J Brashear, KB3EGH
 # Released to the public domain.
