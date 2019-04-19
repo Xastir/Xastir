@@ -8,20 +8,20 @@
 # order to generate the needed configure/makefiles
 #
 
-echo "    7) Removing autom4te.cache directory..."
+echo "    6) Removing autom4te.cache directory..."
 rm -rf autom4te.cache
 
-echo "    6) Running aclocal..."
+echo "    5) Running aclocal..."
 aclocal
 
-echo "    5) Running autoheader..."
+echo "    4) Running autoheader..."
 autoheader
 
-echo "    4) Running autoconf..."
+echo "    3) Running autoconf..."
 autoconf
 
 # Cygwin needs these parameters to be separate.
-echo "    3) Running automake..."
+echo "    2) Running automake..."
 automake -a -c
 
 # Generate derived language files
