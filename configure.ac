@@ -859,18 +859,24 @@ AC_CONFIG_FILES([Makefile \
     help/Makefile \
     m4/Makefile \
     scripts/Makefile \
-    scripts/get-BOMdata \
-    scripts/get-NWSdata \
-    scripts/get-gnis \
-    scripts/get-pop \
-    scripts/get-fcc-rac.pl \
-    scripts/icontable.pl \
     src/Makefile \
     src/rtree/Makefile \
     symbols/Makefile \
     xastir.spec \
     xastir-min.spec \
     xastir-lsb.spec]) 
+AC_CONFIG_FILES([scripts/get-BOMdata \
+    scripts/get-NWSdata \
+    scripts/get-gnis \
+    scripts/get-pop \
+    scripts/get-fcc-rac.pl \
+    scripts/icontable.pl],[chmod +x     scripts/get-BOMdata \
+    scripts/get-NWSdata \
+    scripts/get-gnis \
+    scripts/get-pop \
+    scripts/get-fcc-rac.pl \
+    scripts/icontable.pl ])
+
  
 AC_OUTPUT 
 
