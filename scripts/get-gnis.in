@@ -27,7 +27,6 @@
 GNIS_SITE=https://geonames.usgs.gov/docs/stategaz
 SUFFIX=_Features_20180601
 
-x=`dirname $0`
 prefix=@prefix@
 
 if [ $# -lt 1 ]

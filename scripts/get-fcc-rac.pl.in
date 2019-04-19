@@ -24,7 +24,6 @@
 # Note: Run this script as root in order to write the files into the
 # destination directory listed below, or change directory write access.
 use File::Basename;
-$dirname=dirname($0);
 $prefix="@prefix@";
 
 my $XASTIR_BASE="${prefix}/share/xastir";

@@ -29,7 +29,6 @@
 GNIS_SITE=http://www.eng.uah.edu/pub/xastir
 SUFFIX=.gnis
 
-x=`dirname $0`
 prefix=@prefix@
 
 if [ $# -lt 1 ]

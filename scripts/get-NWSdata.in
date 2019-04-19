@@ -58,7 +58,6 @@ FILE7="c_02ap19"    # RED: Counties, States, Provinces: U.S. Counties
 
 
 
-x=`dirname $0`
 prefix=@prefix@
 
 cd ${prefix}/share/xastir/Counties || exit 1

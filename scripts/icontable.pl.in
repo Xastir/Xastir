@@ -26,7 +26,6 @@
 
 #--------------------------------------------------------------------------
 use File::Basename;
-$dirname=dirname($0);
 $prefix="@prefix@";
 
 # symbols file from XASTIR V2.1, change the path for your environment
