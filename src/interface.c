@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
@@ -22,7 +22,7 @@
  */
 
 /*
- AX.25 Parts adopted from: aprs_tty.c by Henk de Groot - PE1DNN
+  AX.25 Parts adopted from: aprs_tty.c by Henk de Groot - PE1DNN
 */
 
 
@@ -181,13 +181,13 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
     int jj;
 
     if (begin_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
-            fprintf(stderr,"data_lock\n");
+        fprintf(stderr,"data_lock\n");
 
     // Check for queue empty
     if (incoming_read_ptr == incoming_write_ptr) {
         // Yep, it's empty
 
-//fprintf(stderr,"\n\t<- EMPTY!\n");
+        //fprintf(stderr,"\n\t<- EMPTY!\n");
 
         queue_depth = 0;
  
@@ -203,14 +203,8 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
 
     length = incoming_data_queue[incoming_read_ptr].length;
 
-    // This isn't safe for binary data.  It gets truncated at the
-    // first zero byte!
-    // xastir_snprintf((char *)data_string,
-    //     (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
-    //     "%s",
-    //     incoming_data_queue[incoming_read_ptr].data);
-    //
-    // Binary safe code
+    // Yes, this is a string, but it may have zeros embedded.  We can't
+    // use string manipulation functions because of that:
     for (jj = 0; jj < length; jj++) {
         data_string[jj] = incoming_data_queue[incoming_read_ptr].data[jj];
     }
@@ -221,17 +215,17 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
     queue_depth--;
     pop_count++;
 
-//if (push_count != pop_count)
-//    fprintf(stderr,"Pushes:%d\tPops:%d\n", push_count, pop_count);
-//else
-//    fprintf(stderr,"Pushes = \tPops\n");
+    //if (push_count != pop_count)
+    //    fprintf(stderr,"Pushes:%d\tPops:%d\n", push_count, pop_count);
+    //else
+    //    fprintf(stderr,"Pushes = \tPops\n");
 
     // For DEBUG, to see if the queue how the queue is getting used
-//    if (queue_depth > 1) {
-//        fprintf(stderr,"%d\t", queue_depth);
-//    }
+    //    if (queue_depth > 1) {
+    //        fprintf(stderr,"%d\t", queue_depth);
+    //    }
 
-//fprintf(stderr,"\n\t<- %s",data_string);
+    //fprintf(stderr,"\n\t<- %s",data_string);
 
     if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
         fprintf(stderr,"data_lock\n");
@@ -252,20 +246,20 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
 
 
     if (begin_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
-            fprintf(stderr,"data_lock\n");
+        fprintf(stderr,"data_lock\n");
 
     // Check whether queue is full
     if (incoming_read_ptr == next_write_ptr) {
         // Yep, it's full!
 
-//fprintf(stderr,"\n-> FULL!");
+        //fprintf(stderr,"\n-> FULL!");
 
         if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
         return(1);
     }
 
-//fprintf(stderr,"\n-> %s",data_string);
+    //fprintf(stderr,"\n-> %s",data_string);
 
 
     // Advance the write pointer
@@ -306,23 +300,23 @@ int is_local_interface(int port) {
 
     switch (port_data[port].device_type) {
 
-        case DEVICE_SERIAL_TNC:
-        case DEVICE_SERIAL_TNC_HSP_GPS:
-        case DEVICE_SERIAL_GPS:
-        case DEVICE_SERIAL_WX:
-        case DEVICE_AX25_TNC:
-        case DEVICE_SERIAL_TNC_AUX_GPS:
-        case DEVICE_SERIAL_KISS_TNC:
-        case DEVICE_SERIAL_MKISS_TNC:
-            return(1);  // Found a local interface
-            break;
+    case DEVICE_SERIAL_TNC:
+    case DEVICE_SERIAL_TNC_HSP_GPS:
+    case DEVICE_SERIAL_GPS:
+    case DEVICE_SERIAL_WX:
+    case DEVICE_AX25_TNC:
+    case DEVICE_SERIAL_TNC_AUX_GPS:
+    case DEVICE_SERIAL_KISS_TNC:
+    case DEVICE_SERIAL_MKISS_TNC:
+        return(1);  // Found a local interface
+        break;
 
         // Could be port -1 which signifies a spider port or port
         // -99 which signifies "All Ports" and is used for
         // transmitting out all ports at once.
-        default:
-            return(0);  // Unknown or network interface
-            break;
+    default:
+        return(0);  // Unknown or network interface
+        break;
     }
 }
 
@@ -336,20 +330,20 @@ int is_network_interface(int port) {
 
     switch (port_data[port].device_type) {
 
-        case DEVICE_NET_STREAM:
-        case DEVICE_NET_GPSD:
-        case DEVICE_NET_WX:
-        case DEVICE_NET_DATABASE:
-        case DEVICE_NET_AGWPE:
-            return(1);  // Found a network interface
-            break;
+    case DEVICE_NET_STREAM:
+    case DEVICE_NET_GPSD:
+    case DEVICE_NET_WX:
+    case DEVICE_NET_DATABASE:
+    case DEVICE_NET_AGWPE:
+        return(1);  // Found a network interface
+        break;
 
         // Could be port -1 which signifies a spider port or port
         // -99 which signifies "All Ports" and is used for
         // transmitting out all ports at once.
-        default:
-            return(0);  // Unknown or local interface
-            break;
+    default:
+        return(0);  // Unknown or local interface
+        break;
     }
 }
 
@@ -406,11 +400,11 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
     int data_length;
 
 
-/*
-fprintf(stderr,"Sending to AGWPE RadioPort %d, ", RadioPort);
-fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
-    type, FromCall, ToCall, Path, Data);
-*/
+    /*
+      fprintf(stderr,"Sending to AGWPE RadioPort %d, ", RadioPort);
+      fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
+      type, FromCall, ToCall, Path, Data);
+    */
 
     // Check size of data
     if (length > 512)
@@ -429,15 +423,15 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
 
         if (FromCall)   // Write the FromCall string into the frame
             xastir_snprintf((char *)&output_string[8],
-                sizeof(output_string) - 8,
-                "%s",
-                FromCall);
+                            sizeof(output_string) - 8,
+                            "%s",
+                            FromCall);
 
         if (ToCall) // Write the ToCall string into the frame
             xastir_snprintf((char *)&output_string[18],
-                sizeof(output_string) - 18,
-                "%s",
-                ToCall);
+                            sizeof(output_string) - 18,
+                            "%s",
+                            ToCall);
     }
 
     if ( (type != '\0') && (type != 'P') ) {
@@ -448,8 +442,8 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
 
         // Send the packet to AGWPE
         port_write_binary(xastir_interface,
-            output_string,
-            agwpe_header_size);
+                          output_string,
+                          agwpe_header_size);
     }
  
     else if (Path == NULL) { // No ViaCalls, Data or login packet
@@ -466,9 +460,9 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
             // Compute the callsign base string
             // (callsign minus SSID)
             xastir_snprintf(callsign_base,
-                sizeof(callsign_base),
-                "%s",
-                my_callsign);
+                            sizeof(callsign_base),
+                            "%s",
+                            my_callsign);
             // Change '-' into end of string
             strtok(callsign_base, "-");
 
@@ -480,34 +474,34 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
             output_string[28] = (unsigned char)(new_length % 256);
             output_string[29] = (unsigned char)((new_length >> 8) % 256);
 
-/*
-fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-    output_string[28],
-    output_string[29],
-    output_string[30],
-    output_string[31]);
-*/
+            /*
+              fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+              output_string[28],
+              output_string[29],
+              output_string[30],
+              output_string[31]);
+            */
 
-// Write login/password out as 255-byte strings each
+            // Write login/password out as 255-byte strings each
 
             // Put the login string into the buffer
             xastir_snprintf((char *)&output_string[agwpe_header_size],
-                sizeof(output_string) - agwpe_header_size,
-                "%s",
-                callsign_base);
+                            sizeof(output_string) - agwpe_header_size,
+                            "%s",
+                            callsign_base);
 
             // Put the password string into the buffer
             xastir_snprintf((char *)&output_string[agwpe_header_size+255],
-                sizeof(output_string) - agwpe_header_size - 255,
-                "%s",
-                Data);
+                            sizeof(output_string) - agwpe_header_size - 255,
+                            "%s",
+                            Data);
 
-//fprintf(stderr,"AGWPE User:%s,  Pass:%s\n",callsign_base, Data);
+            //fprintf(stderr,"AGWPE User:%s,  Pass:%s\n",callsign_base, Data);
 
             // Send the packet to AGWPE
             port_write_binary(xastir_interface,
-                output_string,
-                255+255+agwpe_header_size);
+                              output_string,
+                              255+255+agwpe_header_size);
         }
         else {  // Data frame
             // Write the type character into the frame
@@ -519,13 +513,13 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
             output_string[28] = (unsigned char)(length % 256);
             output_string[29] = (unsigned char)((length >> 8) % 256);
 
-/*
-fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-    output_string[28],
-    output_string[29],
-    output_string[30],
-    output_string[31]);
-*/
+            /*
+              fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+              output_string[28],
+              output_string[29],
+              output_string[30],
+              output_string[31]);
+            */
 
             // Copy Data onto the end of the string.  This one
             // doesn't have to be null-terminated, so strncpy() is
@@ -537,10 +531,10 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
             // Send the packet to AGWPE
             port_write_binary(xastir_interface,
-                output_string,
-                full_length);
+                              output_string,
+                              full_length);
 
-//fprintf(stderr, "Sent: %s\n", Data);
+            //fprintf(stderr, "Sent: %s\n", Data);
 
         }
     }
@@ -556,7 +550,7 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // Convert path_string to upper-case
         to_upper((char *)path_string);
 
-//fprintf(stderr,"path_string: %s\n", path_string);
+        //fprintf(stderr,"path_string: %s\n", path_string);
 
         split_string((char *)path_string, ViaCall, 10, ',');
 
@@ -568,98 +562,98 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
         // Write the number of ViaCalls into the first byte
         if (ViaCall[7]) {
-//fprintf(stderr, "Eight viacalls\n");
+            //fprintf(stderr, "Eight viacalls\n");
             output_string[agwpe_header_size] = 0x08;
         }
         else if (ViaCall[6]) {
-//fprintf(stderr, "Seven viacalls\n");
+            //fprintf(stderr, "Seven viacalls\n");
             output_string[agwpe_header_size] = 0x07;
         }
         else if (ViaCall[5]) {
-//fprintf(stderr, "Six viacalls\n");
+            //fprintf(stderr, "Six viacalls\n");
             output_string[agwpe_header_size] = 0x06;
         }
         else if (ViaCall[4]) {
-//fprintf(stderr, "Five viacalls\n");
+            //fprintf(stderr, "Five viacalls\n");
             output_string[agwpe_header_size] = 0x05;
         }
         else if (ViaCall[3]) {
-//fprintf(stderr, "Four viacalls\n");
+            //fprintf(stderr, "Four viacalls\n");
             output_string[agwpe_header_size] = 0x04;
         }
         else if (ViaCall[2]) {
-//fprintf(stderr, "Three viacalls\n");
+            //fprintf(stderr, "Three viacalls\n");
             output_string[agwpe_header_size] = 0x03;
         }
         else if (ViaCall[1]) {
-//fprintf(stderr, "Two viacalls\n");
+            //fprintf(stderr, "Two viacalls\n");
             output_string[agwpe_header_size] = 0x02;
         }
         else {
-//fprintf(stderr, "One viacall\n");
+            //fprintf(stderr, "One viacall\n");
             output_string[agwpe_header_size] = 0x01;
         }
  
         // Write the ViaCalls into the Data field
         switch (output_string[agwpe_header_size]) {
-            case 8:
-                if (ViaCall[7]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+70]), ViaCall[7], 10);
-//fprintf(stderr, "%s\n", ViaCall[7]);
-                }
-                else
-                    return;
-            case 7:
-                if (ViaCall[6]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
-//fprintf(stderr, "%s\n", ViaCall[6]);
-                }
-                else
-                    return;
-            case 6:
-                if (ViaCall[5]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+50]), ViaCall[5], 10);
-//fprintf(stderr, "%s\n", ViaCall[5]);
-                }
-                else
-                    return;
-            case 5:
-                if (ViaCall[4]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+40]), ViaCall[4], 10);
-//fprintf(stderr, "%s\n", ViaCall[4]);
-                }
-                else
-                    return;
-            case 4:
-                if (ViaCall[3]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+30]), ViaCall[3], 10);
-//fprintf(stderr, "%s\n", ViaCall[3]);
-                }
-                else
-                    return;
-            case 3:
-                if (ViaCall[2]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+20]), ViaCall[2], 10);
-//fprintf(stderr, "%s\n", ViaCall[2]);
-                }
-                else
-                    return;
-            case 2:
-                if (ViaCall[1]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+10]), ViaCall[1], 10);
-//fprintf(stderr, "%s\n", ViaCall[1]);
-                }
-                else
-                    return;
-            case 1:
-            default:
-                if (ViaCall[0]) {
-                    strncpy((char *)(&output_string[agwpe_header_size+1+0]),  ViaCall[0], 10);
-//fprintf(stderr, "%s\n", ViaCall[0]);
-                }
-                else
-                    return;
-                break;
+        case 8:
+            if (ViaCall[7]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+70]), ViaCall[7], 10);
+                //fprintf(stderr, "%s\n", ViaCall[7]);
+            }
+            else
+                return;
+        case 7:
+            if (ViaCall[6]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
+                //fprintf(stderr, "%s\n", ViaCall[6]);
+            }
+            else
+                return;
+        case 6:
+            if (ViaCall[5]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+50]), ViaCall[5], 10);
+                //fprintf(stderr, "%s\n", ViaCall[5]);
+            }
+            else
+                return;
+        case 5:
+            if (ViaCall[4]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+40]), ViaCall[4], 10);
+                //fprintf(stderr, "%s\n", ViaCall[4]);
+            }
+            else
+                return;
+        case 4:
+            if (ViaCall[3]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+30]), ViaCall[3], 10);
+                //fprintf(stderr, "%s\n", ViaCall[3]);
+            }
+            else
+                return;
+        case 3:
+            if (ViaCall[2]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+20]), ViaCall[2], 10);
+                //fprintf(stderr, "%s\n", ViaCall[2]);
+            }
+            else
+                return;
+        case 2:
+            if (ViaCall[1]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+10]), ViaCall[1], 10);
+                //fprintf(stderr, "%s\n", ViaCall[1]);
+            }
+            else
+                return;
+        case 1:
+        default:
+            if (ViaCall[0]) {
+                strncpy((char *)(&output_string[agwpe_header_size+1+0]),  ViaCall[0], 10);
+                //fprintf(stderr, "%s\n", ViaCall[0]);
+            }
+            else
+                return;
+            break;
         }
 
         // Write the Data onto the end.
@@ -667,17 +661,17 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         // use here.  strncpy stops at the first null byte though.
         // Proper for a binary output routine?
         strncpy((char *)(&output_string[((int)(output_string[agwpe_header_size]) * 10) + agwpe_header_size + 1]),
-            (char *)Data,
-            length);
+                (char *)Data,
+                length);
 
         //Fill in the data length field.  We're assuming the total
         //is less than 512 + 37.
         data_length = length + ((int)(output_string[agwpe_header_size]) * 10) + 1;
 
-//fprintf(stderr, "Via calls: %d\n",
-//(int)(output_string[agwpe_header_size]));
-//fprintf(stderr, "Length: %d\n", length);
-//fprintf(stderr, "Data Length: %d\n", data_length);
+        //fprintf(stderr, "Via calls: %d\n",
+        //(int)(output_string[agwpe_header_size]));
+        //fprintf(stderr, "Length: %d\n", length);
+        //fprintf(stderr, "Data Length: %d\n", data_length);
 
         if ( data_length > 512 )
             return;
@@ -685,22 +679,22 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
         output_string[28] = (unsigned char)(data_length % 256);
         output_string[29] = (unsigned char)((data_length >> 8) % 256);
 
-/*
-fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-    output_string[28],
-    output_string[29],
-    output_string[30],
-    output_string[31]);
-*/
+        /*
+          fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+          output_string[28],
+          output_string[29],
+          output_string[30],
+          output_string[31]);
+        */
 
         full_length = data_length + agwpe_header_size;
 
         // Send the packet to AGWPE
         port_write_binary(xastir_interface,
-            output_string,
-            full_length);
+                          output_string,
+                          full_length);
 
-//fprintf(stderr, "Data: %s\n", Data);
+        //fprintf(stderr, "Data: %s\n", Data);
 
     }
 }
@@ -864,237 +858,237 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // packet.
     //
 
-// Check the data_length here to make sure we don't run off the end.
-//    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
-//        special_debug = 1;
-//    }
+    // Check the data_length here to make sure we don't run off the end.
+    //    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
+    //        special_debug = 1;
+    //    }
 
 
     // Make sure we have a terminating '\0' at the end.
-// Note that this doesn't help for binary packets (like OpenTrac),
-// but doesn't really hurt either.
+    // Note that this doesn't help for binary packets (like OpenTrac),
+    // but doesn't really hurt either.
     input_string[38+data_length] = '\0';
 
  
     // Check what sort of AGWPE packet it is.
     switch (input_string[4]) {
 
-        case 'R':
-            //fprintf(stderr,"AGWPE: Got software version packet\n");
-            if (data_length == 8) { 
-                fprintf(stderr,
+    case 'R':
+        //fprintf(stderr,"AGWPE: Got software version packet\n");
+        if (data_length == 8) { 
+            fprintf(stderr,
                     "\nConnected to AGWPE server, version: %d.%d\n",
                     (input_string[37] << 8) + input_string[36],
                     (input_string[41] << 8) + input_string[40]);
-            }
-            return(NULL);   // All done!
-            break;
+        }
+        return(NULL);   // All done!
+        break;
 
-        case 'G':
-            //fprintf(stderr,"AGWPE: Got port information packet\n");
+    case 'G':
+        //fprintf(stderr,"AGWPE: Got port information packet\n");
 
-            // Print out the data, changing all ';' characters to
-            // <CR> and a bunch of spaces to format it nicely.
-            fprintf(stderr, "    Port Info, total ports = ");
-            ii = 36;
-            while (ii < data_length + 36 && input_string[ii] != '\0') {
-                if (input_string[ii] == ';')
-                    fprintf(stderr, "\n    ");
-                else
-                    fprintf(stderr, "%c", input_string[ii]);
-                ii++;
-            }
-            fprintf(stderr,"\n");
-            return(NULL);   // All done!
-            break;
+        // Print out the data, changing all ';' characters to
+        // <CR> and a bunch of spaces to format it nicely.
+        fprintf(stderr, "    Port Info, total ports = ");
+        ii = 36;
+        while (ii < data_length + 36 && input_string[ii] != '\0') {
+            if (input_string[ii] == ';')
+                fprintf(stderr, "\n    ");
+            else
+                fprintf(stderr, "%c", input_string[ii]);
+            ii++;
+        }
+        fprintf(stderr,"\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'g':
-            //fprintf(stderr,"AGWPE: Got port capabilities packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'g':
+        //fprintf(stderr,"AGWPE: Got port capabilities packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'X':
-            //fprintf(stderr,"AGWPE: Got callsign registration results packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'X':
+        //fprintf(stderr,"AGWPE: Got callsign registration results packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'y':
-            //fprintf(stderr,"AGWPE: Got outstanding frames on port packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'y':
+        //fprintf(stderr,"AGWPE: Got outstanding frames on port packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'Y':
-            //fprintf(stderr,"AGWPE: Got outstanding frames on connection packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'Y':
+        //fprintf(stderr,"AGWPE: Got outstanding frames on connection packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'H':
-            //fprintf(stderr,"AGWPE: Got heard stations on port packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'H':
+        //fprintf(stderr,"AGWPE: Got heard stations on port packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'C':
-            //fprintf(stderr,"AGWPE: Got connection results packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'C':
+        //fprintf(stderr,"AGWPE: Got connection results packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'v':
-            //fprintf(stderr,"AGWPE: Got v packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'v':
+        //fprintf(stderr,"AGWPE: Got v packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'c':
-            //fprintf(stderr,"AGWPE: Got c packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'c':
+        //fprintf(stderr,"AGWPE: Got c packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'D':
-            //fprintf(stderr,"AGWPE: Got connected data packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'D':
+        //fprintf(stderr,"AGWPE: Got connected data packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'd':
-            //fprintf(stderr,"AGWPE: Got disconnection results packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'd':
+        //fprintf(stderr,"AGWPE: Got disconnection results packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'U':
-            //fprintf(stderr,"AGWPE: Got UI data packet\n");
-            // We can decode this one ok in the below code (after
-            // this switch statement), but we no longer use
-            // "monitor" mode packets in AGWPE, switching to the
-            // "raw" mode instead.
-            return(NULL);   // All done!
-            break;
+    case 'U':
+        //fprintf(stderr,"AGWPE: Got UI data packet\n");
+        // We can decode this one ok in the below code (after
+        // this switch statement), but we no longer use
+        // "monitor" mode packets in AGWPE, switching to the
+        // "raw" mode instead.
+        return(NULL);   // All done!
+        break;
 
-        case 'I':
-            //fprintf(stderr,"AGWPE: Got connected information data packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'I':
+        //fprintf(stderr,"AGWPE: Got connected information data packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'S':
-            //fprintf(stderr,"AGWPE: Got supervisory frame packet\n");
-            return(NULL);   // All done!
-            break;
+    case 'S':
+        //fprintf(stderr,"AGWPE: Got supervisory frame packet\n");
+        return(NULL);   // All done!
+        break;
 
-        case 'T':
-            //fprintf(stderr,"AGWPE: Got our own transmitted packet back\n");
-            //fprintf(stderr, "%s\n", &input_string[37]);
-            // We should decode this one ok in the below code (after
-            // this switch statement), but we no longer use
-            // "monitor" mode packets in AGWPE, switching to the
-            // "raw" mode instead.
-            return(NULL);   // All done!
-            break;
+    case 'T':
+        //fprintf(stderr,"AGWPE: Got our own transmitted packet back\n");
+        //fprintf(stderr, "%s\n", &input_string[37]);
+        // We should decode this one ok in the below code (after
+        // this switch statement), but we no longer use
+        // "monitor" mode packets in AGWPE, switching to the
+        // "raw" mode instead.
+        return(NULL);   // All done!
+        break;
 
-        case 'K':
-            //fprintf(stderr,"AGWPE: Got raw frame packet\n");
+    case 'K':
+        //fprintf(stderr,"AGWPE: Got raw frame packet\n");
 
-            // Code here processes the packet for handing to our
-            // KISS decoding routines.  Chop off the header, add
-            // anything to the beginning/end that we need, then send
-            // it to decode_ax25_header().
+        // Code here processes the packet for handing to our
+        // KISS decoding routines.  Chop off the header, add
+        // anything to the beginning/end that we need, then send
+        // it to decode_ax25_header().
 
-            // Try to decode header and checksum.  If bad, break,
-            // else continue through to ASCII logging & decode
-            // routines.  We skip the first byte as it's not part of
-            // the AX.25 packet.
-            //
-            // Note that the packet length often increases here in
-            // decode_ax25_header, as we add '*' characters and such
-            // to the header as it's decoded.
+        // Try to decode header and checksum.  If bad, break,
+        // else continue through to ASCII logging & decode
+        // routines.  We skip the first byte as it's not part of
+        // the AX.25 packet.
+        //
+        // Note that the packet length often increases here in
+        // decode_ax25_header, as we add '*' characters and such
+        // to the header as it's decoded.
 
-            // This string already has a terminator on the end,
-            // added by the code in port_read().  If we didn't have
-            // one here, we could end up with portions of strings
-            // concatenated on the end of our string by the time
-            // we're done processing the data here.
-            //
-//            input_string[data_length+36] = '\0';
-
-
-// WE7U:
-// We may need to extend input_string by a few characters before it
-// is fed to us.  Something like max_callsigns * 3 or 4 characters,
-// to account for '*' and SSID characters that we might add.  This
-// keeps the string from getting truncated as we add bytes to the
-// header in decode_ax25_header.
+        // This string already has a terminator on the end,
+        // added by the code in port_read().  If we didn't have
+        // one here, we could end up with portions of strings
+        // concatenated on the end of our string by the time
+        // we're done processing the data here.
+        //
+        //            input_string[data_length+36] = '\0';
 
 
-            if ( !decode_ax25_header( (unsigned char *)&input_string[37], &data_length ) ) {
-//                int zz;
+        // WE7U:
+        // We may need to extend input_string by a few characters before it
+        // is fed to us.  Something like max_callsigns * 3 or 4 characters,
+        // to account for '*' and SSID characters that we might add.  This
+        // keeps the string from getting truncated as we add bytes to the
+        // header in decode_ax25_header.
 
-                // Had a problem decoding it.  Drop it on the floor.
-                fprintf(stderr, "AGWPE: Bad KISS packet.  Dropping it.\n");
 
-special_debug++;
-//                for (zz = 0; zz < data_length; zz++) {
-//                    fprintf(stderr, "%02x ", input_string[zz+36]);
-//                }
-//                fprintf(stderr,"\n");
+        if ( !decode_ax25_header( (unsigned char *)&input_string[37], &data_length ) ) {
+            //                int zz;
 
-                return(NULL);
-            }
+            // Had a problem decoding it.  Drop it on the floor.
+            fprintf(stderr, "AGWPE: Bad KISS packet.  Dropping it.\n");
 
-            // Good header.  Compute the new length, again skipping
-            // the first byte.
-            data_length = strlen((const char *)&input_string[37]);
+            special_debug++;
+            //                for (zz = 0; zz < data_length; zz++) {
+            //                    fprintf(stderr, "%02x ", input_string[zz+36]);
+            //                }
+            //                fprintf(stderr,"\n");
+
+            return(NULL);
+        }
+
+        // Good header.  Compute the new length, again skipping
+        // the first byte.
+        data_length = strlen((const char *)&input_string[37]);
  
-// The above strlen() requires it to be printable ascii in the KISS
-// packet, so won't work for OpenTrac protocol or other binary
-// protocols.  The decode_ax25_header() function also looks for
-// PID=0xF0, which again won't work for OpenTrac.  It would be
-// better to have the decode_ax25_header routine return the new
-// length of the packet so that decoding of binary packets is still
-// possible.
+        // The above strlen() requires it to be printable ascii in the KISS
+        // packet, so won't work for OpenTrac protocol or other binary
+        // protocols.  The decode_ax25_header() function also looks for
+        // PID=0xF0, which again won't work for OpenTrac.  It would be
+        // better to have the decode_ax25_header routine return the new
+        // length of the packet so that decoding of binary packets is still
+        // possible.
 
-// Check for OpenTrac packets.  If found, dump them into
-// OpenTrac-specific decode and skip the other decode below.  Must
-// tweak the above stuff to allow binary-format packets to get
-// through to this point.
+        // Check for OpenTrac packets.  If found, dump them into
+        // OpenTrac-specific decode and skip the other decode below.  Must
+        // tweak the above stuff to allow binary-format packets to get
+        // through to this point.
 
-            // Do more stuff with the packet here.  The actual
-            // packet itself starts at offset 37.  We can end up
-            // with 0x0d, 0x0d 0x0d, or 0x0d 0x00 0x0d on the end of
-            // it (or none of the above).  Best method should be to
-            // just search for any 0x0d's or 0x0a's starting at the
-            // beginning of the string and overwrite them with
-            // 0x00's.  That's what we do here.
-            //
-            for (ii = 0; ii < data_length; ii++) {
-                if (input_string[ii+37] == 0x0d
-                        || input_string[ii+37] == 0x0a)
-                    input_string[ii+37] = '\0';
-            }
+        // Do more stuff with the packet here.  The actual
+        // packet itself starts at offset 37.  We can end up
+        // with 0x0d, 0x0d 0x0d, or 0x0d 0x00 0x0d on the end of
+        // it (or none of the above).  Best method should be to
+        // just search for any 0x0d's or 0x0a's starting at the
+        // beginning of the string and overwrite them with
+        // 0x00's.  That's what we do here.
+        //
+        for (ii = 0; ii < data_length; ii++) {
+            if (input_string[ii+37] == 0x0d
+                || input_string[ii+37] == 0x0a)
+                input_string[ii+37] = '\0';
+        }
 
-            // Compute data_length again.
-            data_length = strlen((const char *)&input_string[37]);
+        // Compute data_length again.
+        data_length = strlen((const char *)&input_string[37]);
 
-            // Send the processed string back for decoding
-            xastir_snprintf((char *)output_string,
-                output_string_length,
-                "%s",
-                &input_string[37]);
+        // Send the processed string back for decoding
+        xastir_snprintf((char *)output_string,
+                        output_string_length,
+                        "%s",
+                        &input_string[37]);
  
-            // Send back the new length. 
-            *new_length = data_length;
+        // Send back the new length. 
+        *new_length = data_length;
 
-            return(output_string);
-            break;
+        return(output_string);
+        break;
 
-        default:
-            fprintf(stderr,"AGWPE: Got unrecognized '%c' packet\n",input_string[4]);
-            return(NULL);   // All done!
-            break;
+    default:
+        fprintf(stderr,"AGWPE: Got unrecognized '%c' packet\n",input_string[4]);
+        return(NULL);   // All done!
+        break;
     }
 
 
-// NOTE:  All of the code below gets used in "monitor" mode, which
-// we no longer use.  We might keep this code around for a bit and
-// then delete it, as we've probably switched to "raw" mode for
-// good.  "raw" mode allows us to use our KISS processing routines,
-// plus allows us to support digipeating and OpenTrac (binary)
-// protocol in the future.
+    // NOTE:  All of the code below gets used in "monitor" mode, which
+    // we no longer use.  We might keep this code around for a bit and
+    // then delete it, as we've probably switched to "raw" mode for
+    // good.  "raw" mode allows us to use our KISS processing routines,
+    // plus allows us to support digipeating and OpenTrac (binary)
+    // protocol in the future.
 
 
     if (special_debug) {
@@ -1158,7 +1152,7 @@ special_debug++;
     temp_str[0] = '\0';
 
     while (input_string[ii] != ']') {
-      strncat(temp_str, (char *)(&input_string[ii++]), 1);
+        strncat(temp_str, (char *)(&input_string[ii++]), 1);
     }
 
     // Make sure that the protocol ID is "F0".  If not, return.
@@ -1171,12 +1165,12 @@ special_debug++;
         if (pid_ptr) {
             pid_ptr +=4;
             fprintf(stderr,
-                "parse_agwpe_packet: Non-APRS protocol was seen: PID=%2s.  Dropping the packet.\n",
-                pid_ptr);
+                    "parse_agwpe_packet: Non-APRS protocol was seen: PID=%2s.  Dropping the packet.\n",
+                    pid_ptr);
         }
         else {
             fprintf(stderr,
-                "parse_agwpe_packet: Non-APRS protocol was seen.  Dropping the packet.\n");
+                    "parse_agwpe_packet: Non-APRS protocol was seen.  Dropping the packet.\n");
         }
         output_string[0] = '\0';
         new_length = 0;
@@ -1212,8 +1206,8 @@ special_debug++;
 
     // Copy the info field to the output string
     while (info_ptr[0] != '\0') {
-      strncat((char *)output_string, &info_ptr[0], 1);
-      info_ptr++;
+        strncat((char *)output_string, &info_ptr[0], 1);
+        info_ptr++;
     }
 
     // We end up with 0x0d characters on the end.  Get rid of them.
@@ -1238,27 +1232,27 @@ special_debug++;
 }
 
 /*
-Found complete AGWPE packet, 93 bytes total in frame:
-00 00 00 00
-55 00 00 00                     'U' Packet
-57 45 37 55 2d 33 00 00 ff ff   WE7U-3
-41 50 52 53 00 20 ec e9 6c 00   APRS
-39 00 00 00                     Length
-00 00 00 00
+  Found complete AGWPE packet, 93 bytes total in frame:
+  00 00 00 00
+  55 00 00 00                     'U' Packet
+  57 45 37 55 2d 33 00 00 ff ff   WE7U-3
+  41 50 52 53 00 20 ec e9 6c 00   APRS
+  39 00 00 00                     Length
+  00 00 00 00
 
-20 31                           .1 (36-37)
-3a 46 6d 20                     :Fm (38-41)
-57 45 37 55 2d 33               WE7U-3 (42-space)
-20 54 6f                        .To
-20 41 50 52 53                  .APRS
-20 3c 55 49                     .<UI
-20 70 69 64 3d 46 30            .pid=F0
-20 4c 65 6e 3d 34               .Len=4
-20 3e 5b 32 33 3a 31 33 3a 32 30 5d 0d  >[23:13:20].
-54 65 73 74 0d 0d 00            Test<CR><CR>.
-....U...WE7U-3....APRS. ..l.9....... 1:Fm WE7U-3 To APRS <UI pid=F0 Len=4 >[23:13:20].Test...
+  20 31                           .1 (36-37)
+  3a 46 6d 20                     :Fm (38-41)
+  57 45 37 55 2d 33               WE7U-3 (42-space)
+  20 54 6f                        .To
+  20 41 50 52 53                  .APRS
+  20 3c 55 49                     .<UI
+  20 70 69 64 3d 46 30            .pid=F0
+  20 4c 65 6e 3d 34               .Len=4
+  20 3e 5b 32 33 3a 31 33 3a 32 30 5d 0d  >[23:13:20].
+  54 65 73 74 0d 0d 00            Test<CR><CR>.
+  ....U...WE7U-3....APRS. ..l.9....... 1:Fm WE7U-3 To APRS <UI pid=F0 Len=4 >[23:13:20].Test...
 
-1:Fm WE7U-3 To APRS Via RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1 <UI pid=F0 Len=26 >[23:51:46].Testing this darned thing!...
+  1:Fm WE7U-3 To APRS Via RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1 <UI pid=F0 Len=26 >[23:51:46].Testing this darned thing!...
 */
 
 
@@ -1300,7 +1294,7 @@ char *get_device_name_only(char *device_name) {
 int get_open_device(void) {
     int i, found;
 
-begin_critical_section(&devices_lock, "interface.c:get_open_device" );
+    begin_critical_section(&devices_lock, "interface.c:get_open_device" );
 
     found = -1;
     for(i = 0; i < MAX_IFACE_DEVICES && found == -1; i++) {
@@ -1310,7 +1304,7 @@ begin_critical_section(&devices_lock, "interface.c:get_open_device" );
         }
     }
 
-end_critical_section(&devices_lock, "interface.c:get_open_device" );
+    end_critical_section(&devices_lock, "interface.c:get_open_device" );
 
     if (found == -1)
         popup_message(langcode("POPEM00004"),langcode("POPEM00017"));
@@ -1379,14 +1373,14 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     // string.  Used for debugging purposes.  If we get a segfault,
     // we can print out the last two messages received.
     xastir_snprintf((char *)incoming_data_copy_previous,
-        sizeof(incoming_data_copy_previous),
-        "%s",
-        incoming_data_copy);
+                    sizeof(incoming_data_copy_previous),
+                    "%s",
+                    incoming_data_copy);
     xastir_snprintf((char *)incoming_data_copy,
-        sizeof(incoming_data_copy),
-        "Port%d:%s",
-        port,
-        string);
+                    sizeof(incoming_data_copy),
+                    "Port%d:%s",
+                    port,
+                    string);
 
     max = 0;
 
@@ -1399,7 +1393,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     if (length == 0) {
         // Compute length of string including terminator
         length = strlen((const char *)string) + 1;
-//fprintf(stderr,"Computing length with strlen, port %d\n", port);
+        //fprintf(stderr,"Computing length with strlen, port %d\n", port);
     }
 
     // Check for excessively long packets.  These might be TCP/IP
@@ -1411,8 +1405,8 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     if (length > MAX_LINE_SIZE) {   // Too long!
         if (debug_level & 1) {
             fprintf(stderr,"\nchannel_data: LONG packet:%d,  Dumping it:\n%s\n",
-            length,
-            string);
+                    length,
+                    string);
         }
 
         string[0] = '\0';   // Truncate it to zero length
@@ -1429,7 +1423,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
 
     // Then install the cleanup routine:
     pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex1);
-//    pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex1);
+    //    pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex1);
 
 
     // This protects channel_data from being run by more than one
@@ -1451,11 +1445,11 @@ void channel_data(int port, unsigned char *string, volatile int length) {
 
         // Then install the cleanup routine:
         pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex2);
-//        pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex2);
+        //        pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex2);
 
 
-//        if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
-//            fprintf(stderr,"data_lock, Port = %d\n", port);
+        //        if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
+        //            fprintf(stderr,"data_lock, Port = %d\n", port);
 
 
         // If it's any of three types of GPS ports and is a GPRMC or
@@ -1466,70 +1460,70 @@ void channel_data(int port, unsigned char *string, volatile int length) {
         //
         switch(port_data[port].device_type) {
 
-            case DEVICE_SERIAL_GPS:
-            case DEVICE_SERIAL_TNC_HSP_GPS:
-            case DEVICE_NET_GPSD:
+        case DEVICE_SERIAL_GPS:
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+        case DEVICE_NET_GPSD:
 
-                // One of the three types of interfaces that might
-                // send in a lot of GPS data constantly.  Save only
-                // GPRMC and GPGGA strings into global variables.
-                // Drop other GPS strings on the floor.
+            // One of the three types of interfaces that might
+            // send in a lot of GPS data constantly.  Save only
+            // GPRMC and GPGGA strings into global variables.
+            // Drop other GPS strings on the floor.
+            //
+            if ( (length > 7) && (isRMC((char *)string))) {
+                xastir_snprintf(gprmc_save_string,
+                                sizeof(gprmc_save_string),
+                                "%s",
+                                string);
+                gps_port_save = port;
+                process_it = 0;
+            }
+            else if ( (length > 7) && (isGGA((char *)string))) {
+                xastir_snprintf(gpgga_save_string,
+                                sizeof(gpgga_save_string),
+                                "%s",
+                                string);
+                gps_port_save = port;
+                process_it = 0;
+            }
+            else {
+                // It's not one of the GPS strings we're looking
+                // for.  It could be another GPS string, a
+                // partial GPS string, or a full/partial TNC
+                // string.  Drop the string on the floor unless
+                // it's an HSP interface.
                 //
-                if ( (length > 7) && (isRMC((char *)string))) {
-                    xastir_snprintf(gprmc_save_string,
-                        sizeof(gprmc_save_string),
-                        "%s",
-                        string);
-                    gps_port_save = port;
-                    process_it = 0;
+                if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
+                    // Decode the string normally.
+                    process_it++;
+                    //fprintf(stderr,"data_avail\n");
                 }
-                else if ( (length > 7) && (isGGA((char *)string))) {
-                    xastir_snprintf(gpgga_save_string,
-                        sizeof(gpgga_save_string),
-                        "%s",
-                        string);
-                    gps_port_save = port;
-                    process_it = 0;
-                }
-                else {
-                    // It's not one of the GPS strings we're looking
-                    // for.  It could be another GPS string, a
-                    // partial GPS string, or a full/partial TNC
-                    // string.  Drop the string on the floor unless
-                    // it's an HSP interface.
-                    //
-                    if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
-                        // Decode the string normally.
-                        process_it++;
-                        //fprintf(stderr,"data_avail\n");
-                    }
-                }
-                break;
-// We need to make sure that the variables stating that a string is
-// available are reset in any case.  Look at how/where data_avail is
-// reset.  We may not care if we just wait for data_avail to be
-// cleared before writing to the string again.
+            }
+            break;
+            // We need to make sure that the variables stating that a string is
+            // available are reset in any case.  Look at how/where data_avail is
+            // reset.  We may not care if we just wait for data_avail to be
+            // cleared before writing to the string again.
 
-            default:    // Not one of the above three types, decode
-                        // the string normally.
-                process_it++;
-                //fprintf(stderr,"data_avail\n");
-                break;
+        default:    // Not one of the above three types, decode
+            // the string normally.
+            process_it++;
+            //fprintf(stderr,"data_avail\n");
+            break;
         }
 
 
-//        if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
-//            fprintf(stderr,"data_lock, Port = %d\n", port);
+        //        if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
+        //            fprintf(stderr,"data_lock, Port = %d\n", port);
 
         // Remove the cleanup routine for the case where this thread
         // gets killed while the mutex is locked.  The cleanup
         // routine initiates an unlock before the thread dies.  We
         // must be in deferred cancellation mode for the thread to
         // have this work properly.
-//
-// NOTE: Ignore the four \"suggest braces\" warnings you see when
-//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-//
+        //
+        // NOTE: Ignore the four \"suggest braces\" warnings you see when
+        //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+        //
         pthread_cleanup_pop(0);
 
  
@@ -1539,7 +1533,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
         if (process_it) {
 
             // Wait for empty space in queue
-//fprintf(stderr,"\n== %s", string);
+            //fprintf(stderr,"\n== %s", string);
             while (push_incoming_data(string, length, port) && max < 5400) {
                 sched_yield();  // Yield to other threads
                 tmv.tv_sec = 0;
@@ -1559,10 +1553,10 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     // initiates an unlock before the thread dies.  We must be in
     // deferred cancellation mode for the thread to have this work
     // properly.
-//
-// NOTE: Ignore the four \"suggest braces\" warnings you see when
-//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-//
+    //
+    // NOTE: Ignore the four \"suggest braces\" warnings you see when
+    //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+    //
     pthread_cleanup_pop(0);
 }
 
@@ -1665,13 +1659,13 @@ int ui_connect( int port, char *to[]) {
 
     if ((portcall = ax25_config_get_addr(port_data[port].device_name)) == NULL) {
         xastir_snprintf(temp, sizeof(temp), langcode("POPEM00005"),
-                port_data[port].device_name);
+                        port_data[port].device_name);
         popup_message(langcode("POPEM00004"),temp);
         return -1;
     }
     if (ax25_aton_entry(portcall, axbind.fsa_digipeater[0].ax25_call) == -1) {
         xastir_snprintf(temp, sizeof(temp), langcode("POPEM00006"),
-                port_data[port].device_name);
+                        port_data[port].device_name);
         popup_message(langcode("POPEM00004"), temp);
         return -1;
     }
@@ -1720,7 +1714,7 @@ int ui_connect( int port, char *to[]) {
     }
 
     if (debug_level & 2)
-       fprintf(stderr,"*** Connecting to UNPROTO port for transmission...\n");
+        fprintf(stderr,"*** Connecting to UNPROTO port for transmission...\n");
 
     /*
      * Lets try and connect to the far end.
@@ -1782,9 +1776,9 @@ static void data_out_ax25(int port, unsigned char *string) {
                 if (temp != NULL) {
                     substr(ui_mycall, temp, 9);
                     xastir_snprintf(port_data[port].ui_call,
-                        sizeof(port_data[port].ui_call),
-                        "%s",
-                        ui_mycall);
+                                    sizeof(port_data[port].ui_call),
+                                    "%s",
+                                    ui_mycall);
                     if (debug_level & 2)
                         fprintf(stderr,"*** MYCALL %s\n",port_data[port].ui_call);
                 }
@@ -2070,9 +2064,9 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
     message[l] = '\0';
 
     xastir_snprintf(buffer,
-        buffer_size,
-        "%s",
-        source);
+                    buffer_size,
+                    "%s",
+                    source);
 
     /*
      * if there are no digis or the first digi has not handled the
@@ -2083,9 +2077,9 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
     /* I don't think we need this just yet, perhaps not at all? */
     /* I think if we don't have a '*' in the path we can assume direct? -FG */
     /*
-    if((digis == 0) || (digi_h[0] != 0x80))
-        strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
-     */
+      if((digis == 0) || (digi_h[0] != 0x80))
+      strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
+    */
 
     strncat(buffer, ">", buffer_size - 1 - strlen(buffer));
 
@@ -2137,9 +2131,9 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
 int ax25_init(int port) {
 
     /*
-        COMMENT:tested this Seems to work fine as ETH_P_AX25
-        on newer linux kernels (and you see your own transmissions
-        but it is not good for older linux kernels and FreeBSD  -FG
+      COMMENT:tested this Seems to work fine as ETH_P_AX25
+      on newer linux kernels (and you see your own transmissions
+      but it is not good for older linux kernels and FreeBSD  -FG
     */
 
 #ifdef HAVE_LIBAX25
@@ -2152,7 +2146,7 @@ int ax25_init(int port) {
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     /* clear port_channel */
-//    port_data[port].channel = -1;
+    //    port_data[port].channel = -1;
 
     /* clear port active */
     port_data[port].active = DEVICE_NOT_IN_USE;
@@ -2182,7 +2176,7 @@ int ax25_init(int port) {
     if (port_data[port].device_name != NULL) {
         if ((dev = ax25_config_get_dev(port_data[port].device_name)) == NULL) {
             xastir_snprintf(temp, sizeof(temp), langcode("POPEM00014"),
-                    port_data[port].device_name);
+                            port_data[port].device_name);
             popup_message(langcode("POPEM00004"),temp);
 
             if (end_critical_section(&port_data_lock, "interface.c:ax25_init(3)" ) > 0)
@@ -2195,7 +2189,7 @@ int ax25_init(int port) {
     /* COMMENT: tested this AF_INET is CORRECT -FG */
     // Commented out sections below.  We keep the old socket number
     // around now, so have to start a new socket in all cases to make it work.
-//    if (port_data[port].channel == -1) {
+    //    if (port_data[port].channel == -1) {
 
     ENABLE_SETUID_PRIVILEGE;
 #if __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
@@ -2213,10 +2207,10 @@ int ax25_init(int port) {
         return -1;
     }
 
-//    }
-//    else {
-        // Use socket number that is already defined
-//    }
+    //    }
+    //    else {
+    // Use socket number that is already defined
+    //    }
 
     /* port active */
     port_data[port].active = DEVICE_IN_USE;
@@ -2267,20 +2261,20 @@ int command_file_to_tnc_port(int port, char *filename) {
     // Check file status
     if (stat(filename, &file_status) < 0) {
         fprintf(stderr,
-            "Couldn't stat file: %s\n",
-            filename);
+                "Couldn't stat file: %s\n",
+                filename);
         fprintf(stderr,
-            "Skipping send to TNC\n");
+                "Skipping send to TNC\n");
         return(-1);
     }
 
     // Check that it is a regular file
     if (!S_ISREG(file_status.st_mode)) {
         fprintf(stderr,
-            "File is not a regular file: %s\n",
-            filename);
+                "File is not a regular file: %s\n",
+                filename);
         fprintf(stderr,
-            "Skipping send to TNC\n");
+                "Skipping send to TNC\n");
         return(-1);
     } 
 
@@ -2318,17 +2312,17 @@ int command_file_to_tnc_port(int port, char *filename) {
                         if (send_ctrl_C) {
                             // Control-C desired
                             xastir_snprintf(command,
-                                sizeof(command),
-                                "%c%s\r",
-                                (char)03,   // Control-C
-                                line);
+                                            sizeof(command),
+                                            "%c%s\r",
+                                            (char)03,   // Control-C
+                                            line);
                         }
                         else {
                             // No Control-C desired
                             xastir_snprintf(command,
-                                sizeof(command),
-                                "%s\r",
-                                line);
+                                            sizeof(command),
+                                            "%s\r",
+                                            line);
                         }
 
                         if (debug_level & 2)
@@ -2356,8 +2350,8 @@ int command_file_to_tnc_port(int port, char *filename) {
                             }
                             else {
                                 fprintf(stderr,
-                                    "Unrecognized ##META command: %s\n",
-                                    line);
+                                        "Unrecognized ##META command: %s\n",
+                                        line);
                             }
                         }
                     }
@@ -2384,10 +2378,10 @@ int command_file_to_tnc_port(int port, char *filename) {
 //***********************************************************
 void port_dtr(int port, int dtr) {
 
-// It looks like we have two methods of getting this to compile on
-// CYGWIN, getting rid of the entire procedure contents, and getting
-// rid of the TIO* code.  One method or the other should work to get
-// it compiled.  We shouldn't need both.
+    // It looks like we have two methods of getting this to compile on
+    // CYGWIN, getting rid of the entire procedure contents, and getting
+    // rid of the TIO* code.  One method or the other should work to get
+    // it compiled.  We shouldn't need both.
     int sg;
 
     /* check for 1 or 0 */
@@ -2397,24 +2391,24 @@ void port_dtr(int port, int dtr) {
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (port_data[port].active == DEVICE_IN_USE
-            && port_data[port].status == DEVICE_UP
-            && port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS){
+        && port_data[port].status == DEVICE_UP
+        && port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS){
 
         port_data[port].dtr = dtr;
         if (debug_level & 2)
             fprintf(stderr,"DTR %d\n",port_data[port].dtr);
 
 #ifdef TIOCMGET
-            ENABLE_SETUID_PRIVILEGE;
+        ENABLE_SETUID_PRIVILEGE;
         (void)ioctl(port_data[port].channel, TIOCMGET, &sg);
-            DISABLE_SETUID_PRIVILEGE;
+        DISABLE_SETUID_PRIVILEGE;
 #endif  // TIOCMGET
 
         sg &= 0xff;
 
 #ifdef TIOCM_DTR
 
-// ugly HPUX hack - n8ysz 20041206
+        // ugly HPUX hack - n8ysz 20041206
 
 #ifndef MDTR 
 #define MDTR 99999
@@ -2423,7 +2417,7 @@ void port_dtr(int port, int dtr) {
 #endif 
 #endif
 
-// end ugly hack
+        // end ugly hack
 
         sg = TIOCM_DTR;
 #endif  // TIOCM_DIR
@@ -2474,10 +2468,10 @@ void port_dtr(int port, int dtr) {
 void dtr_all_set(int dtr) {
     int i;
 
-//fprintf(stderr,"dtr_all_set(%d)\t",dtr);
+    //fprintf(stderr,"dtr_all_set(%d)\t",dtr);
     for (i = 0; i < MAX_IFACE_DEVICES; i++) {
         if (port_data[i].device_type == DEVICE_SERIAL_TNC_HSP_GPS
-                && port_data[i].status == DEVICE_UP) {
+            && port_data[i].status == DEVICE_UP) {
             port_dtr(i,dtr);
         }
     }
@@ -2626,7 +2620,7 @@ int serial_init (int port) {
 
     // check for lockfile
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s",
-            get_device_name_only(port_data[port].device_name));
+                    get_device_name_only(port_data[port].device_name));
 
     if (filethere(fn) == 1) {
 
@@ -2641,14 +2635,14 @@ int serial_init (int port) {
                 lockfile_pid = (pid_t)lockfile_intpid;
 
 #ifdef HAVE_GETPGRP
-  #ifdef GETPGRP_VOID   
+#ifdef GETPGRP_VOID   
                 // Won't this one get our process group instead of
                 // the process group for the lockfile?  Not of that
                 // much use to us here.
                 status = getpgrp();
-  #else // GETPGRP_VOID
+#else // GETPGRP_VOID
                 status = getpgrp(lockfile_pid);
-  #endif // GETPGRP_VOID
+#endif // GETPGRP_VOID
 #else   // HAVE_GETPGRP
                 status = getpgid(lockfile_pid);
 #endif // HAVE_GETPGRP
@@ -2697,7 +2691,7 @@ int serial_init (int port) {
             }
         }
         else {    // Couldn't open it, so the lock must have been
-                    // created by another userid
+            // created by another userid
             fprintf(stderr,"Cannot open port:  Lockfile cannot be opened!\n");
 
             if (end_critical_section(&port_data_lock, "interface.c:serial_init(3)" ) > 0)
@@ -2722,81 +2716,81 @@ int serial_init (int port) {
 
         switch (myerrno) {
 
-            case EACCES:
-                fprintf(stderr,"\tEACCESS ERROR\n");
-                break;
+        case EACCES:
+            fprintf(stderr,"\tEACCESS ERROR\n");
+            break;
 
-            case EEXIST:
-                fprintf(stderr,"\tEEXIST ERROR\n");
-                break;
+        case EEXIST:
+            fprintf(stderr,"\tEEXIST ERROR\n");
+            break;
 
-            case EFAULT:
-                fprintf(stderr,"\tEFAULT ERROR\n");
-                break;
+        case EFAULT:
+            fprintf(stderr,"\tEFAULT ERROR\n");
+            break;
 
-            case EISDIR:
-                fprintf(stderr,"\tEISDIR ERROR\n");
-                break;
+        case EISDIR:
+            fprintf(stderr,"\tEISDIR ERROR\n");
+            break;
 
-            case ELOOP:
-                fprintf(stderr,"\tELOOP ERROR\n");
-                break;
+        case ELOOP:
+            fprintf(stderr,"\tELOOP ERROR\n");
+            break;
 
-            case EMFILE:
-                fprintf(stderr,"\tEMFILE ERROR\n");
-                break;
+        case EMFILE:
+            fprintf(stderr,"\tEMFILE ERROR\n");
+            break;
 
-            case ENAMETOOLONG:
-                fprintf(stderr,"\tENAMETOOLONG ERROR\n");
-                break;
+        case ENAMETOOLONG:
+            fprintf(stderr,"\tENAMETOOLONG ERROR\n");
+            break;
 
-            case ENFILE:
-                fprintf(stderr,"\tEMFILE ERROR\n");
-                break;
+        case ENFILE:
+            fprintf(stderr,"\tEMFILE ERROR\n");
+            break;
 
-            case ENODEV:
-                fprintf(stderr,"\tENODEV ERROR\n");
-                break;
+        case ENODEV:
+            fprintf(stderr,"\tENODEV ERROR\n");
+            break;
 
-            case ENOENT:
-                fprintf(stderr,"\tENOENT ERROR\n");
-                break;
+        case ENOENT:
+            fprintf(stderr,"\tENOENT ERROR\n");
+            break;
 
-            case ENOMEM:
-                fprintf(stderr,"\tENOMEM ERROR\n");
-                break;
+        case ENOMEM:
+            fprintf(stderr,"\tENOMEM ERROR\n");
+            break;
 
-            case ENOSPC:
-                fprintf(stderr,"\tENOSPC ERROR\n");
-                break;
+        case ENOSPC:
+            fprintf(stderr,"\tENOSPC ERROR\n");
+            break;
 
-            case ENOTDIR:
-                fprintf(stderr,"\tENOTDIR ERROR\n");
-                break;
+        case ENOTDIR:
+            fprintf(stderr,"\tENOTDIR ERROR\n");
+            break;
 
-            case ENXIO:
-                fprintf(stderr,"\tENXIO ERROR\n");
-                break;
+        case ENXIO:
+            fprintf(stderr,"\tENXIO ERROR\n");
+            break;
 
-            case EOVERFLOW:
-                fprintf(stderr,"\tEOVERFLOW ERROR\n");
-                break;
+        case EOVERFLOW:
+            fprintf(stderr,"\tEOVERFLOW ERROR\n");
+            break;
 
-            case EPERM:
-                fprintf(stderr,"\tEPERM ERROR\n");
-                break;
+        case EPERM:
+            fprintf(stderr,"\tEPERM ERROR\n");
+            break;
 
-            case EROFS:
-                fprintf(stderr,"\tEROFS ERROR\n");
-                break;
+        case EROFS:
+            fprintf(stderr,"\tEROFS ERROR\n");
+            break;
 
-            case ETXTBSY:
-                fprintf(stderr,"\tETXTBSY ERROR\n");
-                break;
+        case ETXTBSY:
+            fprintf(stderr,"\tETXTBSY ERROR\n");
+            break;
 
-            default:
-                fprintf(stderr,"\tOTHER ERROR\n");
-                break;
+        default:
+            fprintf(stderr,"\tOTHER ERROR\n");
+            break;
         }
 
         return (-1);
@@ -2818,9 +2812,9 @@ int serial_init (int port) {
         user_id = getuid();
         user_info = getpwuid(user_id);
         xastir_snprintf(temp,
-            sizeof(temp),
-            "%s",
-            user_info->pw_name);
+                        sizeof(temp),
+                        "%s",
+                        user_info->pw_name);
 
         fprintf(lock,"%9d %s %s",(int)mypid,"xastir",temp);
         (void)fclose(lock);
@@ -2833,17 +2827,17 @@ int serial_init (int port) {
 
         /* if we can't create lockfile don't fail!
 
-if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
-    fprintf(stderr,"port_data_lock, Port = %d\n", port);
+           if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
+           fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
-        return (-1);*/
+           return (-1);*/
     }
 
     // get port attributes for new and old
     if (tcgetattr(port_data[port].channel, &port_data[port].t) != 0) {
 
-    if (end_critical_section(&port_data_lock, "interface.c:serial_init(6)" ) > 0)
-        fprintf(stderr,"port_data_lock, Port = %d\n", port);
+        if (end_critical_section(&port_data_lock, "interface.c:serial_init(6)" ) > 0)
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
             fprintf(stderr,"Could not get t port attributes for port %d!\n",port);
@@ -2856,8 +2850,8 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
 
     if (tcgetattr(port_data[port].channel, &port_data[port].t_old) != 0) {
 
-    if (end_critical_section(&port_data_lock, "interface.c:serial_init(7)" ) > 0)
-        fprintf(stderr,"port_data_lock, Port = %d\n", port);
+        if (end_critical_section(&port_data_lock, "interface.c:serial_init(7)" ) > 0)
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
             fprintf(stderr,"Could not get t_old port attributes for port %d!\n",port);
@@ -2887,39 +2881,39 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     port_data[port].t.c_cflag = (tcflag_t)(HUPCL|CLOCAL|CREAD);
     port_data[port].t.c_cflag &= ~PARENB;
     switch (port_data[port].style){
-        case(0):
-            // No parity (8N1)
-            port_data[port].t.c_cflag &= ~CSTOPB;
-            port_data[port].t.c_cflag &= ~CSIZE;
-            port_data[port].t.c_cflag |= CS8;
-            break;
+    case(0):
+        // No parity (8N1)
+        port_data[port].t.c_cflag &= ~CSTOPB;
+        port_data[port].t.c_cflag &= ~CSIZE;
+        port_data[port].t.c_cflag |= CS8;
+        break;
 
-        case(1):
-            // Even parity (7E1)
-            port_data[port].t.c_cflag &= ~PARODD;
-            port_data[port].t.c_cflag &= ~CSTOPB;
-            port_data[port].t.c_cflag &= ~CSIZE;
-            port_data[port].t.c_cflag |= CS7;
-            break;
+    case(1):
+        // Even parity (7E1)
+        port_data[port].t.c_cflag &= ~PARODD;
+        port_data[port].t.c_cflag &= ~CSTOPB;
+        port_data[port].t.c_cflag &= ~CSIZE;
+        port_data[port].t.c_cflag |= CS7;
+        break;
 
-        case(2):
-            // Odd parity (7O1):
-            port_data[port].t.c_cflag |= PARODD;
-            port_data[port].t.c_cflag &= ~CSTOPB;
-            port_data[port].t.c_cflag &= ~CSIZE;
-            port_data[port].t.c_cflag |= CS7;
-            break;
+    case(2):
+        // Odd parity (7O1):
+        port_data[port].t.c_cflag |= PARODD;
+        port_data[port].t.c_cflag &= ~CSTOPB;
+        port_data[port].t.c_cflag &= ~CSIZE;
+        port_data[port].t.c_cflag |= CS7;
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     port_data[port].t.c_cflag |= speed;
     // set input and out put speed
     if (cfsetispeed(&port_data[port].t, port_data[port].sp) == -1) {
 
-    if (end_critical_section(&port_data_lock, "interface.c:serial_init(8)" ) > 0)
-        fprintf(stderr,"port_data_lock, Port = %d\n", port);
+        if (end_critical_section(&port_data_lock, "interface.c:serial_init(8)" ) > 0)
+            fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
             fprintf(stderr,"Could not set port input speed for port %d!\n",port);
@@ -3122,7 +3116,7 @@ static void* net_connect_thread(void *arg) {
 
     // Then install the cleanup routine:
     pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
-//    pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
+    //    pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
 
 
     if (begin_critical_section(&connect_lock, "interface.c:net_connect_thread(2)" ) > 0)
@@ -3139,15 +3133,15 @@ static void* net_connect_thread(void *arg) {
     // initiates an unlock before the thread dies.  We must be in
     // deferred cancellation mode for the thread to have this work
     // properly.
-//
-// NOTE: Ignore the four \"suggest braces\" warnings you see when
-//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-//
+    //
+    // NOTE: Ignore the four \"suggest braces\" warnings you see when
+    //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+    //
     pthread_cleanup_pop(0);
  
 
-//if (end_critical_section(&port_data_lock, "interface.c:net_connect_thread(4)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port);
+    //if (end_critical_section(&port_data_lock, "interface.c:net_connect_thread(4)" ) > 0)
+    //    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (debug_level & 2)
         fprintf(stderr,"net_connect_thread terminating itself\n");
@@ -3181,7 +3175,7 @@ int net_init(int port) {
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     /* clear port_channel */
-//    port_data[port].channel = -1;
+    //    port_data[port].channel = -1;
 
     /* set port active */
     port_data[port].active = DEVICE_IN_USE;
@@ -3238,7 +3232,7 @@ int net_init(int port) {
                 fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
             usleep(100000);         // 100ms
             port_data[port].channel = -1;
-       }
+        }
 
         if (end_critical_section(&connect_lock, "interface.c:net_init(3)" ) > 0)
             fprintf(stderr,"connect_lock, Port = %d\n", port);
@@ -3279,7 +3273,7 @@ int net_init(int port) {
 
         /* thread did not return! kill it */
         if ( (sec_now() >= wait_time)      // Timed out
-                || (ok != 1) ) {            // or connection failure of another type
+             || (ok != 1) ) {            // or connection failure of another type
             if (debug_level & 2)
                 fprintf(stderr,"Thread exceeded it's time limit or failed to connect! Port %d\n",port);
 
@@ -3323,31 +3317,31 @@ int net_init(int port) {
             fprintf(stderr,"Net ok: %d, port %d\n", ok, port);
 
         switch (ok) {
-            case 1: /* connection up */
-                xastir_snprintf(st, sizeof(st), langcode("BBARSTA020"), port_data[port].device_host_name);
-                statusline(st,1);               // Connected to ...
-                break;
+        case 1: /* connection up */
+            xastir_snprintf(st, sizeof(st), langcode("BBARSTA020"), port_data[port].device_host_name);
+            statusline(st,1);               // Connected to ...
+            break;
 
-            case 0:
-                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA021"));
-                statusline(st,1);               // Net Connection Failed!
-                ok = -1;
-                break;
+        case 0:
+            xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA021"));
+            statusline(st,1);               // Net Connection Failed!
+            ok = -1;
+            break;
 
-            case -1:
-                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA022"));
-                statusline(st,1);               // Could not bind socket
-                break;
+        case -1:
+            xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA022"));
+            statusline(st,1);               // Could not bind socket
+            break;
 
-            case -2:
-                xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
-                statusline(st,1);               // Net Connection timed out
-                ok = 0;
-                break;
+        case -2:
+            xastir_snprintf(st, sizeof(st), "%s", langcode("BBARSTA018"));
+            statusline(st,1);               // Net Connection timed out
+            ok = 0;
+            break;
 
-            default:
-                break;
-                /*break;*/
+        default:
+            break;
+            /*break;*/
         }
     }
     else if (gai_rc == FAI_TIMEOUT) { /* host lookup time out */
@@ -3427,8 +3421,8 @@ int net_detach(int port) {
             }
         }
         /*
-            Shut down and Close were separated but this would cause sockets to
-            just float around
+          Shut down and Close were separated but this would cause sockets to
+          just float around
         */
 
         // It doesn't matter whether we _think_ the device is up.  It might
@@ -3436,8 +3430,8 @@ int net_detach(int port) {
         //if (port_data[port].status == DEVICE_UP) {
 
         /* we don't need to do a shut down on AX_25 devices */
-       if ( (port_data[port].status == DEVICE_UP)
-                && (port_data[port].device_type != DEVICE_AX25_TNC) ) {
+        if ( (port_data[port].status == DEVICE_UP)
+             && (port_data[port].device_type != DEVICE_AX25_TNC) ) {
             stat = shutdown(port_data[port].channel,2);
             if (debug_level & 2)
                 fprintf(stderr,"net_detach():Net Shutdown Returned %d, port %d\n",stat,port);
@@ -3502,7 +3496,7 @@ void fix_up_callsign(unsigned char *data, int data_size) {
 
     // Check whether we've digipeated through this callsign yet.
     if (strstr((const char *)data,"*") != 0) {
-         digipeated_flag++;
+        digipeated_flag++;
     }
 
     // Change callsign to upper-case and pad out to six places with
@@ -3528,12 +3522,12 @@ void fix_up_callsign(unsigned char *data, int data_size) {
     if ( (i < (int)strlen((const char *)data)) && (data[i++] == '-') ) {   // We might have an SSID
         if (data[i] != '\0')
             ssid = atoi((const char *)&data[i]);
-//            ssid = data[i++] - 0x30;    // Convert from ascii to int
-//        if (data[i] != '\0')
-//            ssid = (ssid * 10) + (data[i] - 0x30);
+        //            ssid = data[i++] - 0x30;    // Convert from ascii to int
+        //        if (data[i] != '\0')
+        //            ssid = (ssid * 10) + (data[i] - 0x30);
     }
 
-//fprintf(stderr,"SSID:%d\t",ssid);
+    //fprintf(stderr,"SSID:%d\t",ssid);
 
     if (ssid >= 0 && ssid <= 15) {
         new_call[6] = ssid | 0x30;  // Set 2 reserved bits
@@ -3552,14 +3546,14 @@ void fix_up_callsign(unsigned char *data, int data_size) {
         new_call[i] = new_call[i] & 0xfe;
     }
 
-//fprintf(stderr,"Last:%0x\n",new_call[6]);
+    //fprintf(stderr,"Last:%0x\n",new_call[6]);
 
     // Write over the top of the input string with the newly
     // formatted callsign
     xastir_snprintf((char *)data,
-        data_size,
-        "%s",
-        new_call);
+                    data_size,
+                    "%s",
+                    new_call);
 }
 
 
@@ -3582,7 +3576,7 @@ void port_write_binary(int port, unsigned char *data, int length) {
     int write_in_pos_hold;
 
 
-//fprintf(stderr,"Sending to AGWPE:\n");
+    //fprintf(stderr,"Sending to AGWPE:\n");
 
     erd = 0;
 
@@ -3594,7 +3588,7 @@ void port_write_binary(int port, unsigned char *data, int length) {
 
     for (ii = 0; ii < length && !erd; ii++) {
 
-//fprintf(stderr,"%02x ",data[ii]);
+        //fprintf(stderr,"%02x ",data[ii]);
 
         // Put character into write buffer and advance pointer
         port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[ii];
@@ -3618,17 +3612,17 @@ void port_write_binary(int port, unsigned char *data, int length) {
         }
     }
 
-// Check that the data got placed in the buffer ok
-//for (ii = write_in_pos_hold;  ii < port_data[port].write_in_pos; ii++) {
-//  fprintf(stderr,"%02x ",port_data[port].device_write_buffer[ii]);
-//}
-//fprintf(stderr,"\n");
+    // Check that the data got placed in the buffer ok
+    //for (ii = write_in_pos_hold;  ii < port_data[port].write_in_pos; ii++) {
+    //  fprintf(stderr,"%02x ",port_data[port].device_write_buffer[ii]);
+    //}
+    //fprintf(stderr,"\n");
 
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
-//fprintf(stderr,"\n");
+    //fprintf(stderr,"\n");
 
 }
 
@@ -3652,7 +3646,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int write_in_pos_hold;
 
 
-//fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
+    //fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     // Check whether transmits are disabled globally
     if (transmit_disable) {
@@ -3669,24 +3663,24 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
     // Format the destination callsign
     xastir_snprintf((char *)temp_dest,
-        sizeof(temp_dest),
-        "%s",
-        destination);
+                    sizeof(temp_dest),
+                    "%s",
+                    destination);
     fix_up_callsign(temp_dest, sizeof(temp_dest));
     xastir_snprintf((char *)transmit_txt,
-        sizeof(transmit_txt),
-        "%s",
-        temp_dest);
+                    sizeof(transmit_txt),
+                    "%s",
+                    temp_dest);
 
     // Format the source callsign
     xastir_snprintf((char *)temp_source,
-        sizeof(temp_source),
-        "%s",
-        source);
+                    sizeof(temp_source),
+                    "%s",
+                    source);
     fix_up_callsign(temp_source, sizeof(temp_source));
     strncat((char *)transmit_txt,
-        (char *)temp_source,
-        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
+            (char *)temp_source,
+            sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Break up the path into individual callsigns and send them one
     // by one to fix_up_callsign().  If we get passed an empty path,
@@ -3706,12 +3700,12 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
                 j++;
             }
 
-//fprintf(stderr,"%s\n",temp);
+            //fprintf(stderr,"%s\n",temp);
 
             fix_up_callsign(temp, sizeof(temp));
             strncat((char *)transmit_txt,
-                (char *)temp,
-                sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
+                    (char *)temp,
+                    sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
         }
     }
 
@@ -3723,20 +3717,20 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     control[0] = 0x03;
     control[1] = '\0';
     strncat((char *)transmit_txt,
-        (char *)control,
-        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
+            (char *)control,
+            sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Add the PID byte
     pid[0] = 0xf0;
     pid[1] = '\0';
     strncat((char *)transmit_txt,
-        (char *)pid,
-        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
+            (char *)pid,
+            sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     // Append the information chars
     strncat((char *)transmit_txt,
-        data,
-        sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
+            data,
+            sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
 
     //fprintf(stderr,"%s\n",transmit_txt);
 
@@ -3770,12 +3764,12 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     //
     transmit_txt2[j] = '\0';
 
-//-------------------------------------------------------------------
-// Had to snag code from port_write_string() below because our string
-// needs to have 0x00 chars inside it.  port_write_string() can't
-// handle that case.  It's a good thing the transmit queue stuff
-// could handle it.
-//-------------------------------------------------------------------
+    //-------------------------------------------------------------------
+    // Had to snag code from port_write_string() below because our string
+    // needs to have 0x00 chars inside it.  port_write_string() can't
+    // handle that case.  It's a good thing the transmit queue stuff
+    // could handle it.
+    //-------------------------------------------------------------------
 
     erd = 0;
 
@@ -3802,14 +3796,14 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
 
 
-// DEBUG.  Dump out the hex codes for the KISS packet we just
-// created.
-/*
-    for (i = 0; i< j; i++) {
-        fprintf(stderr,"%02x ", transmit_txt2[i]);
-    }
-    fprintf(stderr,"\n\n");
-*/
+    // DEBUG.  Dump out the hex codes for the KISS packet we just
+    // created.
+    /*
+      for (i = 0; i< j; i++) {
+      fprintf(stderr,"%02x ", transmit_txt2[i]);
+      }
+      fprintf(stderr,"\n\n");
+    */
 
 
 
@@ -3875,12 +3869,12 @@ void send_kiss_config(int port, int device, int command, int value) {
 
 
 
-//-------------------------------------------------------------------
-// Had to snag code from port_write_string() below because our string
-// needs to have 0x00 chars inside it.  port_write_string() can't
-// handle that case.  It's a good thing the transmit queue stuff
-// could handle it.
-//-------------------------------------------------------------------
+    //-------------------------------------------------------------------
+    // Had to snag code from port_write_string() below because our string
+    // needs to have 0x00 chars inside it.  port_write_string() can't
+    // handle that case.  It's a good thing the transmit queue stuff
+    // could handle it.
+    //-------------------------------------------------------------------
 
     erd = 0;
 
@@ -3997,13 +3991,13 @@ void port_read(int port) {
     int binary_wx_data = 0;
     int max;
     /*
-    * Some local variables used for checking AX.25 data - PE1DNN
-    *
-    * "from"     is used to look up where the data comes from
-    * "from_len" is used to keep the size of sockaddr structure
-    * "dev"      is used to keep the name of the interface that
-    *            belongs to our port/device_name
-    */
+     * Some local variables used for checking AX.25 data - PE1DNN
+     *
+     * "from"     is used to look up where the data comes from
+     * "from_len" is used to keep the size of sockaddr structure
+     * "dev"      is used to keep the name of the interface that
+     *            belongs to our port/device_name
+     */
     struct sockaddr from;
     socklen_t from_len;
 
@@ -4014,7 +4008,7 @@ void port_read(int port) {
     if (debug_level & 2)
         fprintf(stderr,"Port %d read start\n",port);
 
-//    init_critical_section(&port_data[port].read_lock);
+    //    init_critical_section(&port_data[port].read_lock);
 
     group = 0;
     max = MAX_DEVICE_BUFFER - 1;
@@ -4030,25 +4024,25 @@ void port_read(int port) {
             port_data[port].scan = 1;
 
             while (port_data[port].scan
-                    && (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) )
-                    && (port_data[port].status == DEVICE_UP) ) {
+                   && (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) )
+                   && (port_data[port].status == DEVICE_UP) ) {
 
                 int skip = 0;
 
-//                pthread_testcancel();   // Check for thread termination request
+                //                pthread_testcancel();   // Check for thread termination request
  
                 // Handle all EXCEPT AX25_TNC interfaces here
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
-//fprintf(stderr," in:%02x ",cin);
+                    //fprintf(stderr," in:%02x ",cin);
                 }
 
                 else {  // Handle AX25_TNC interfaces
                     /*
-                    * Use recvfrom on a network socket to know from
-                    * which interface the packet came - PE1DNN
-                    */
+                     * Use recvfrom on a network socket to know from
+                     * which interface the packet came - PE1DNN
+                     */
 
 #ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
@@ -4057,10 +4051,10 @@ void port_read(int port) {
 #endif  // __solaris__
 
                     port_data[port].scan = recvfrom(port_data[port].channel,buffer,
-                        sizeof(buffer) - 1,
-                        0,
-                        &from,
-                        &from_len);
+                                                    sizeof(buffer) - 1,
+                                                    0,
+                                                    &from,
+                                                    &from_len);
                 }
 
 
@@ -4071,9 +4065,9 @@ void port_read(int port) {
                         port_data[port].bytes_input += port_data[port].scan;      // Add character to read buffer
 
 
-// Somewhere between these lock statements the read_lock got unlocked.  How?
-// if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
-//    fprintf(stderr,"read_lock, Port = %d\n", port);
+                    // Somewhere between these lock statements the read_lock got unlocked.  How?
+                    // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
+                    //    fprintf(stderr,"read_lock, Port = %d\n", port);
 
 
                     // Handle all EXCEPT AX25_TNC interfaces here
@@ -4086,7 +4080,7 @@ void port_read(int port) {
                         // otherwise only used for AX.25 ports.
 
                         if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
-                                || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+                             || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
 
                             if (port_data[port].channel2 == KISS_FESC) { // Frame Escape char
@@ -4116,14 +4110,14 @@ void port_read(int port) {
                                 // either be another frame end or a
                                 // type byte.
 
-// Note this "type" byte is where it specifies which KISS interface
-// the packet came from.  We may want to use this later for
-// multi-drop KISS or other types of KISS protocols.
+                                // Note this "type" byte is where it specifies which KISS interface
+                                // the packet came from.  We may want to use this later for
+                                // multi-drop KISS or other types of KISS protocols.
 
                                 // Save this char for next time
                                 // around
                                 port_data[port].channel2 = cin;
-//fprintf(stderr,"Byte: %02x\n", cin);
+                                //fprintf(stderr,"Byte: %02x\n", cin);
                                 skip++;
                             }
                             else if (cin == KISS_FESC) { // Frame Escape char
@@ -4139,23 +4133,23 @@ void port_read(int port) {
 
 
 
-// AGWPE
-// Process AGWPE packets here.  Massage the frames so that they look
-// like normal serial packets to the Xastir decoding functions?
-//
-// We turn on monitoring of packets when we first connect.  We now
-// need to throw away all but the "U" packets, which are unconnected
-// information packets.
-//
-// Check for enough bytes to complete a header (36 bytes).  If
-// enough, check the datalength to see if an entire packet has been
-// read.  If so, run that packet through a conversion routine to
-// convert it to a TAPR2-style packet.
-//
-// Right now we're not taking into account multiple radio ports that
-// AGWPE is capable of.  Just assume that we'll receive from all
-// radio ports, but transmit out port 0.
-//
+                        // AGWPE
+                        // Process AGWPE packets here.  Massage the frames so that they look
+                        // like normal serial packets to the Xastir decoding functions?
+                        //
+                        // We turn on monitoring of packets when we first connect.  We now
+                        // need to throw away all but the "U" packets, which are unconnected
+                        // information packets.
+                        //
+                        // Check for enough bytes to complete a header (36 bytes).  If
+                        // enough, check the datalength to see if an entire packet has been
+                        // read.  If so, run that packet through a conversion routine to
+                        // convert it to a TAPR2-style packet.
+                        //
+                        // Right now we're not taking into account multiple radio ports that
+                        // AGWPE is capable of.  Just assume that we'll receive from all
+                        // radio ports, but transmit out port 0.
+                        //
                         if (port_data[port].device_type == DEVICE_NET_AGWPE) {
                             int bytes_available = 0;
                             long frame_length = 0;
@@ -4180,7 +4174,7 @@ void port_read(int port) {
                             if (bytes_available < 0)
                                 bytes_available = (bytes_available + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
 
-//fprintf(stderr," bytes_avail:%d ",bytes_available);
+                            //fprintf(stderr," bytes_avail:%d ",bytes_available);
  
                             if (bytes_available >= 36) {
                                 // We have a full AGWPE header,
@@ -4205,9 +4199,9 @@ void port_read(int port) {
                                 frame_length = frame_length | (count[2] << 16);
                                 frame_length = frame_length | (count[3] << 24);
 
-//fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
+                                //fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
 
-                               // Have a complete AGWPE packet?  If
+                                // Have a complete AGWPE packet?  If
                                 // so, convert it to a more standard
                                 // packet format then feed it to our
                                 // decoding routines.
@@ -4217,7 +4211,7 @@ void port_read(int port) {
                                     char output_string[MAX_DEVICE_BUFFER];
                                     int ii,jj,new_length;
 
-//fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length+36);
+                                    //fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length+36);
 
                                     my_pointer = port_data[port].read_out_pos;
                                     jj = 0;
@@ -4238,12 +4232,12 @@ void port_read(int port) {
                                     my_pointer = port_data[port].read_out_pos;
 
                                     if ( parse_agwpe_packet((unsigned char *)input_string,
-                                            frame_length+36,
-                                            (unsigned char *)output_string,
-                                            &new_length) ) {
+                                                            frame_length+36,
+                                                            (unsigned char *)output_string,
+                                                            &new_length) ) {
                                         channel_data(port,
-                                            (unsigned char *)output_string,
-                                            new_length+1); // include terminator
+                                                     (unsigned char *)output_string,
+                                                     new_length+1); // include terminator
                                     }
 
                                     for (i = 0; i <= port_data[port].read_in_pos; i++)
@@ -4259,7 +4253,7 @@ void port_read(int port) {
                                 // more data.
                             }
                         }
-// End of new AGWPE code
+                        // End of new AGWPE code
 
 
 
@@ -4278,15 +4272,15 @@ void port_read(int port) {
 
 
                         if ( (!skip)
-                                && (cin == (unsigned char)'\r'
-                                    || cin == (unsigned char)'\n'
-                                    || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1)
-                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) )
-                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) )
-                               && port_data[port].data_type == 0) {     // If end-of-line
+                             && (cin == (unsigned char)'\r'
+                                 || cin == (unsigned char)'\n'
+                                 || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1)
+                                 || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) )
+                                 || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) )
+                             && port_data[port].data_type == 0) {     // If end-of-line
 
-// End serial/net type data send it to the decoder Put a terminating
-// zero at the end of the read-in data
+                            // End serial/net type data send it to the decoder Put a terminating
+                            // zero at the end of the read-in data
 
                             port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
 
@@ -4300,21 +4294,21 @@ void port_read(int port) {
 
                                 // KISS TNC sends binary data
                                 if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
-                                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+                                     || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
  
                                     length = port_data[port].read_in_pos - port_data[port].read_out_pos;
                                     if (length < 0)
                                         length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
 
-length++;
+                                    length++;
                                 }
                                 else {  // ASCII data
                                     length = 0;
                                 }
 
                                 channel_data(port,
-                                    (unsigned char *)port_data[port].device_read_buffer,
-                                    length);   // Length of string
+                                             (unsigned char *)port_data[port].device_read_buffer,
+                                             length);   // Length of string
                             }
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
@@ -4326,56 +4320,56 @@ length++;
 
                             // Check for binary WX station data
                             if (port_data[port].data_type == 1 && (port_data[port].device_type == DEVICE_NET_WX ||
-                                    port_data[port].device_type == DEVICE_SERIAL_WX)) {
+                                                                   port_data[port].device_type == DEVICE_SERIAL_WX)) {
 
                                 /* BINARY DATA input (WX data ?) */
                                 /* check RS WX200 */
                                 switch (cin) {
 
-                                    case 0x8f:
-                                    case 0x9f:
-                                    case 0xaf:
-                                    case 0xbf:
-                                    case 0xcf:
+                                case 0x8f:
+                                case 0x9f:
+                                case 0xaf:
+                                case 0xbf:
+                                case 0xcf:
 
-                                        if (group == 0) {
-                                            port_data[port].read_in_pos = 0;
-                                            group = (int)cin;
-                                            switch (cin) {
+                                    if (group == 0) {
+                                        port_data[port].read_in_pos = 0;
+                                        group = (int)cin;
+                                        switch (cin) {
 
-                                                case 0x8f:
-                                                    max = 35;
-                                                    binary_wx_data = 1;
-                                                    break;
+                                        case 0x8f:
+                                            max = 35;
+                                            binary_wx_data = 1;
+                                            break;
 
-                                                case 0x9f:
-                                                    max = 34;
-                                                    binary_wx_data = 1;
-                                                    break;
+                                        case 0x9f:
+                                            max = 34;
+                                            binary_wx_data = 1;
+                                            break;
 
-                                                case 0xaf:
-                                                    max = 31;
-                                                    binary_wx_data = 1;
-                                                    break;
+                                        case 0xaf:
+                                            max = 31;
+                                            binary_wx_data = 1;
+                                            break;
 
-                                                case 0xbf:
-                                                    max = 14;
-                                                    binary_wx_data = 1;
-                                                    break;
+                                        case 0xbf:
+                                            max = 14;
+                                            binary_wx_data = 1;
+                                            break;
 
-                                                case 0xcf:
-                                                    max = 27;
-                                                    binary_wx_data = 1;
-                                                    break;
+                                        case 0xcf:
+                                            max = 27;
+                                            binary_wx_data = 1;
+                                            break;
 
-                                                default:
-                                                    break;
-                                            }
+                                        default:
+                                            break;
                                         }
-                                        break;
+                                    }
+                                    break;
 
-                                    default:
-                                        break;
+                                default:
+                                    break;
                                 }
                                 if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                     port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)cin;
@@ -4390,23 +4384,23 @@ length++;
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
                                         int length = 0;
-//int jj;   
+                                        //int jj;   
                                         if (binary_wx_data) {                             
                                             length = port_data[port].read_in_pos - port_data[port].read_out_pos;
                                             if (length < 0)
                                                 length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
                                             length++;
                                         }
-//fprintf(stderr,"\n\n3, length: %d ", length);
-//for (jj = 0; jj < (length-1); jj++) {
-//  fprintf(stderr, "%02x ", 0x0ff & port_data[port].device_read_buffer[jj]);
-//}
-//fprintf(stderr,"\n");
+                                        //fprintf(stderr,"\n\n3, length: %d ", length);
+                                        //for (jj = 0; jj < (length-1); jj++) {
+                                        //  fprintf(stderr, "%02x ", 0x0ff & port_data[port].device_read_buffer[jj]);
+                                        //}
+                                        //fprintf(stderr,"\n");
 
 
                                         channel_data(port,
-                                            (unsigned char *)port_data[port].device_read_buffer,
-                                            length);
+                                                     (unsigned char *)port_data[port].device_read_buffer,
+                                                     length);
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
@@ -4435,8 +4429,8 @@ length++;
 
                         // Ascii WX station data but no line-ends?
                         if (port_data[port].read_in_pos > MAX_DEVICE_BUFFER_UNTIL_BINARY_SWITCH &&
-                                (port_data[port].device_type == DEVICE_NET_WX
-                                || port_data[port].device_type == DEVICE_SERIAL_WX)) {
+                            (port_data[port].device_type == DEVICE_NET_WX
+                             || port_data[port].device_type == DEVICE_SERIAL_WX)) {
 
                             /* normal data on WX not found do look at data for binary WX */
                             port_data[port].data_type++;
@@ -4458,24 +4452,24 @@ length++;
                                 if(strcmp(dev, from.sa_data) == 0) {
                                     /* Received data from our interface! - process data */
                                     if (process_ax25_packet(buffer,
-                                            port_data[port].scan,
-                                            port_data[port].device_read_buffer,
-                                            sizeof(port_data[port].device_read_buffer)) != NULL) {
+                                                            port_data[port].scan,
+                                                            port_data[port].device_read_buffer,
+                                                            sizeof(port_data[port].device_read_buffer)) != NULL) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
 
                                         channel_data(port,
-                                            (unsigned char *)port_data[port].device_read_buffer,
-                                             0);
+                                                     (unsigned char *)port_data[port].device_read_buffer,
+                                                     0);
                                     }
                                     /*
-                                        do this for interface indicator in this case we only do it for,
-                                        data from the correct AX.25 port
+                                      do this for interface indicator in this case we only do it for,
+                                      data from the correct AX.25 port
                                     */
                                     if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                         port_data[port].read_in_pos += port_data[port].scan;
                                     } else {
 
-                                       /* no buffer over runs writing a line at a time */
+                                        /* no buffer over runs writing a line at a time */
                                         port_data[port].read_in_pos = 0;
                                     }
                                 }
@@ -4485,8 +4479,8 @@ length++;
                     }   // End of AX.25 interface code block
 
 
-//if (end_critical_section(&port_data[port].read_lock, "interface.c:port_read(2)" ) > 0)
-//    fprintf(stderr,"read_lock, Port = %d\n", port);
+                    //if (end_critical_section(&port_data[port].read_lock, "interface.c:port_read(2)" ) > 0)
+                    //    fprintf(stderr,"read_lock, Port = %d\n", port);
 
                 }
                 else if (port_data[port].status == DEVICE_UP) {    /* error or close on read */
@@ -4538,40 +4532,40 @@ length++;
 
                             if (debug_level & 2) {
                                 fprintf(stderr,"error on read with error no %d, or signal interrupted the read, port %d, DEVICE_ERROR ***\n",
-                                    errno,port);
+                                        errno,port);
                                 switch (errno) {
 
-                                    case EINTR:
-                                        fprintf(stderr,"EINTR ERROR\n");
-                                        break;
+                                case EINTR:
+                                    fprintf(stderr,"EINTR ERROR\n");
+                                    break;
 
-                                    case EAGAIN:
-                                        fprintf(stderr,"EAGAIN ERROR\n");
-                                        break;
+                                case EAGAIN:
+                                    fprintf(stderr,"EAGAIN ERROR\n");
+                                    break;
 
-                                    case EIO:
-                                        fprintf(stderr,"EIO ERROR\n");
-                                        break;
+                                case EIO:
+                                    fprintf(stderr,"EIO ERROR\n");
+                                    break;
 
-                                    case EISDIR:
-                                        fprintf(stderr,"EISDIR ERROR\n");
-                                        break;
+                                case EISDIR:
+                                    fprintf(stderr,"EISDIR ERROR\n");
+                                    break;
 
-                                    case EBADF: // Get this one when we terminate nearby threads
-                                        fprintf(stderr,"EBADF ERROR\n");
-                                        break;
+                                case EBADF: // Get this one when we terminate nearby threads
+                                    fprintf(stderr,"EBADF ERROR\n");
+                                    break;
 
-                                    case EINVAL:
-                                        fprintf(stderr,"EINVAL ERROR\n");
-                                        break;
+                                case EINVAL:
+                                    fprintf(stderr,"EINVAL ERROR\n");
+                                    break;
 
-                                    case EFAULT:
-                                        fprintf(stderr,"EFAULT ERROR\n");
-                                        break;
+                                case EFAULT:
+                                    fprintf(stderr,"EFAULT ERROR\n");
+                                    break;
 
-                                    default:
-                                        fprintf(stderr,"OTHER ERROR\n");
-                                        break;
+                                default:
+                                    fprintf(stderr,"OTHER ERROR\n");
+                                    break;
                                 }
                             }
                         }
@@ -4584,17 +4578,17 @@ length++;
             // We need to delay here so that the thread doesn't use
             // high amounts of CPU doing nothing.
 
-// This select that waits on data and a timeout, so that if data
-// doesn't come in within a certain period of time, we wake up to
-// check whether the socket has gone down.  Else, we go back into
-// the select to wait for more data or a timeout.  FreeBSD has a
-// problem if this is less than 1ms.  Linux works ok down to 100us.
-// We don't need it anywhere near that short though.  We just need
-// to check whether the main thread has requested the interface be
-// closed, and so need to have this short enough to have reasonable
-// response time to the user.
+            // This select that waits on data and a timeout, so that if data
+            // doesn't come in within a certain period of time, we wake up to
+            // check whether the socket has gone down.  Else, we go back into
+            // the select to wait for more data or a timeout.  FreeBSD has a
+            // problem if this is less than 1ms.  Linux works ok down to 100us.
+            // We don't need it anywhere near that short though.  We just need
+            // to check whether the main thread has requested the interface be
+            // closed, and so need to have this short enough to have reasonable
+            // response time to the user.
 
-//sched_yield();  // Yield to other threads
+            //sched_yield();  // Yield to other threads
 
             // Set up the select to block until data ready or 100ms
             // timeout, whichever occurs first.
@@ -4656,7 +4650,7 @@ void port_write(int port) {
 
             // Then install the cleanup routine:
             pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
-//            pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
+            //            pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
 
 
 
@@ -4664,212 +4658,212 @@ void port_write(int port) {
                 fprintf(stderr,"write_lock, Port = %d\n", port);
 
             if ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
-                    && port_data[port].status == DEVICE_UP) {
+                 && port_data[port].status == DEVICE_UP) {
                 // We have something in the buffer to transmit!
 
 
-// Handle control-C delay
+                // Handle control-C delay
                 switch (port_data[port].device_type) {
 
                     // Use this block for serial interfaces where we
                     // need special delays for control-C character
                     // processing in the TNC.
-                    case DEVICE_SERIAL_TNC_HSP_GPS:
-                    case DEVICE_SERIAL_TNC_AUX_GPS:
-                    case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                case DEVICE_SERIAL_TNC:
 
-                        // Are we trying to send a control-C?  If so, wait a
-                        // special amount of time _before_ we send
-                        // it out the serial port.
-                        if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
-                            // Sending control-C.
+                    // Are we trying to send a control-C?  If so, wait a
+                    // special amount of time _before_ we send
+                    // it out the serial port.
+                    if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
+                        // Sending control-C.
 
-                            if (debug_level & 128) {
-                                fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
+                        if (debug_level & 128) {
+                            fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
                                     *(port_data[port].device_write_buffer + 
-                                    port_data[port].write_out_pos),
+                                      port_data[port].write_out_pos),
                                     port, port_data[port].write_out_pos);
-                            }
+                        }
 
-                            wait_max = 0;
-                            bytes_input = port_data[port].bytes_input + 40;
-                            while ( (port_data[port].bytes_input != bytes_input)
-                                    && (port_data[port].status == DEVICE_UP)
-                                    && (wait_max < 100) ) {
-                                bytes_input = port_data[port].bytes_input;
-                                /*sleep(1);*/
+                        wait_max = 0;
+                        bytes_input = port_data[port].bytes_input + 40;
+                        while ( (port_data[port].bytes_input != bytes_input)
+                                && (port_data[port].status == DEVICE_UP)
+                                && (wait_max < 100) ) {
+                            bytes_input = port_data[port].bytes_input;
+                            /*sleep(1);*/
 
-                                /*wait*/
-                                FD_ZERO(&wd);
-                                FD_SET(port_data[port].channel, &wd);
-                                tmv.tv_sec = 0;
-                                tmv.tv_usec = 80000l;   // Delay 80ms
-                                (void)select(0,NULL,&wd,NULL,&tmv);
-                                wait_max++;
-                                /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
-                            }
-                            /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
-                        }   // End of command byte wait
-                        break;
+                            /*wait*/
+                            FD_ZERO(&wd);
+                            FD_SET(port_data[port].channel, &wd);
+                            tmv.tv_sec = 0;
+                            tmv.tv_usec = 80000l;   // Delay 80ms
+                            (void)select(0,NULL,&wd,NULL,&tmv);
+                            wait_max++;
+                            /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
+                        }
+                        /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
+                    }   // End of command byte wait
+                    break;
 
                     // Use this block for all other interfaces.
-                    default:
-                        // Do nothing (no delays for control-C's)
-                        break;
+                default:
+                    // Do nothing (no delays for control-C's)
+                    break;
 
                 }   // End of switch
-// End of control-C delay code
+                // End of control-C delay code
 
  
                 pthread_testcancel();   // Check for thread termination request
 
 
-// Handle method of sending data (1 or multiple chars per TX)
+                // Handle method of sending data (1 or multiple chars per TX)
                 switch (port_data[port].device_type) {
 
                     // Use this block for serial interfaces where we
                     // need character pacing and so must send one
                     // character per write.
-                    case DEVICE_SERIAL_TNC_HSP_GPS:
-                    case DEVICE_SERIAL_TNC_AUX_GPS:
-                    case DEVICE_SERIAL_KISS_TNC:
-                    case DEVICE_SERIAL_MKISS_TNC:
-                    case DEVICE_SERIAL_TNC:
-                    case DEVICE_SERIAL_GPS:
-                    case DEVICE_SERIAL_WX:
-                        // Do the actual write here, one character
-                        // at a time for these types of interfaces.
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
+                case DEVICE_SERIAL_TNC:
+                case DEVICE_SERIAL_GPS:
+                case DEVICE_SERIAL_WX:
+                    // Do the actual write here, one character
+                    // at a time for these types of interfaces.
 
-                        retval = (int)write(port_data[port].channel,
-                            &port_data[port].device_write_buffer[port_data[port].write_out_pos],
-                            1);
+                    retval = (int)write(port_data[port].channel,
+                                        &port_data[port].device_write_buffer[port_data[port].write_out_pos],
+                                        1);
 
-//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
+                    //fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
 
-                        pthread_testcancel();   // Check for thread termination request
+                    pthread_testcancel();   // Check for thread termination request
 
-                        if (retval == 1) {  // We succeeded in writing one byte
+                    if (retval == 1) {  // We succeeded in writing one byte
 
-                            port_data[port].bytes_output++;
+                        port_data[port].bytes_output++;
 
-                            port_data[port].write_out_pos++;
-                            if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
-                                port_data[port].write_out_pos = 0;
+                        port_data[port].write_out_pos++;
+                        if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
+                            port_data[port].write_out_pos = 0;
 
-                        }  else {
-                            /* error of some kind */
-                            port_data[port].errors++;
-                            port_data[port].status = DEVICE_ERROR;
+                    }  else {
+                        /* error of some kind */
+                        port_data[port].errors++;
+                        port_data[port].status = DEVICE_ERROR;
 
-                            // If the below statement is enabled, it causes an immediate reconnect
-                            // after one time-period of inactivity, currently 7.5 minutes, as set in
-                            // main.c:UpdateTime().  This means the symbol will never change from green
-                            // to red on the status bar, so the operator might not know about a
-                            // connection that is being constantly reconnected.  By leaving it commented
-                            // out we get one time period of red, and then it will reconnect at the 2nd
-                            // time period.  This means we can reconnect within 15 minutes if a line
-                            // goes dead.
-                            //
-                            port_data[port].reconnects = -1;     // Causes an immediate reconnect
+                        // If the below statement is enabled, it causes an immediate reconnect
+                        // after one time-period of inactivity, currently 7.5 minutes, as set in
+                        // main.c:UpdateTime().  This means the symbol will never change from green
+                        // to red on the status bar, so the operator might not know about a
+                        // connection that is being constantly reconnected.  By leaving it commented
+                        // out we get one time period of red, and then it will reconnect at the 2nd
+                        // time period.  This means we can reconnect within 15 minutes if a line
+                        // goes dead.
+                        //
+                        port_data[port].reconnects = -1;     // Causes an immediate reconnect
  
-                            if (retval == 0) {
-                                /* Should not get this unless the device is down */
+                        if (retval == 0) {
+                            /* Should not get this unless the device is down */
+                            if (debug_level & 2)
+                                fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
+                        } else {
+                            if (retval == -1) {
+                                /* Should only get this if an real error occurs */
                                 if (debug_level & 2)
-                                    fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
-                            } else {
-                                if (retval == -1) {
-                                    /* Should only get this if an real error occurs */
-                                    if (debug_level & 2)
-                                        fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
-                                }
+                                    fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
                             }
-                            // Show the latest status in the interface control dialog
-                            update_interface_list();
                         }
-//fprintf(stderr,"Char pacing ");
-//                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
-                        if (serial_char_pacing > 0) {
-                            // Character pacing.  Delay in between
-                            // each character in milliseconds.
-                            // Convert to microseconds for this
-                            // usleep() call .
-                          usleep(serial_char_pacing * 1000);
-                        }
-                        break;
+                        // Show the latest status in the interface control dialog
+                        update_interface_list();
+                    }
+                    //fprintf(stderr,"Char pacing ");
+                    //                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
+                    if (serial_char_pacing > 0) {
+                        // Character pacing.  Delay in between
+                        // each character in milliseconds.
+                        // Convert to microseconds for this
+                        // usleep() call .
+                        usleep(serial_char_pacing * 1000);
+                    }
+                    break;
 
                     // Use this block for all other interfaces where
                     // we don't need character pacing and we can
                     // send blocks of data in one write.
-                    default:
-                        // Do the actual write here, one buffer's
-                        // worth at a time.
+                default:
+                    // Do the actual write here, one buffer's
+                    // worth at a time.
 
-                        // Copy the data to a linear write buffer so
-                        // that we can send it all in one shot.
+                    // Copy the data to a linear write buffer so
+                    // that we can send it all in one shot.
 
-// Need to handle the case where only a portion of the data was
-// written by the write() function.  Perhaps just write out an error
-// message?
-                        quantity = 0;
-                        while (port_data[port].write_in_pos != port_data[port].write_out_pos) {
+                    // Need to handle the case where only a portion of the data was
+                    // written by the write() function.  Perhaps just write out an error
+                    // message?
+                    quantity = 0;
+                    while (port_data[port].write_in_pos != port_data[port].write_out_pos) {
 
-                            write_buffer[quantity] = port_data[port].device_write_buffer[port_data[port].write_out_pos];
+                        write_buffer[quantity] = port_data[port].device_write_buffer[port_data[port].write_out_pos];
 
-                            port_data[port].write_out_pos++;
-                            if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
-                                port_data[port].write_out_pos = 0;
+                        port_data[port].write_out_pos++;
+                        if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
+                            port_data[port].write_out_pos = 0;
 
-//fprintf(stderr,"%02x ",(unsigned char)write_buffer[quantity]);
+                        //fprintf(stderr,"%02x ",(unsigned char)write_buffer[quantity]);
 
-                            quantity++;
-                        }
+                        quantity++;
+                    }
 
-//fprintf(stderr,"\nWriting %d bytes\n\n", quantity);
+                    //fprintf(stderr,"\nWriting %d bytes\n\n", quantity);
 
-                        retval = (int)write(port_data[port].channel,
-                            write_buffer,
-                            quantity);
+                    retval = (int)write(port_data[port].channel,
+                                        write_buffer,
+                                        quantity);
 
-//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
+                    //fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
 
-                        pthread_testcancel();   // Check for thread termination request
+                    pthread_testcancel();   // Check for thread termination request
 
-                        if (retval == quantity) {  // We succeeded in writing one byte
-                            port_data[port].bytes_output++;
-                        }  else {
-                            /* error of some kind */
-                            port_data[port].errors++;
-                            port_data[port].status = DEVICE_ERROR;
+                    if (retval == quantity) {  // We succeeded in writing one byte
+                        port_data[port].bytes_output++;
+                    }  else {
+                        /* error of some kind */
+                        port_data[port].errors++;
+                        port_data[port].status = DEVICE_ERROR;
 
-                            // If the below statement is enabled, it causes an immediate reconnect
-                            // after one time-period of inactivity, currently 7.5 minutes, as set in
-                            // main.c:UpdateTime().  This means the symbol will never change from green
-                            // to red on the status bar, so the operator might not know about a
-                            // connection that is being constantly reconnected.  By leaving it commented
-                            // out we get one time period of red, and then it will reconnect at the 2nd
-                            // time period.  This means we can reconnect within 15 minutes if a line
-                            // goes dead.
-                            //
-                            port_data[port].reconnects = -1;     // Causes an immediate reconnect
+                        // If the below statement is enabled, it causes an immediate reconnect
+                        // after one time-period of inactivity, currently 7.5 minutes, as set in
+                        // main.c:UpdateTime().  This means the symbol will never change from green
+                        // to red on the status bar, so the operator might not know about a
+                        // connection that is being constantly reconnected.  By leaving it commented
+                        // out we get one time period of red, and then it will reconnect at the 2nd
+                        // time period.  This means we can reconnect within 15 minutes if a line
+                        // goes dead.
+                        //
+                        port_data[port].reconnects = -1;     // Causes an immediate reconnect
  
-                            if (retval == 0) {
-                                /* Should not get this unless the device is down */
+                        if (retval == 0) {
+                            /* Should not get this unless the device is down */
+                            if (debug_level & 2)
+                                fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
+                        } else {
+                            if (retval == -1) {
+                                /* Should only get this if an real error occurs */
                                 if (debug_level & 2)
-                                    fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
-                            } else {
-                                if (retval == -1) {
-                                    /* Should only get this if an real error occurs */
-                                    if (debug_level & 2)
-                                        fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
-                                }
+                                    fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
                             }
-                            // Show the latest status in the interface control dialog
-                            update_interface_list();
                         }
-                        break;
+                        // Show the latest status in the interface control dialog
+                        update_interface_list();
+                    }
+                    break;
 
                 }   // End of switch
-// End of handling method of sending data (1 or multiple char per TX)
+                // End of handling method of sending data (1 or multiple char per TX)
 
 
             }
@@ -4882,10 +4876,10 @@ void port_write(int port) {
             // cleanup routine initiates an unlock before the thread
             // dies.  We must be in deferred cancellation mode for
             // the thread to have this work properly.
-//
-// NOTE: Ignore the four \"suggest braces\" warnings you see when
-//       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-//
+            //
+            // NOTE: Ignore the four \"suggest braces\" warnings you see when
+            //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
+            //
             pthread_cleanup_pop(0);
  
         }
@@ -4896,18 +4890,18 @@ void port_write(int port) {
             // amounts of CPU doing _nothing_.  Take this delay out
             // and the thread will take lots of CPU time.
 
-// Try to change this to a select that waits on data and a timeout,
-// so that if data doesn't come in within a certain period of time,
-// we wake up to check whether the socket has gone down.  Else, we
-// go back into the select to wait for more data or a timeout.
-// FreeBSD has a problem if this is less than 1ms.  Linux works ok
-// down to 100us.  Theoretically we don't need it anywhere near that
-// short, we just need to check whether the main thread has
-// requested the interface be closed, and so need to have this short
-// enough to have reasonable response time to the user.
-// Unfortunately it has been reported that having this at 100ms
-// causes about 9 seconds of delay when transmitting to a KISS TNC,
-// so it's good to keep this short also.
+            // Try to change this to a select that waits on data and a timeout,
+            // so that if data doesn't come in within a certain period of time,
+            // we wake up to check whether the socket has gone down.  Else, we
+            // go back into the select to wait for more data or a timeout.
+            // FreeBSD has a problem if this is less than 1ms.  Linux works ok
+            // down to 100us.  Theoretically we don't need it anywhere near that
+            // short, we just need to check whether the main thread has
+            // requested the interface be closed, and so need to have this short
+            // enough to have reasonable response time to the user.
+            // Unfortunately it has been reported that having this at 100ms
+            // causes about 9 seconds of delay when transmitting to a KISS TNC,
+            // so it's good to keep this short also.
 
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
@@ -4999,10 +4993,10 @@ int start_port_threads(int port) {
             ok = -1;
         }
         else if (pthread_create(&port_data[port].write_thread, NULL, write_access_port_thread, &port_id[port])) {
-                /* error starting write thread*/
-                fprintf(stderr,"Error starting write thread, port %d\n",port);
-                port_data[port].write_thread = 0;
-                ok = -1;
+            /* error starting write thread*/
+            fprintf(stderr,"Error starting write thread, port %d\n",port);
+            port_data[port].write_thread = 0;
+            ok = -1;
         }
 
     }
@@ -5102,68 +5096,68 @@ void clear_all_port_data(void) {
 //***********************************************************
 void init_device_names(void) {
     xastir_snprintf(dtype[DEVICE_NONE].device_name,
-        sizeof(dtype[DEVICE_NONE].device_name),
-        "%s",
-        langcode("IFDNL00000"));
+                    sizeof(dtype[DEVICE_NONE].device_name),
+                    "%s",
+                    langcode("IFDNL00000"));
     xastir_snprintf(dtype[DEVICE_SERIAL_TNC].device_name,
-        sizeof(dtype[DEVICE_SERIAL_TNC].device_name),
-        "%s",
-        langcode("IFDNL00001"));
+                    sizeof(dtype[DEVICE_SERIAL_TNC].device_name),
+                    "%s",
+                    langcode("IFDNL00001"));
     xastir_snprintf(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name,
-        sizeof(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name),
-        "%s",
-        langcode("IFDNL00002"));
+                    sizeof(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name),
+                    "%s",
+                    langcode("IFDNL00002"));
     xastir_snprintf(dtype[DEVICE_SERIAL_GPS].device_name,
-        sizeof(dtype[DEVICE_SERIAL_GPS].device_name),
-        "%s",
-        langcode("IFDNL00003"));
+                    sizeof(dtype[DEVICE_SERIAL_GPS].device_name),
+                    "%s",
+                    langcode("IFDNL00003"));
     xastir_snprintf(dtype[DEVICE_SERIAL_WX].device_name,
-        sizeof(dtype[DEVICE_SERIAL_WX].device_name),
-        "%s",
-        langcode("IFDNL00004"));
+                    sizeof(dtype[DEVICE_SERIAL_WX].device_name),
+                    "%s",
+                    langcode("IFDNL00004"));
     xastir_snprintf(dtype[DEVICE_NET_STREAM].device_name,
-        sizeof(dtype[DEVICE_NET_STREAM].device_name),
-        "%s",
-        langcode("IFDNL00005"));
+                    sizeof(dtype[DEVICE_NET_STREAM].device_name),
+                    "%s",
+                    langcode("IFDNL00005"));
     xastir_snprintf(dtype[DEVICE_AX25_TNC].device_name,
-        sizeof(dtype[DEVICE_AX25_TNC].device_name),
-        "%s",
-        langcode("IFDNL00006"));
+                    sizeof(dtype[DEVICE_AX25_TNC].device_name),
+                    "%s",
+                    langcode("IFDNL00006"));
     xastir_snprintf(dtype[DEVICE_NET_GPSD].device_name,
-        sizeof(dtype[DEVICE_NET_GPSD].device_name),
-        "%s",
-        langcode("IFDNL00007"));
+                    sizeof(dtype[DEVICE_NET_GPSD].device_name),
+                    "%s",
+                    langcode("IFDNL00007"));
     xastir_snprintf(dtype[DEVICE_NET_WX].device_name,
-        sizeof(dtype[DEVICE_NET_WX].device_name),
-        "%s",
-        langcode("IFDNL00008"));
+                    sizeof(dtype[DEVICE_NET_WX].device_name),
+                    "%s",
+                    langcode("IFDNL00008"));
     xastir_snprintf(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,
-        sizeof(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name),
-        "%s",
-        langcode("IFDNL00009"));
+                    sizeof(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name),
+                    "%s",
+                    langcode("IFDNL00009"));
     xastir_snprintf(dtype[DEVICE_SERIAL_KISS_TNC].device_name,
-        sizeof(dtype[DEVICE_SERIAL_KISS_TNC].device_name),
-        "%s",
-        langcode("IFDNL00010"));
+                    sizeof(dtype[DEVICE_SERIAL_KISS_TNC].device_name),
+                    "%s",
+                    langcode("IFDNL00010"));
     xastir_snprintf(dtype[DEVICE_NET_DATABASE].device_name,
-        sizeof(dtype[DEVICE_NET_DATABASE].device_name),
-        "%s",
-        langcode("IFDNL00011"));
+                    sizeof(dtype[DEVICE_NET_DATABASE].device_name),
+                    "%s",
+                    langcode("IFDNL00011"));
     xastir_snprintf(dtype[DEVICE_NET_AGWPE].device_name,
-        sizeof(dtype[DEVICE_NET_AGWPE].device_name),
-        "%s",
-        langcode("IFDNL00012"));
+                    sizeof(dtype[DEVICE_NET_AGWPE].device_name),
+                    "%s",
+                    langcode("IFDNL00012"));
     xastir_snprintf(dtype[DEVICE_SERIAL_MKISS_TNC].device_name,
-        sizeof(dtype[DEVICE_SERIAL_MKISS_TNC].device_name),
-        "%s",
-        langcode("IFDNL00013"));
+                    sizeof(dtype[DEVICE_SERIAL_MKISS_TNC].device_name),
+                    "%s",
+                    langcode("IFDNL00013"));
 
 #ifdef HAVE_DB
     // SQL Database (experimental)
     xastir_snprintf(dtype[DEVICE_SQL_DATABASE].device_name,
-        sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
-        "%s",
-        langcode("IFDNL00014"));
+                    sizeof(dtype[DEVICE_SQL_DATABASE].device_name),
+                    "%s",
+                    langcode("IFDNL00014"));
 #endif /* HAVE_DB */
 
 }
@@ -5187,183 +5181,183 @@ int del_device(int port) {
     ok = -1;
     switch (port_data[port].device_type) {
 
-        case(DEVICE_SERIAL_TNC):
-        case(DEVICE_SERIAL_KISS_TNC):
-        case(DEVICE_SERIAL_MKISS_TNC):
-        case(DEVICE_SERIAL_GPS):
-        case(DEVICE_SERIAL_WX):
-        case(DEVICE_SERIAL_TNC_HSP_GPS):
-        case(DEVICE_SERIAL_TNC_AUX_GPS):
+    case(DEVICE_SERIAL_TNC):
+    case(DEVICE_SERIAL_KISS_TNC):
+    case(DEVICE_SERIAL_MKISS_TNC):
+    case(DEVICE_SERIAL_GPS):
+    case(DEVICE_SERIAL_WX):
+    case(DEVICE_SERIAL_TNC_HSP_GPS):
+    case(DEVICE_SERIAL_TNC_AUX_GPS):
 
-            switch (port_data[port].device_type){
+        switch (port_data[port].device_type){
 
-                case DEVICE_SERIAL_TNC:
+        case DEVICE_SERIAL_TNC:
 
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial TNC device\n");
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial TNC device\n");
 
-begin_critical_section(&devices_lock, "interface.c:del_device" );
+            begin_critical_section(&devices_lock, "interface.c:del_device" );
 
-                    xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port].tnc_down_file);
+            xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port].tnc_down_file);
 
-end_critical_section(&devices_lock, "interface.c:del_device" );
+            end_critical_section(&devices_lock, "interface.c:del_device" );
 
-                    (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    break;
+            (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
+            break;
 
-                case DEVICE_SERIAL_KISS_TNC:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial KISS TNC device\n");
-                        break;
+        case DEVICE_SERIAL_KISS_TNC:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial KISS TNC device\n");
+            break;
 
-                case DEVICE_SERIAL_MKISS_TNC:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial MKISS TNC device\n");
-                        break;
+        case DEVICE_SERIAL_MKISS_TNC:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial MKISS TNC device\n");
+            break;
 
-                case DEVICE_SERIAL_GPS:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial GPS device\n");
-                        if (using_gps_position) {
-                            using_gps_position--;
-                        }
-                        break;
+        case DEVICE_SERIAL_GPS:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial GPS device\n");
+            if (using_gps_position) {
+                using_gps_position--;
+            }
+            break;
 
-                case DEVICE_SERIAL_WX:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial WX device\n");
+        case DEVICE_SERIAL_WX:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial WX device\n");
 
-                    break;
+            break;
 
-                case DEVICE_SERIAL_TNC_HSP_GPS:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial TNC w/HSP GPS\n");
-                        if (using_gps_position) {
-                            using_gps_position--;
-                        }
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial TNC w/HSP GPS\n");
+            if (using_gps_position) {
+                using_gps_position--;
+            }
 
-begin_critical_section(&devices_lock, "interface.c:del_device" );
+            begin_critical_section(&devices_lock, "interface.c:del_device" );
 
-                    xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port].tnc_down_file);
+            xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port].tnc_down_file);
 
-end_critical_section(&devices_lock, "interface.c:del_device" );
+            end_critical_section(&devices_lock, "interface.c:del_device" );
 
-                    (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    break;
+            (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
+            break;
 
-                case DEVICE_SERIAL_TNC_AUX_GPS:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Serial TNC w/AUX GPS\n");
-                        if (using_gps_position) {
-                            using_gps_position--;
-                        }
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Serial TNC w/AUX GPS\n");
+            if (using_gps_position) {
+                using_gps_position--;
+            }
 
-begin_critical_section(&devices_lock, "interface.c:del_device");
+            begin_critical_section(&devices_lock, "interface.c:del_device");
 
-                    sprintf(temp, "config/%s", devices[port].tnc_down_file);
+            sprintf(temp, "config/%s", devices[port].tnc_down_file);
 
-end_critical_section(&devices_lock, "interface.c:del_device");
+            end_critical_section(&devices_lock, "interface.c:del_device");
 
-                    (void)command_file_to_tnc_port(port,
-                        get_data_base_dir(temp));
-                    break;
+            (void)command_file_to_tnc_port(port,
+                                           get_data_base_dir(temp));
+            break;
 
-                default:
-                    break;
-            }   // End of switch
+        default:
+            break;
+        }   // End of switch
 
 
             // Let the write queue empty before we return, to make
             // sure all of the data gets written out.
-            while ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
-                    && port_data[port].status == DEVICE_UP) {
+        while ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
+                && port_data[port].status == DEVICE_UP) {
 
-                // Check whether we're hung waiting on the device
-                if (wait_time > SERIAL_MAX_WAIT)
-                    break;   // Break out of the while loop
+            // Check whether we're hung waiting on the device
+            if (wait_time > SERIAL_MAX_WAIT)
+                break;   // Break out of the while loop
 
-                sched_yield();
-                usleep(25000);    // 25ms
-                wait_time = wait_time + 25000;
-            }
+            sched_yield();
+            usleep(25000);    // 25ms
+            wait_time = wait_time + 25000;
+        }
 
 
+        if (debug_level & 2)
+            fprintf(stderr,"Serial detach\n");
+
+        ok = serial_detach(port);
+        break;
+
+    case(DEVICE_NET_STREAM):
+    case(DEVICE_AX25_TNC):
+    case(DEVICE_NET_GPSD):
+    case(DEVICE_NET_WX):
+    case(DEVICE_NET_DATABASE):
+    case(DEVICE_NET_AGWPE):
+
+        switch (port_data[port].device_type){
+
+        case DEVICE_NET_STREAM:
             if (debug_level & 2)
-                fprintf(stderr,"Serial detach\n");
-
-            ok = serial_detach(port);
+                fprintf(stderr,"Close a Network stream\n");
             break;
 
-        case(DEVICE_NET_STREAM):
-        case(DEVICE_AX25_TNC):
-        case(DEVICE_NET_GPSD):
-        case(DEVICE_NET_WX):
-        case(DEVICE_NET_DATABASE):
-        case(DEVICE_NET_AGWPE):
-
-            switch (port_data[port].device_type){
-
-                case DEVICE_NET_STREAM:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Network stream\n");
-                    break;
-
-                case DEVICE_AX25_TNC:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a AX25 TNC device\n");
-                    break;
-
-                case DEVICE_NET_GPSD:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Network GPSd stream\n");
-                        if (using_gps_position) {
-                            using_gps_position--;
-                        }
-                    break;
-
-                case DEVICE_NET_WX:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Network WX stream\n");
-                    break;
-
-                case DEVICE_NET_DATABASE:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Network Database stream\n");
-                    break;
-
-                case DEVICE_NET_AGWPE:
-                    if (debug_level & 2)
-                        fprintf(stderr,"Close a Network AGWPE stream\n");
-                    break;
-
-                default:
-                    break;
-            }
+        case DEVICE_AX25_TNC:
             if (debug_level & 2)
-                fprintf(stderr,"Net detach\n");
-
-            ok = net_detach(port);
+                fprintf(stderr,"Close a AX25 TNC device\n");
             break;
 
-#ifdef HAVE_DB
-            case DEVICE_SQL_DATABASE:
-                if (debug_level & 2)
-                    fprintf(stderr,"Close connection to database on device %d\n",port);
-                if (port_data[port].status==DEVICE_UP) { 
-                   ok = closeConnection(&connections[port],port);
-                }
-                // remove the connection from the list of open connections
-                /* clear port active */
-                port_data[port].active = DEVICE_NOT_IN_USE;
-                /* clear port status */
-                port_data[port].active = DEVICE_DOWN;
-                update_interface_list();
-fprintf(stderr,"Closed connection to database on device %d\n",port);
+        case DEVICE_NET_GPSD:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Network GPSd stream\n");
+            if (using_gps_position) {
+                using_gps_position--;
+            }
             break;
-#endif /* HAVE_DB */
+
+        case DEVICE_NET_WX:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Network WX stream\n");
+            break;
+
+        case DEVICE_NET_DATABASE:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Network Database stream\n");
+            break;
+
+        case DEVICE_NET_AGWPE:
+            if (debug_level & 2)
+                fprintf(stderr,"Close a Network AGWPE stream\n");
+            break;
 
         default:
             break;
+        }
+        if (debug_level & 2)
+            fprintf(stderr,"Net detach\n");
+
+        ok = net_detach(port);
+        break;
+
+#ifdef HAVE_DB
+    case DEVICE_SQL_DATABASE:
+        if (debug_level & 2)
+            fprintf(stderr,"Close connection to database on device %d\n",port);
+        if (port_data[port].status==DEVICE_UP) { 
+            ok = closeConnection(&connections[port],port);
+        }
+        // remove the connection from the list of open connections
+        /* clear port active */
+        port_data[port].active = DEVICE_NOT_IN_USE;
+        /* clear port status */
+        port_data[port].active = DEVICE_DOWN;
+        update_interface_list();
+        fprintf(stderr,"Closed connection to database on device %d\n",port);
+        break;
+#endif /* HAVE_DB */
+
+    default:
+        break;
     }
 
     if (ok) {
@@ -5442,72 +5436,72 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
     if (port_avail >= 0){
 
         switch (device->device_type) {
-            case DEVICE_SQL_DATABASE:
-                if (debug_level & 4096)
-                    fprintf(stderr,"Opening a sql db connection to %s\n",device->device_host_name);
-                clear_port_data(port_avail,0);
+        case DEVICE_SQL_DATABASE:
+            if (debug_level & 4096)
+                fprintf(stderr,"Opening a sql db connection to %s\n",device->device_host_name);
+            clear_port_data(port_avail,0);
 
-                port_data[port_avail].device_type = DEVICE_SQL_DATABASE;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    device->device_host_name);
-                if (connections_initialized==0) { 
+            port_data[port_avail].device_type = DEVICE_SQL_DATABASE;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            device->device_host_name);
+            if (connections_initialized==0) { 
+                if (debug_level & 4096)
+                    fprintf(stderr,"Calling initConnections in add_device_by_ioparam\n");
+                fprintf(stderr,"adddevice, initializing connections");
+                connections_initialized = initConnections();
+            }
+            if (debug_level & 4096) { 
+                fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,&connections[port_avail]);
+                fprintf(stderr,"device [%p][%p] device_type=%d\n",device,&device,device->device_type);
+            }
+            got_conn = 0;
+            got_conn=openConnection(device, &connections[port_avail]);
+            if (debug_level & 4096) {
+                fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,&connections[port_avail],got_conn);
+                if (got_conn==1) 
+                    fprintf(stderr,"got_conn connection type %d\n",connections[port_avail].type);
+            }
+            if ((got_conn == 1) && (!(connections[port_avail].type==NULL))) { 
+                if (debug_level & 4096)
+                    fprintf(stderr, "Opened connection [%d] type=[%d]\n",port_avail,connections[port_avail].type);
+                ok = 1;
+                port_data[port_avail].active = DEVICE_IN_USE;
+                port_data[port_avail].status = DEVICE_UP;
+            } else { 
+                port_data[port_avail].active = DEVICE_IN_USE;
+                port_data[port_avail].status = DEVICE_ERROR;
+            }
+            // Show the latest status in the interface control dialog
+            update_interface_list();
+            if (ok == 1) {
+                /* if connected save top of call list */
+                ok = storeStationSimpleToGisDb(&connections[port_avail], n_first);
+                if (ok==1) { 
                     if (debug_level & 4096)
-                        fprintf(stderr,"Calling initConnections in add_device_by_ioparam\n");
-fprintf(stderr,"adddevice, initializing connections");
-                   connections_initialized = initConnections();
-                }
-                if (debug_level & 4096) { 
-                    fprintf(stderr,"Opening (in interfaces) device on port [%d] with connection [%p]\n",port_avail,&connections[port_avail]);
-                    fprintf(stderr,"device [%p][%p] device_type=%d\n",device,&device,device->device_type);
-                }
-                got_conn = 0;
-                got_conn=openConnection(device, &connections[port_avail]);
-                if (debug_level & 4096) {
-                    fprintf(stderr,"got_conn connections[%d] [%p] result=%d\n",port_avail,&connections[port_avail],got_conn);
-                    if (got_conn==1) 
-                        fprintf(stderr,"got_conn connection type %d\n",connections[port_avail].type);
-                }
-                if ((got_conn == 1) && (!(connections[port_avail].type==NULL))) { 
-                   if (debug_level & 4096)
-                       fprintf(stderr, "Opened connection [%d] type=[%d]\n",port_avail,connections[port_avail].type);
-                   ok = 1;
-                   port_data[port_avail].active = DEVICE_IN_USE;
-                   port_data[port_avail].status = DEVICE_UP;
-                } else { 
-                   port_data[port_avail].active = DEVICE_IN_USE;
-                   port_data[port_avail].status = DEVICE_ERROR;
-                }
-                // Show the latest status in the interface control dialog
-                update_interface_list();
-                if (ok == 1) {
-                    /* if connected save top of call list */
-                    ok = storeStationSimpleToGisDb(&connections[port_avail], n_first);
-                    if (ok==1) { 
-                         if (debug_level & 4096)
-                             fprintf(stderr,"Stored station n_first\n");
-                         // iterate through station_pointers and write all stations currently known
-                         dr = n_first->n_next;
-                         if (dr!=NULL) { 
-                             while (done==0) { 
-                                 if (debug_level & 4096)
-                                      fprintf(stderr,"storing additional stations\n");
-                                 // Need to check that stations aren't from the database 
-                                 // preventing creation of duplicate round trip records.
-                                 ok = storeStationSimpleToGisDb(&connections[port_avail], dr);
-                                 if (ok==1) {
-                                    dr = dr->n_next;
-                                    if (dr==NULL) { 
-                                        done = 1;
-                                    } 
-                                 } else { 
+                        fprintf(stderr,"Stored station n_first\n");
+                    // iterate through station_pointers and write all stations currently known
+                    dr = n_first->n_next;
+                    if (dr!=NULL) { 
+                        while (done==0) { 
+                            if (debug_level & 4096)
+                                fprintf(stderr,"storing additional stations\n");
+                            // Need to check that stations aren't from the database 
+                            // preventing creation of duplicate round trip records.
+                            ok = storeStationSimpleToGisDb(&connections[port_avail], dr);
+                            if (ok==1) {
+                                dr = dr->n_next;
+                                if (dr==NULL) { 
                                     done = 1;
-                                 }
-                             }
-                         }
+                                } 
+                            } else { 
+                                done = 1;
+                            }
+                        }
                     }
                 }
+            }
         }
     }
     return ok;
@@ -5528,7 +5522,7 @@ fprintf(stderr,"adddevice, initializing connections");
 // otherwise it will return -1 if there is an error
 //***********************************************************
 int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck_p,
-        int dev_sp,int dev_sty,int reconnect, char *filter_string) {
+               int dev_sp,int dev_sty,int reconnect, char *filter_string) {
     char logon_txt[600];
     char init_kiss_string[5];   // KISS-mode on startup
     int ok;
@@ -5542,9 +5536,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
         return(-1);
 
     xastir_snprintf(verstr,
-        sizeof(verstr),
-        "XASTIR %s",
-        VERSION);
+                    sizeof(verstr),
+                    "XASTIR %s",
+                    VERSION);
 
     ok = -1;
     if (port_avail >= 0){
@@ -5553,342 +5547,342 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
         switch(dev_type){
 
+        case DEVICE_SERIAL_TNC:
+        case DEVICE_SERIAL_KISS_TNC:
+        case DEVICE_SERIAL_MKISS_TNC:
+        case DEVICE_SERIAL_GPS:
+        case DEVICE_SERIAL_WX:
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+
+            switch (dev_type) {
+
             case DEVICE_SERIAL_TNC:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial TNC device\n");
+
+                break;
+
             case DEVICE_SERIAL_KISS_TNC:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial KISS TNC device\n");
+
+                break;
+
             case DEVICE_SERIAL_MKISS_TNC:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial MKISS TNC device\n");
+
+                break;
+
             case DEVICE_SERIAL_GPS:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial GPS device\n");
+                // Must wait for valid GPS parsing after
+                // sending one posit.
+                my_position_valid = 1;
+                using_gps_position++;
+                statusline(langcode("BBARSTA041"),1);
+                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
+ 
+                break;
+
             case DEVICE_SERIAL_WX:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial WX device\n");
+
+                break;
+
             case DEVICE_SERIAL_TNC_HSP_GPS:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial TNC w/HSP GPS device\n");
+                // Must wait for valid GPS parsing after
+                // sending one posit.
+                my_position_valid = 1;
+                using_gps_position++;
+                statusline(langcode("BBARSTA041"),1);
+                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
+ 
+                break;
+
             case DEVICE_SERIAL_TNC_AUX_GPS:
-
-                switch (dev_type) {
-
-                    case DEVICE_SERIAL_TNC:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial TNC device\n");
-
-                        break;
-
-                    case DEVICE_SERIAL_KISS_TNC:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial KISS TNC device\n");
-
-                        break;
-
-                    case DEVICE_SERIAL_MKISS_TNC:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial MKISS TNC device\n");
-
-                        break;
-
-                    case DEVICE_SERIAL_GPS:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial GPS device\n");
-                        // Must wait for valid GPS parsing after
-                        // sending one posit.
-                        my_position_valid = 1;
-                        using_gps_position++;
-                        statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a Serial TNC w/AUX GPS device\n");
+                // Must wait for valid GPS parsing after
+                // sending one posit.
+                my_position_valid = 1;
+                using_gps_position++;
+                statusline(langcode("BBARSTA041"),1);
+                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
  
-                        break;
-
-                    case DEVICE_SERIAL_WX:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial WX device\n");
-
-                        break;
-
-                    case DEVICE_SERIAL_TNC_HSP_GPS:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial TNC w/HSP GPS device\n");
-                        // Must wait for valid GPS parsing after
-                        // sending one posit.
-                        my_position_valid = 1;
-                        using_gps_position++;
-                        statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
- 
-                        break;
-
-                    case DEVICE_SERIAL_TNC_AUX_GPS:
-                        if (debug_level & 2)
-                            fprintf(stderr,"Opening a Serial TNC w/AUX GPS device\n");
-                        // Must wait for valid GPS parsing after
-                        // sending one posit.
-                        my_position_valid = 1;
-                        using_gps_position++;
-                        statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
- 
-                        break;
-
-                    default:
-                        break;
-                }
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(1)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
-
-                port_data[port_avail].device_type = dev_type;
-                xastir_snprintf(port_data[port_avail].device_name,
-                    sizeof(port_data[port_avail].device_name),
-                    "%s",
-                    dev_nm);
-                port_data[port_avail].sp = dev_sp;
-                port_data[port_avail].style = dev_sty;
-                if (dev_type == DEVICE_SERIAL_WX) {
-                    if (strcmp("1",passwd) == 0)
-                        port_data[port_avail].data_type = 1;
-                }
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(2)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
-
-                ok = serial_init(port_avail);
-                break;
-
-            case DEVICE_NET_STREAM:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a Network stream\n");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(3)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
-
-                port_data[port_avail].device_type = DEVICE_NET_STREAM;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    dev_nm);
-                xastir_snprintf(port_data[port_avail].device_host_pswd,
-                    sizeof(port_data[port_avail].device_host_pswd),
-                    "%s",
-                    passwd);
-                port_data[port_avail].socket_port = dev_sck_p;
-                port_data[port_avail].reconnect = reconnect;
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(4)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = net_init(port_avail);
-
-                if (ok == 1) {
-
-                    /* if connected now send password */
-                    if (strlen(passwd)) {
-
-                        if (filter_string != NULL
-                                && strlen(filter_string) > 0) {    // Filter specified
-
-                            // Please note that "filter" must be the 8th
-                            // parameter on the line in order to be
-                            // parsed properly by the servers.
-                            xastir_snprintf(logon_txt,
-                                sizeof(logon_txt),
-                                "user %s pass %s vers %s filter %s%c%c",
-                                my_callsign,
-                                passwd,
-                                verstr,
-                                filter_string,
-                                '\r',
-                                '\n');
-                        }
-                        else {  // No filter specified
-                            xastir_snprintf(logon_txt,
-                                sizeof(logon_txt),
-                                "user %s pass %s vers %s%c%c",
-                                my_callsign,
-                                passwd,
-                                verstr,
-                                '\r',
-                                '\n');
-                        }
-                    }
-                    else {
-                        xastir_snprintf(logon_txt,
-                            sizeof(logon_txt),
-                            "user %s pass -1 vers %s %c%c",
-                            my_callsign,
-                            verstr,
-                            '\r',
-                            '\n');
-                    }
-
-//fprintf(stderr,"Sending this string: %s\n", logon_txt);
- 
-                    port_write_string(port_avail,logon_txt);
-                }
-                break;
-
-            case DEVICE_AX25_TNC:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a network AX25 TNC\n");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(5)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                port_data[port_avail].device_type = DEVICE_AX25_TNC;
-                xastir_snprintf(port_data[port_avail].device_name,
-                    sizeof(port_data[port_avail].device_name),
-                    "%s",
-                    dev_nm);
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(6)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = ax25_init(port_avail);
-                break;
-
-            case DEVICE_NET_GPSD:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a network GPS using gpsd\n");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(7)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                port_data[port_avail].device_type = DEVICE_NET_GPSD;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    dev_nm);
-                port_data[port_avail].socket_port = dev_sck_p;
-                port_data[port_avail].reconnect = reconnect;
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(8)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = net_init(port_avail);
-                if (ok == 1) {
-
-                    // Pre-2.90 GPSD protocol
-                    xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
-                    port_write_string(port_avail,logon_txt);
-
-                    // Post-2.90 GPSD protocol is handled near the
-                    // bottom of this routine.
-
-                    // Must wait for valid GPS parsing after sending
-                    // one posit.
-                    my_position_valid = 1;
-                    using_gps_position++;
-                    statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
-                }
-                break;
-
-            case DEVICE_NET_WX:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a network WX\n");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(9)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                port_data[port_avail].device_type = DEVICE_NET_WX;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    dev_nm);
-                port_data[port_avail].socket_port = dev_sck_p;
-                port_data[port_avail].reconnect = reconnect;
-                if (strcmp("1",passwd) == 0)
-                    port_data[port_avail].data_type = 1;
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(10)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = net_init(port_avail);
-                if (ok == 1) {
-                    /* if connected now send call and program version */
-                    xastir_snprintf(logon_txt, sizeof(logon_txt), "%s %s%c%c", my_callsign, VERSIONTXT, '\r', '\n');
-                    port_write_string(port_avail,logon_txt);
-                }
-                break;
-
-            case DEVICE_NET_DATABASE:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a network database stream\n");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(11)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                port_data[port_avail].device_type = DEVICE_NET_DATABASE;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    dev_nm);
-                port_data[port_avail].socket_port = dev_sck_p;
-                port_data[port_avail].reconnect = reconnect;
-                if (strcmp("1",passwd) == 0)
-                    port_data[port_avail].data_type = 1;
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(12)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = net_init(port_avail);
-                if (ok == 1) {
-                    /* if connected now send call and program version */
-                    xastir_snprintf(logon_txt, sizeof(logon_txt), "%s %s%c%c", my_callsign, VERSIONTXT, '\r', '\n');
-                    port_write_string(port_avail,logon_txt);
-                }
-                break;
-
-            case DEVICE_NET_AGWPE:
-                if (debug_level & 2)
-                    fprintf(stderr,"Opening a network AGWPE stream");
-
-                clear_port_data(port_avail,0);
-
-//if (begin_critical_section(&port_data_lock, "interface.c:add_device(13)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                port_data[port_avail].device_type = DEVICE_NET_AGWPE;
-                xastir_snprintf(port_data[port_avail].device_host_name,
-                    sizeof(port_data[port_avail].device_host_name),
-                    "%s",
-                    dev_nm);
-                port_data[port_avail].socket_port = dev_sck_p;
-                port_data[port_avail].reconnect = reconnect;
-                if (strcmp("1",passwd) == 0)
-                    port_data[port_avail].data_type = 1;
-
-//if (end_critical_section(&port_data_lock, "interface.c:add_device(14)" ) > 0)
-//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
-                ok = net_init(port_avail);
-
-                if (ok == 1) {
-
-                    // If password isn't empty, send login
-                    // information
-                    //
-                    if (strlen(passwd) != 0) {
-
-                        // Send the login packet 
-                        send_agwpe_packet(port_avail,
-                            0,                       // AGWPE RadioPort
-                            'P',                     // Login/Password Frame
-                            NULL,                    // FromCall
-                            NULL,                    // ToCall
-                            NULL,                    // Path
-                            (unsigned char *)passwd, // Data
-                            strlen(passwd));         // Length
-                    }
-                }
                 break;
 
             default:
                 break;
+            }
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(1)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
+
+            port_data[port_avail].device_type = dev_type;
+            xastir_snprintf(port_data[port_avail].device_name,
+                            sizeof(port_data[port_avail].device_name),
+                            "%s",
+                            dev_nm);
+            port_data[port_avail].sp = dev_sp;
+            port_data[port_avail].style = dev_sty;
+            if (dev_type == DEVICE_SERIAL_WX) {
+                if (strcmp("1",passwd) == 0)
+                    port_data[port_avail].data_type = 1;
+            }
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(2)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
+
+            ok = serial_init(port_avail);
+            break;
+
+        case DEVICE_NET_STREAM:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a Network stream\n");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(3)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
+
+            port_data[port_avail].device_type = DEVICE_NET_STREAM;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            dev_nm);
+            xastir_snprintf(port_data[port_avail].device_host_pswd,
+                            sizeof(port_data[port_avail].device_host_pswd),
+                            "%s",
+                            passwd);
+            port_data[port_avail].socket_port = dev_sck_p;
+            port_data[port_avail].reconnect = reconnect;
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(4)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = net_init(port_avail);
+
+            if (ok == 1) {
+
+                /* if connected now send password */
+                if (strlen(passwd)) {
+
+                    if (filter_string != NULL
+                        && strlen(filter_string) > 0) {    // Filter specified
+
+                        // Please note that "filter" must be the 8th
+                        // parameter on the line in order to be
+                        // parsed properly by the servers.
+                        xastir_snprintf(logon_txt,
+                                        sizeof(logon_txt),
+                                        "user %s pass %s vers %s filter %s%c%c",
+                                        my_callsign,
+                                        passwd,
+                                        verstr,
+                                        filter_string,
+                                        '\r',
+                                        '\n');
+                    }
+                    else {  // No filter specified
+                        xastir_snprintf(logon_txt,
+                                        sizeof(logon_txt),
+                                        "user %s pass %s vers %s%c%c",
+                                        my_callsign,
+                                        passwd,
+                                        verstr,
+                                        '\r',
+                                        '\n');
+                    }
+                }
+                else {
+                    xastir_snprintf(logon_txt,
+                                    sizeof(logon_txt),
+                                    "user %s pass -1 vers %s %c%c",
+                                    my_callsign,
+                                    verstr,
+                                    '\r',
+                                    '\n');
+                }
+
+                //fprintf(stderr,"Sending this string: %s\n", logon_txt);
+ 
+                port_write_string(port_avail,logon_txt);
+            }
+            break;
+
+        case DEVICE_AX25_TNC:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a network AX25 TNC\n");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(5)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            port_data[port_avail].device_type = DEVICE_AX25_TNC;
+            xastir_snprintf(port_data[port_avail].device_name,
+                            sizeof(port_data[port_avail].device_name),
+                            "%s",
+                            dev_nm);
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(6)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = ax25_init(port_avail);
+            break;
+
+        case DEVICE_NET_GPSD:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a network GPS using gpsd\n");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(7)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            port_data[port_avail].device_type = DEVICE_NET_GPSD;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            dev_nm);
+            port_data[port_avail].socket_port = dev_sck_p;
+            port_data[port_avail].reconnect = reconnect;
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(8)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = net_init(port_avail);
+            if (ok == 1) {
+
+                // Pre-2.90 GPSD protocol
+                xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
+                port_write_string(port_avail,logon_txt);
+
+                // Post-2.90 GPSD protocol is handled near the
+                // bottom of this routine.
+
+                // Must wait for valid GPS parsing after sending
+                // one posit.
+                my_position_valid = 1;
+                using_gps_position++;
+                statusline(langcode("BBARSTA041"),1);
+                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
+            }
+            break;
+
+        case DEVICE_NET_WX:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a network WX\n");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(9)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            port_data[port_avail].device_type = DEVICE_NET_WX;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            dev_nm);
+            port_data[port_avail].socket_port = dev_sck_p;
+            port_data[port_avail].reconnect = reconnect;
+            if (strcmp("1",passwd) == 0)
+                port_data[port_avail].data_type = 1;
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(10)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = net_init(port_avail);
+            if (ok == 1) {
+                /* if connected now send call and program version */
+                xastir_snprintf(logon_txt, sizeof(logon_txt), "%s %s%c%c", my_callsign, VERSIONTXT, '\r', '\n');
+                port_write_string(port_avail,logon_txt);
+            }
+            break;
+
+        case DEVICE_NET_DATABASE:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a network database stream\n");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(11)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            port_data[port_avail].device_type = DEVICE_NET_DATABASE;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            dev_nm);
+            port_data[port_avail].socket_port = dev_sck_p;
+            port_data[port_avail].reconnect = reconnect;
+            if (strcmp("1",passwd) == 0)
+                port_data[port_avail].data_type = 1;
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(12)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = net_init(port_avail);
+            if (ok == 1) {
+                /* if connected now send call and program version */
+                xastir_snprintf(logon_txt, sizeof(logon_txt), "%s %s%c%c", my_callsign, VERSIONTXT, '\r', '\n');
+                port_write_string(port_avail,logon_txt);
+            }
+            break;
+
+        case DEVICE_NET_AGWPE:
+            if (debug_level & 2)
+                fprintf(stderr,"Opening a network AGWPE stream");
+
+            clear_port_data(port_avail,0);
+
+            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(13)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            port_data[port_avail].device_type = DEVICE_NET_AGWPE;
+            xastir_snprintf(port_data[port_avail].device_host_name,
+                            sizeof(port_data[port_avail].device_host_name),
+                            "%s",
+                            dev_nm);
+            port_data[port_avail].socket_port = dev_sck_p;
+            port_data[port_avail].reconnect = reconnect;
+            if (strcmp("1",passwd) == 0)
+                port_data[port_avail].data_type = 1;
+
+            //if (end_critical_section(&port_data_lock, "interface.c:add_device(14)" ) > 0)
+            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+            ok = net_init(port_avail);
+
+            if (ok == 1) {
+
+                // If password isn't empty, send login
+                // information
+                //
+                if (strlen(passwd) != 0) {
+
+                    // Send the login packet 
+                    send_agwpe_packet(port_avail,
+                                      0,                       // AGWPE RadioPort
+                                      'P',                     // Login/Password Frame
+                                      NULL,                    // FromCall
+                                      NULL,                    // ToCall
+                                      NULL,                    // Path
+                                      (unsigned char *)passwd, // Data
+                                      strlen(passwd));         // Length
+                }
+            }
+            break;
+
+        default:
+            break;
         }
 
         if (ok == 1) {  // If port is connected...
@@ -5902,146 +5896,146 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             switch (dev_type) {
 
-                case DEVICE_SERIAL_TNC:
-                case DEVICE_SERIAL_TNC_HSP_GPS:
-                case DEVICE_SERIAL_TNC_AUX_GPS:
+            case DEVICE_SERIAL_TNC:
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
 
-                    if (ok == 1) {
+                if (ok == 1) {
 
-// We already have the lock by the time add_device() is called!
-//begin_critical_section(&devices_lock, "interface.c:add_device" );
+                    // We already have the lock by the time add_device() is called!
+                    //begin_critical_section(&devices_lock, "interface.c:add_device" );
 
-                        xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
+                    xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
 
-//end_critical_section(&devices_lock, "interface.c:add_device" );
+                    //end_critical_section(&devices_lock, "interface.c:add_device" );
 
-                        (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
-                    }
-                    break;
+                    (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
+                }
+                break;
 
-                case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_KISS_TNC:
 
-                    // Initialize KISS-Mode at startup
-                    if (devices[port_avail].init_kiss) {
-                        xastir_snprintf(init_kiss_string,
-                            sizeof(init_kiss_string),
-                            "\x1B@k\r");    // [ESC@K sets tnc from terminal- into kissmode
-                        port_write_string(port_avail,init_kiss_string);
-                        usleep(100000); // wait a little bit...
-                    }
+                // Initialize KISS-Mode at startup
+                if (devices[port_avail].init_kiss) {
+                    xastir_snprintf(init_kiss_string,
+                                    sizeof(init_kiss_string),
+                                    "\x1B@k\r");    // [ESC@K sets tnc from terminal- into kissmode
+                    port_write_string(port_avail,init_kiss_string);
+                    usleep(100000); // wait a little bit...
+                }
 
-                    // Send the KISS parameters to the TNC
-                    send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
-                    send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
-                    send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
-                    send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
-                    send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
-                    break;
+                // Send the KISS parameters to the TNC
+                send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
+                send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
+                send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
+                send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
+                send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
+                break;
 
-//WE7U
-               case DEVICE_SERIAL_MKISS_TNC:
-                    // Send the KISS parameters to the TNC.  We'll
-                    // need to send them to the correct port for
-                    // this MKISS device.
-                    send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
-                    send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
-                    send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
-                    send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
-                    send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
-                    break;
+                //WE7U
+            case DEVICE_SERIAL_MKISS_TNC:
+                // Send the KISS parameters to the TNC.  We'll
+                // need to send them to the correct port for
+                // this MKISS device.
+                send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
+                send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
+                send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
+                send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
+                send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
+                break;
 
-                case DEVICE_NET_AGWPE:
+            case DEVICE_NET_AGWPE:
 
-                    // Query for the AGWPE version
-                    //
-                    send_agwpe_packet(port_avail,
-                        0,      // AGWPE RadioPort
-                        'R',    // Request SW Version Frame
-                        NULL,   // FromCall
-                        NULL,   // ToCall
-                        NULL,   // Path
-                        NULL,   // Data
-                        0);     // Length
-
-
-                    // Query for port information
-                    //
-                    send_agwpe_packet(port_avail,
-                        0,      // AGWPE RadioPort
-                        'G',    // Request Port Info Frame
-                        NULL,   // FromCall
-                        NULL,   // ToCall
-                        NULL,   // Path
-                        NULL,   // Data
-                        0);     // Length
+                // Query for the AGWPE version
+                //
+                send_agwpe_packet(port_avail,
+                                  0,      // AGWPE RadioPort
+                                  'R',    // Request SW Version Frame
+                                  NULL,   // FromCall
+                                  NULL,   // ToCall
+                                  NULL,   // Path
+                                  NULL,   // Data
+                                  0);     // Length
 
 
-/*
-                    // Ask to receive "Monitor" frames.  Once we
-                    // switch to "raw" mode for decoding, we won't
-                    // need this one anymore.
-                    //
-                    send_agwpe_packet(port_avail,
-                        0,      // AGWPE RadioPort
-                        'm',    // Monitor Packets Frame
-                        NULL,   // FromCall
-                        NULL,   // ToCall
-                        NULL,   // Path
-                        NULL,   // Data
-                        0);     // Length
-*/
+                // Query for port information
+                //
+                send_agwpe_packet(port_avail,
+                                  0,      // AGWPE RadioPort
+                                  'G',    // Request Port Info Frame
+                                  NULL,   // FromCall
+                                  NULL,   // ToCall
+                                  NULL,   // Path
+                                  NULL,   // Data
+                                  0);     // Length
 
 
-                    // Ask to receive "raw" frames
-                    //
-                    send_agwpe_packet(port_avail,
-                        0,      // AGWPE RadioPort
-                        'k',    // Request Raw Packets Frame
-                        NULL,   // FromCall
-                        NULL,   // ToCall
-                        NULL,   // Path
-                        NULL,   // Data
-                        0);     // Length
+                /*
+                // Ask to receive "Monitor" frames.  Once we
+                // switch to "raw" mode for decoding, we won't
+                // need this one anymore.
+                //
+                send_agwpe_packet(port_avail,
+                0,      // AGWPE RadioPort
+                'm',    // Monitor Packets Frame
+                NULL,   // FromCall
+                NULL,   // ToCall
+                NULL,   // Path
+                NULL,   // Data
+                0);     // Length
+                */
 
 
-/*
-                    // Send a dummy UI frame for testing purposes.
-                    //
-                    send_agwpe_packet(port_avail,
-                        atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
-                        '\0',       // type
-                        "TEST-3",   // FromCall
-                        "APRS",     // ToCall
-                        NULL,       // Path
-                        "Test",     // Data
-                        4);         // length
+                // Ask to receive "raw" frames
+                //
+                send_agwpe_packet(port_avail,
+                                  0,      // AGWPE RadioPort
+                                  'k',    // Request Raw Packets Frame
+                                  NULL,   // FromCall
+                                  NULL,   // ToCall
+                                  NULL,   // Path
+                                  NULL,   // Data
+                                  0);     // Length
 
 
-                    // Send another dummy UI frame.
-                    //
-                    send_agwpe_packet(port_avail,
-                        atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
-                        '\0',       // type
-                        "TEST-3",   // FromCall
-                        "APRS",     // ToCall
-                        "RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1", // Path
-                        "Testing this darned thing!",   // Data
-                        26);     // length
-*/
+                /*
+                // Send a dummy UI frame for testing purposes.
+                //
+                send_agwpe_packet(port_avail,
+                atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
+                '\0',       // type
+                "TEST-3",   // FromCall
+                "APRS",     // ToCall
+                NULL,       // Path
+                "Test",     // Data
+                4);         // length
 
-                    break;
 
-                case DEVICE_NET_GPSD:
+                // Send another dummy UI frame.
+                //
+                send_agwpe_packet(port_avail,
+                atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
+                '\0',       // type
+                "TEST-3",   // FromCall
+                "APRS",     // ToCall
+                "RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1", // Path
+                "Testing this darned thing!",   // Data
+                26);     // length
+                */
+
+                break;
+
+            case DEVICE_NET_GPSD:
  
-                     // Post-2.90 GPSD protocol
-                     // (Pre-2.90 protocol handled in a prior section of
-                     // this routine)
-                    xastir_snprintf(logon_txt, sizeof(logon_txt), "?WATCH={\"enable\":true,\"nmea\":true}\r\n");
-                    port_write_string(port_avail,logon_txt);
-                    break;
+                // Post-2.90 GPSD protocol
+                // (Pre-2.90 protocol handled in a prior section of
+                // this routine)
+                xastir_snprintf(logon_txt, sizeof(logon_txt), "?WATCH={\"enable\":true,\"nmea\":true}\r\n");
+                port_write_string(port_avail,logon_txt);
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
 
@@ -6099,203 +6093,203 @@ void startup_all_or_defined_port(int port) {
 
     switch (port) {
 
-        case -1:    // Start if "Activate on Startup" enabled
-            start = 0;
-            break;
+    case -1:    // Start if "Activate on Startup" enabled
+        start = 0;
+        break;
 
-        case -2:    // Start all interfaces, period!
-            start = 0;
-            override = 1;
-            break;
+    case -2:    // Start all interfaces, period!
+        start = 0;
+        override = 1;
+        break;
 
-        default:    // Start only the interface specified in "port"
-            start = port;
-            override = 1;
-            break;
+    default:    // Start only the interface specified in "port"
+        start = port;
+        override = 1;
+        break;
     }
 
-begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+    begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
     for (i = start; i < MAX_IFACE_DEVICES; i++){
 
         // Only start ports that aren't already up
         if ( (port_data[i].active != DEVICE_IN_USE)
-                || (port_data[i].status != DEVICE_UP) ) {
+             || (port_data[i].status != DEVICE_UP) ) {
 
             switch (devices[i].device_type) {
 
-                case DEVICE_NET_STREAM:
-                    if (devices[i].connect_on_startup == 1 || override) {
+            case DEVICE_NET_STREAM:
+                if (devices[i].connect_on_startup == 1 || override) {
 
-//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
                     //(void)del_device(i);    // Disconnect old port if it exists
-//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,
-                            DEVICE_NET_STREAM,
-                            devices[i].device_host_name,
-                            devices[i].device_host_pswd,
-                            devices[i].sp,
-                            0,
-                            0,
-                            devices[i].reconnect,
-                            devices[i].device_host_filter_string);
-                    }
-                    break;
+                    (void)add_device(i,
+                                     DEVICE_NET_STREAM,
+                                     devices[i].device_host_name,
+                                     devices[i].device_host_pswd,
+                                     devices[i].sp,
+                                     0,
+                                     0,
+                                     devices[i].reconnect,
+                                     devices[i].device_host_filter_string);
+                }
+                break;
 
-                case DEVICE_NET_DATABASE:
-                    if (devices[i].connect_on_startup == 1 || override) {
+            case DEVICE_NET_DATABASE:
+                if (devices[i].connect_on_startup == 1 || override) {
 
-//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
                     //(void)del_device(i);    // Disconnect old port if it exists
-//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,
-                            DEVICE_NET_DATABASE,
-                            devices[i].device_host_name,
-                            devices[i].device_host_pswd,
-                            devices[i].sp,
-                            0,
-                            0,
-                            devices[i].reconnect,
-                            devices[i].device_host_filter_string);
-                    }
-                    break;
+                    (void)add_device(i,
+                                     DEVICE_NET_DATABASE,
+                                     devices[i].device_host_name,
+                                     devices[i].device_host_pswd,
+                                     devices[i].sp,
+                                     0,
+                                     0,
+                                     devices[i].reconnect,
+                                     devices[i].device_host_filter_string);
+                }
+                break;
 
-                case DEVICE_NET_AGWPE:
-                    if (devices[i].connect_on_startup == 1 || override) {
+            case DEVICE_NET_AGWPE:
+                if (devices[i].connect_on_startup == 1 || override) {
 
-//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
                     //(void)del_device(i);    // Disconnect old port if it exists
-//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,
-                            DEVICE_NET_AGWPE,
-                            devices[i].device_host_name,
-                            devices[i].device_host_pswd,
-                            devices[i].sp,
-                            0,
-                            0,
-                            devices[i].reconnect,
-                            devices[i].device_host_filter_string);
-                    }
-                    break;
+                    (void)add_device(i,
+                                     DEVICE_NET_AGWPE,
+                                     devices[i].device_host_name,
+                                     devices[i].device_host_pswd,
+                                     devices[i].sp,
+                                     0,
+                                     0,
+                                     devices[i].reconnect,
+                                     devices[i].device_host_filter_string);
+                }
+                break;
 
-                case DEVICE_NET_GPSD:
-                    if (devices[i].connect_on_startup == 1 || override) {
+            case DEVICE_NET_GPSD:
+                if (devices[i].connect_on_startup == 1 || override) {
 
-//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-//                    (void)del_device(i);    // Disconnect old port if it exists
-//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //                    (void)del_device(i);    // Disconnect old port if it exists
+                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,
-                            DEVICE_NET_GPSD,
-                            devices[i].device_host_name,
-                            "",
-                            devices[i].sp,
-                            0,
-                            0,
-                            devices[i].reconnect,
-                            "");
-                    }
-                    break;
+                    (void)add_device(i,
+                                     DEVICE_NET_GPSD,
+                                     devices[i].device_host_name,
+                                     "",
+                                     devices[i].sp,
+                                     0,
+                                     0,
+                                     devices[i].reconnect,
+                                     "");
+                }
+                break;
 
-                case DEVICE_SERIAL_WX:
-                    if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,
-                            DEVICE_SERIAL_WX,
-                            devices[i].device_name,
-                            devices[i].device_host_pswd,
-                            -1,
-                            devices[i].sp,
-                            devices[i].style,
-                            0,
-                            "");
-                    }
-                    break;
+            case DEVICE_SERIAL_WX:
+                if (devices[i].connect_on_startup == 1 || override) {
+                    (void)add_device(i,
+                                     DEVICE_SERIAL_WX,
+                                     devices[i].device_name,
+                                     devices[i].device_host_pswd,
+                                     -1,
+                                     devices[i].sp,
+                                     devices[i].style,
+                                     0,
+                                     "");
+                }
+                break;
 
-                case DEVICE_NET_WX:
-                    if (devices[i].connect_on_startup == 1 || override) {
+            case DEVICE_NET_WX:
+                if (devices[i].connect_on_startup == 1 || override) {
 
-//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-//                    (void)del_device(i);    // Disconnect old port if it exists
-//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //                    (void)del_device(i);    // Disconnect old port if it exists
+                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,
-                            DEVICE_NET_WX,
-                            devices[i].device_host_name,
-                            devices[i].device_host_pswd,
-                            devices[i].sp,
-                            0,
-                            0,
-                            devices[i].reconnect,
-                            "");
-                    }
-                    break;
+                    (void)add_device(i,
+                                     DEVICE_NET_WX,
+                                     devices[i].device_host_name,
+                                     devices[i].device_host_pswd,
+                                     devices[i].sp,
+                                     0,
+                                     0,
+                                     devices[i].reconnect,
+                                     "");
+                }
+                break;
 
-                case DEVICE_SERIAL_GPS:
-                    if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,
-                            DEVICE_SERIAL_GPS,
-                            devices[i].device_name,
-                            "",
-                            -1,
-                            devices[i].sp,
-                            devices[i].style,
-                            0,
-                            "");
-                    }
-                    break;
+            case DEVICE_SERIAL_GPS:
+                if (devices[i].connect_on_startup == 1 || override) {
+                    (void)add_device(i,
+                                     DEVICE_SERIAL_GPS,
+                                     devices[i].device_name,
+                                     "",
+                                     -1,
+                                     devices[i].sp,
+                                     devices[i].style,
+                                     0,
+                                     "");
+                }
+                break;
 
-                case DEVICE_SERIAL_TNC:
-                case DEVICE_SERIAL_KISS_TNC:
-                case DEVICE_SERIAL_MKISS_TNC:
-                case DEVICE_SERIAL_TNC_HSP_GPS:
-                case DEVICE_SERIAL_TNC_AUX_GPS:
+            case DEVICE_SERIAL_TNC:
+            case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
 
-                    if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,
-                            devices[i].device_type,
-                            devices[i].device_name,
-                            "",
-                            -1,
-                            devices[i].sp,
-                            devices[i].style,
-                            0,
-                            "");
-                    }
-                    break;
+                if (devices[i].connect_on_startup == 1 || override) {
+                    (void)add_device(i,
+                                     devices[i].device_type,
+                                     devices[i].device_name,
+                                     "",
+                                     -1,
+                                     devices[i].sp,
+                                     devices[i].style,
+                                     0,
+                                     "");
+                }
+                break;
 
-                case DEVICE_AX25_TNC:
-                    if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,
-                            DEVICE_AX25_TNC,
-                            devices[i].device_name,
-                            "",
-                            -1,
-                            -1,
-                            -1,
-                            0,
-                            "");
-                    }
-                    break;
+            case DEVICE_AX25_TNC:
+                if (devices[i].connect_on_startup == 1 || override) {
+                    (void)add_device(i,
+                                     DEVICE_AX25_TNC,
+                                     devices[i].device_name,
+                                     "",
+                                     -1,
+                                     -1,
+                                     -1,
+                                     0,
+                                     "");
+                }
+                break;
 #ifdef HAVE_DB
-                case DEVICE_SQL_DATABASE:
+            case DEVICE_SQL_DATABASE:
+                if (debug_level & 4096) 
+                    fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
+                if (devices[i].connect_on_startup == 1 || override) {
+                    ioparam *d = &devices[i];
                     if (debug_level & 4096) 
-                        fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
-                    if (devices[i].connect_on_startup == 1 || override) {
-                        ioparam *d = &devices[i];
-                        if (debug_level & 4096) 
-                            fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
-                        (void)add_device_by_ioparam(i, &devices[i]);
-                        if (debug_level & 4096) 
-                            fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i].type);
-                    }
-                    break;
+                        fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
+                    (void)add_device_by_ioparam(i, &devices[i]);
+                    if (debug_level & 4096) 
+                        fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i].type);
+                }
+                break;
 #endif /* HAVE_DB */
 
-                default:
-                    break;
+            default:
+                break;
             }   // End of switch
         }
         else if (debug_level & 2) {
@@ -6308,7 +6302,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
         }
     }
 
-end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+    end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
 }
 
@@ -6336,8 +6330,8 @@ void shutdown_all_active_or_defined_port(int port) {
 
     for( i = start; i < MAX_IFACE_DEVICES; i++ ){
         if ( (port_data[i].active == DEVICE_IN_USE)
-                && ( (port_data[i].status == DEVICE_UP)
-                    || (port_data[i].status == DEVICE_ERROR) ) ) {
+             && ( (port_data[i].status == DEVICE_UP)
+                  || (port_data[i].status == DEVICE_ERROR) ) ) {
             if (debug_level & 2)
                 fprintf(stderr,"Shutting down port %d \n",i);
 
@@ -6365,46 +6359,46 @@ void check_ports(void) {
     for (i = 0; i < MAX_IFACE_DEVICES; i++){
 
         switch (port_data[i].device_type){
-            case(DEVICE_NET_STREAM):
+        case(DEVICE_NET_STREAM):
             //case(DEVICE_AX25_TNC):
-            case(DEVICE_NET_GPSD):
-            case(DEVICE_NET_WX):
-                if (port_data[i].port_activity == 0) {
-                    // We've seen no activity for one time period.  This variable
-                    // is updated in interface_gui.c
+        case(DEVICE_NET_GPSD):
+        case(DEVICE_NET_WX):
+            if (port_data[i].port_activity == 0) {
+                // We've seen no activity for one time period.  This variable
+                // is updated in interface_gui.c
     
-                    if (port_data[i].status == DEVICE_ERROR) {
-                        // We're already in the error state, so force a reconnect
-                        port_data[i].reconnects = -1;
-                    }
-                    else if (port_data[i].status == DEVICE_UP) {
-                        // No activity on a port that's being used.
-                        // Cause a reconnect at the next iteration
-                        if (debug_level & 2)
-                            fprintf(stderr,"check_ports(): Inactivity on port %d, DEVICE_ERROR ***\n",i);
-                        port_data[i].status = DEVICE_ERROR; // No activity, so force a shutdown
-
-                        // Show the latest status in the interface control dialog
-                        update_interface_list();
-
-
-                        // If the below statement is enabled, it causes an immediate reconnect
-                        // after one time-period of inactivity, currently 7.5 minutes, as set in
-                        // main.c:UpdateTime().  This means the symbol will never change from green
-                        // to red on the status bar, so the operator might not know about a
-                        // connection that is being constantly reconnected.  By leaving it commented
-                        // out we get one time period of red, and then it will reconnect at the 2nd
-                        // time period.  This means we can reconnect within 15 minutes if a line
-                        // goes dead.
-                        //
-                        port_data[i].reconnects = -1;     // Causes an immediate reconnect
-                    }
-
+                if (port_data[i].status == DEVICE_ERROR) {
+                    // We're already in the error state, so force a reconnect
+                    port_data[i].reconnects = -1;
                 }
-                else {  // We saw activity on this port.
-                    port_data[i].port_activity = 0;     // Reset counter for next time
+                else if (port_data[i].status == DEVICE_UP) {
+                    // No activity on a port that's being used.
+                    // Cause a reconnect at the next iteration
+                    if (debug_level & 2)
+                        fprintf(stderr,"check_ports(): Inactivity on port %d, DEVICE_ERROR ***\n",i);
+                    port_data[i].status = DEVICE_ERROR; // No activity, so force a shutdown
+
+                    // Show the latest status in the interface control dialog
+                    update_interface_list();
+
+
+                    // If the below statement is enabled, it causes an immediate reconnect
+                    // after one time-period of inactivity, currently 7.5 minutes, as set in
+                    // main.c:UpdateTime().  This means the symbol will never change from green
+                    // to red on the status bar, so the operator might not know about a
+                    // connection that is being constantly reconnected.  By leaving it commented
+                    // out we get one time period of red, and then it will reconnect at the 2nd
+                    // time period.  This means we can reconnect within 15 minutes if a line
+                    // goes dead.
+                    //
+                    port_data[i].reconnects = -1;     // Causes an immediate reconnect
                 }
-                break;
+
+            }
+            else {  // We saw activity on this port.
+                port_data[i].port_activity = 0;     // Reset counter for next time
+            }
+            break;
         }
 
         if (port_data[i].active == DEVICE_IN_USE && port_data[i].status == DEVICE_ERROR) {
@@ -6483,50 +6477,50 @@ unsigned char *select_unproto_path(int port) {
         temp = (devices[port].unprotonum + count) % 3;
         switch (temp) {
 
-            case 0:
-                if (strlen(devices[port].unproto1) > 0) {
-                    xastir_snprintf(unproto_path_txt,
-                        sizeof(unproto_path_txt),
-                        "%s",
-                        devices[port].unproto1);
-                    done++;
-                }
-                else {
-                    // No path entered here.  Skip this path in the
-                    // rotation for next time.
-                    bump_up++;
-                }
-                break;
+        case 0:
+            if (strlen(devices[port].unproto1) > 0) {
+                xastir_snprintf(unproto_path_txt,
+                                sizeof(unproto_path_txt),
+                                "%s",
+                                devices[port].unproto1);
+                done++;
+            }
+            else {
+                // No path entered here.  Skip this path in the
+                // rotation for next time.
+                bump_up++;
+            }
+            break;
 
-            case 1:
-                    if (strlen(devices[port].unproto2) > 0) {
-                        xastir_snprintf(unproto_path_txt,
-                            sizeof(unproto_path_txt),
-                            "%s",
-                            devices[port].unproto2);
-                        done++;
-                    }
-                    else {
-                        // No path entered here.  Skip this path in
-                        // the rotation for next time.
-                        bump_up++;
-                    }
-                    break;
+        case 1:
+            if (strlen(devices[port].unproto2) > 0) {
+                xastir_snprintf(unproto_path_txt,
+                                sizeof(unproto_path_txt),
+                                "%s",
+                                devices[port].unproto2);
+                done++;
+            }
+            else {
+                // No path entered here.  Skip this path in
+                // the rotation for next time.
+                bump_up++;
+            }
+            break;
 
-            case 2:
-                    if (strlen(devices[port].unproto3) > 0) {
-                        xastir_snprintf(unproto_path_txt,
-                            sizeof(unproto_path_txt),
-                            "%s",
-                            devices[port].unproto3);
-                        done++;
-                    }
-                    else {
-                        // No path entered here.  Skip this path in
-                        // the rotation for next time.
-                        bump_up++;
-                    }
-                    break;
+        case 2:
+            if (strlen(devices[port].unproto3) > 0) {
+                xastir_snprintf(unproto_path_txt,
+                                sizeof(unproto_path_txt),
+                                "%s",
+                                devices[port].unproto3);
+                done++;
+            }
+            else {
+                // No path entered here.  Skip this path in
+                // the rotation for next time.
+                bump_up++;
+            }
+            break;
         }   // End of switch
         count++;
     }   // End of while loop
@@ -6538,7 +6532,7 @@ unsigned char *select_unproto_path(int port) {
         //
         if(check_unproto_path(unproto_path_txt)) {
             popup_message_always(langcode("WPUPCFT045"),
-                langcode("WPUPCFT043"));
+                                 langcode("WPUPCFT043"));
         }
     }
     else {
@@ -6546,8 +6540,8 @@ unsigned char *select_unproto_path(int port) {
         // interface.  Set a default path of "WIDE2-2".
 
         xastir_snprintf(unproto_path_txt,
-            sizeof(unproto_path_txt),
-            "WIDE2-2");
+                        sizeof(unproto_path_txt),
+                        "WIDE2-2");
     }
 
     // Increment the path number for the next round of
@@ -6608,7 +6602,7 @@ void output_my_aprs_data(void) {
             // "Warning"
             // "Global transmit is DISABLED.  Emergency beacons are NOT going out!"
             popup_message_always( langcode("POPEM00035"),
-                langcode("POPEM00047") );
+                                  langcode("POPEM00047") );
 	}
         return;
     }
@@ -6623,24 +6617,24 @@ void output_my_aprs_data(void) {
     // transmit.
     if (emergency_beacon) {
         xastir_snprintf(my_comment_tx,
-            sizeof(my_comment_tx),
-            "EMERGENCY %s",
-            my_comment);
+                        sizeof(my_comment_tx),
+                        "EMERGENCY %s",
+                        my_comment);
     }
     else {
         xastir_snprintf(my_comment_tx,
-            sizeof(my_comment_tx),
-            "%s",
-            my_comment);
+                        sizeof(my_comment_tx),
+                        "%s",
+                        my_comment);
     }
 
 
     // Format latitude string for transmit later
     if (transmit_compressed_posit) {    // High res version
         xastir_snprintf(my_output_lat,
-            sizeof(my_output_lat),
-            "%s",
-            my_lat);
+                        sizeof(my_output_lat),
+                        "%s",
+                        my_lat);
     }
     else {  // Create a low-res version of the latitude string
         long my_temp_lat;
@@ -6651,22 +6645,22 @@ void output_my_aprs_data(void) {
 
         // Convert to low-res string
         convert_lat_l2s(my_temp_lat,
-            temp_data,
-            sizeof(temp_data),
-            CONVERT_LP_NORMAL);
+                        temp_data,
+                        sizeof(temp_data),
+                        CONVERT_LP_NORMAL);
 
-//fprintf(stderr," Latitude temp_data:%s\n", temp_data);
+        //fprintf(stderr," Latitude temp_data:%s\n", temp_data);
 
         xastir_snprintf(my_output_lat,
-            sizeof(my_output_lat),
-            "%c%c%c%c.%c%c%c",
-            temp_data[0],
-            temp_data[1],
-            temp_data[3],
-            temp_data[4],
-            temp_data[6],
-            temp_data[7],
-            temp_data[8]);
+                        sizeof(my_output_lat),
+                        "%c%c%c%c.%c%c%c",
+                        temp_data[0],
+                        temp_data[1],
+                        temp_data[3],
+                        temp_data[4],
+                        temp_data[6],
+                        temp_data[7],
+                        temp_data[8]);
     }
 
     (void)output_lat(my_output_lat,transmit_compressed_posit);
@@ -6676,9 +6670,9 @@ void output_my_aprs_data(void) {
     // Format longitude string for transmit later
     if (transmit_compressed_posit) {    // High res version
         xastir_snprintf(my_output_long,
-            sizeof(my_output_long),
-            "%s",
-            my_long);
+                        sizeof(my_output_long),
+                        "%s",
+                        my_long);
     }
     else {  // Create a low-res version of the longitude string
         long my_temp_long;
@@ -6689,23 +6683,23 @@ void output_my_aprs_data(void) {
 
         // Convert to low-res string
         convert_lon_l2s(my_temp_long,
-            temp_data,
-            sizeof(temp_data),
-            CONVERT_LP_NORMAL);
+                        temp_data,
+                        sizeof(temp_data),
+                        CONVERT_LP_NORMAL);
 
-//fprintf(stderr,"Longitude temp_data:%s\n", temp_data);
+        //fprintf(stderr,"Longitude temp_data:%s\n", temp_data);
 
         xastir_snprintf(my_output_long,
-            sizeof(my_output_long),
-            "%c%c%c%c%c.%c%c%c",
-            temp_data[0],
-            temp_data[1],
-            temp_data[2],
-            temp_data[4],
-            temp_data[5],
-            temp_data[7],
-            temp_data[8],
-            temp_data[9]);
+                        sizeof(my_output_long),
+                        "%c%c%c%c%c.%c%c%c",
+                        temp_data[0],
+                        temp_data[1],
+                        temp_data[2],
+                        temp_data[4],
+                        temp_data[5],
+                        temp_data[7],
+                        temp_data[8],
+                        temp_data[9]);
     }
 
     (void)output_long(my_output_long,transmit_compressed_posit);
@@ -6714,7 +6708,7 @@ void output_my_aprs_data(void) {
 
     output_net[0]='\0'; // Make sure this array at least starts initialized.
 
-begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
+    begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
     // Iterate across the ports, set up each device's headers/paths/handshakes,
     // then transmit the posit if the port is open and tx is enabled.
@@ -6725,126 +6719,126 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         ok = 1;
         switch (port_data[port].device_type) {
 
-//            case DEVICE_NET_DATABASE:
+            //            case DEVICE_NET_DATABASE:
 
-            case DEVICE_NET_AGWPE:
+        case DEVICE_NET_AGWPE:
 
-                output_net[0]='\0'; // We don't need this header for AGWPE
-                break;
+            output_net[0]='\0'; // We don't need this header for AGWPE
+            break;
 
-            case DEVICE_NET_STREAM:
+        case DEVICE_NET_STREAM:
 
-                xastir_snprintf(output_net,
-                    sizeof(output_net),
-                    "%s>%s,TCPIP*:",
-                    my_callsign,
-                    VERSIONFRM);
-                break;
+            xastir_snprintf(output_net,
+                            sizeof(output_net),
+                            "%s>%s,TCPIP*:",
+                            my_callsign,
+                            VERSIONFRM);
+            break;
 
-            case DEVICE_SERIAL_TNC_HSP_GPS:
-                /* make dtr normal (talk to TNC) */
-                if (port_data[port].status == DEVICE_UP) {
-                    port_dtr(port,0);
-                }
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+            /* make dtr normal (talk to TNC) */
+            if (port_data[port].status == DEVICE_UP) {
+                port_dtr(port,0);
+            }
 
-            case DEVICE_SERIAL_TNC_AUX_GPS:
-            case DEVICE_SERIAL_KISS_TNC:
-            case DEVICE_SERIAL_MKISS_TNC:
-            case DEVICE_SERIAL_TNC:
-            case DEVICE_AX25_TNC:
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+        case DEVICE_SERIAL_KISS_TNC:
+        case DEVICE_SERIAL_MKISS_TNC:
+        case DEVICE_SERIAL_TNC:
+        case DEVICE_AX25_TNC:
 
-                /* clear this for a TNC */
-                output_net[0] = '\0';
+            /* clear this for a TNC */
+            output_net[0] = '\0';
               
-                /* Set my call sign */
-                xastir_snprintf(header_txt,
-                    sizeof(header_txt),
-                    "%c%s %s\r",
-                    '\3',
-                    "MYCALL",
-                    my_callsign);
+            /* Set my call sign */
+            xastir_snprintf(header_txt,
+                            sizeof(header_txt),
+                            "%c%s %s\r",
+                            '\3',
+                            "MYCALL",
+                            my_callsign);
 
-                // Send the callsign out to the TNC only if the interface is up and tx is enabled???
-                // We don't set it this way for KISS TNC interfaces.
-                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                        && (port_data[port].status == DEVICE_UP)
-                        && (devices[port].transmit_data == 1)
-                        && !transmit_disable
-                        && !posit_tx_disable) {
-                    port_write_string(port,header_txt);
-                }
+            // Send the callsign out to the TNC only if the interface is up and tx is enabled???
+            // We don't set it this way for KISS TNC interfaces.
+            if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                 && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                 && (port_data[port].status == DEVICE_UP)
+                 && (devices[port].transmit_data == 1)
+                 && !transmit_disable
+                 && !posit_tx_disable) {
+                port_write_string(port,header_txt);
+            }
 
-                // Set unproto path:  Get next unproto path in
-                // sequence.
-                unproto_path = (char *)select_unproto_path(port);
+            // Set unproto path:  Get next unproto path in
+            // sequence.
+            unproto_path = (char *)select_unproto_path(port);
 
-                xastir_snprintf(header_txt,
-                        sizeof(header_txt),
-                        "%c%s %s VIA %s\r",
-                        '\3',
-                        "UNPROTO",
-                        VERSIONFRM,
-                        unproto_path);
+            xastir_snprintf(header_txt,
+                            sizeof(header_txt),
+                            "%c%s %s VIA %s\r",
+                            '\3',
+                            "UNPROTO",
+                            VERSIONFRM,
+                            unproto_path);
 
-                xastir_snprintf(header_txt_save,
-                        sizeof(header_txt_save),
-                        "%s>%s,%s:",
-                        my_callsign,
-                        VERSIONFRM,
-                        unproto_path);
+            xastir_snprintf(header_txt_save,
+                            sizeof(header_txt_save),
+                            "%s>%s,%s:",
+                            my_callsign,
+                            VERSIONFRM,
+                            unproto_path);
 
-                xastir_snprintf(path_txt,
-                        sizeof(path_txt),
-                        "%s",
-                        unproto_path);
-
-
-                // Send the header data to the TNC.  This sets the
-                // unproto path that'll be used by the next packet.
-                // We don't set it this way for KISS TNC interfaces.
-                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                        && (port_data[port].status == DEVICE_UP)
-                        && (devices[port].transmit_data == 1)
-                        && !transmit_disable
-                        && !posit_tx_disable) {
-                    port_write_string(port,header_txt);
-                }
+            xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
+                            unproto_path);
 
 
-                // Set converse mode.  We don't need to do this for
-                // KISS TNC interfaces.  One european TNC (tnc2-ui)
-                // doesn't accept "conv" but does accept the 'k'
-                // command.  A Kantronics KPC-2 v2.71 TNC accepts
-                // the "conv" command but not the 'k' command.
-                // Figures!  The  choice of whether to send "k" or "conv"
-                // is made by the user in the Serial TNC interface properties
-                // dialog.  Older versions of Xastir had this hardcoded here.
-                // 
-                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
-//fprintf(stderr,"%s\n", header_txt);
+            // Send the header data to the TNC.  This sets the
+            // unproto path that'll be used by the next packet.
+            // We don't set it this way for KISS TNC interfaces.
+            if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                 && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                 && (port_data[port].status == DEVICE_UP)
+                 && (devices[port].transmit_data == 1)
+                 && !transmit_disable
+                 && !posit_tx_disable) {
+                port_write_string(port,header_txt);
+            }
+
+
+            // Set converse mode.  We don't need to do this for
+            // KISS TNC interfaces.  One european TNC (tnc2-ui)
+            // doesn't accept "conv" but does accept the 'k'
+            // command.  A Kantronics KPC-2 v2.71 TNC accepts
+            // the "conv" command but not the 'k' command.
+            // Figures!  The  choice of whether to send "k" or "conv"
+            // is made by the user in the Serial TNC interface properties
+            // dialog.  Older versions of Xastir had this hardcoded here.
+            // 
+            xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
+            //fprintf(stderr,"%s\n", header_txt);
  
-                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                        && (port_data[port].status == DEVICE_UP)
-                        && (devices[port].transmit_data == 1)
-                        && !transmit_disable
-                        && !posit_tx_disable) {
-                    port_write_string(port,header_txt);
-                }
-                // Delay a bit if the user clicked on the "Add Delay" 
-                // togglebutton in the port's interface properties dialog.  
-                // This is primarily needed for KAM TNCs, which will fail to 
-                // go into converse mode if there is no delay here.
-                if (devices[port].tnc_extra_delay != 0) {
-                    usleep(devices[port].tnc_extra_delay);
-                }
-                break;
+            if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                 && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                 && (port_data[port].status == DEVICE_UP)
+                 && (devices[port].transmit_data == 1)
+                 && !transmit_disable
+                 && !posit_tx_disable) {
+                port_write_string(port,header_txt);
+            }
+            // Delay a bit if the user clicked on the "Add Delay" 
+            // togglebutton in the port's interface properties dialog.  
+            // This is primarily needed for KAM TNCs, which will fail to 
+            // go into converse mode if there is no delay here.
+            if (devices[port].tnc_extra_delay != 0) {
+                usleep(devices[port].tnc_extra_delay);
+            }
+            break;
 
-            default: /* port has unknown device_type */
-                ok = 0;
-                break;
+        default: /* port has unknown device_type */
+            ok = 0;
+            break;
 
         } // End of switch
 
@@ -6860,83 +6854,226 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
         if (transmit_compressed_posit)
             xastir_snprintf(my_pos,
-                sizeof(my_pos),
-                "%s",
-                compress_posit(my_output_lat,
-                    my_group,
-                    my_output_long,
-                    my_symbol,
-                    my_last_course,
-                    my_last_speed,  // In knots
-                    my_phg));
+                            sizeof(my_pos),
+                            "%s",
+                            compress_posit(my_output_lat,
+                                           my_group,
+                                           my_output_long,
+                                           my_symbol,
+                                           my_last_course,
+                                           my_last_speed,  // In knots
+                                           my_phg));
         else { /* standard non compressed mode */
             xastir_snprintf(my_pos,
-                sizeof(my_pos),
-                "%s%c%s%c",
-                my_output_lat,
-                my_group,
-                my_output_long,
-                my_symbol);
+                            sizeof(my_pos),
+                            "%s%c%s%c",
+                            my_output_lat,
+                            my_group,
+                            my_output_long,
+                            my_symbol);
             /* get PHG, if used for output */
             if (strlen(my_phg) >= 6)
                 xastir_snprintf(output_phg,
-                    sizeof(output_phg),
-                    "%s",
-                    my_phg);
+                                sizeof(output_phg),
+                                "%s",
+                                my_phg);
 
             /* get CSE/SPD, Always needed for output even if 0 */
             xastir_snprintf(output_cs,
-                sizeof(output_cs),
-                "%03d/%03d/",
-                my_last_course,
-                my_last_speed);    // Speed in knots
+                            sizeof(output_cs),
+                            "%03d/%03d/",
+                            my_last_course,
+                            my_last_speed);    // Speed in knots
 
             /* get altitude */
             if (my_last_altitude_time > 0)
                 xastir_snprintf(output_alt,
-                    sizeof(output_alt),
-                    "A=%06ld/",
-                     my_last_altitude);
+                                sizeof(output_alt),
+                                "A=%06ld/",
+                                my_last_altitude);
         }
 
 
         // And set up still more strings for later transmission
         switch (output_station_type) {
-            case(1):
-                /* APRS_MOBILE LOCAL TIME */
+        case(1):
+            /* APRS_MOBILE LOCAL TIME */
 
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-		   (strlen(output_alt) > 0)) {
-                    xastir_snprintf(output_brk,
-                        sizeof(output_brk),
-                        "/");
+            if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+               (strlen(output_alt) > 0)) {
+                xastir_snprintf(output_brk,
+                                sizeof(output_brk),
+                                "/");
+            }
+
+            day_time = localtime(&sec);
+
+            xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "@%02d%02d%02d/%s%s%s%s%s",
+                            day_time->tm_mday,
+                            day_time->tm_hour,
+                            day_time->tm_min,
+                            my_pos,
+                            output_cs,
+                            output_brk,
+                            output_alt,
+                            my_comment_tx);
+
+            //WE7U2:
+            // Truncate at max length for this type of APRS
+            // packet.
+            if (transmit_compressed_posit) {
+                if (strlen(data_txt_save) > 61) {
+                    data_txt_save[61] = '\0';
                 }
+            }
+            else { // Uncompressed lat/long
+                if (strlen(data_txt_save) > 70) {
+                    data_txt_save[70] = '\0';
+                }
+            }
 
-                day_time = localtime(&sec);
+            // Add '\r' onto end.
+            strncat(data_txt_save, "\r", 1);
+
+            xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%s%s",
+                            output_net,
+                            data_txt_save);
+
+            break;
+
+        case(2):
+            /* APRS_MOBILE ZULU DATE-TIME */
+
+            if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+               (strlen(output_alt) > 0)) {
+                xastir_snprintf(output_brk,
+                                sizeof(output_brk),
+                                "/");
+            }
+
+            day_time = gmtime(&sec);
+
+            xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "@%02d%02d%02dz%s%s%s%s%s",
+                            day_time->tm_mday,
+                            day_time->tm_hour,
+                            day_time->tm_min,
+                            my_pos,
+                            output_cs,
+                            output_brk,
+                            output_alt,
+                            my_comment_tx);
+
+            //WE7U2:
+            // Truncate at max length for this type of APRS
+            // packet.
+            if (transmit_compressed_posit) {
+                if (strlen(data_txt_save) > 61) {
+                    data_txt_save[61] = '\0';
+                }
+            }
+            else { // Uncompressed lat/long
+                if (strlen(data_txt_save) > 70) {
+                    data_txt_save[70] = '\0';
+                }
+            }
+
+            // Add '\r' onto end.
+            strncat(data_txt_save, "\r", 1);
+
+            xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%s%s",
+                            output_net,
+                            data_txt_save);
+
+            break;
+
+        case(3):
+            /* APRS_MOBILE ZULU TIME w/SEC */
+
+            if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
+               (strlen(output_alt) > 0)) {
+                xastir_snprintf(output_brk,
+                                sizeof(output_brk),
+                                "/");
+            }
+
+            day_time = gmtime(&sec);
+
+            xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "@%02d%02d%02dh%s%s%s%s%s",
+                            day_time->tm_hour,
+                            day_time->tm_min,
+                            day_time->tm_sec,
+                            my_pos,
+                            output_cs,
+                            output_brk,
+                            output_alt,
+                            my_comment_tx);
+
+            //WE7U2:
+            // Truncate at max length for this type of APRS
+            // packet.
+            if (transmit_compressed_posit) {
+                if (strlen(data_txt_save) > 61) {
+                    data_txt_save[61] = '\0';
+                }
+            }
+            else { // Uncompressed lat/long
+                if (strlen(data_txt_save) > 70) {
+                    data_txt_save[70] = '\0';
+                }
+            }
+
+            // Add '\r' onto end.
+            strncat(data_txt_save, "\r", 1);
+
+            xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%s%s",
+                            output_net,
+                            data_txt_save);
+
+            break;
+
+        case(4):
+            /* APRS position with WX data, no timestamp */
+            sec = wx_tx_data1(wx_data, sizeof(wx_data));
+            if (sec != 0) {
 
                 xastir_snprintf(data_txt_save,
-                    sizeof(data_txt_save),
-                    "@%02d%02d%02d/%s%s%s%s%s",
-                    day_time->tm_mday,
-                    day_time->tm_hour,
-                    day_time->tm_min,
-                    my_pos,
-                    output_cs,
-                    output_brk,
-                    output_alt,
-                    my_comment_tx);
+                                sizeof(data_txt_save),
+                                "%c%s%s",
+                                aprs_station_message_type,
+                                my_pos,
+                                wx_data);
 
-//WE7U2:
+                // WE7U2:
+                // There's no limit on the max size for this kind of packet except
+                // for the AX.25 limit of 256 bytes!
+                //
                 // Truncate at max length for this type of APRS
-                // packet.
+                // packet.  Left the compressed/uncompressed
+                // "if" statement here in case we need to change
+                // this in the future due to spec changes.
+                // Consistent with the rest of the code in this
+                // function which does similar things.
+                //
                 if (transmit_compressed_posit) {
-                    if (strlen(data_txt_save) > 61) {
-                        data_txt_save[61] = '\0';
+                    if (strlen(data_txt_save) > 256) {
+                        data_txt_save[256] = '\0';
                     }
                 }
                 else { // Uncompressed lat/long
-                    if (strlen(data_txt_save) > 70) {
-                        data_txt_save[70] = '\0';
+                    if (strlen(data_txt_save) > 256) {
+                        data_txt_save[256] = '\0';
                     }
                 }
 
@@ -6944,307 +7081,32 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 strncat(data_txt_save, "\r", 1);
 
                 xastir_snprintf(data_txt,
-                    sizeof(data_txt),
-                    "%s%s",
-                    output_net,
-                    data_txt_save);
-
-                break;
-
-            case(2):
-                /* APRS_MOBILE ZULU DATE-TIME */
-
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-                   (strlen(output_alt) > 0)) {
-                    xastir_snprintf(output_brk,
-                        sizeof(output_brk),
-                        "/");
-                }
-
-                day_time = gmtime(&sec);
-
-                xastir_snprintf(data_txt_save,
-                    sizeof(data_txt_save),
-                    "@%02d%02d%02dz%s%s%s%s%s",
-                    day_time->tm_mday,
-                    day_time->tm_hour,
-                    day_time->tm_min,
-                    my_pos,
-                    output_cs,
-                    output_brk,
-                    output_alt,
-                    my_comment_tx);
-
-//WE7U2:
-                // Truncate at max length for this type of APRS
-                // packet.
-                if (transmit_compressed_posit) {
-                    if (strlen(data_txt_save) > 61) {
-                        data_txt_save[61] = '\0';
-                    }
-                }
-                else { // Uncompressed lat/long
-                    if (strlen(data_txt_save) > 70) {
-                        data_txt_save[70] = '\0';
-                    }
-                }
-
-                // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
-
-                xastir_snprintf(data_txt,
-                    sizeof(data_txt),
-                    "%s%s",
-                    output_net,
-                    data_txt_save);
-
-                break;
-
-            case(3):
-                /* APRS_MOBILE ZULU TIME w/SEC */
-
-                if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-                   (strlen(output_alt) > 0)) {
-                    xastir_snprintf(output_brk,
-                        sizeof(output_brk),
-                        "/");
-                }
-
-                day_time = gmtime(&sec);
-
-                xastir_snprintf(data_txt_save,
-                    sizeof(data_txt_save),
-                    "@%02d%02d%02dh%s%s%s%s%s",
-                    day_time->tm_hour,
-                    day_time->tm_min,
-                    day_time->tm_sec,
-                    my_pos,
-                    output_cs,
-                    output_brk,
-                    output_alt,
-                    my_comment_tx);
-
-//WE7U2:
-                // Truncate at max length for this type of APRS
-                // packet.
-                if (transmit_compressed_posit) {
-                    if (strlen(data_txt_save) > 61) {
-                        data_txt_save[61] = '\0';
-                    }
-                }
-                else { // Uncompressed lat/long
-                    if (strlen(data_txt_save) > 70) {
-                        data_txt_save[70] = '\0';
-                    }
-                }
-
-                // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
-
-                xastir_snprintf(data_txt,
-                    sizeof(data_txt),
-                    "%s%s",
-                    output_net,
-                    data_txt_save);
-
-                break;
-
-            case(4):
-                /* APRS position with WX data, no timestamp */
-                sec = wx_tx_data1(wx_data, sizeof(wx_data));
-                if (sec != 0) {
-
-                    xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "%c%s%s",
-                        aprs_station_message_type,
-                        my_pos,
-                        wx_data);
-
-// WE7U2:
-// There's no limit on the max size for this kind of packet except
-// for the AX.25 limit of 256 bytes!
-                    //
-                    // Truncate at max length for this type of APRS
-                    // packet.  Left the compressed/uncompressed
-                    // "if" statement here in case we need to change
-                    // this in the future due to spec changes.
-                    // Consistent with the rest of the code in this
-                    // function which does similar things.
-                    //
-                    if (transmit_compressed_posit) {
-                        if (strlen(data_txt_save) > 256) {
-                            data_txt_save[256] = '\0';
-                        }
-                    }
-                    else { // Uncompressed lat/long
-                        if (strlen(data_txt_save) > 256) {
-                            data_txt_save[256] = '\0';
-                        }
-                    }
-
-                    // Add '\r' onto end.
-                    strncat(data_txt_save, "\r", 1);
-
-                    xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%s%s",
-                        output_net,
-                        data_txt_save);
-                }
-                else {
-                    /* default to APRS FIXED if no wx data. No timestamp */
-
-                    if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
-                        (strlen(output_alt) > 0)) {
-                        xastir_snprintf(output_brk,
-                            sizeof(output_brk),
-                            "/");
-                    }
-
-                    xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "%c%s%s%s%s%s",
-                        aprs_station_message_type,
-                        my_pos,
-                        output_phg,
-                        output_brk,
-                        output_alt,
-                        my_comment_tx);
-
-// WE7U2:
-                    // Truncate at max length for this type of APRS
-                    // packet.
-                    if (transmit_compressed_posit) {
-                        if (strlen(data_txt_save) > 54) {
-                            data_txt_save[54] = '\0';
-                        }
-                    }
-                    else { // Uncompressed lat/long
-                        if (strlen(data_txt_save) > 63) {
-                            data_txt_save[63] = '\0';
-                        }
-                    }
-
-                    // Add '\r' onto end.
-                    strncat(data_txt_save, "\r", 1);
-
-                    xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%s%s",
-                        output_net,
-                        data_txt_save);
-                }
-
-                break;
-
-            case(5):
-                /* APRS position with ZULU DATE-TIME and WX data */
-                sec = wx_tx_data1(wx_data,sizeof(wx_data));
-                if (sec != 0) {
-                    day_time = gmtime(&sec);
-
-                    xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "@%02d%02d%02dz%s%s",
-                        day_time->tm_mday,
-                        day_time->tm_hour,
-                        day_time->tm_min,
-                        my_pos,
-                        wx_data);
-
-// WE7U2:
-                    // Truncate at max length for this type of APRS
-                    // packet.
-                    if (transmit_compressed_posit) {
-                        if (strlen(data_txt_save) > 61) {
-                            data_txt_save[61] = '\0';
-                        }
-                    }
-                    else { // Uncompressed lat/long
-                        if (strlen(data_txt_save) > 70) {
-                            data_txt_save[70] = '\0';
-                        }
-                    }
-
-                    // Add '\r' onto end.
-                    strncat(data_txt_save, "\r", 1);
-
-                    xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%s%s",
-                        output_net,
-                        data_txt_save);
-                }
-                else {
-                    /* default to APRS FIXED if no wx data */
-
-                    if((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
-                       (strlen(output_alt) > 0)) {
-                        xastir_snprintf(output_brk,
-                            sizeof(output_brk),
-                            "/");
-                    }
-
-                    xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "%c%s%s%s%s%s",
-                        aprs_station_message_type,
-                        my_pos,
-                        output_phg,
-                        output_brk,
-                        output_alt,
-                        my_comment_tx);
-
-// WE7U2:
-                    // Truncate at max length for this type of APRS
-                    // packet.
-                    if (transmit_compressed_posit) {
-                        if (strlen(data_txt_save) > 54) {
-                            data_txt_save[54] = '\0';
-                        }
-                    }
-                    else { // Uncompressed lat/long
-                        if (strlen(data_txt_save) > 63) {
-                            data_txt_save[63] = '\0';
-                        }
-                    }
-
-                    // Add '\r' onto end.
-                    strncat(data_txt_save, "\r", 1);
-
-                    xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%s%s",
-                        output_net,
-                        data_txt_save);
-                }
-                break;
-
-                /* default to APRS FIXED if no wx data */
-            case(0):
-
-            default:
-                /* APRS_FIXED */
+                                sizeof(data_txt),
+                                "%s%s",
+                                output_net,
+                                data_txt_save);
+            }
+            else {
+                /* default to APRS FIXED if no wx data. No timestamp */
 
                 if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
                     (strlen(output_alt) > 0)) {
                     xastir_snprintf(output_brk,
-                        sizeof(output_brk),
-                        "/");
+                                    sizeof(output_brk),
+                                    "/");
                 }
 
                 xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "%c%s%s%s%s%s",
-                        aprs_station_message_type,
-                        my_pos,
-                        output_phg,
-                        output_brk,
-                        output_alt,
-                        my_comment_tx);
+                                sizeof(data_txt_save),
+                                "%c%s%s%s%s%s",
+                                aprs_station_message_type,
+                                my_pos,
+                                output_phg,
+                                output_brk,
+                                output_alt,
+                                my_comment_tx);
 
-// WE7U2:
+                // WE7U2:
                 // Truncate at max length for this type of APRS
                 // packet.
                 if (transmit_compressed_posit) {
@@ -7262,16 +7124,148 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 strncat(data_txt_save, "\r", 1);
 
                 xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%s%s",
-                        output_net,
-                        data_txt_save);
+                                sizeof(data_txt),
+                                "%s%s",
+                                output_net,
+                                data_txt_save);
+            }
 
-                break;
+            break;
+
+        case(5):
+            /* APRS position with ZULU DATE-TIME and WX data */
+            sec = wx_tx_data1(wx_data,sizeof(wx_data));
+            if (sec != 0) {
+                day_time = gmtime(&sec);
+
+                xastir_snprintf(data_txt_save,
+                                sizeof(data_txt_save),
+                                "@%02d%02d%02dz%s%s",
+                                day_time->tm_mday,
+                                day_time->tm_hour,
+                                day_time->tm_min,
+                                my_pos,
+                                wx_data);
+
+                // WE7U2:
+                // Truncate at max length for this type of APRS
+                // packet.
+                if (transmit_compressed_posit) {
+                    if (strlen(data_txt_save) > 61) {
+                        data_txt_save[61] = '\0';
+                    }
+                }
+                else { // Uncompressed lat/long
+                    if (strlen(data_txt_save) > 70) {
+                        data_txt_save[70] = '\0';
+                    }
+                }
+
+                // Add '\r' onto end.
+                strncat(data_txt_save, "\r", 1);
+
+                xastir_snprintf(data_txt,
+                                sizeof(data_txt),
+                                "%s%s",
+                                output_net,
+                                data_txt_save);
+            }
+            else {
+                /* default to APRS FIXED if no wx data */
+
+                if((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
+                   (strlen(output_alt) > 0)) {
+                    xastir_snprintf(output_brk,
+                                    sizeof(output_brk),
+                                    "/");
+                }
+
+                xastir_snprintf(data_txt_save,
+                                sizeof(data_txt_save),
+                                "%c%s%s%s%s%s",
+                                aprs_station_message_type,
+                                my_pos,
+                                output_phg,
+                                output_brk,
+                                output_alt,
+                                my_comment_tx);
+
+                // WE7U2:
+                // Truncate at max length for this type of APRS
+                // packet.
+                if (transmit_compressed_posit) {
+                    if (strlen(data_txt_save) > 54) {
+                        data_txt_save[54] = '\0';
+                    }
+                }
+                else { // Uncompressed lat/long
+                    if (strlen(data_txt_save) > 63) {
+                        data_txt_save[63] = '\0';
+                    }
+                }
+
+                // Add '\r' onto end.
+                strncat(data_txt_save, "\r", 1);
+
+                xastir_snprintf(data_txt,
+                                sizeof(data_txt),
+                                "%s%s",
+                                output_net,
+                                data_txt_save);
+            }
+            break;
+
+            /* default to APRS FIXED if no wx data */
+        case(0):
+
+        default:
+            /* APRS_FIXED */
+
+            if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
+                (strlen(output_alt) > 0)) {
+                xastir_snprintf(output_brk,
+                                sizeof(output_brk),
+                                "/");
+            }
+
+            xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "%c%s%s%s%s%s",
+                            aprs_station_message_type,
+                            my_pos,
+                            output_phg,
+                            output_brk,
+                            output_alt,
+                            my_comment_tx);
+
+            // WE7U2:
+            // Truncate at max length for this type of APRS
+            // packet.
+            if (transmit_compressed_posit) {
+                if (strlen(data_txt_save) > 54) {
+                    data_txt_save[54] = '\0';
+                }
+            }
+            else { // Uncompressed lat/long
+                if (strlen(data_txt_save) > 63) {
+                    data_txt_save[63] = '\0';
+                }
+            }
+
+            // Add '\r' onto end.
+            strncat(data_txt_save, "\r", 1);
+
+            xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%s%s",
+                            output_net,
+                            data_txt_save);
+
+            break;
         }
 
 
-//fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
+        //fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
 
 
         if (ok) {
@@ -7280,20 +7274,20 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             // If transmit or posits have been turned off, don't transmit posit
             if ( (port_data[port].status == DEVICE_UP)
-                    && (devices[port].transmit_data == 1)
-                    && !transmit_disable
-                    && !posit_tx_disable) {
+                 && (devices[port].transmit_data == 1)
+                 && !transmit_disable
+                 && !posit_tx_disable) {
 
                 interfaces_ok_for_transmit++;
 
-// WE7U:  Change so that path is passed as well for KISS TNC
-// interfaces:  header_txt_save would probably be the one to pass,
-// or create a new string just for KISS TNC's.
+                // WE7U:  Change so that path is passed as well for KISS TNC
+                // interfaces:  header_txt_save would probably be the one to pass,
+                // or create a new string just for KISS TNC's.
 
                 if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
-                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+                     || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
-// Note:  This one has callsign & destination in the string
+                    // Note:  This one has callsign & destination in the string
 
                     // Transmit the posit out the KISS interface
                     send_ax25_frame(port,
@@ -7303,34 +7297,34 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                     data_txt);      // data
                 }
 
-//WE7U:AGWPE
+                //WE7U:AGWPE
                 else if (port_data[port].device_type == DEVICE_NET_AGWPE) {
 
                     // Set unproto path:  Get next unproto path in
                     // sequence.
                     unproto_path = (char *)select_unproto_path(port);
 
-// We need to remove the complete AX.25 header from data_txt before
-// we call this routine!  Instead put the digipeaters into the
-// ViaCall fields.  We do this above by setting output_net to '\0'
-// before creating the data_txt string.
+                    // We need to remove the complete AX.25 header from data_txt before
+                    // we call this routine!  Instead put the digipeaters into the
+                    // ViaCall fields.  We do this above by setting output_net to '\0'
+                    // before creating the data_txt string.
                     send_agwpe_packet(port,            // Xastir interface port
-                        atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
-                        '\0',                          // Type of frame
-                        (unsigned char *)my_callsign,  // source
-                        (unsigned char *)VERSIONFRM,   // destination
-                        (unsigned char *)unproto_path, // Path,
-                        (unsigned char *)data_txt,     // Data
-                        strlen(data_txt) - 1);         // Skip \r
+                                      atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
+                                      '\0',                          // Type of frame
+                                      (unsigned char *)my_callsign,  // source
+                                      (unsigned char *)VERSIONFRM,   // destination
+                                      (unsigned char *)unproto_path, // Path,
+                                      (unsigned char *)data_txt,     // Data
+                                      strlen(data_txt) - 1);         // Skip \r
 
-//fprintf(stderr,"Sending this string: \n%s\n", data_txt);
-//fprintf(stderr,"Length was %d\n", strlen(data_txt) - 1);
+                    //fprintf(stderr,"Sending this string: \n%s\n", data_txt);
+                    //fprintf(stderr,"Length was %d\n", strlen(data_txt) - 1);
 
                 }
 
                 else {  // Not a Serial KISS TNC interface
 
-//fprintf(stderr,"Sending this string: \n%s\n\n", data_txt);
+                    //fprintf(stderr,"Sending this string: \n%s\n\n", data_txt);
 
                     port_write_string(port, data_txt);  // Transmit the posit
                 }
@@ -7355,15 +7349,15 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // LF on the end of them.  Remove that so the display
                 // looks nice.
                 xastir_snprintf(temp,
-                    sizeof(temp),
-                    "%s>%s,%s:%s",
-                    my_callsign,
-                    VERSIONFRM,
-                    unproto_path,
-                    data_txt);
+                                sizeof(temp),
+                                "%s>%s,%s:%s",
+                                my_callsign,
+                                VERSIONFRM,
+                                unproto_path,
+                                data_txt);
                 makePrintable(temp);
                 packet_data_add("TX ", temp, port);
-//fprintf(stderr,"%s\n", temp);
+                //fprintf(stderr,"%s\n", temp);
 
             }
             else {
@@ -7371,7 +7365,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         } // End of posit transmit: "if (ok)"
     } // End of big loop
 
-end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
+    end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 
     // Check the interfaces_ok_for_transmit variable if we're in
@@ -7389,7 +7383,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             // "Emergency Beacon Mode"
             // "EMERGENCY BEACON MODE, transmitting every 60 seconds!"
             popup_message_always( langcode("POPEM00048"),
-                langcode("POPEM00049") );
+                                  langcode("POPEM00049") );
         }
 
         else {  // Emergency beacons are not going out for some reason
@@ -7401,7 +7395,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 	    // "Warning"
             // "Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!"
             popup_message_always( langcode("POPEM00035"),
-                langcode("POPEM00050") );
+                                  langcode("POPEM00050") );
         }
     }
 
@@ -7410,7 +7404,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     // whether or not any network interfaces are currently up.
     if (log_net_data) {
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-                VERSIONFRM, data_txt_save);
+                        VERSIONFRM, data_txt_save);
         log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
                                     sizeof(logfile_tmp_path)), 
                   (char *)data_txt );
@@ -7418,26 +7412,26 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 
     if (enable_server_port && !transmit_disable && !posit_tx_disable) {
-// Send data to the x_spider server
+        // Send data to the x_spider server
 
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-                VERSIONFRM, data_txt_save);
+                        VERSIONFRM, data_txt_save);
  
         if (writen(pipe_xastir_to_tcp_server,
-                data_txt,
-                strlen(data_txt)) != (int)strlen(data_txt)) {
+                   data_txt,
+                   strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
-                "my_aprs_data: Writen error: %d\n",
-                errno);
+                    "my_aprs_data: Writen error: %d\n",
+                    errno);
         }
         // Terminate it with a linefeed
         if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
-                "my_aprs_data: Writen error: %d\n",
-                errno);
+                    "my_aprs_data: Writen error: %d\n",
+                    errno);
         }
     }
-// End of x_spider server send code
+    // End of x_spider server send code
 
 
     // Note that this will only log one TNC line per transmission now matter
@@ -7453,7 +7447,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         }
     }
 
-//fprintf(stderr,"Data_txt:%s\n", data_txt);
+    //fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
@@ -7504,10 +7498,10 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
 
     if (debug_level & 1) {
         fprintf(stderr,
-            "Sending out port: %d, type: %d, path: %s\n",
-            incoming_port,
-            type,
-            path);
+                "Sending out port: %d, type: %d, path: %s\n",
+                incoming_port,
+                type,
+                path);
     }
 
     if (message == NULL)
@@ -7528,7 +7522,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     }
 
 
-begin_critical_section(&devices_lock, "interface.c:output_my_data" );
+    begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
     for (port = start; port < finish; port++) {
 
@@ -7536,227 +7530,227 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
         if (type == 0) {                        // my data
             switch (port_data[port].device_type) {
 
-//                case DEVICE_NET_DATABASE:
+                //                case DEVICE_NET_DATABASE:
 
-                case DEVICE_NET_AGWPE:
-//fprintf(stderr,"DEVICE_NET_AGWPE\n");
-                    output_net[0] = '\0';   // Clear header
-                    break;
+            case DEVICE_NET_AGWPE:
+                //fprintf(stderr,"DEVICE_NET_AGWPE\n");
+                output_net[0] = '\0';   // Clear header
+                break;
 
-                case DEVICE_NET_STREAM:
-                    if (debug_level & 1)
-                        fprintf(stderr,"%d Net\n",port);
-                    xastir_snprintf(output_net,
-                        sizeof(output_net),
-                        "%s>%s,TCPIP*:",
-                        my_callsign,
-                        VERSIONFRM);
-                    break;
+            case DEVICE_NET_STREAM:
+                if (debug_level & 1)
+                    fprintf(stderr,"%d Net\n",port);
+                xastir_snprintf(output_net,
+                                sizeof(output_net),
+                                "%s>%s,TCPIP*:",
+                                my_callsign,
+                                VERSIONFRM);
+                break;
 
-                case DEVICE_SERIAL_TNC_HSP_GPS:
-                    if (port_data[port].status == DEVICE_UP && !loopback_only && !transmit_disable) {
-                        port_dtr(port,0);           // make DTR normal (talk to TNC)
-                    }
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+                if (port_data[port].status == DEVICE_UP && !loopback_only && !transmit_disable) {
+                    port_dtr(port,0);           // make DTR normal (talk to TNC)
+                }
 
-                case DEVICE_SERIAL_TNC_AUX_GPS:
-                case DEVICE_SERIAL_KISS_TNC:
-                case DEVICE_SERIAL_MKISS_TNC:
-                case DEVICE_SERIAL_TNC:
-                case DEVICE_AX25_TNC:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
+            case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
+            case DEVICE_SERIAL_TNC:
+            case DEVICE_AX25_TNC:
 
-                    if (debug_level & 1)
-                        fprintf(stderr,"%d AX25 TNC\n",port);
-                    output_net[0] = '\0';   // clear this for a TNC
+                if (debug_level & 1)
+                    fprintf(stderr,"%d AX25 TNC\n",port);
+                output_net[0] = '\0';   // clear this for a TNC
 
-                    /* Set my call sign */
-                    xastir_snprintf(data_txt,
-                        sizeof(data_txt),
-                        "%c%s %s\r",
-                        '\3',
-                        "MYCALL",
-                        my_callsign);
-
-                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[port].status == DEVICE_UP)
-                            && (devices[port].transmit_data == 1)
-                            && !transmit_disable
-                            && !loopback_only) {
-                        port_write_string(port,data_txt);
-                        usleep(10000);  // 10ms
-                    }
- 
-                    done = 0;
- 
-                    // Set unproto path.  First check whether we're
-                    // to use the igate path.  If so and the path
-                    // isn't empty, skip the rest of the path selection:
-                    if ( (use_igate_path)
-                            && (strlen(devices[port].unproto_igate) > 0) ) {
-
-// WE7U:  Should we check here and in the following path
-// selection code to make sure that there are printable characters
-// in the path?  Also:  Output_my_aprs_data() has nearly identical
-// path selection code.  Fix it in one place, fix it in the other.
-
-                        // Check whether igate path is socially
-                        // acceptable.  Output warning if not, but
-                        // still allow the transmit.
-                        if(check_unproto_path(devices[port].unproto_igate)) {
-                            popup_message_always(langcode("WPUPCFT046"),
-                                langcode("WPUPCFT043"));
-                        }
-
-                        xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%c%s %s VIA %s\r",
-                            '\3',
-                            "UNPROTO",
-                            VERSIONFRM,
-                            devices[port].unproto_igate);
-
-                        xastir_snprintf(data_txt_save,
-                            sizeof(data_txt_save),
-                            "%s>%s,%s:",
-                            my_callsign,
-                            VERSIONFRM,
-                            devices[port].unproto_igate);
-
-                        xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            devices[port].unproto_igate);
-
-                        done++;
-                    }
-
-
-                    // Check whether a path was passed to us as a
-                    // parameter:
-                    if ( (path != NULL) && (strlen(path) != 0) ) {
- 
-                        if (strncmp(path, "DIRECT PATH", 11) == 0) {
-                            // The user has requested a direct path
-
-                            xastir_snprintf(data_txt,
+                /* Set my call sign */
+                xastir_snprintf(data_txt,
                                 sizeof(data_txt),
                                 "%c%s %s\r",
                                 '\3',
-                                "UNPROTO",
-                                VERSIONFRM);
+                                "MYCALL",
+                                my_callsign);
 
-                            xastir_snprintf(data_txt_save,
-                                sizeof(data_txt_save),
-                                "%s>%s:",
-                                my_callsign,
-                                VERSIONFRM);
-                        }
-                        else {
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                     && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                     && (port_data[port].status == DEVICE_UP)
+                     && (devices[port].transmit_data == 1)
+                     && !transmit_disable
+                     && !loopback_only) {
+                    port_write_string(port,data_txt);
+                    usleep(10000);  // 10ms
+                }
+ 
+                done = 0;
+ 
+                // Set unproto path.  First check whether we're
+                // to use the igate path.  If so and the path
+                // isn't empty, skip the rest of the path selection:
+                if ( (use_igate_path)
+                     && (strlen(devices[port].unproto_igate) > 0) ) {
 
-                            xastir_snprintf(data_txt,
-                                sizeof(data_txt),
-                                "%c%s %s VIA %s\r",
-                                '\3',
-                                "UNPROTO",
-                                VERSIONFRM,
-                                path);
+                    // WE7U:  Should we check here and in the following path
+                    // selection code to make sure that there are printable characters
+                    // in the path?  Also:  Output_my_aprs_data() has nearly identical
+                    // path selection code.  Fix it in one place, fix it in the other.
 
-                            xastir_snprintf(data_txt_save,
-                                sizeof(data_txt_save),
-                                "%s>%s,%s:",
-                                my_callsign,
-                                VERSIONFRM,
-                                path);
-                        }
-
-                        if (strncmp(path, "DIRECT PATH", 11) == 0) {
-                            // The user has requested a direct path
-                            path_txt[0] = '\0'; // Empty path
-                        }
-                        else {
-                            xastir_snprintf(path_txt,
-                                sizeof(path_txt),
-                                "%s",
-                                path);
-                        }
-
-                        done++;
-
-                        // If "DEFAULT PATH" was passed to us, then
-                        // we're not done yet.
-                        //
-                        if (strncmp(path, "DEFAULT PATH", 12) == 0) {
-                            done = 0;
-                        }
+                    // Check whether igate path is socially
+                    // acceptable.  Output warning if not, but
+                    // still allow the transmit.
+                    if(check_unproto_path(devices[port].unproto_igate)) {
+                        popup_message_always(langcode("WPUPCFT046"),
+                                             langcode("WPUPCFT043"));
                     }
 
-                    if (!done) {
+                    xastir_snprintf(data_txt,
+                                    sizeof(data_txt),
+                                    "%c%s %s VIA %s\r",
+                                    '\3',
+                                    "UNPROTO",
+                                    VERSIONFRM,
+                                    devices[port].unproto_igate);
 
-                        // Set unproto path:  Get next unproto path
-                        // in sequence.
-                        unproto_path = (char *)select_unproto_path(port);
+                    xastir_snprintf(data_txt_save,
+                                    sizeof(data_txt_save),
+                                    "%s>%s,%s:",
+                                    my_callsign,
+                                    VERSIONFRM,
+                                    devices[port].unproto_igate);
+
+                    xastir_snprintf(path_txt,
+                                    sizeof(path_txt),
+                                    "%s",
+                                    devices[port].unproto_igate);
+
+                    done++;
+                }
+
+
+                // Check whether a path was passed to us as a
+                // parameter:
+                if ( (path != NULL) && (strlen(path) != 0) ) {
+ 
+                    if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                        // The user has requested a direct path
 
                         xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%c%s %s VIA %s\r",
-                            '\3',
-                            "UNPROTO",
-                            VERSIONFRM,
-                            unproto_path);
+                                        sizeof(data_txt),
+                                        "%c%s %s\r",
+                                        '\3',
+                                        "UNPROTO",
+                                        VERSIONFRM);
 
                         xastir_snprintf(data_txt_save,
-                            sizeof(data_txt_save),
-                            "%s>%s,%s:",
-                            my_callsign,
-                            VERSIONFRM,
-                            unproto_path);
+                                        sizeof(data_txt_save),
+                                        "%s>%s:",
+                                        my_callsign,
+                                        VERSIONFRM);
+                    }
+                    else {
 
+                        xastir_snprintf(data_txt,
+                                        sizeof(data_txt),
+                                        "%c%s %s VIA %s\r",
+                                        '\3',
+                                        "UNPROTO",
+                                        VERSIONFRM,
+                                        path);
+
+                        xastir_snprintf(data_txt_save,
+                                        sizeof(data_txt_save),
+                                        "%s>%s,%s:",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        path);
+                    }
+
+                    if (strncmp(path, "DIRECT PATH", 11) == 0) {
+                        // The user has requested a direct path
+                        path_txt[0] = '\0'; // Empty path
+                    }
+                    else {
                         xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            unproto_path);
-
-                        done++;
+                                        sizeof(path_txt),
+                                        "%s",
+                                        path);
                     }
 
+                    done++;
 
-                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[port].status == DEVICE_UP)
-                            && (devices[port].transmit_data == 1)
-                            && !transmit_disable
-                            && !loopback_only) {
-                        port_write_string(port,data_txt);
-                        usleep(10000);  // 10ms
-                    }
- 
-                    // Set converse mode.  One european TNC
-                    // (tnc2-ui) doesn't accept "conv" but does
-                    // accept the 'k' command.  A Kantronics  KPC-2
-                    // v2.71 TNC accepts the "conv" command but not
-                    // the 'k' command.  Figures!
+                    // If "DEFAULT PATH" was passed to us, then
+                    // we're not done yet.
                     //
-//                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
-//                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "k");
-//                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', CONVERSE_MODE);
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', devices[port].device_converse_string);
-
-
-
-                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[port].status == DEVICE_UP)
-                            && (devices[port].transmit_data == 1)
-                            && !transmit_disable
-                            && !loopback_only) {
-                        port_write_string(port,data_txt);
-                        usleep(20000); // 20ms
+                    if (strncmp(path, "DEFAULT PATH", 12) == 0) {
+                        done = 0;
                     }
-                    break;
+                }
 
-                default: /* unknown */
-                    ok = 0;
-                    break;
+                if (!done) {
+
+                    // Set unproto path:  Get next unproto path
+                    // in sequence.
+                    unproto_path = (char *)select_unproto_path(port);
+
+                    xastir_snprintf(data_txt,
+                                    sizeof(data_txt),
+                                    "%c%s %s VIA %s\r",
+                                    '\3',
+                                    "UNPROTO",
+                                    VERSIONFRM,
+                                    unproto_path);
+
+                    xastir_snprintf(data_txt_save,
+                                    sizeof(data_txt_save),
+                                    "%s>%s,%s:",
+                                    my_callsign,
+                                    VERSIONFRM,
+                                    unproto_path);
+
+                    xastir_snprintf(path_txt,
+                                    sizeof(path_txt),
+                                    "%s",
+                                    unproto_path);
+
+                    done++;
+                }
+
+
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                     && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                     && (port_data[port].status == DEVICE_UP)
+                     && (devices[port].transmit_data == 1)
+                     && !transmit_disable
+                     && !loopback_only) {
+                    port_write_string(port,data_txt);
+                    usleep(10000);  // 10ms
+                }
+ 
+                // Set converse mode.  One european TNC
+                // (tnc2-ui) doesn't accept "conv" but does
+                // accept the 'k' command.  A Kantronics  KPC-2
+                // v2.71 TNC accepts the "conv" command but not
+                // the 'k' command.  Figures!
+                //
+                //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
+                //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "k");
+                //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', CONVERSE_MODE);
+                xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', devices[port].device_converse_string);
+
+
+
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                     && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                     && (port_data[port].status == DEVICE_UP)
+                     && (devices[port].transmit_data == 1)
+                     && !transmit_disable
+                     && !loopback_only) {
+                    port_write_string(port,data_txt);
+                    usleep(20000); // 20ms
+                }
+                break;
+
+            default: /* unknown */
+                ok = 0;
+                break;
             } // End of switch
         } else {    // Type == 1, raw data.  Probably igating something...
             output_net[0] = '\0';
@@ -7767,19 +7761,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
             /* send data */
             xastir_snprintf(data_txt, sizeof(data_txt), "%s%s\r", output_net, message);
 
-//fprintf(stderr,"%s\n",data_txt);
+            //fprintf(stderr,"%s\n",data_txt);
 
             if ( (port_data[port].status == DEVICE_UP)
-                    && (devices[port].transmit_data == 1)
-                    && !transmit_disable
-                    && !loopback_only) {
+                 && (devices[port].transmit_data == 1)
+                 && !transmit_disable
+                 && !loopback_only) {
 
-// WE7U:  Change so that path is passed as well for KISS TNC
-// interfaces:  data_txt_save would probably be the one to pass,
-// or create a new string just for KISS TNC's.
+                // WE7U:  Change so that path is passed as well for KISS TNC
+                // interfaces:  data_txt_save would probably be the one to pass,
+                // or create a new string just for KISS TNC's.
 
                 if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
-                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+                     || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
                     // Transmit
                     send_ax25_frame(port,
@@ -7789,27 +7783,27 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                     data_txt);      // data
                 }
 
-//WE7U:AGWPE
+                //WE7U:AGWPE
                 else if (port_data[port].device_type == DEVICE_NET_AGWPE) {
 
                     // Set unproto path.  First check whether we're
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
                     if ( (use_igate_path)
-                            && (strlen(devices[port].unproto_igate) > 0) ) {
+                         && (strlen(devices[port].unproto_igate) > 0) ) {
 
                         // Check whether igate path is socially
                         // acceptable.  Output warning if not, but
                         // still allow the transmit.
                         if(check_unproto_path(devices[port].unproto_igate)) {
                             popup_message_always(langcode("WPUPCFT046"),
-                                langcode("WPUPCFT043"));
+                                                 langcode("WPUPCFT043"));
                         }
 
                         xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            devices[port].unproto_igate);
+                                        sizeof(path_txt),
+                                        "%s",
+                                        devices[port].unproto_igate);
                     }
                     // Check whether a path was passed to us as a
                     // parameter:
@@ -7818,26 +7812,26 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         if (strncmp(path, "DEFAULT PATH", 12) == 0) {
                             unproto_path = (char *)select_unproto_path(port);
 
-//fprintf(stderr,"unproto_path: %s\n", unproto_path);
+                            //fprintf(stderr,"unproto_path: %s\n", unproto_path);
                             xastir_snprintf(path_txt,
-                                sizeof(path_txt),
-                                "%s",
-                                unproto_path);
+                                            sizeof(path_txt),
+                                            "%s",
+                                            unproto_path);
                         }
 
                         else if (strncmp(path, "DIRECT PATH", 11) == 0) {
                             // The user has requested a direct path
                             path_txt[0] = '\0'; // Empty string
 
-// WE7U
-// TEST THIS TO SEE IF IT WORKS ON AGWPE TO HAVE NO PATH
+                            // WE7U
+                            // TEST THIS TO SEE IF IT WORKS ON AGWPE TO HAVE NO PATH
 
                         }
                         else {
                             xastir_snprintf(path_txt,
-                                sizeof(path_txt),
-                                "%s",
-                                path);
+                                            sizeof(path_txt),
+                                            "%s",
+                                            path);
                         }
                     }
                     else {
@@ -7846,43 +7840,43 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                         unproto_path = (char *)select_unproto_path(port);
 
-//fprintf(stderr,"unproto_path: %s\n", unproto_path);
+                        //fprintf(stderr,"unproto_path: %s\n", unproto_path);
                         xastir_snprintf(path_txt,
-                            sizeof(path_txt),
-                            "%s",
-                            unproto_path);
+                                        sizeof(path_txt),
+                                        "%s",
+                                        unproto_path);
                     }
-//fprintf(stderr,"path_txt: %s\n", path_txt);
+                    //fprintf(stderr,"path_txt: %s\n", path_txt);
  
 
-// We need to remove the complete AX.25 header from data_txt before
-// we call this routine!  Instead put the digipeaters into the
-// ViaCall fields.  We do this above by setting output_net to '\0'
-// before creating the data_txt string.
+                    // We need to remove the complete AX.25 header from data_txt before
+                    // we call this routine!  Instead put the digipeaters into the
+                    // ViaCall fields.  We do this above by setting output_net to '\0'
+                    // before creating the data_txt string.
 
-//fprintf(stderr,"send_agwpe_packet\n");
+                    //fprintf(stderr,"send_agwpe_packet\n");
 
                     send_agwpe_packet(port,           // Xastir interface port
-                        atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
-                        '\0',                         // Type of frame
-                        (unsigned char *)my_callsign, // source
-                        (unsigned char *)VERSIONFRM,  // destination
-                        (unsigned char *)path_txt,    // Path,
-                        (unsigned char *)data_txt,    // Data
-                        strlen(data_txt) - 1);        // Skip \r
+                                      atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
+                                      '\0',                         // Type of frame
+                                      (unsigned char *)my_callsign, // source
+                                      (unsigned char *)VERSIONFRM,  // destination
+                                      (unsigned char *)path_txt,    // Path,
+                                      (unsigned char *)data_txt,    // Data
+                                      strlen(data_txt) - 1);        // Skip \r
                 }
 
                 else {  // Not a Serial KISS TNC interface
 
-//fprintf(stderr,"Sending this string: %s\n", data_txt);
+                    //fprintf(stderr,"Sending this string: %s\n", data_txt);
 
-                   port_write_string(port, data_txt);  // Transmit
+                    port_write_string(port, data_txt);  // Transmit
                 }
 
                 if (debug_level & 1)
                     fprintf(stderr,"Sending to interface:%d, %s\n",
-                        port,
-                        data_txt);
+                            port,
+                            data_txt);
 
 
                 // Put our transmitted packet into the Incoming Data
@@ -7902,44 +7896,44 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                     if (strncmp(path, "DEFAULT PATH", 12) == 0) {
                         xastir_snprintf(temp,
-                            sizeof(temp),
-                            "%s>%s,%s:%s",
-                            my_callsign,
-                            VERSIONFRM,
-                            unproto_path,
-                            message);
+                                        sizeof(temp),
+                                        "%s>%s,%s:%s",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        unproto_path,
+                                        message);
                     }
                     else if (strncmp(path, "DIRECT PATH", 11) == 0) {
                         // The user has requested a direct path
                         xastir_snprintf(temp,
-                            sizeof(temp),
-                            "%s>%s:%s",
-                            my_callsign,
-                            VERSIONFRM,
-                            message);
+                                        sizeof(temp),
+                                        "%s>%s:%s",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        message);
                     }
                     else {
                         xastir_snprintf(temp,
-                            sizeof(temp),
-                            "%s>%s,%s:%s",
-                            my_callsign,
-                            VERSIONFRM,
-                            path,
-                            message);
+                                        sizeof(temp),
+                                        "%s>%s,%s:%s",
+                                        my_callsign,
+                                        VERSIONFRM,
+                                        path,
+                                        message);
                     }
                 }
                 else {
                     xastir_snprintf(temp,
-                        sizeof(temp),
-                        "%s>%s,%s:%s",
-                        my_callsign,
-                        VERSIONFRM,
-                        unproto_path,
-                        message);
+                                    sizeof(temp),
+                                    "%s>%s,%s:%s",
+                                    my_callsign,
+                                    VERSIONFRM,
+                                    unproto_path,
+                                    message);
                 }
                 makePrintable(temp);
                 packet_data_add("TX ", temp, port);
-//fprintf(stderr,"%s\n", temp);
+                //fprintf(stderr,"%s\n", temp);
 
             }
 
@@ -7951,32 +7945,32 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 xastir_snprintf(data_txt, sizeof(data_txt), "\n");
 
                 if ( (port_data[port].status == DEVICE_UP)
-                        && (devices[port].transmit_data == 1)
-                        && !transmit_disable
-                        && !loopback_only) {
+                     && (devices[port].transmit_data == 1)
+                     && !transmit_disable
+                     && !loopback_only) {
                     port_write_string(port,data_txt);
                 }
             }
             else {
             }
         }
-//        if (incoming_port != -1)
-//            port = MAX_IFACE_DEVICES+1;    // process only one port
+        //        if (incoming_port != -1)
+        //            port = MAX_IFACE_DEVICES+1;    // process only one port
     }
 
-end_critical_section(&devices_lock, "interface.c:output_my_data" );
+    end_critical_section(&devices_lock, "interface.c:output_my_data" );
 
     // This will log a posit in the general format for a network interface
     // whether or not any network interfaces are currently up.
     xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-            VERSIONFRM, message);
+                    VERSIONFRM, message);
     if (debug_level & 2)
         fprintf(stderr,"output_my_data: Transmitting and decoding: %s\n", data_txt);
 
     if (log_net_data)
-      log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
-                                  sizeof(logfile_tmp_path)), 
-                (char *)data_txt );
+        log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
+                                    sizeof(logfile_tmp_path)), 
+                  (char *)data_txt );
 
 
     // Note that this will only log one TNC line per transmission now matter
@@ -7987,48 +7981,48 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
         xastir_snprintf(data_txt, sizeof(data_txt), "%s%s", data_txt_save, message);
         if (log_tnc_data)
             log_data( get_user_base_dir(LOGFILE_TNC, logfile_tmp_path, 
-                                  sizeof(logfile_tmp_path)), 
+                                        sizeof(logfile_tmp_path)), 
                       (char *)data_txt );
     }
 
 
     if (enable_server_port && !loopback_only && !transmit_disable) {
-// Send data to the x_spider server
+        // Send data to the x_spider server
 
         if (type == 0) {    // My data, add a header
             xastir_snprintf(data_txt,
-                sizeof(data_txt),
-                "%s>%s,TCPIP*:%s",
-                my_callsign,
-                VERSIONFRM,
-                message);
+                            sizeof(data_txt),
+                            "%s>%s,TCPIP*:%s",
+                            my_callsign,
+                            VERSIONFRM,
+                            message);
         }
         else {  // Not my data, don't add a header
             xastir_snprintf(data_txt,
-                sizeof(data_txt),
-                "%s",
-                message);
+                            sizeof(data_txt),
+                            "%s",
+                            message);
         }
 
-//fprintf(stderr,"To 2023:%s", data_txt);
-//fprintf(stderr,"\tport:%d  type:%d  loopback_only:%d use_igate_path:%d\n",
-//    incoming_port, type, loopback_only, use_igate_path);
+        //fprintf(stderr,"To 2023:%s", data_txt);
+        //fprintf(stderr,"\tport:%d  type:%d  loopback_only:%d use_igate_path:%d\n",
+        //    incoming_port, type, loopback_only, use_igate_path);
 
         if (writen(pipe_xastir_to_tcp_server,
-                data_txt,
-                strlen(data_txt)) != (int)strlen(data_txt)) {
+                   data_txt,
+                   strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
-                "output_my_data: Writen error: %d\n",
-                errno);
+                    "output_my_data: Writen error: %d\n",
+                    errno);
         }
         // Terminate it with a linefeed
         if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1) {
             fprintf(stderr,
-                "output_my_data: Writen error: %d\n",
-                errno);
+                    "output_my_data: Writen error: %d\n",
+                    errno);
         }
     }
-// End of x_spider server send code
+    // End of x_spider server send code
 
 
     // Decode our own transmitted packets.
@@ -8041,15 +8035,15 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // feeds.
     if (incoming_port == -1) {   // We were sending to all ports
         // Pretend we received it from port 1
-//fprintf(stderr,"output_my_data 1:%s\n", data_txt);
+        //fprintf(stderr,"output_my_data 1:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, 1, 1);
     }
     else {  // We were sending to a specific port
-//fprintf(stderr,"output_my_data 2:%s\n", data_txt);
+        //fprintf(stderr,"output_my_data 2:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, incoming_port, 1);
     }
 
-//fprintf(stderr,"Data_txt:%s\n", data_txt);
+    //fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
@@ -8084,22 +8078,22 @@ void output_waypoint_data(char *message) {
     start = 0;
     finish = MAX_IFACE_DEVICES;
 
-begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
+    begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 
     for (i = start; i < finish; i++) {
         ok = 1;
         switch (port_data[i].device_type) {
 
-            case DEVICE_SERIAL_TNC_HSP_GPS:
-                port_dtr(i,1);   // make DTR active (select GPS)
-                break;
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+            port_dtr(i,1);   // make DTR active (select GPS)
+            break;
 
-            case DEVICE_SERIAL_GPS:
-                break;
+        case DEVICE_SERIAL_GPS:
+            break;
 
-            default: /* unknown */
-                ok = 0;
-                break;
+        default: /* unknown */
+            ok = 0;
+            break;
         } // End of switch
 
         if (ok) {   // Found a GPS interface
@@ -8123,7 +8117,7 @@ begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
         }
     }
 
-end_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
+    end_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 
 }
 
@@ -8237,7 +8231,7 @@ int tnc_get_data_type(char *buf, int port) {
 
                         makePrintable(filtered_data);
                         fprintf(stderr,"tnc_get_data_type: Not NMEA %s\n",
-                            filtered_data);
+                                filtered_data);
                     }
                 }
             }
@@ -8258,7 +8252,7 @@ int tnc_get_data_type(char *buf, int port) {
 
                         makePrintable(filtered_data);
                         fprintf(stderr,"tnc_get_data_type: Not NMEA %s\n",
-                            filtered_data);
+                                filtered_data);
                     }
                 }
             }
