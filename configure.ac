@@ -33,7 +33,7 @@ AC_CONFIG_SRCDIR([src/xastir.h])
 #AM_CONFIG_HEADER(config.h)
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([subdir-objects])
-
+AM_SILENT_RULES(yes)
 
 echo ""
 echo "Configuring AC_PACKAGE_NAME AC_PACKAGE_VERSION"
