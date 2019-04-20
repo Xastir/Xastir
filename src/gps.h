@@ -38,6 +38,9 @@ extern int gps_data_find(char *gps_line_data, int port);
 
 extern void create_garmin_waypoint(long latitude,long longitude,char *call_sign);
 
+int isGGA(char *gps_line_data);
+int isRMC(char *gps_line_data);
+
 #endif  // __XASTIR_GPS_H
 
 
