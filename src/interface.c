@@ -1237,7 +1237,7 @@ int get_device_status(int port) {
 // incoming_data_queue.  If queue is full, waits for queue to have
 // space before continuing.
 //
-// port #                                                    
+// port #
 // string is the string of data
 // length is the length of the string.  If 0 then use strlen()
 // on the string itself to determine the length.
@@ -1249,7 +1249,7 @@ int get_device_status(int port) {
 // for this reason also.
 //***********************************************************
 void channel_data(int port, unsigned char *string, volatile int length) {
-    int max;
+    volatile int max;
     struct timeval tmv;
     // Some messiness necessary because we're using xastir_mutex's
     // instead of pthread_mutex_t's.
@@ -1730,8 +1730,13 @@ static void data_out_ax25(int port, unsigned char *string) {
         if (debug_level & 2)
             fprintf(stderr,"*** DATA: %s\n",(char *)string);
 
-        if (port_data[port].channel2 != -1)
-            (void)write(port_data[port].channel2, string, strlen((char *)string));
+        if (port_data[port].channel2 != -1) {
+            if (write(port_data[port].channel2, string, strlen((char *)string)) != -1) {
+                /* we don't actually care if this returns -1 or not
+                   but newer linux systems hate when we ignore the return
+                   value of write() */
+            }
+        }
         else if (debug_level & 2)
             fprintf(stderr,"\nPort down for writing!\n\n");
     }
