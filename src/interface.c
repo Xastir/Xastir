@@ -98,6 +98,7 @@
 #include "forked_getaddrinfo.h"
 #include "x_spider.h"
 #include "db_gis.h"
+#include "gps.h"
 
 #ifdef HAVE_LIBAX25
 #include <netax25/ax25.h>
@@ -1474,7 +1475,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
                 // GPRMC and GPGGA strings into global variables.
                 // Drop other GPS strings on the floor.
                 //
-                if ( (length > 7) && (isRMC(string))) {
+                if ( (length > 7) && (isRMC((char *)string))) {
                     xastir_snprintf(gprmc_save_string,
                         sizeof(gprmc_save_string),
                         "%s",
@@ -1482,7 +1483,7 @@ void channel_data(int port, unsigned char *string, volatile int length) {
                     gps_port_save = port;
                     process_it = 0;
                 }
-                else if ( (length > 7) && (isGGA(string))) {
+                else if ( (length > 7) && (isGGA((char *)string))) {
                     xastir_snprintf(gpgga_save_string,
                         sizeof(gpgga_save_string),
                         "%s",
