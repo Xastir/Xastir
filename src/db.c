@@ -7771,8 +7771,8 @@ int store_trail_point(DataRow *p_station,
         // Check whether distance between points is too far.  We
         // must convert from degrees to the Xastir coordinate system
         // units, which are 100th of a second.
-        if (    abs(lon - ptr->prev->trail_long_pos) > (trail_segment_distance * 60*60*100) ||
-                abs(lat - ptr->prev->trail_lat_pos)  > (trail_segment_distance * 60*60*100) ) {
+        if (    labs(lon - ptr->prev->trail_long_pos) > (trail_segment_distance * 60*60*100) ||
+                labs(lat - ptr->prev->trail_lat_pos)  > (trail_segment_distance * 60*60*100) ) {
 
             // Set "new track" flag if there's
             // "trail_segment_distance" degrees or more between
@@ -7783,7 +7783,7 @@ int store_trail_point(DataRow *p_station,
         else {
             // Check whether trail went above our maximum time
             // between points.  If so, don't draw segment.
-            if (abs(sec - ptr->prev->sec) > (trail_segment_time *60)) {
+            if (labs(sec - ptr->prev->sec) > (trail_segment_time *60)) {
 
                 // Set "new track" flag if long delay between
                 // reception of two points.  Time is set by a slider
@@ -8332,7 +8332,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
            fprintf(f,"<Placemark>");
            get_iso_datetime(p_station->sec_heard,timestring,True,True);
 
-           if (p_station->origin == NULL || p_station->origin[0] == '\0') { 
+           if (p_station->origin[0] == '\0') { 
                fprintf(f,"<name>%s</name>\n",p_station->call_sign);
                fprintf(f,"<description>");
            } else { 
@@ -8396,7 +8396,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
                }
                // Prepare to follow with  a trail (as a <LineString/>).
                fprintf(f,"<Placemark>");
-               if (p_station->origin == NULL || p_station->origin[0] == '\0')
+               if (p_station->origin[0] == '\0')
                    fprintf(f,"<name>%s (trail)</name>\n",p_station->call_sign);
                else
                    fprintf(f,"<name>%s (trail)</name>\n<description>Object from %s</description>\n",p_station->call_sign,p_station->origin);
@@ -8405,7 +8405,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
 
         case EXPORT_XASTIR_TRACK:
         default:
-           if (p_station->origin == NULL || p_station->origin[0] == '\0')
+           if (p_station->origin[0] == '\0')
                fprintf(f,"\n#C %s\n",p_station->call_sign);
            else
                fprintf(f,"\n#O %s %s\n",p_station->call_sign,p_station->origin);
@@ -9766,8 +9766,8 @@ int position_on_extd_screen(long lat, long lon) {
     if (marg_lon < IN_VIEW_MIN*60*100)          // with trail parts on screen
         marg_lon = IN_VIEW_MIN*60*100;
 
-    if (    abs(lon - center_longitude) < marg_lon
-         && abs(lat - center_latitude)  < marg_lat
+    if (    labs(lon - center_longitude) < marg_lon
+         && labs(lat - center_latitude)  < marg_lat
          && !(lat == 0 && lon == 0))    // discard undef positions from screen
         return(1);                      // position is inside the area
     else
