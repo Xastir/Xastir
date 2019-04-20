@@ -1,0 +1,56 @@
+language: c
+
+script:
+  - ./bootstrap.sh
+  - ./configure CPPFLAGS="-I/usr/include/geotiff"
+  - make
+  - sudo make install
+
+matrix:
+  include:
+    - os: linux
+      name: "Linux full featured with GraphicsMagick"
+      addons:
+        apt:
+          packages:
+            - graphicsmagick
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libproj-dev
+            - libdb5.3-dev
+            - libax25-dev
+            - shapelib
+            - libshp-dev
+            - festival
+            - festival-dev
+            - libgeotiff-dev
+            - libgraphicsmagick1-dev
+            - gpsman
+            - gpsmanshp
+    - os: linux
+      name: "Linux light with ImageMagick"
+      addons:
+        apt:
+          packages:
+            - imagemagick
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libdb5.3-dev
+            - shapelib
+            - libshp-dev
+            - libmagickcore-dev
+    - os: osx
+      name: "MacOS"
+      addons:
+        homebrew:
+          packages:
+            - berkeley-db
+            - graphicsmagick
+            - libgeotiff
+            - openmotif
+            - pcre
+            - proj
+            - shapelib
+            - wget
