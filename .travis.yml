@@ -29,6 +29,27 @@ matrix:
             - gpsman
             - gpsmanshp
     - os: linux
+      dist: xenial
+      name: "Ubuntu 16.04 full featured with GraphicsMagick"
+      addons:
+        apt:
+          packages:
+            - graphicsmagick
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libproj-dev
+            - libdb5.3-dev
+            - libax25-dev
+            - shapelib
+            - libshp-dev
+            - festival
+            - festival-dev
+            - libgeotiff-dev
+            - libgraphicsmagick1-dev
+            - gpsman
+            - gpsmanshp
+    - os: linux
       name: "Linux light with ImageMagick"
       addons:
         apt:
