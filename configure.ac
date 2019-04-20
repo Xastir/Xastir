@@ -865,18 +865,12 @@ AC_CONFIG_FILES([Makefile \
     xastir.spec \
     xastir-min.spec \
     xastir-lsb.spec]) 
-AC_CONFIG_FILES([scripts/get-BOMdata \
-    scripts/get-NWSdata \
-    scripts/get-gnis \
-    scripts/get-pop \
-    scripts/get-fcc-rac.pl \
-    scripts/icontable.pl],[chmod +x     scripts/get-BOMdata \
-    scripts/get-NWSdata \
-    scripts/get-gnis \
-    scripts/get-pop \
-    scripts/get-fcc-rac.pl \
-    scripts/icontable.pl ])
-
+AC_CONFIG_FILES([scripts/get-BOMdata],[chmod +x scripts/get-BOMdata])
+AC_CONFIG_FILES([scripts/get-NWSdata],[chmod +x scripts/get-NWSdata])
+AC_CONFIG_FILES([scripts/get-gnis],[chmod +x scripts/get-gnis])
+AC_CONFIG_FILES([scripts/get-pop],[chmod +x scripts/get-pop])
+AC_CONFIG_FILES([scripts/get-fcc-rac.pl],[chmod +x scripts/get-fcc-rac.pl])
+AC_CONFIG_FILES([scripts/icontable.pl],[chmod +x scripts/icontable.pl])
  
 AC_OUTPUT 
 
