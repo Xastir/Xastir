@@ -187,8 +187,6 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
     if (incoming_read_ptr == incoming_write_ptr) {
         // Yep, it's empty
 
-        //fprintf(stderr,"\n\t<- EMPTY!\n");
-
         queue_depth = 0;
  
         if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
@@ -215,18 +213,6 @@ int pop_incoming_data(unsigned char *data_string, int *port) {
     queue_depth--;
     pop_count++;
 
-    //if (push_count != pop_count)
-    //    fprintf(stderr,"Pushes:%d\tPops:%d\n", push_count, pop_count);
-    //else
-    //    fprintf(stderr,"Pushes = \tPops\n");
-
-    // For DEBUG, to see if the queue how the queue is getting used
-    //    if (queue_depth > 1) {
-    //        fprintf(stderr,"%d\t", queue_depth);
-    //    }
-
-    //fprintf(stderr,"\n\t<- %s",data_string);
-
     if (end_critical_section(&data_lock, "interface.c:pop_incoming_data" ) > 0)
         fprintf(stderr,"data_lock\n");
 
@@ -252,14 +238,10 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
     if (incoming_read_ptr == next_write_ptr) {
         // Yep, it's full!
 
-        //fprintf(stderr,"\n-> FULL!");
-
         if (end_critical_section(&data_lock, "interface.c:push_incoming_data" ) > 0)
             fprintf(stderr,"data_lock\n");
         return(1);
     }
-
-    //fprintf(stderr,"\n-> %s",data_string);
 
 
     // Advance the write pointer
@@ -269,14 +251,7 @@ int push_incoming_data(unsigned char *data_string, int length, int port) {
 
     incoming_data_queue[incoming_write_ptr].port = port;
 
-    // This isn't safe for binary data.  It gets truncated at the
-    // first zero byte!
-    // xastir_snprintf((char *)incoming_data_queue[incoming_write_ptr].data,
-    //     (length < MAX_LINE_SIZE) ? length : MAX_LINE_SIZE,
-    //     "%s",
-    //     data_string);
-    //
-    // Binary safe
+    // Binary safe copy in case there are embedded zeros
     for (jj = 0; jj < length; jj++) {
         incoming_data_queue[incoming_write_ptr].data[jj] = data_string[jj];
     }
@@ -400,12 +375,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
     int data_length;
 
 
-    /*
-      fprintf(stderr,"Sending to AGWPE RadioPort %d, ", RadioPort);
-      fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
-      type, FromCall, ToCall, Path, Data);
-    */
-
     // Check size of data
     if (length > 512)
         return;
@@ -474,14 +443,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
             output_string[28] = (unsigned char)(new_length % 256);
             output_string[29] = (unsigned char)((new_length >> 8) % 256);
 
-            /*
-              fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-              output_string[28],
-              output_string[29],
-              output_string[30],
-              output_string[31]);
-            */
-
             // Write login/password out as 255-byte strings each
 
             // Put the login string into the buffer
@@ -495,8 +456,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                             sizeof(output_string) - agwpe_header_size - 255,
                             "%s",
                             Data);
-
-            //fprintf(stderr,"AGWPE User:%s,  Pass:%s\n",callsign_base, Data);
 
             // Send the packet to AGWPE
             port_write_binary(xastir_interface,
@@ -513,14 +472,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
             output_string[28] = (unsigned char)(length % 256);
             output_string[29] = (unsigned char)((length >> 8) % 256);
 
-            /*
-              fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-              output_string[28],
-              output_string[29],
-              output_string[30],
-              output_string[31]);
-            */
-
             // Copy Data onto the end of the string.  This one
             // doesn't have to be null-terminated, so strncpy() is
             // ok to use here.  strncpy stops at the first null byte
@@ -533,8 +484,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
             port_write_binary(xastir_interface,
                               output_string,
                               full_length);
-
-            //fprintf(stderr, "Sent: %s\n", Data);
 
         }
     }
@@ -550,8 +499,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         // Convert path_string to upper-case
         to_upper((char *)path_string);
 
-        //fprintf(stderr,"path_string: %s\n", path_string);
-
         split_string((char *)path_string, ViaCall, 10, ',');
 
         // Write the type character into the frame
@@ -562,35 +509,27 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
 
         // Write the number of ViaCalls into the first byte
         if (ViaCall[7]) {
-            //fprintf(stderr, "Eight viacalls\n");
             output_string[agwpe_header_size] = 0x08;
         }
         else if (ViaCall[6]) {
-            //fprintf(stderr, "Seven viacalls\n");
             output_string[agwpe_header_size] = 0x07;
         }
         else if (ViaCall[5]) {
-            //fprintf(stderr, "Six viacalls\n");
             output_string[agwpe_header_size] = 0x06;
         }
         else if (ViaCall[4]) {
-            //fprintf(stderr, "Five viacalls\n");
             output_string[agwpe_header_size] = 0x05;
         }
         else if (ViaCall[3]) {
-            //fprintf(stderr, "Four viacalls\n");
             output_string[agwpe_header_size] = 0x04;
         }
         else if (ViaCall[2]) {
-            //fprintf(stderr, "Three viacalls\n");
             output_string[agwpe_header_size] = 0x03;
         }
         else if (ViaCall[1]) {
-            //fprintf(stderr, "Two viacalls\n");
             output_string[agwpe_header_size] = 0x02;
         }
         else {
-            //fprintf(stderr, "One viacall\n");
             output_string[agwpe_header_size] = 0x01;
         }
  
@@ -599,49 +538,42 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         case 8:
             if (ViaCall[7]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+70]), ViaCall[7], 10);
-                //fprintf(stderr, "%s\n", ViaCall[7]);
             }
             else
                 return;
         case 7:
             if (ViaCall[6]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
-                //fprintf(stderr, "%s\n", ViaCall[6]);
             }
             else
                 return;
         case 6:
             if (ViaCall[5]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+50]), ViaCall[5], 10);
-                //fprintf(stderr, "%s\n", ViaCall[5]);
             }
             else
                 return;
         case 5:
             if (ViaCall[4]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+40]), ViaCall[4], 10);
-                //fprintf(stderr, "%s\n", ViaCall[4]);
             }
             else
                 return;
         case 4:
             if (ViaCall[3]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+30]), ViaCall[3], 10);
-                //fprintf(stderr, "%s\n", ViaCall[3]);
             }
             else
                 return;
         case 3:
             if (ViaCall[2]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+20]), ViaCall[2], 10);
-                //fprintf(stderr, "%s\n", ViaCall[2]);
             }
             else
                 return;
         case 2:
             if (ViaCall[1]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+10]), ViaCall[1], 10);
-                //fprintf(stderr, "%s\n", ViaCall[1]);
             }
             else
                 return;
@@ -649,7 +581,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         default:
             if (ViaCall[0]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+0]),  ViaCall[0], 10);
-                //fprintf(stderr, "%s\n", ViaCall[0]);
             }
             else
                 return;
@@ -668,24 +599,11 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         //is less than 512 + 37.
         data_length = length + ((int)(output_string[agwpe_header_size]) * 10) + 1;
 
-        //fprintf(stderr, "Via calls: %d\n",
-        //(int)(output_string[agwpe_header_size]));
-        //fprintf(stderr, "Length: %d\n", length);
-        //fprintf(stderr, "Data Length: %d\n", data_length);
-
         if ( data_length > 512 )
             return;
 
         output_string[28] = (unsigned char)(data_length % 256);
         output_string[29] = (unsigned char)((data_length >> 8) % 256);
-
-        /*
-          fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
-          output_string[28],
-          output_string[29],
-          output_string[30],
-          output_string[31]);
-        */
 
         full_length = data_length + agwpe_header_size;
 
@@ -694,7 +612,6 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                           output_string,
                           full_length);
 
-        //fprintf(stderr, "Data: %s\n", Data);
 
     }
 }
@@ -858,12 +775,6 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // packet.
     //
 
-    // Check the data_length here to make sure we don't run off the end.
-    //    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
-    //        special_debug = 1;
-    //    }
-
-
     // Make sure we have a terminating '\0' at the end.
     // Note that this doesn't help for binary packets (like OpenTrac),
     // but doesn't really hurt either.
@@ -874,7 +785,6 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     switch (input_string[4]) {
 
     case 'R':
-        //fprintf(stderr,"AGWPE: Got software version packet\n");
         if (data_length == 8) { 
             fprintf(stderr,
                     "\nConnected to AGWPE server, version: %d.%d\n",
@@ -885,8 +795,6 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
         break;
 
     case 'G':
-        //fprintf(stderr,"AGWPE: Got port information packet\n");
-
         // Print out the data, changing all ';' characters to
         // <CR> and a bunch of spaces to format it nicely.
         fprintf(stderr, "    Port Info, total ports = ");
@@ -903,57 +811,46 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
         break;
 
     case 'g':
-        //fprintf(stderr,"AGWPE: Got port capabilities packet\n");
         return(NULL);   // All done!
         break;
 
     case 'X':
-        //fprintf(stderr,"AGWPE: Got callsign registration results packet\n");
         return(NULL);   // All done!
         break;
 
     case 'y':
-        //fprintf(stderr,"AGWPE: Got outstanding frames on port packet\n");
         return(NULL);   // All done!
         break;
 
     case 'Y':
-        //fprintf(stderr,"AGWPE: Got outstanding frames on connection packet\n");
         return(NULL);   // All done!
         break;
 
     case 'H':
-        //fprintf(stderr,"AGWPE: Got heard stations on port packet\n");
         return(NULL);   // All done!
         break;
 
     case 'C':
-        //fprintf(stderr,"AGWPE: Got connection results packet\n");
         return(NULL);   // All done!
         break;
 
     case 'v':
-        //fprintf(stderr,"AGWPE: Got v packet\n");
         return(NULL);   // All done!
         break;
 
     case 'c':
-        //fprintf(stderr,"AGWPE: Got c packet\n");
         return(NULL);   // All done!
         break;
 
     case 'D':
-        //fprintf(stderr,"AGWPE: Got connected data packet\n");
         return(NULL);   // All done!
         break;
 
     case 'd':
-        //fprintf(stderr,"AGWPE: Got disconnection results packet\n");
         return(NULL);   // All done!
         break;
 
     case 'U':
-        //fprintf(stderr,"AGWPE: Got UI data packet\n");
         // We can decode this one ok in the below code (after
         // this switch statement), but we no longer use
         // "monitor" mode packets in AGWPE, switching to the
@@ -962,18 +859,14 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
         break;
 
     case 'I':
-        //fprintf(stderr,"AGWPE: Got connected information data packet\n");
         return(NULL);   // All done!
         break;
 
     case 'S':
-        //fprintf(stderr,"AGWPE: Got supervisory frame packet\n");
         return(NULL);   // All done!
         break;
 
     case 'T':
-        //fprintf(stderr,"AGWPE: Got our own transmitted packet back\n");
-        //fprintf(stderr, "%s\n", &input_string[37]);
         // We should decode this one ok in the below code (after
         // this switch statement), but we no longer use
         // "monitor" mode packets in AGWPE, switching to the
@@ -982,8 +875,6 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
         break;
 
     case 'K':
-        //fprintf(stderr,"AGWPE: Got raw frame packet\n");
-
         // Code here processes the packet for handing to our
         // KISS decoding routines.  Chop off the header, add
         // anything to the beginning/end that we need, then send
@@ -1367,8 +1258,6 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     int process_it = 0;
 
 
-    //fprintf(stderr,"channel_data: %x %d\n",string[0],length);
-
     // Save backup copies of the incoming string and the previous
     // string.  Used for debugging purposes.  If we get a segfault,
     // we can print out the last two messages received.
@@ -1393,7 +1282,6 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     if (length == 0) {
         // Compute length of string including terminator
         length = strlen((const char *)string) + 1;
-        //fprintf(stderr,"Computing length with strlen, port %d\n", port);
     }
 
     // Check for excessively long packets.  These might be TCP/IP
@@ -1495,7 +1383,6 @@ void channel_data(int port, unsigned char *string, volatile int length) {
                 if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
                     // Decode the string normally.
                     process_it++;
-                    //fprintf(stderr,"data_avail\n");
                 }
             }
             break;
@@ -1507,13 +1394,8 @@ void channel_data(int port, unsigned char *string, volatile int length) {
         default:    // Not one of the above three types, decode
             // the string normally.
             process_it++;
-            //fprintf(stderr,"data_avail\n");
             break;
         }
-
-
-        //        if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
-        //            fprintf(stderr,"data_lock, Port = %d\n", port);
 
         // Remove the cleanup routine for the case where this thread
         // gets killed while the mutex is locked.  The cleanup
@@ -1521,19 +1403,15 @@ void channel_data(int port, unsigned char *string, volatile int length) {
         // must be in deferred cancellation mode for the thread to
         // have this work properly.
         //
-        // NOTE: Ignore the four \"suggest braces\" warnings you see when
-        //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-        //
         pthread_cleanup_pop(0);
 
- 
+
         if (debug_level & 1)
             fprintf(stderr,"Channel data on Port %d [%s]\n",port,(char *)string);
 
         if (process_it) {
 
             // Wait for empty space in queue
-            //fprintf(stderr,"\n== %s", string);
             while (push_incoming_data(string, length, port) && max < 5400) {
                 sched_yield();  // Yield to other threads
                 tmv.tv_sec = 0;
@@ -1553,9 +1431,6 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     // initiates an unlock before the thread dies.  We must be in
     // deferred cancellation mode for the thread to have this work
     // properly.
-    //
-    // NOTE: Ignore the four \"suggest braces\" warnings you see when
-    //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
     //
     pthread_cleanup_pop(0);
 }
@@ -1797,18 +1672,15 @@ static void data_out_ax25(int port, unsigned char *string) {
                 temp = strtok(NULL," \t\r\n");
                 if (temp != NULL) {
                     to[quantity++] = temp; // Store it
-                    //fprintf(stderr,"Destination call: %s\n",temp);
 
                     // Look for "via" or "v"
                     temp = strtok(NULL," \t\r\n");
-                    //fprintf(stderr,"Via: %s\n",temp);
 
                     while (temp != NULL) {  // Found it
                         // Look for the rest of the callsigns (up to
                         // eight of them)
                         temp = strtok(NULL," ,\t\r\n");
                         if (temp != NULL) {
-                            //fprintf(stderr,"Call: %s\n",temp);
                             if (quantity < 9) {
                                 to[quantity++] = temp;
                             }
@@ -2073,13 +1945,6 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
      * packet then this is directly from the source, mark it with
      * a "*" in that case
      */
-
-    /* I don't think we need this just yet, perhaps not at all? */
-    /* I think if we don't have a '*' in the path we can assume direct? -FG */
-    /*
-      if((digis == 0) || (digi_h[0] != 0x80))
-      strncat(buffer, "*", buffer_size - 1 - strlen(buffer));
-    */
 
     strncat(buffer, ">", buffer_size - 1 - strlen(buffer));
 
@@ -2468,7 +2333,6 @@ void port_dtr(int port, int dtr) {
 void dtr_all_set(int dtr) {
     int i;
 
-    //fprintf(stderr,"dtr_all_set(%d)\t",dtr);
     for (i = 0; i < MAX_IFACE_DEVICES; i++) {
         if (port_data[i].device_type == DEVICE_SERIAL_TNC_HSP_GPS
             && port_data[i].status == DEVICE_UP) {
@@ -2631,11 +2495,10 @@ int serial_init (int port) {
         if (lock != NULL) { // We could open it so it must have
                             // been created by this userid
             if (fscanf(lock,"%d %99s %99s",&lockfile_intpid,temp,temp1) == 3) {
-                //fprintf(stderr,"Current lock %d %s %s\n",lockfile_intpid,temp,temp1);
                 lockfile_pid = (pid_t)lockfile_intpid;
 
 #ifdef HAVE_GETPGRP
-#ifdef GETPGRP_VOID   
+#ifdef GETPGRP_VOID
                 // Won't this one get our process group instead of
                 // the process group for the lockfile?  Not of that
                 // much use to us here.
@@ -3083,28 +2946,11 @@ static void* net_connect_thread(void *arg) {
         // Show the latest status in the interface control dialog
         update_interface_list();
 
-        // Shut down and close the socket
-
-        //pthread_testcancel();   // Check for thread termination request
-        //
-        // Don't do a shutdown!  The socket wasn't connected.  This causes
-        // problems due to the same socket number getting recycled.  It can
-        // shut down another socket.
-        //
-        //stat = shutdown(port_data[port].channel,2);
-        //pthread_testcancel();   // Check for thread termination request
-        //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
-
         usleep(100000); // 100ms
-        //pthread_testcancel();   // Check for thread termination request
-        //stat = close(port_data[port].channel);
-        //pthread_testcancel();   // Check for thread termination request
-        //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
-
-        //if (debug_level & 2)
-        //    fprintf(stderr,"net_connect_thread():Net connection 1 failed, port %d\n",port);
+        // Note:  Old comments note that it is essential not to shut down
+        // the socket here, because the connection didn't actually happen,
+        // and multithreading could lead to the socket number having
+        // already been reused elsewhere.
     }
 
     // Install the cleanup routine for the case where this thread
@@ -3116,8 +2962,6 @@ static void* net_connect_thread(void *arg) {
 
     // Then install the cleanup routine:
     pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
-    //    pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
-
 
     if (begin_critical_section(&connect_lock, "interface.c:net_connect_thread(2)" ) > 0)
         fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
@@ -3134,14 +2978,7 @@ static void* net_connect_thread(void *arg) {
     // deferred cancellation mode for the thread to have this work
     // properly.
     //
-    // NOTE: Ignore the four \"suggest braces\" warnings you see when
-    //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-    //
     pthread_cleanup_pop(0);
- 
-
-    //if (end_critical_section(&port_data_lock, "interface.c:net_connect_thread(4)" ) > 0)
-    //    fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
     if (debug_level & 2)
         fprintf(stderr,"net_connect_thread terminating itself\n");
@@ -3170,12 +3007,9 @@ int net_init(int port) {
     int gai_rc;     // Return code from get address info
     char port_num[16];
     struct addrinfo hints;
- 
+
     if (begin_critical_section(&port_data_lock, "interface.c:net_init(1)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
-
-    /* clear port_channel */
-    //    port_data[port].channel = -1;
 
     /* set port active */
     port_data[port].active = DEVICE_IN_USE;
@@ -3263,10 +3097,7 @@ int net_init(int port) {
             if (debug_level & 2)
                 fprintf(stderr,"%d\n", (int)(wait_time - sec_now()) );
 
-            /* update display while waiting */
-            // XmUpdateDisplay(XtParent(da));
             usleep(250000);      // 250mS
-            //sched_yield();    // Too fast!
         }
 
         ok = port_data[port].connect_status;
@@ -3286,7 +3117,6 @@ int net_init(int port) {
                 // The only error code we can get here is ESRCH, which means
                 // that the thread number wasn't found.  The thread is already
                 // dead, so let's not print out an error code.
-                //fprintf(stderr,"Error on termination of connect thread!\n");
             }
 
             if (sec_now() >= wait_time) {  // Timed out
@@ -3415,7 +3245,6 @@ int net_detach(int port) {
                 if (debug_level & 2)
                     fprintf(stderr,"net_detach():Waiting to finish writing data to port %d\n",port);
 
-                //(void)sleep(1);
                 usleep(100000);    // 100ms
                 max++;
             }
@@ -3424,10 +3253,6 @@ int net_detach(int port) {
           Shut down and Close were separated but this would cause sockets to
           just float around
         */
-
-        // It doesn't matter whether we _think_ the device is up.  It might
-        // be in some other state, but the socket still needs to be closed.
-        //if (port_data[port].status == DEVICE_UP) {
 
         /* we don't need to do a shut down on AX_25 devices */
         if ( (port_data[port].status == DEVICE_UP)
@@ -3515,19 +3340,12 @@ void fix_up_callsign(unsigned char *data, int data_size) {
     }
     new_call[7] = '\0';
 
-    //fprintf(stderr,"new_call:(%s)\n",new_call);
-
     // Handle SSID.  'i' should now be pointing at a dash or at the
     // terminating zero character.
     if ( (i < (int)strlen((const char *)data)) && (data[i++] == '-') ) {   // We might have an SSID
         if (data[i] != '\0')
             ssid = atoi((const char *)&data[i]);
-        //            ssid = data[i++] - 0x30;    // Convert from ascii to int
-        //        if (data[i] != '\0')
-        //            ssid = (ssid * 10) + (data[i] - 0x30);
     }
-
-    //fprintf(stderr,"SSID:%d\t",ssid);
 
     if (ssid >= 0 && ssid <= 15) {
         new_call[6] = ssid | 0x30;  // Set 2 reserved bits
@@ -3539,14 +3357,12 @@ void fix_up_callsign(unsigned char *data, int data_size) {
     if (digipeated_flag) {
         new_call[6] = new_call[6] | 0x40; // Set the 'H' bit
     }
- 
+
     // Shift each byte one bit to the left
     for (i = 0; i < 7; i++) {
         new_call[i] = new_call[i] << 1;
         new_call[i] = new_call[i] & 0xfe;
     }
-
-    //fprintf(stderr,"Last:%0x\n",new_call[6]);
 
     // Write over the top of the input string with the newly
     // formatted callsign
@@ -3576,8 +3392,6 @@ void port_write_binary(int port, unsigned char *data, int length) {
     int write_in_pos_hold;
 
 
-    //fprintf(stderr,"Sending to AGWPE:\n");
-
     erd = 0;
 
     if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(1)" ) > 0)
@@ -3587,8 +3401,6 @@ void port_write_binary(int port, unsigned char *data, int length) {
     write_in_pos_hold = port_data[port].write_in_pos;
 
     for (ii = 0; ii < length && !erd; ii++) {
-
-        //fprintf(stderr,"%02x ",data[ii]);
 
         // Put character into write buffer and advance pointer
         port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[ii];
@@ -3612,18 +3424,8 @@ void port_write_binary(int port, unsigned char *data, int length) {
         }
     }
 
-    // Check that the data got placed in the buffer ok
-    //for (ii = write_in_pos_hold;  ii < port_data[port].write_in_pos; ii++) {
-    //  fprintf(stderr,"%02x ",port_data[port].device_write_buffer[ii]);
-    //}
-    //fprintf(stderr,"\n");
-
-
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
-
-    //fprintf(stderr,"\n");
-
 }
 
 
@@ -3646,12 +3448,10 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int write_in_pos_hold;
 
 
-    //fprintf(stderr,"KISS String:%s>%s,%s:%s\n",source,destination,path,data);
-
     // Check whether transmits are disabled globally
     if (transmit_disable) {
         return;
-    }    
+    }
 
     // Check whether transmit has been enabled for this interface.
     // If not, get out while the gettin's good.
@@ -3700,8 +3500,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
                 j++;
             }
 
-            //fprintf(stderr,"%s\n",temp);
-
             fix_up_callsign(temp, sizeof(temp));
             strncat((char *)transmit_txt,
                     (char *)temp,
@@ -3731,8 +3529,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     strncat((char *)transmit_txt,
             data,
             sizeof(transmit_txt) - 1 - strlen((char *)transmit_txt));
-
-    //fprintf(stderr,"%s\n",transmit_txt);
 
     // Add the KISS framing characters and do the proper escapes.
     j = 0;
@@ -3793,19 +3589,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
             erd = 1;
         }
     }
-
-
-
-    // DEBUG.  Dump out the hex codes for the KISS packet we just
-    // created.
-    /*
-      for (i = 0; i< j; i++) {
-      fprintf(stderr,"%02x ", transmit_txt2[i]);
-      }
-      fprintf(stderr,"\n\n");
-    */
-
-
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
@@ -4008,8 +3791,6 @@ void port_read(int port) {
     if (debug_level & 2)
         fprintf(stderr,"Port %d read start\n",port);
 
-    //    init_critical_section(&port_data[port].read_lock);
-
     group = 0;
     max = MAX_DEVICE_BUFFER - 1;
     cin = (unsigned char)0;
@@ -4029,13 +3810,10 @@ void port_read(int port) {
 
                 int skip = 0;
 
-                //                pthread_testcancel();   // Check for thread termination request
- 
                 // Handle all EXCEPT AX25_TNC interfaces here
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
-                    //fprintf(stderr," in:%02x ",cin);
                 }
 
                 else {  // Handle AX25_TNC interfaces
@@ -4063,12 +3841,6 @@ void port_read(int port) {
 
                     if (port_data[port].device_type != DEVICE_AX25_TNC)
                         port_data[port].bytes_input += port_data[port].scan;      // Add character to read buffer
-
-
-                    // Somewhere between these lock statements the read_lock got unlocked.  How?
-                    // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
-                    //    fprintf(stderr,"read_lock, Port = %d\n", port);
-
 
                     // Handle all EXCEPT AX25_TNC interfaces here
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
@@ -4117,7 +3889,6 @@ void port_read(int port) {
                                 // Save this char for next time
                                 // around
                                 port_data[port].channel2 = cin;
-                                //fprintf(stderr,"Byte: %02x\n", cin);
                                 skip++;
                             }
                             else if (cin == KISS_FESC) { // Frame Escape char
@@ -4174,8 +3945,6 @@ void port_read(int port) {
                             if (bytes_available < 0)
                                 bytes_available = (bytes_available + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
 
-                            //fprintf(stderr," bytes_avail:%d ",bytes_available);
- 
                             if (bytes_available >= 36) {
                                 // We have a full AGWPE header,
                                 // which means we can compute the
@@ -4199,8 +3968,6 @@ void port_read(int port) {
                                 frame_length = frame_length | (count[2] << 16);
                                 frame_length = frame_length | (count[3] << 24);
 
-                                //fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
-
                                 // Have a complete AGWPE packet?  If
                                 // so, convert it to a more standard
                                 // packet format then feed it to our
@@ -4210,8 +3977,6 @@ void port_read(int port) {
                                     char input_string[MAX_DEVICE_BUFFER];
                                     char output_string[MAX_DEVICE_BUFFER];
                                     int ii,jj,new_length;
-
-                                    //fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length+36);
 
                                     my_pointer = port_data[port].read_out_pos;
                                     jj = 0;
@@ -4289,8 +4054,6 @@ void port_read(int port) {
 
                                 // Compute length of string in
                                 // circular queue
-
-                                //fprintf(stderr,"%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
 
                                 // KISS TNC sends binary data
                                 if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
@@ -4384,19 +4147,12 @@ void port_read(int port) {
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
                                         int length = 0;
-                                        //int jj;   
-                                        if (binary_wx_data) {                             
+                                        if (binary_wx_data) { 
                                             length = port_data[port].read_in_pos - port_data[port].read_out_pos;
                                             if (length < 0)
                                                 length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
                                             length++;
                                         }
-                                        //fprintf(stderr,"\n\n3, length: %d ", length);
-                                        //for (jj = 0; jj < (length-1); jj++) {
-                                        //  fprintf(stderr, "%02x ", 0x0ff & port_data[port].device_read_buffer[jj]);
-                                        //}
-                                        //fprintf(stderr,"\n");
-
 
                                         channel_data(port,
                                                      (unsigned char *)port_data[port].device_read_buffer,
@@ -4477,11 +4233,6 @@ void port_read(int port) {
                         }
 #endif /* HAVE_LIBAX25 */
                     }   // End of AX.25 interface code block
-
-
-                    //if (end_critical_section(&port_data[port].read_lock, "interface.c:port_read(2)" ) > 0)
-                    //    fprintf(stderr,"read_lock, Port = %d\n", port);
-
                 }
                 else if (port_data[port].status == DEVICE_UP) {    /* error or close on read */
                     port_data[port].errors++;
@@ -4588,8 +4339,6 @@ void port_read(int port) {
             // closed, and so need to have this short enough to have reasonable
             // response time to the user.
 
-            //sched_yield();  // Yield to other threads
-
             // Set up the select to block until data ready or 100ms
             // timeout, whichever occurs first.
             FD_ZERO(&rd);
@@ -4650,8 +4399,6 @@ void port_write(int port) {
 
             // Then install the cleanup routine:
             pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
-            //            pthread_cleanup_push(void (*pthread_mutex_unlock)(void *), (void *)cleanup_mutex);
-
 
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
@@ -4691,7 +4438,6 @@ void port_write(int port) {
                                 && (port_data[port].status == DEVICE_UP)
                                 && (wait_max < 100) ) {
                             bytes_input = port_data[port].bytes_input;
-                            /*sleep(1);*/
 
                             /*wait*/
                             FD_ZERO(&wd);
@@ -4700,9 +4446,7 @@ void port_write(int port) {
                             tmv.tv_usec = 80000l;   // Delay 80ms
                             (void)select(0,NULL,&wd,NULL,&tmv);
                             wait_max++;
-                            /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
                         }
-                        /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
                     }   // End of command byte wait
                     break;
 
@@ -4737,8 +4481,6 @@ void port_write(int port) {
                     retval = (int)write(port_data[port].channel,
                                         &port_data[port].device_write_buffer[port_data[port].write_out_pos],
                                         1);
-
-                    //fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
 
                     pthread_testcancel();   // Check for thread termination request
 
@@ -4780,8 +4522,6 @@ void port_write(int port) {
                         // Show the latest status in the interface control dialog
                         update_interface_list();
                     }
-                    //fprintf(stderr,"Char pacing ");
-                    //                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                     if (serial_char_pacing > 0) {
                         // Character pacing.  Delay in between
                         // each character in milliseconds.
@@ -4813,18 +4553,12 @@ void port_write(int port) {
                         if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
                             port_data[port].write_out_pos = 0;
 
-                        //fprintf(stderr,"%02x ",(unsigned char)write_buffer[quantity]);
-
                         quantity++;
                     }
-
-                    //fprintf(stderr,"\nWriting %d bytes\n\n", quantity);
 
                     retval = (int)write(port_data[port].channel,
                                         write_buffer,
                                         quantity);
-
-                    //fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
 
                     pthread_testcancel();   // Check for thread termination request
 
@@ -4877,11 +4611,7 @@ void port_write(int port) {
             // dies.  We must be in deferred cancellation mode for
             // the thread to have this work properly.
             //
-            // NOTE: Ignore the four \"suggest braces\" warnings you see when
-            //       compiling, see: http://archive.netbsd.se/?ml=gcc-help&a=2008-06&t=7730779
-            //
             pthread_cleanup_pop(0);
- 
         }
 
         if (port_data[port].active == DEVICE_IN_USE) {
@@ -5379,17 +5109,14 @@ int del_device(int port) {
         if (port_data[port].read_thread != 0) { // If we have a thread defined
             retvalue = pthread_cancel(port_data[port].read_thread);
             if (retvalue == ESRCH) {
-                //fprintf(stderr,"ERROR: Could not cancel read thread on port %d\n", port);
-                //fprintf(stderr,"No thread found with that thread ID\n");
             }
         }
 
         if (port_data[port].write_thread != 0) {    // If we have a thread defined
             retvalue = pthread_cancel(port_data[port].write_thread);
-            if (retvalue == ESRCH) {
-                //fprintf(stderr,"ERROR: Could not cancel write thread on port %d\n", port);
-                //fprintf(stderr,"No thread found with that thread ID\n");
-            }
+            // we used to test retvalue against ESRCH and throw a
+            // warning if this failed, but it got commented out a very
+            // long time ago (around 2003).
         }
 
         if (end_critical_section(&connect_lock, "interface.c:del_device(3)" ) > 0)
@@ -5419,11 +5146,11 @@ int del_device(int port) {
 
 
 #ifdef HAVE_DB
-/* Add a device, passing it a pointer to the ioparam 
+/* Add a device, passing it a pointer to the ioparam
  * that describes the interface to start up, rather than passing
- * an extracted list of elements 
+ * an extracted list of elements
  *
- * temporary addition for testing sql_database_functionality 
+ * temporary addition for testing sql_database_functionality
  * when working, needs to be integrated into add_device
  */
 int add_device_by_ioparam(int port_avail, ioparam *device) {
@@ -5469,7 +5196,7 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
                 ok = 1;
                 port_data[port_avail].active = DEVICE_IN_USE;
                 port_data[port_avail].status = DEVICE_UP;
-            } else { 
+            } else {
                 port_data[port_avail].active = DEVICE_IN_USE;
                 port_data[port_avail].status = DEVICE_ERROR;
             }
@@ -5478,24 +5205,24 @@ int add_device_by_ioparam(int port_avail, ioparam *device) {
             if (ok == 1) {
                 /* if connected save top of call list */
                 ok = storeStationSimpleToGisDb(&connections[port_avail], n_first);
-                if (ok==1) { 
+                if (ok==1) {
                     if (debug_level & 4096)
                         fprintf(stderr,"Stored station n_first\n");
                     // iterate through station_pointers and write all stations currently known
                     dr = n_first->n_next;
-                    if (dr!=NULL) { 
-                        while (done==0) { 
+                    if (dr!=NULL) {
+                        while (done==0) {
                             if (debug_level & 4096)
                                 fprintf(stderr,"storing additional stations\n");
-                            // Need to check that stations aren't from the database 
+                            // Need to check that stations aren't from the database
                             // preventing creation of duplicate round trip records.
                             ok = storeStationSimpleToGisDb(&connections[port_avail], dr);
                             if (ok==1) {
                                 dr = dr->n_next;
-                                if (dr==NULL) { 
+                                if (dr==NULL) {
                                     done = 1;
-                                } 
-                            } else { 
+                                }
+                            } else {
                                 done = 1;
                             }
                         }
@@ -5583,8 +5310,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 my_position_valid = 1;
                 using_gps_position++;
                 statusline(langcode("BBARSTA041"),1);
-                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
- 
                 break;
 
             case DEVICE_SERIAL_WX:
@@ -5601,8 +5326,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 my_position_valid = 1;
                 using_gps_position++;
                 statusline(langcode("BBARSTA041"),1);
-                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
- 
                 break;
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -5613,17 +5336,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 my_position_valid = 1;
                 using_gps_position++;
                 statusline(langcode("BBARSTA041"),1);
-                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
- 
                 break;
 
             default:
                 break;
             }
             clear_port_data(port_avail,0);
-
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(1)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
             port_data[port_avail].device_type = dev_type;
             xastir_snprintf(port_data[port_avail].device_name,
@@ -5637,9 +5355,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     port_data[port_avail].data_type = 1;
             }
 
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(2)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
-
             ok = serial_init(port_avail);
             break;
 
@@ -5648,9 +5363,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 fprintf(stderr,"Opening a Network stream\n");
 
             clear_port_data(port_avail,0);
-
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(3)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
             port_data[port_avail].device_type = DEVICE_NET_STREAM;
             xastir_snprintf(port_data[port_avail].device_host_name,
@@ -5663,9 +5375,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             passwd);
             port_data[port_avail].socket_port = dev_sck_p;
             port_data[port_avail].reconnect = reconnect;
-
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(4)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             ok = net_init(port_avail);
 
@@ -5710,9 +5419,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                                     '\r',
                                     '\n');
                 }
-
-                //fprintf(stderr,"Sending this string: %s\n", logon_txt);
- 
                 port_write_string(port_avail,logon_txt);
             }
             break;
@@ -5723,17 +5429,11 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             clear_port_data(port_avail,0);
 
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(5)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
             port_data[port_avail].device_type = DEVICE_AX25_TNC;
             xastir_snprintf(port_data[port_avail].device_name,
                             sizeof(port_data[port_avail].device_name),
                             "%s",
                             dev_nm);
-
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(6)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             ok = ax25_init(port_avail);
             break;
@@ -5744,9 +5444,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             clear_port_data(port_avail,0);
 
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(7)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
             port_data[port_avail].device_type = DEVICE_NET_GPSD;
             xastir_snprintf(port_data[port_avail].device_host_name,
                             sizeof(port_data[port_avail].device_host_name),
@@ -5754,9 +5451,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             dev_nm);
             port_data[port_avail].socket_port = dev_sck_p;
             port_data[port_avail].reconnect = reconnect;
-
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(8)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             ok = net_init(port_avail);
             if (ok == 1) {
@@ -5773,7 +5467,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 my_position_valid = 1;
                 using_gps_position++;
                 statusline(langcode("BBARSTA041"),1);
-                //fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
             }
             break;
 
@@ -5782,9 +5475,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 fprintf(stderr,"Opening a network WX\n");
 
             clear_port_data(port_avail,0);
-
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(9)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             port_data[port_avail].device_type = DEVICE_NET_WX;
             xastir_snprintf(port_data[port_avail].device_host_name,
@@ -5795,9 +5485,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             port_data[port_avail].reconnect = reconnect;
             if (strcmp("1",passwd) == 0)
                 port_data[port_avail].data_type = 1;
-
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(10)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             ok = net_init(port_avail);
             if (ok == 1) {
@@ -5813,9 +5500,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             clear_port_data(port_avail,0);
 
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(11)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
             port_data[port_avail].device_type = DEVICE_NET_DATABASE;
             xastir_snprintf(port_data[port_avail].device_host_name,
                             sizeof(port_data[port_avail].device_host_name),
@@ -5825,9 +5509,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             port_data[port_avail].reconnect = reconnect;
             if (strcmp("1",passwd) == 0)
                 port_data[port_avail].data_type = 1;
-
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(12)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
             ok = net_init(port_avail);
             if (ok == 1) {
@@ -5843,9 +5524,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             clear_port_data(port_avail,0);
 
-            //if (begin_critical_section(&port_data_lock, "interface.c:add_device(13)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
             port_data[port_avail].device_type = DEVICE_NET_AGWPE;
             xastir_snprintf(port_data[port_avail].device_host_name,
                             sizeof(port_data[port_avail].device_host_name),
@@ -5856,9 +5534,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             if (strcmp("1",passwd) == 0)
                 port_data[port_avail].data_type = 1;
 
-            //if (end_critical_section(&port_data_lock, "interface.c:add_device(14)" ) > 0)
-            //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
-
             ok = net_init(port_avail);
 
             if (ok == 1) {
@@ -5868,7 +5543,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 //
                 if (strlen(passwd) != 0) {
 
-                    // Send the login packet 
+                    // Send the login packet
                     send_agwpe_packet(port_avail,
                                       0,                       // AGWPE RadioPort
                                       'P',                     // Login/Password Frame
@@ -5901,14 +5576,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
             case DEVICE_SERIAL_TNC_AUX_GPS:
 
                 if (ok == 1) {
-
-                    // We already have the lock by the time add_device() is called!
-                    //begin_critical_section(&devices_lock, "interface.c:add_device" );
-
                     xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
-
-                    //end_critical_section(&devices_lock, "interface.c:add_device" );
-
                     (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
                 }
                 break;
@@ -5968,23 +5636,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                                   NULL,   // Path
                                   NULL,   // Data
                                   0);     // Length
-
-
-                /*
-                // Ask to receive "Monitor" frames.  Once we
-                // switch to "raw" mode for decoding, we won't
-                // need this one anymore.
-                //
-                send_agwpe_packet(port_avail,
-                0,      // AGWPE RadioPort
-                'm',    // Monitor Packets Frame
-                NULL,   // FromCall
-                NULL,   // ToCall
-                NULL,   // Path
-                NULL,   // Data
-                0);     // Length
-                */
-
 
                 // Ask to receive "raw" frames
                 //
@@ -6120,11 +5771,6 @@ void startup_all_or_defined_port(int port) {
 
             case DEVICE_NET_STREAM:
                 if (devices[i].connect_on_startup == 1 || override) {
-
-                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-                    //(void)del_device(i);    // Disconnect old port if it exists
-                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-
                     (void)add_device(i,
                                      DEVICE_NET_STREAM,
                                      devices[i].device_host_name,
@@ -6139,11 +5785,6 @@ void startup_all_or_defined_port(int port) {
 
             case DEVICE_NET_DATABASE:
                 if (devices[i].connect_on_startup == 1 || override) {
-
-                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-                    //(void)del_device(i);    // Disconnect old port if it exists
-                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-
                     (void)add_device(i,
                                      DEVICE_NET_DATABASE,
                                      devices[i].device_host_name,
@@ -6158,11 +5799,6 @@ void startup_all_or_defined_port(int port) {
 
             case DEVICE_NET_AGWPE:
                 if (devices[i].connect_on_startup == 1 || override) {
-
-                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-                    //(void)del_device(i);    // Disconnect old port if it exists
-                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-
                     (void)add_device(i,
                                      DEVICE_NET_AGWPE,
                                      devices[i].device_host_name,
@@ -6177,11 +5813,6 @@ void startup_all_or_defined_port(int port) {
 
             case DEVICE_NET_GPSD:
                 if (devices[i].connect_on_startup == 1 || override) {
-
-                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-                    //                    (void)del_device(i);    // Disconnect old port if it exists
-                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-
                     (void)add_device(i,
                                      DEVICE_NET_GPSD,
                                      devices[i].device_host_name,
@@ -6210,11 +5841,6 @@ void startup_all_or_defined_port(int port) {
 
             case DEVICE_NET_WX:
                 if (devices[i].connect_on_startup == 1 || override) {
-
-                    //end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-                    //                    (void)del_device(i);    // Disconnect old port if it exists
-                    //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
-
                     (void)add_device(i,
                                      DEVICE_NET_WX,
                                      devices[i].device_host_name,
@@ -6275,14 +5901,14 @@ void startup_all_or_defined_port(int port) {
                 break;
 #ifdef HAVE_DB
             case DEVICE_SQL_DATABASE:
-                if (debug_level & 4096) 
+                if (debug_level & 4096)
                     fprintf(stderr,"Device %d Connect_on_startup=%d\n",i,devices[i].connect_on_startup);
                 if (devices[i].connect_on_startup == 1 || override) {
                     ioparam *d = &devices[i];
-                    if (debug_level & 4096) 
+                    if (debug_level & 4096)
                         fprintf(stderr,"Opening a sql db with device type %d\n",d->device_type);
                     (void)add_device_by_ioparam(i, &devices[i]);
-                    if (debug_level & 4096) 
+                    if (debug_level & 4096)
                         fprintf(stderr, "added device by ioparam [%d] type=[%d]\n",i,connections[i].type);
                 }
                 break;
@@ -6347,7 +5973,7 @@ void shutdown_all_active_or_defined_port(int port) {
 
 
 //*************************************************************
-// check ports                                               
+// check ports
 //
 // Called periodically by main.c:UpdateTime() function.
 // Attempts to reconnect interfaces that are down.
@@ -6366,7 +5992,7 @@ void check_ports(void) {
             if (port_data[i].port_activity == 0) {
                 // We've seen no activity for one time period.  This variable
                 // is updated in interface_gui.c
-    
+
                 if (port_data[i].status == DEVICE_ERROR) {
                     // We're already in the error state, so force a reconnect
                     port_data[i].reconnects = -1;
@@ -6649,8 +6275,6 @@ void output_my_aprs_data(void) {
                         sizeof(temp_data),
                         CONVERT_LP_NORMAL);
 
-        //fprintf(stderr," Latitude temp_data:%s\n", temp_data);
-
         xastir_snprintf(my_output_lat,
                         sizeof(my_output_lat),
                         "%c%c%c%c.%c%c%c",
@@ -6686,8 +6310,6 @@ void output_my_aprs_data(void) {
                         temp_data,
                         sizeof(temp_data),
                         CONVERT_LP_NORMAL);
-
-        //fprintf(stderr,"Longitude temp_data:%s\n", temp_data);
 
         xastir_snprintf(my_output_long,
                         sizeof(my_output_long),
@@ -6815,10 +6437,9 @@ void output_my_aprs_data(void) {
             // Figures!  The  choice of whether to send "k" or "conv"
             // is made by the user in the Serial TNC interface properties
             // dialog.  Older versions of Xastir had this hardcoded here.
-            // 
+            //
             xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
-            //fprintf(stderr,"%s\n", header_txt);
- 
+
             if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
                  && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
                  && (port_data[port].status == DEVICE_UP)
@@ -6827,9 +6448,9 @@ void output_my_aprs_data(void) {
                  && !posit_tx_disable) {
                 port_write_string(port,header_txt);
             }
-            // Delay a bit if the user clicked on the "Add Delay" 
-            // togglebutton in the port's interface properties dialog.  
-            // This is primarily needed for KAM TNCs, which will fail to 
+            // Delay a bit if the user clicked on the "Add Delay"
+            // togglebutton in the port's interface properties dialog.
+            // This is primarily needed for KAM TNCs, which will fail to
             // go into converse mode if there is no delay here.
             if (devices[port].tnc_extra_delay != 0) {
                 usleep(devices[port].tnc_extra_delay);
@@ -7264,10 +6885,6 @@ void output_my_aprs_data(void) {
             break;
         }
 
-
-        //fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
-
-
         if (ok) {
             // Here's where the actual transmit of the posit occurs.  The
             // transmit string has been set up in "data_txt" by this point.
@@ -7316,16 +6933,10 @@ void output_my_aprs_data(void) {
                                       (unsigned char *)unproto_path, // Path,
                                       (unsigned char *)data_txt,     // Data
                                       strlen(data_txt) - 1);         // Skip \r
-
-                    //fprintf(stderr,"Sending this string: \n%s\n", data_txt);
-                    //fprintf(stderr,"Length was %d\n", strlen(data_txt) - 1);
-
                 }
 
-                else {  // Not a Serial KISS TNC interface
-
-                    //fprintf(stderr,"Sending this string: \n%s\n\n", data_txt);
-
+                else {
+                    // Not a Serial KISS TNC interface
                     port_write_string(port, data_txt);  // Transmit the posit
                 }
 
@@ -7357,8 +6968,6 @@ void output_my_aprs_data(void) {
                                 data_txt);
                 makePrintable(temp);
                 packet_data_add("TX ", temp, port);
-                //fprintf(stderr,"%s\n", temp);
-
             }
             else {
             }
@@ -7446,8 +7055,6 @@ void output_my_aprs_data(void) {
                       (char *)data_txt );
         }
     }
-
-    //fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
@@ -7533,7 +7140,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                 //                case DEVICE_NET_DATABASE:
 
             case DEVICE_NET_AGWPE:
-                //fprintf(stderr,"DEVICE_NET_AGWPE\n");
                 output_net[0] = '\0';   // Clear header
                 break;
 
@@ -7760,9 +7366,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
         if (ok) {
             /* send data */
             xastir_snprintf(data_txt, sizeof(data_txt), "%s%s\r", output_net, message);
-
-            //fprintf(stderr,"%s\n",data_txt);
-
             if ( (port_data[port].status == DEVICE_UP)
                  && (devices[port].transmit_data == 1)
                  && !transmit_disable
@@ -7812,7 +7415,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                         if (strncmp(path, "DEFAULT PATH", 12) == 0) {
                             unproto_path = (char *)select_unproto_path(port);
 
-                            //fprintf(stderr,"unproto_path: %s\n", unproto_path);
                             xastir_snprintf(path_txt,
                                             sizeof(path_txt),
                                             "%s",
@@ -7840,21 +7442,16 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
 
                         unproto_path = (char *)select_unproto_path(port);
 
-                        //fprintf(stderr,"unproto_path: %s\n", unproto_path);
                         xastir_snprintf(path_txt,
                                         sizeof(path_txt),
                                         "%s",
                                         unproto_path);
                     }
-                    //fprintf(stderr,"path_txt: %s\n", path_txt);
- 
 
                     // We need to remove the complete AX.25 header from data_txt before
                     // we call this routine!  Instead put the digipeaters into the
                     // ViaCall fields.  We do this above by setting output_net to '\0'
                     // before creating the data_txt string.
-
-                    //fprintf(stderr,"send_agwpe_packet\n");
 
                     send_agwpe_packet(port,           // Xastir interface port
                                       atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
@@ -7866,10 +7463,8 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                                       strlen(data_txt) - 1);        // Skip \r
                 }
 
-                else {  // Not a Serial KISS TNC interface
-
-                    //fprintf(stderr,"Sending this string: %s\n", data_txt);
-
+                else {
+                    // Not a Serial KISS TNC interface
                     port_write_string(port, data_txt);  // Transmit
                 }
 
@@ -7933,8 +7528,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                 }
                 makePrintable(temp);
                 packet_data_add("TX ", temp, port);
-                //fprintf(stderr,"%s\n", temp);
-
             }
 
             if (debug_level & 2)
@@ -8004,10 +7597,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                             message);
         }
 
-        //fprintf(stderr,"To 2023:%s", data_txt);
-        //fprintf(stderr,"\tport:%d  type:%d  loopback_only:%d use_igate_path:%d\n",
-        //    incoming_port, type, loopback_only, use_igate_path);
-
         if (writen(pipe_xastir_to_tcp_server,
                    data_txt,
                    strlen(data_txt)) != (int)strlen(data_txt)) {
@@ -8035,15 +7624,11 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     // feeds.
     if (incoming_port == -1) {   // We were sending to all ports
         // Pretend we received it from port 1
-        //fprintf(stderr,"output_my_data 1:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, 1, 1);
     }
     else {  // We were sending to a specific port
-        //fprintf(stderr,"output_my_data 2:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, incoming_port, 1);
     }
-
-    //fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
