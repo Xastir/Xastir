@@ -3333,7 +3333,7 @@ void fix_up_callsign(unsigned char *data, int data_size) {
     // Change callsign to upper-case and pad out to six places with
     // space characters.
     for (i = 0; i < (int)strlen((const char *)data); i++) {
-        toupper(data[i]);
+        data[i] = toupper(data[i]);
 
         if (data[i] == '-') {   // Stop at '-'
             break;
