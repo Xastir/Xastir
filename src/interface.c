@@ -1255,7 +1255,14 @@ void channel_data(int port, unsigned char *string, volatile int length) {
     // instead of pthread_mutex_t's.
     pthread_mutex_t *cleanup_mutex1;
     pthread_mutex_t *cleanup_mutex2;
-    int process_it = 0;
+    // This variable defined as volatile to quash a GCC warning on some
+    // platforms that "process_it" might be "clobbered" by a longjmp or
+    // vfork.  There is a longjmp in forked_getaddrinfo, and somehow this
+    // function gets involved somewhere.  If the compiler optimizes this
+    // function just right, putting process_it into a register, that fouls
+    // things up.  Declaring volatile silences the warning by removing
+    // the possibility of clobbering by longjmp.
+    volatile int process_it = 0;
 
 
     // Save backup copies of the incoming string and the previous
@@ -1791,7 +1798,7 @@ int fetch32bits(unsigned char *str) {
 
 char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int buffer_size) {
     int i,j;
-    unsigned int  k,l;
+    unsigned int  l;
     unsigned int  digis;
     unsigned char source[10];
     unsigned char dest[10];
@@ -1922,7 +1929,6 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
 
     bp++;
     len--;
-    k = 0;
     l = 0;
     while (len) {
         i = (int)(*bp++);
@@ -2860,7 +2866,7 @@ int serial_init (int port) {
 static void* net_connect_thread(void *arg) {
     int port;
     volatile int ok = -1;
-    int result;
+    int result=-1;
     int flag;
     //int stat;
     struct addrinfo *res;
@@ -3765,7 +3771,7 @@ void port_write_string(int port, char *data) {
 //***********************************************************
 
 void port_read(int port) {
-    unsigned char cin, last;
+    unsigned char cin;
     unsigned char buffer[MAX_DEVICE_BUFFER];    // Only used for AX.25 packets
     int i;
     struct timeval tmv;
@@ -3794,7 +3800,6 @@ void port_read(int port) {
     group = 0;
     max = MAX_DEVICE_BUFFER - 1;
     cin = (unsigned char)0;
-    last = (unsigned char)0;
 
     // We stay in this read loop until the port is shut down
     while(port_data[port].active == DEVICE_IN_USE){
@@ -6556,7 +6561,7 @@ void output_my_aprs_data(void) {
             }
 
             // Add '\r' onto end.
-            strncat(data_txt_save, "\r", 1);
+            strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
             xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -6605,7 +6610,7 @@ void output_my_aprs_data(void) {
             }
 
             // Add '\r' onto end.
-            strncat(data_txt_save, "\r", 1);
+            strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
             xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -6654,7 +6659,7 @@ void output_my_aprs_data(void) {
             }
 
             // Add '\r' onto end.
-            strncat(data_txt_save, "\r", 1);
+            strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
             xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -6699,7 +6704,7 @@ void output_my_aprs_data(void) {
                 }
 
                 // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
+                strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
                 xastir_snprintf(data_txt,
                                 sizeof(data_txt),
@@ -6742,7 +6747,7 @@ void output_my_aprs_data(void) {
                 }
 
                 // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
+                strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
                 xastir_snprintf(data_txt,
                                 sizeof(data_txt),
@@ -6783,7 +6788,7 @@ void output_my_aprs_data(void) {
                 }
 
                 // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
+                strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
                 xastir_snprintf(data_txt,
                                 sizeof(data_txt),
@@ -6826,7 +6831,7 @@ void output_my_aprs_data(void) {
                 }
 
                 // Add '\r' onto end.
-                strncat(data_txt_save, "\r", 1);
+                strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
                 xastir_snprintf(data_txt,
                                 sizeof(data_txt),
@@ -6874,7 +6879,7 @@ void output_my_aprs_data(void) {
             }
 
             // Add '\r' onto end.
-            strncat(data_txt_save, "\r", 1);
+            strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
             xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -7646,7 +7651,6 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
 //*****************************************************************************
 void output_waypoint_data(char *message) {
     char data_txt[MAX_LINE_SIZE+5];
-    char data_txt_save[MAX_LINE_SIZE+5];
     int ok, start, finish, i;
 
     if (message == NULL)
@@ -7654,11 +7658,9 @@ void output_waypoint_data(char *message) {
 
     if (message[0] == '\0')
         return;
- 
+
     if (debug_level & 1)
         fprintf(stderr,"Sending to GPS interfaces: %s\n", message);
-
-    data_txt_save[0] = '\0';
 
     start = 0;
     finish = MAX_IFACE_DEVICES;
