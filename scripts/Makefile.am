@@ -47,4 +47,4 @@ dist_scripts_DATA = \
 
 install-data-hook:
 	cd $(DESTDIR)$(scriptsdir) && \
-	chmod a+x *.sh *.pl *.py get-* gpx2* *.bash
+	chmod a+x *.pl *.py get-* gpx2* *.bash
