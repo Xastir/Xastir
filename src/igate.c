@@ -943,7 +943,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
     // Check whether the source and destination calls have been
     // heard on local RF.
     if ( !found_in_nws_file // Skip this check if they're always authorized via the file
-         && ( !heard_via_tnc_in_past_hour(call)==1    // Haven't heard destination call in previous hour
+         && ( !heard_via_tnc_in_past_hour(call)    // Haven't heard destination call in previous hour
             || heard_via_tnc_in_past_hour(from)) ) {  // Have heard source call in previous hour
 
         if (log_igate && (debug_level & 1024) ) {

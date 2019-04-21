@@ -422,12 +422,12 @@ int is_tracked_station(char *call_sign) {
             found = 1;
             for ( ii = 0; ii <= call_len; ii++ ) {
                 if (!track_case) {
-                    if (!strncasecmp(call_find,call_sign+ii,strlen(call_find)) == 0) {
+                    if (strncasecmp(call_find,call_sign+ii,strlen(call_find)) != 0) {
                         found = 0;  // Found a mis-match
                     }
                 }
                 else {
-                    if (!strncmp(call_find,call_sign+ii,strlen(call_find)) == 0) {
+                    if (strncmp(call_find,call_sign+ii,strlen(call_find)) != 0) {
                         found = 0;
                     }
                 }
@@ -2222,7 +2222,6 @@ void  clear_sort_file(char *filename) {
 
 
 void sort_reset_pointers(FILE *pointer,long new_data_ptr,long records, int type, long start_ptr) {
-    long cp;
     long temp[13000];
     long buffn,start_buffn;
     long cp_records;
@@ -2234,7 +2233,6 @@ void sort_reset_pointers(FILE *pointer,long new_data_ptr,long records, int type,
     if(type==0) {
         /* before start_ptr */
         /* copy back pointers */
-        cp=start_ptr;
         for(buffn=records; buffn > start_ptr; buffn-=max_buffer) {
             start_buffn=buffn-max_buffer;
             if(start_buffn<start_ptr)
@@ -5590,7 +5588,6 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     Arg args[50];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
-    int restore_position = 0;
 
 
 //fprintf(stderr,"db.c:Station_data start\n");
@@ -5638,7 +5635,6 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     }
  
     if (db_station_info != NULL) {  // We already have a dialog
-        restore_position = 1;
 
         // This is a pain.  We can get the X/Y position, but when
         // we restore the new dialog to the same position we're
@@ -6216,15 +6212,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
  
 begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
-// restore_position doesn't appear to work.  I get the dialog
-// positioned all over my virtual consoles if I try.  Reverting to
-// pos_dialog() for now.
-//        if (restore_position) {
-//            XtVaSetValues(db_station_info,XmNx,x - decoration_offset_x,XmNy,y - decoration_offset_y,NULL);
-//        }
-//        else {
             pos_dialog(db_station_info);
-//        }
 
         delw = XmInternAtom(XtDisplay(db_station_info),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(db_station_info, delw, Station_data_destroy_shell, (XtPointer)db_station_info);
@@ -7783,8 +7771,8 @@ int store_trail_point(DataRow *p_station,
         // Check whether distance between points is too far.  We
         // must convert from degrees to the Xastir coordinate system
         // units, which are 100th of a second.
-        if (    abs(lon - ptr->prev->trail_long_pos) > (trail_segment_distance * 60*60*100) ||
-                abs(lat - ptr->prev->trail_lat_pos)  > (trail_segment_distance * 60*60*100) ) {
+        if (    labs(lon - ptr->prev->trail_long_pos) > (trail_segment_distance * 60*60*100) ||
+                labs(lat - ptr->prev->trail_lat_pos)  > (trail_segment_distance * 60*60*100) ) {
 
             // Set "new track" flag if there's
             // "trail_segment_distance" degrees or more between
@@ -7795,7 +7783,7 @@ int store_trail_point(DataRow *p_station,
         else {
             // Check whether trail went above our maximum time
             // between points.  If so, don't draw segment.
-            if (abs(sec - ptr->prev->sec) > (trail_segment_time *60)) {
+            if (labs(sec - ptr->prev->sec) > (trail_segment_time *60)) {
 
                 // Set "new track" flag if long delay between
                 // reception of two points.  Time is set by a slider
@@ -7850,13 +7838,13 @@ int is_trailpoint_echo(DataRow *p_station) {
 
         if ((p_station->coord_lon == ptr->trail_long_pos)
                 && (p_station->coord_lat == ptr->trail_lat_pos)
-                && (p_station->speed == '\0' || ptr->speed < 0
+                && (p_station->speed[0] == '\0' || ptr->speed < 0
                         || (long)(atof(p_station->speed)*18.52) == ptr->speed)
                         // current: char knots, trail: long 0.1m (-1 is undef)
-                && (p_station->course == '\0' || ptr->course <= 0
+                && (p_station->course[0] == '\0' || ptr->course <= 0
                         || atoi(p_station->course) == ptr->course)
                         // current: char, trail: int (-1 is undef)
-                && (p_station->altitude == '\0' || ptr->altitude <= -99999l
+                && (p_station->altitude[0] == '\0' || ptr->altitude <= -99999l
                         || atoi(p_station->altitude)*10 == ptr->altitude)) {
                         // current: char, trail: int (-99999l is undef)
             if (debug_level & 1) {
@@ -8344,7 +8332,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
            fprintf(f,"<Placemark>");
            get_iso_datetime(p_station->sec_heard,timestring,True,True);
 
-           if (p_station->origin == NULL || p_station->origin[0] == '\0') { 
+           if (p_station->origin[0] == '\0') { 
                fprintf(f,"<name>%s</name>\n",p_station->call_sign);
                fprintf(f,"<description>");
            } else { 
@@ -8408,7 +8396,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
                }
                // Prepare to follow with  a trail (as a <LineString/>).
                fprintf(f,"<Placemark>");
-               if (p_station->origin == NULL || p_station->origin[0] == '\0')
+               if (p_station->origin[0] == '\0')
                    fprintf(f,"<name>%s (trail)</name>\n",p_station->call_sign);
                else
                    fprintf(f,"<name>%s (trail)</name>\n<description>Object from %s</description>\n",p_station->call_sign,p_station->origin);
@@ -8417,7 +8405,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format) {
 
         case EXPORT_XASTIR_TRACK:
         default:
-           if (p_station->origin == NULL || p_station->origin[0] == '\0')
+           if (p_station->origin[0] == '\0')
                fprintf(f,"\n#C %s\n",p_station->call_sign);
            else
                fprintf(f,"\n#O %s %s\n",p_station->call_sign,p_station->origin);
@@ -9778,8 +9766,8 @@ int position_on_extd_screen(long lat, long lon) {
     if (marg_lon < IN_VIEW_MIN*60*100)          // with trail parts on screen
         marg_lon = IN_VIEW_MIN*60*100;
 
-    if (    abs(lon - center_longitude) < marg_lon
-         && abs(lat - center_latitude)  < marg_lat
+    if (    labs(lon - center_longitude) < marg_lon
+         && labs(lat - center_latitude)  < marg_lat
          && !(lat == 0 && lon == 0))    // discard undef positions from screen
         return(1);                      // position is inside the area
     else
@@ -10355,7 +10343,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     char *my_data;
     float lon = 0;
     float lat = 0;
-    float range;
+    // We were extracting  the range from the posit, but never using it.
+    // GCC 6.x whines
+    //    float range;
     int skip = 0;
     char L;
 
@@ -10513,7 +10503,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
             else {    // Found pre-calculated radio range bytes
                 if (c == 90) {
                     // pre-calculated radio range
-                    range = 2 * pow(1.08,(double)s);    // miles
+                    // Commented out to silence GCC 6.x warning about
+                    // "set but unused" variables.
+                    // range = 2 * pow(1.08,(double)s);    // miles
 
                     // DK7IN: dirty hack...  but better than nothing
                     if (s <= 5)                         // 2.9387 mi
@@ -10753,9 +10745,8 @@ int extract_powergain_range(char *info, char *phgd) {
  *  Extract omnidf from APRS info field          "DFS1234/"    from APRS data extension
  */
 int extract_omnidf(char *info, char *phgd) {
-    int i,found,len;
+    int i,len;
 
-    found=0;
     len = (int)strlen(info);
     if (len >= 8 && strncmp(info,"DFS",3)==0 && info[7]=='/'    // trailing '/' not defined in Reference...
                  && isdigit((int)info[3]) && isdigit((int)info[5]) && isdigit((int)info[6])) {
@@ -14672,7 +14663,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     unsigned char s_b4;
     unsigned char s_b5;
     unsigned char s_b6;
-    unsigned char s_b7;
+    // unsigned char s_b7;
     int  north,west,long_offset;
     int  d,m,h;
     char temp[MAX_LINE_SIZE+1];     // Note: Must be big in case we get long concatenated packets
@@ -14869,7 +14860,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         s_b6 = (unsigned char)0x20;
     //fprintf(stderr,"s_b6:%c\n",s_b6);
  
-    s_b7 =  (unsigned char)path[6];        // SSID, not used here
+    // s_b7 =  (unsigned char)path[6];        // SSID, not used here
     //fprintf(stderr,"path6:%c\ts_b7:%c\n",path[6],s_b7);
  
     //fprintf(stderr,"\n");
@@ -17176,7 +17167,6 @@ void decode_info_field(char *call,
     }
 
     if (!done) {
-        int rdf_type;
 
         data_id = message[0];           // look at the APRS Data Type ID (first char in information field)
         message += 1;                   // extract data ID from information field
@@ -17444,8 +17434,6 @@ void decode_info_field(char *call,
                         && message[3] == '/'
                         && is_num_chr(message[4]) ) {
 
-                    rdf_type = 1;
-
                     fprintf(stderr,
                         "Type 1 RDF packet from call: %s\tBearing: %c%c%c\tQuality: %c\n",
                         call,
@@ -17473,8 +17461,6 @@ void decode_info_field(char *call,
                         && message[11] == '.'
                         && is_num_chr(message[12]) ) {
 
-                    rdf_type = 3;
-
                     fprintf(stderr,
                         "Type 3 RDF packet from call: %s\tBearing: %c%c%c%c%c\tQuality: %c\tMag Bearing: %c%c%c%c%c\n",
                         call,
@@ -17501,8 +17487,6 @@ void decode_info_field(char *call,
                         && is_num_chr(message[4])
                         && message[5] == '/'
                         && is_num_chr(message[6]) ) {
-
-                    rdf_type = 2;
 
                     fprintf(stderr,
                         "Type 2 RDF packet from call: %s\tBearing: %c%c%c%c%c\tQuality: %c\n",
@@ -18980,9 +18964,7 @@ int locate_station(Widget w, char *call, int follow_case, int get_match, int cen
     char call_find[MAX_CALLSIGN+1];
     char call_find1[MAX_CALLSIGN+1];
     int ii;
-    int call_len;
 
-    call_len = 0;
     if (!follow_case) {
         for (ii=0; ii<(int)strlen(call); ii++) {
             if (isalpha((int)call[ii]))

@@ -443,14 +443,16 @@ extern uid_t euid;
 extern gid_t egid;
 
 /* JMT - works in FreeBSD */
+// Note: weird conditional thing is there just to shut up
+// "ignoring return value" warnings from GCC on newer Linux systems
 #define DISABLE_SETUID_PRIVILEGE do { \
-seteuid(getuid()); \
-setegid(getgid()); \
+if (seteuid(getuid())==0){/* all is well*/} \
+if (setegid(getgid())==0){/* all is well*/} \
 if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (int)getuid(), (int)getgid()); } \
 } while(0)
 #define ENABLE_SETUID_PRIVILEGE do { \
-seteuid(euid); \
-setegid(egid); \
+if (seteuid(euid)==0){/* all is well*/}     \
+if (setegid(egid)==0){/* all is well*/} \
 if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (int)euid, (int)egid); } \
 } while(0)
 

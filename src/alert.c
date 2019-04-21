@@ -1949,13 +1949,13 @@ if (debug_level & 2)
             // the strings.
             for (jj = 4; jj > 0; jj--) {
                 xastir_snprintf(&title[jj][0],
-                    sizeof(&title[jj][0]),
+                    TITLE_SIZE,
                     "%s",
                     &title[jj-1][0]);
             }
  
             xastir_snprintf(&title[0][0],
-                sizeof(&title[0][0]),
+                TITLE_SIZE,
                 "%s",
                 entry.alert_tag);
  
