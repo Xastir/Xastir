@@ -1479,7 +1479,9 @@ char *get_line(FILE *f, char *linedata, int maxline) {
     memset(linedata,0,maxline);
 
     // Get the data
-    (void)fgets(linedata, maxline, f);
+    if (fgets(linedata, maxline, f) == 0) {
+      return "\0";  // Couldn't read from file: Return empty string
+    }
 
     // Change CR/LF to '\0'
     length = strlen(linedata);
