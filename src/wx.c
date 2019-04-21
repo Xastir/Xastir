@@ -534,12 +534,10 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     float computed_gust;
     char temp_data1[10];
     char *temp_conv;
-    char format;
 
     last_speed = 0.0;
     last_speed_time = 0;
     computed_gust = 0.0;
-    format = 0;
 
     if (debug_level & 1)
         fprintf(stderr,"APRS WX3 Peet Bros U-2k (data logging mode): |%s|\n", data);
@@ -1112,7 +1110,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     int rh2;
     int hi_hum;
     int heat_index;
-    char format;
     WeatherRow *weather;
     float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15,tmp16,tmp17,tmp18,tmp19;
     int tmp7,tmp8;
@@ -1122,7 +1119,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     last_speed=0.0;
     computed_gust=0.0;
     last_speed_time=0;
-    format = 0;
 
 
     len=(int)strlen((char*)data);

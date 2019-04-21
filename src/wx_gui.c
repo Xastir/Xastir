@@ -794,14 +794,11 @@ void WX_station_change_data(Widget widget, XtPointer clientData, XtPointer callD
 //
 void WX_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, form1, button_close, frame, 
-            WX_type, temp, wind_cse, wind_deg, wind_spd, wind_gst, 
+            WX_type, temp, wind_cse, wind_spd, wind_gst, 
             my_rain, to_rain, rain_h, my_rain_24, baro,
-            humidity, humidity_n,
-            dew_point,
-            high_wind, wind_chill,
-            heat_index, three_hour_baro,
-            hi_temp, low_temp,
-            sts;
+            dew_point, high_wind, wind_chill,
+            heat_index, three_hour_baro, hi_temp;
+            //wind_deg, humidity, humidity_n, low_temp, sts;
 
     Atom delw;
 
@@ -871,12 +868,12 @@ XmNtraversalOn, FALSE,
                                     XmNbackground, colors[0xff], 
                                     NULL);
 
-        sts  = XtVaCreateManagedWidget(langcode("WXPUPSI002"),xmLabelWidgetClass,frame,
-XmNtraversalOn, FALSE,
-                                    XmNchildType, XmFRAME_TITLE_CHILD,
-                                    XmNbackground, colors[0xff], 
-                                    XmNfontList, fontlist1,
-                                    NULL);
+//        sts  = XtVaCreateManagedWidget(langcode("WXPUPSI002"),xmLabelWidgetClass,frame,
+//XmNtraversalOn, FALSE,
+//                                    XmNchildType, XmFRAME_TITLE_CHILD,
+//                                    XmNbackground, colors[0xff], 
+//                                    XmNfontList, fontlist1,
+//                                    NULL);
 
         form1 =  XtVaCreateWidget("WX_station form1",xmFormWidgetClass, frame,
 XmNtraversalOn, FALSE,
@@ -919,17 +916,17 @@ XmNtraversalOn, FALSE,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        wind_deg = XtVaCreateManagedWidget(langcode("UNIOP00024"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, WX_wind_cse_data,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
-                                      XmNfontList, fontlist1,
-                                      NULL);
+//        wind_deg = XtVaCreateManagedWidget(langcode("UNIOP00024"),xmLabelWidgetClass, form1,
+//                                      XmNtopAttachment, XmATTACH_FORM,
+//                                      XmNtopOffset, 12,
+//                                      XmNbottomAttachment, XmATTACH_NONE,
+//                                      XmNleftAttachment, XmATTACH_WIDGET,
+//                                      XmNleftWidget, WX_wind_cse_data,
+//                                      XmNleftOffset, 5,
+//                                      XmNrightAttachment, XmATTACH_NONE,
+//                                      XmNbackground, colors[0xff], 
+//                                      XmNfontList, fontlist1,
+//                                      NULL);
 
         wind_spd = XtVaCreateManagedWidget(langcode("WXPUPSI004"),xmLabelWidgetClass, form1,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -1277,17 +1274,17 @@ XmNtraversalOn, FALSE,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        humidity = XtVaCreateManagedWidget(langcode("WXPUPSI010"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, my_rain_24,
-                                      XmNtopOffset, 11,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
-                                      XmNfontList, fontlist1,
-                                      NULL);
+//        humidity = XtVaCreateManagedWidget(langcode("WXPUPSI010"),xmLabelWidgetClass, form1,
+//                                      XmNtopAttachment, XmATTACH_WIDGET,
+//                                      XmNtopWidget, my_rain_24,
+//                                      XmNtopOffset, 11,
+//                                      XmNbottomAttachment, XmATTACH_NONE,
+//                                      XmNleftAttachment, XmATTACH_FORM,
+//                                      XmNleftOffset, 5,
+//                                      XmNrightAttachment, XmATTACH_NONE,
+//                                      XmNbackground, colors[0xff], 
+//                                      XmNfontList, fontlist1,
+//                                      NULL);
 
 
         WX_humidity_data = XtVaCreateManagedWidget("WX_station Humidity data", xmTextFieldWidgetClass, form1,
@@ -1308,18 +1305,18 @@ XmNtraversalOn, FALSE,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        humidity_n = XtVaCreateManagedWidget(langcode("UNIOP00026"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, my_rain_24, 
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, WX_humidity_data,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNfontList, fontlist1,
-                                      NULL);
+//        humidity_n = XtVaCreateManagedWidget(langcode("UNIOP00026"),xmLabelWidgetClass, form1,
+//                                      XmNtopAttachment, XmATTACH_WIDGET,
+//                                      XmNtopWidget, my_rain_24, 
+//                                      XmNtopOffset, 12,
+//                                      XmNbottomAttachment, XmATTACH_NONE,
+//                                      XmNleftAttachment, XmATTACH_WIDGET,
+//                                      XmNleftWidget, WX_humidity_data,
+//                                      XmNleftOffset, 5,
+//                                      XmNrightAttachment, XmATTACH_NONE,
+//                                      XmNbackground, colors[0xff],
+//                                      XmNfontList, fontlist1,
+//                                      NULL);
 
 
         dew_point = XtVaCreateManagedWidget(langcode("WXPUPSI018"),xmLabelWidgetClass, form1,
@@ -1642,17 +1639,17 @@ XmNtraversalOn, FALSE,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        low_temp = XtVaCreateManagedWidget(langcode("WXPUPSI024"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, hi_temp,
-                                      XmNtopOffset, 11,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
-                                      XmNfontList, fontlist1,
-                                      NULL);
+//        low_temp = XtVaCreateManagedWidget(langcode("WXPUPSI024"),xmLabelWidgetClass, form1,
+//                                      XmNtopAttachment, XmATTACH_WIDGET,
+//                                      XmNtopWidget, hi_temp,
+//                                      XmNtopOffset, 11,
+//                                      XmNbottomAttachment, XmATTACH_NONE,
+//                                      XmNleftAttachment, XmATTACH_POSITION,
+//                                      XmNleftPosition, 4,
+//                                      XmNrightAttachment, XmATTACH_NONE,
+//                                      XmNbackground, colors[0xff], 
+//                                      XmNfontList, fontlist1,
+//                                      NULL);
 
         WX_low_temp_data = XtVaCreateManagedWidget("WX_station Today's Low Temp", xmTextFieldWidgetClass, form1,
                                       XmNeditable,   FALSE,
