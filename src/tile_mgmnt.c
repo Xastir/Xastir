@@ -316,7 +316,9 @@ void mkOSMmapDirs (char *baseDir,
         unsigned long endx,
         int zoom) {
     char fullPath[MAX_FILENAME];
+#ifdef HAVE_POSIX_STRERROR_R
     char errmsg[1024];
+#endif
     struct stat sb;
     unsigned long dnum;
 

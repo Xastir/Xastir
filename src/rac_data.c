@@ -206,7 +206,6 @@ int check_rac_data(void) {
 int search_rac_data(char *callsign, rac_record *data) {
     FILE *fdb;
     FILE *fndx;
-    char *rc;
     long call_offset = 0l;
     char char_offset[16];
     char index[32];
@@ -227,11 +226,11 @@ int search_rac_data(char *callsign, rac_record *data) {
 
     fndx = fopen(amacall_path, "r");
     if(fndx != NULL) {
-        rc = fgets(index, (int)sizeof(index), fndx);
+        (void)fgets(index, (int)sizeof(index), fndx);
         xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
         while (!feof(fndx) && strncmp(callsign, index, 6) > 0) {
             xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
-            rc = fgets(index, (int)sizeof(index), fndx);
+            (void)fgets(index, (int)sizeof(index), fndx);
         }
     } else {
         fprintf(stderr,
@@ -260,7 +259,7 @@ int search_rac_data(char *callsign, rac_record *data) {
 
 //WE7U
 // Problem here:  We're sticking 8 bytes too many into racdata!
-            rc = fgets((char *)&racdata, sizeof(racdata), fdb);
+            (void)fgets((char *)&racdata, sizeof(racdata), fdb);
 
     } else
         fprintf(stderr,"Search:Could not open RAC data base: %s\n", get_data_base_dir("fcc/AMACALL.LST") );
