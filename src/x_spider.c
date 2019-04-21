@@ -833,8 +833,11 @@ extern char *__progname, *__progname_full;
 #endif  // __linux__
 static char *LastArgv = ((void *)0);
 static char **local_environ;
+#ifdef __linux__
+#ifndef __LSB__
 static char *old_progname, *old_progname_full;
-
+#endif  // __LSB__
+#endif  // __linux__
 
 
 void clear_proc_title(void)
@@ -1691,16 +1694,9 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
             fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         }
 
-        // Go into an infinite loop here which restarts the
-        // listening process whenever it dies.
-        //
-//        while (1) {
-//            fprintf(stderr,"Starting TCP_Server...\n");
-
-            TCP_Server(argc, argv, envp);
-
-//            fprintf(stderr,"TCP_Server process died.\n");
-//        }
+        TCP_Server(argc, argv, envp);
+        fprintf(stderr,"TCP_Server process died.\n");
+        exit(1);
     }
     //
     // Parent process
@@ -1810,16 +1806,9 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
 //                "x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
 //        }
 
-        // Go into an infinite loop here which restarts the
-        // listening process whenever it dies.
-        //
-//        while (1) {
-//            fprintf(stderr,"Starting UDP_Server...\n");
-
-	UDP_Server(argc, argv, envp);
-
-	fprintf(stderr,"UDP_Server process died.\n");
-//        }
+        UDP_Server(argc, argv, envp);
+        fprintf(stderr,"UDP_Server process died.\n");
+        exit(1);
     }
     //
     // Parent process
