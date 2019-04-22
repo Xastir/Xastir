@@ -413,7 +413,7 @@ void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPoi
 //
 void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer callData) {
     int ii;
-    Atom delw;
+    //Atom delw;
     Widget pane, form, current_path_label, reverse_path_label,
         reverse_path, button_default, button_direct, button_apply,
         button_cancel;
@@ -740,7 +740,8 @@ XtSetSensitive(button_nogate, FALSE);
  
     pos_dialog(change_path_dialog);
 
-    delw = XmInternAtom(XtDisplay(change_path_dialog),"WM_DELETE_WINDOW", FALSE);
+    //delw
+    (void)XmInternAtom(XtDisplay(change_path_dialog),"WM_DELETE_WINDOW", FALSE);
 //    XmAddWMProtocolCallback(change_path_dialog, delw, Send_message_destroy_shell, (XtPointer)mw[ii].win);
 
     XtManageChild(form);

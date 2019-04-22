@@ -963,9 +963,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
     double power, height, gain, range;
     char directivity[6], temp[64];
     int  gain_db;
-    int len;
 
-    len = strlen(phg_decoded);
 
     if (strlen(phg) != 7) {
         xastir_snprintf(phg_decoded,
@@ -1102,9 +1100,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
     char directivity[6], temp[80], signal[64];
     int  gain_db;
     char s;
-    int len;
 
-    len = strlen(shg_decoded);
     if (strlen(shg) != 7) {
         xastir_snprintf(shg_decoded,
             shg_decoded_length,
@@ -1317,12 +1313,9 @@ void bearing_decode(const char *langstr, const char *bearing_str,
     int bearing, range, width;
     char N,R,Q;
     char temp[64];
-    int len;
 
 
 //fprintf(stderr,"bearing_decode incoming: bearing is %s, NRQ is %s\n", bearing_str, NRQ);
-
-    len = strlen(bearing_decoded);
 
     if (strlen(bearing_str) != 3) {
         xastir_snprintf(bearing_decoded,
@@ -1486,7 +1479,9 @@ char *get_line(FILE *f, char *linedata, int maxline) {
     memset(linedata,0,maxline);
 
     // Get the data
-    (void)fgets(linedata, maxline, f);
+    if (fgets(linedata, maxline, f) == 0) {
+      return "\0";  // Couldn't read from file: Return empty string
+    }
 
     // Change CR/LF to '\0'
     length = strlen(linedata);
@@ -4410,13 +4405,15 @@ an asterisk later in the path than the first unused digi.
  *  Check for a valid AX.25 call
  *      Valid calls consist of up to 6 uppercase alphanumeric characters
  *      plus optional SSID (four-bit integer)       [APRS Reference, AX.25 Reference]
+ *
+ * We originally required at least one number so-as to get rid of calls like
+ * "NOCALL", but got rid of that code.
  */
 int valid_call(char *call) {
     int len, ok;
-    int i, del, has_num, has_chr;
+    int i, del, has_chr;
     char c;
 
-    has_num = 0;
     has_chr = 0;
     ok      = 1;
     len = (int)strlen(call);
@@ -4489,8 +4486,9 @@ int valid_call(char *call) {
 
         if (c >= 'A' && c <= 'Z')
             has_chr = 1;                        // we need at least one char
-        else if (c >= '0' && c <= '9')
-            has_num = 1;                        // we need at least one number
+        else if (c >= '0' && c <= '9') {
+            // We originally required at least one number
+        }
         else
             ok = 0;                             // wrong character in call
     }

@@ -84,7 +84,7 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
                         SOUND_DIR,
                         soundfile);
 
-                    (void)system(command);  // Note we're not caring about whether it succeeded or not
+                    if (system(command) != 0) {}  // We don't care whether it succeeded
                     exit(0);    // Exits only this process, not Xastir itself
                 }
                 else {

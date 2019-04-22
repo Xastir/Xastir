@@ -494,36 +494,45 @@ static void* findu_transfer_thread(void *arg) {
         "%s -i -e \"s/<br>/   /\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
-//fprintf(stderr,"%s\n", sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Greater-than symbol '>'
     sprintf(sys_cmd,
         "%s -i -e \"s/&gt;/>/\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Less-than symbol '<'
     sprintf(sys_cmd,
         "%s -i -e \"s/&lt;/</\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Ampersand '&' (A difficult character to escape from the shell!)
     sprintf(sys_cmd,
         "%s -i -e \"s/&amp;/\\&/\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Double-quote symbol '"'
     sprintf(sys_cmd,
         "%s -i -e \"s/&quot;/""/\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Remove whitespace at the start of a line
 // sed 's/^[ \t]*//'
@@ -531,21 +540,27 @@ static void* findu_transfer_thread(void *arg) {
         "%s -i -e \"s/^[ \t]*//\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    } 
 
 // Remove any lines that start with '<'
     sprintf(sys_cmd,
         "%s -i -e \"s/^<.*$//\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Remove any lines that start with '"http'
     sprintf(sys_cmd,
         "%s -i -e \"/^\\\"http.*$/d\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
 
 // Remove any blank lines from the file
 // sed '/^$/d'
@@ -553,7 +568,10 @@ static void* findu_transfer_thread(void *arg) {
         "%s -i -e \"/^$/d\" %s",
         SED_PATH,
         log_filename);
-    system(sys_cmd);
+    if (system(sys_cmd)) {
+        fprintf(stderr,"Couldn't execute command: %s\n", sys_cmd);
+    }
+ 
 #endif  // HAVE_SED
 
 /*
@@ -569,7 +587,7 @@ static void* findu_transfer_thread(void *arg) {
         log_filename_tmp,
         log_filename);
     // Convert the newly-downloaded file from html to text format
-    system(sys_cmd);
+    (void)system(sys_cmd);
     // Rename the file so that we can keep the static char* name
     // pointing to it, needed for the read_file_ptr code in the main
     // thread.
@@ -579,7 +597,7 @@ static void* findu_transfer_thread(void *arg) {
         MV_PATH,
         log_filename_tmp,
         log_filename);
-    system(sys_cmd);
+    (void)system(sys_cmd);
 #endif  // HAVE_MV
 #endif  // HAVE_HTML2TEXT
 */

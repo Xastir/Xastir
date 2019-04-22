@@ -6740,7 +6740,9 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     int j = 0;
     char error_correct_location[256];
     char predef_obj_path[MAX_VALUE];
+#ifdef OBJECT_DEF_FILE_USER_BASE
     char temp_file_path[MAX_VALUE];
+#endif
 
 
     xastir_snprintf(line,sizeof(line),"%s","\0");
@@ -7285,25 +7287,25 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
     static Widget ob_pane, ob_form,
-                ob_name,ob_latlon_frame,ob_latlon_form,ob_latlon_ts,
-                ob_lat, ob_lat_deg, ob_lat_min, ob_lat_ns,
+                ob_name,ob_latlon_frame,ob_latlon_form,
+                ob_lat, ob_lat_deg, ob_lat_min,
                 ob_lon, ob_lon_deg, ob_lon_min, ob_lon_ew,
-                ob_form1, ob_ts,
-                signpost_form,signpost_ts,
+                ob_form1,
+                signpost_form,
                 signpost_label,
-                probability_frame,probability_form,probability_ts,
+                probability_frame,probability_form,
                 probability_label_min, probability_label_max,
-                ob_option_ts,ob_option_form,
-                area_ts, area_form,
+                ob_option_form,
+                area_form,
                 bright_dim_toggle,
                 shape_box,toption1,toption2,toption3,toption4,toption5,
                 color_box,coption1,coption2,coption3,coption4,coption5,coption6,coption7,coption8,
-                omnilabel,formomni,
+                formomni,
                 signal_box,soption0,soption1,soption2,soption3,soption4,soption5,soption6,soption7,soption8,soption9,
                 height_box,hoption0,hoption1,hoption2,hoption3,hoption4,hoption5,hoption6,hoption7,hoption8,hoption9,
                 gain_box,goption0,goption1,goption2,goption3,goption4,goption5,goption6,goption7,goption8,goption9,
                 directivity_box,doption0,doption1,doption2,doption3,doption4,doption5,doption6,doption7,doption8,
-                beamlabel,formbeam,
+                formbeam,
                 width_box,woption0,woption1,woption2,woption3,woption4,woption5,woption6,woption7,woption8,woption9,
                 ob_bearing,
                 ob_lat_offset,ob_lon_offset,
@@ -7532,7 +7534,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfontList, fontlist1,
                 NULL);
         // "Station Symbol"
-        ob_ts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),
+        // ob_ts
+        (void)XtVaCreateManagedWidget(langcode("WPUPCFS009"),
                 xmLabelWidgetClass,
                 ob_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -7685,7 +7688,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 NULL);
 
         // "Location"
-        ob_latlon_ts  = XtVaCreateManagedWidget(langcode("POPUPOB028"),
+        //ob_latlon_ts
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB028"),
                 xmLabelWidgetClass,
                 ob_latlon_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -7805,7 +7809,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfontList, fontlist1,
                 NULL);
         // "(N/S)"
-        ob_lat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
+        // ob_lat_ns
+        (void)XtVaCreateManagedWidget(langcode("WPUPCFS006"),
                 xmLabelWidgetClass, 
                 ob_latlon_form,
                 XmNtopAttachment,           XmATTACH_FORM,
@@ -7989,7 +7994,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 XmNfontList, fontlist1,
                 NULL);
         // "Generic Options"
-        ob_option_ts  = XtVaCreateManagedWidget(langcode("POPUPOB027"),
+        // ob_option_ts
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB027"),
                 xmLabelWidgetClass,
                 ob_option_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -8279,7 +8285,8 @@ if (Probability_circles_enabled) {
                 NULL);
 
         // "Probability Circles"
-        probability_ts  = XtVaCreateManagedWidget(langcode("POPUPOB047"),
+        // probability_ts
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB047"),
                 xmLabelWidgetClass,
                 probability_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -8410,7 +8417,8 @@ else if (Signpost_object_enabled) {
                 NULL);
 
         // "Signpost"
-        signpost_ts  = XtVaCreateManagedWidget(langcode("POPUPOB031"),
+        // signpost_ts
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB031"),
                 xmLabelWidgetClass,
                 signpost_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -8503,7 +8511,8 @@ else if (Area_object_enabled) {
                 NULL);
 
         // "Area Options"
-        area_ts  = XtVaCreateManagedWidget(langcode("POPUPOB007"),
+        // area_ts
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB007"),
                 xmLabelWidgetClass,
                 area_frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -8951,7 +8960,8 @@ else if (DF_object_enabled) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        omnilabel  = XtVaCreateManagedWidget(langcode("POPUPOB039"),
+        // omnilabel
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB039"),
                 xmLabelWidgetClass,
                 frameomni,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -9473,7 +9483,8 @@ else if (DF_object_enabled) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        beamlabel  = XtVaCreateManagedWidget(langcode("POPUPOB040"),
+        // beamlabel
+        (void)XtVaCreateManagedWidget(langcode("POPUPOB040"),
                 xmLabelWidgetClass,
                 framebeam,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
