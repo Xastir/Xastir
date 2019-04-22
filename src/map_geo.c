@@ -584,10 +584,10 @@ void draw_geo_image_map (Widget w,
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
     register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
 // DK7IN--
-    int test;                       // temporary debugging
+//  int test;                       // temporary debugging
 
     unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
-    unsigned long c_y_max;          // bottom right coordinates of map inside screen
+//  unsigned long c_y_max;          // bottom right coordinates of map inside screen
     double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     double c_y;                     // Xastir coordinates 1/100 sec, 0 =  90°N
     double c_y_a;                   // coordinates correction for Transverse Mercator
@@ -597,8 +597,8 @@ void draw_geo_image_map (Widget w,
     long map_x_min, map_x_max;      // map boundaries for in screen part of map
     long map_y_min, map_y_max;      //
     long map_x_ctr;                 // half map width in pixel
-    long map_y_ctr;                 // half map height in pixel
-//    long x;
+//  long map_y_ctr;                 // half map height in pixel
+//  long x;
     int map_seen, map_act, map_done;
     double corrfact;
 
@@ -610,7 +610,7 @@ void draw_geo_image_map (Widget w,
     long scr_x,  scr_y;             // screen pixel plot positions
     long scr_xp, scr_yp;            // previous screen plot positions
     int  scr_dx, scr_dy;            // increments in screen plot positions
-    long scr_x_mc;                  // map center in screen units
+//  long scr_x_mc;                  // map center in screen units
 
     long scr_c_xr;
 
@@ -645,7 +645,8 @@ void draw_geo_image_map (Widget w,
         char level[32];
         char modulate[32];
     } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, "", "" };
-    double left, right, top, bottom, map_width, map_height;
+    double left, right, top, bottom;
+//  double map_width, map_height;
     //N0VH
 //    double lat_center  = 0;
 //    double long_center = 0;
@@ -1302,8 +1303,8 @@ void draw_geo_image_map (Widget w,
             geo_image_width = geo_image_height;
 
 
-        map_width  = right - left;
-        map_height = top - bottom;
+//        map_width  = right - left;
+//        map_height = top - bottom;
 
         tp[0].img_x = 0;
         tp[0].img_y = 0;
@@ -2083,7 +2084,7 @@ fprintf(stderr,"2 ");
             temp_pack = image->colormap[l];
             if (debug_level & 16)
                 fprintf(stderr,"Colormap color is %1.2f  %1.2f  %1.2f \n",
-                       temp_pack.red, temp_pack.green, temp_pack.blue);
+                       (float)temp_pack.red, (float)temp_pack.green, (float)temp_pack.blue);
 
             // Here's a tricky bit:  PixelPacket entries are defined as Quantum's.  Quantum
             // is defined in /usr/include/magick/image.h as either an unsigned short or an
@@ -2284,22 +2285,22 @@ fprintf(stderr,"2 ");
     // for the XFillRectangle call later.
 
     map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
-    map_y_ctr = (long)(height / 2 +0.499);
+//  map_y_ctr = (long)(height / 2 +0.499);
     scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
 
     map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
     map_x_ctr = (long)(width  / 2 +0.499);
-    scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
+//  scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
 
     // calculate map pixel range in y direction that falls into screen area
-    c_y_max = 0ul;
+//  c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
     for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
         scr_y = (c_y - NW_corner_latitude) / scale_y;   // current screen position
         if (scr_y > 0) {
             if (scr_y < screen_height) {
                 map_y_max = map_y_0;          // update last map pixel in y
-                c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
+//              c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
             } else
                 break;                      // done, reached bottom screen border
         } else {                            // pixel is above screen
@@ -2338,7 +2339,7 @@ fprintf(stderr,"2 ");
 //    for (scr_y = scr_y_min; scr_y <= scr_y_max;scr_y++) {       // screen lines
 //    }
 
-    test = 1;           // DK7IN: debuging
+//  test = 1;           // DK7IN: debuging
     scr_yp = -1;
     scr_c_xr = SE_corner_longitude;
     c_dx = map_c_dx;                            // map pixel width
@@ -2526,3 +2527,5 @@ fprintf(stderr,"2 ");
 #endif  // TIMING_DEBUG
 #endif  // NO_GRAPHICS
 }
+
+
