@@ -471,14 +471,14 @@ void draw_geotiff_image_map (Widget w,
     float top_y_increment;
     float xastir_bottom_y_increment;
     float bottom_y_increment;
-    float xastir_avg_y_increment;
+//    float xastir_avg_y_increment;
     float avg_y_increment;
     int row_offset;
     register unsigned long current_xastir_left;
     unsigned long current_xastir_right;
     register uint32 current_left;
     uint32 current_right;
-    uint32 current_line_width;
+//    uint32 current_line_width;
     register unsigned long xastir_current_y;
     register uint32 column_offset;
     register unsigned long xastir_current_x;
@@ -2270,7 +2270,7 @@ right_crop = width - 1;
 
 
     // Find the average change in Y as we traverse from left to right one pixel
-    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
+//    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
     avg_y_increment = (float)(top_y_increment + bottom_y_increment) / 2.0;
 
 
@@ -2498,7 +2498,7 @@ right_crop = width - 1;
 if (current_right >= width)
     current_right = width - 1;
 
-        current_line_width = current_right - current_left + 1;  // Pixels
+//        current_line_width = current_right - current_left + 1;  // Pixels
 
 
         // if (debug_level & 16)
