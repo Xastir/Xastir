@@ -867,7 +867,7 @@ void draw_shapefile_map (Widget w,
 
     filename = filenm;
     i = strlen(filenm);
-    while ( (filenm[i] != '/') && (i >= 0) )
+    while ( (i >= 0) && (filenm[i] != '/') )
         filename = &filenm[i--];
         //fprintf(stderr,"draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);    
 
