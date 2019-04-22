@@ -195,15 +195,15 @@ int main(int argc, char *argv[]) {
     for (ii = 5; ii < argc; ii++) {
         if (strstr(argv[ii], "-identify")) {
 //fprintf(stderr,"Found -identify\n");
-            strncat(extra, ",-identify", 10);
+            strncat(extra, ",-identify", sizeof(extra)-strlen(extra)-1);
         }
         else if (strstr(argv[ii], "-to_rf")) {
 //fprintf(stderr,"Found -to_rf\n");
-            strncat(extra, ",-to_rf", 7);
+            strncat(extra, ",-to_rf", sizeof(extra)-strlen(extra)-1);
         }
         else if (strstr(argv[ii], "-to_inet")) {
 //fprintf(stderr,"Found -to_inet\n");
-            strncat(extra, ",-to_inet", 9);
+            strncat(extra, ",-to_inet", sizeof(extra)-strlen(extra)-1);
         }
     }
 
