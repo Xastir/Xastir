@@ -9,7 +9,7 @@ script:
 matrix:
   include:
     - os: linux
-      name: "Linux full featured with GraphicsMagick"
+      name: "Ubuntu 14.04 full-featured with GraphicsMagick"
       addons:
         apt:
           packages:
@@ -30,7 +30,7 @@ matrix:
             - gpsmanshp
     - os: linux
       dist: xenial
-      name: "Ubuntu 16.04 full featured with GraphicsMagick"
+      name: "Ubuntu 16.04 full-featured with GraphicsMagick"
       addons:
         apt:
           packages:
@@ -50,7 +50,7 @@ matrix:
             - gpsman
             - gpsmanshp
     - os: linux
-      name: "Linux light with ImageMagick"
+      name: "Ubuntu 14.04 light with ImageMagick"
       addons:
         apt:
           packages:
@@ -63,7 +63,7 @@ matrix:
             - libshp-dev
             - libmagickcore-dev
     - os: osx
-      name: "MacOS"
+      name: "OSX"
       addons:
         homebrew:
           packages:
