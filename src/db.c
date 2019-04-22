@@ -2320,7 +2320,10 @@ long sort_input_database(char *filename, char *fill, int size) {
                     /*fprintf(stderr,"Records Start %ld, Mid %ld, End %ld\n",record_start,record_mid,record_end);*/
                     /* get data for record start */
                     (void)fseek(pointer,(ptr_size*record_start),SEEK_SET);
-                    (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
+                    if (fread(&data_ptr,(size_t)ptr_size,1,pointer) != 0) {
+                        // we are explicitly ignoring the return value,
+                        // but are doing it this way to silence GCC warnings
+                    }
                     (void)fseek(my_data,data_ptr,SEEK_SET);
                     if(fread(file_data,(size_t)size,1,my_data)==1) {
                         /* COMPARE HERE */
@@ -2337,7 +2340,12 @@ long sort_input_database(char *filename, char *fill, int size) {
                         else {
                             /* get data for record end */
                             (void)fseek(pointer,(ptr_size*record_end),SEEK_SET);
-                            (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
+                            if (fread(&data_ptr,(size_t)ptr_size,1,pointer) != 0) {
+                                // we are explicitly ignoring the return value,
+                                // but are doing it this way to silence GCC
+                                // warnings
+                            }
+
                             (void)fseek(my_data,data_ptr,SEEK_SET);
                             if(fread(file_data,(size_t)size,1,my_data)==1) {
                                 /* COMPARE HERE */
@@ -2364,7 +2372,14 @@ long sort_input_database(char *filename, char *fill, int size) {
                                     else {
                                         /* get data for record mid */
                                         (void)fseek(pointer,(ptr_size*record_mid),SEEK_SET);
-                                        (void)fread(&data_ptr,(size_t)ptr_size,1,pointer);
+                                        if (fread(&data_ptr,(size_t)ptr_size,1,pointer) != 0) {
+                                            // we are explicitly
+                                            // ignoring the return
+                                            // value, but are doing it
+                                            // this way to silence GCC
+                                            // warnings
+                                        }
+
                                         (void)fseek(my_data,data_ptr,SEEK_SET);
                                         if(fread(file_data,(size_t)size,1,my_data)==1) {
                                             /* COMPARE HERE */
