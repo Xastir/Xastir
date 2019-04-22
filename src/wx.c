@@ -453,8 +453,7 @@ void cycle_weather(void) {
                                         last_speed,
                                         &last_speed_time);
             weather->wx_speed_sec_time = sec_now();
-            if (computed_gust > 0.0)
-                xastir_snprintf(weather->wx_gust,
+            xastir_snprintf(weather->wx_gust,
                 sizeof(weather->wx_gust),
                 "%03d",
                 (int)(computed_gust + 0.5)); // Cheater's way of rounding
@@ -1330,11 +1329,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                         last_speed,
                                         &last_speed_time);
                 weather->wx_speed_sec_time = sec_now();
-                if (computed_gust > 0.0)
-                    xastir_snprintf(weather->wx_gust,
-                        sizeof(weather->wx_gust),
-                        "%03d",
-                        (int)(0.5 + computed_gust));
+                xastir_snprintf(weather->wx_gust,
+                    sizeof(weather->wx_gust),
+                    "%03d",
+                    (int)(0.5 + computed_gust));
             }
 
             /* outdoor temp */
@@ -1446,11 +1444,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                         last_speed,
                                         &last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
-                    if (computed_gust > 0.0)
-                        xastir_snprintf(weather->wx_gust,
-                            sizeof(weather->wx_gust),
-                            "%03d",
-                            (int)(0.5 + computed_gust));
+                    xastir_snprintf(weather->wx_gust,
+                        sizeof(weather->wx_gust),
+                        "%03d",
+                        (int)(0.5 + computed_gust));
                 }
             } else {
                 if (!from)  // From local station
@@ -1644,11 +1641,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                         weather->wx_speed_sec_time = sec_now();
-                        if (computed_gust > 0.0)
-                            xastir_snprintf(weather->wx_gust,
-                                sizeof(weather->wx_gust),
-                                "%03d",
-                                (int)(0.5 + computed_gust));
+                        xastir_snprintf(weather->wx_gust,
+                            sizeof(weather->wx_gust),
+                            "%03d",
+                            (int)(0.5 + computed_gust));
                     }
                 }
             } else {
@@ -1808,11 +1804,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
-                    if (computed_gust > 0.0)
-                        xastir_snprintf(weather->wx_gust,
-                            sizeof(weather->wx_gust),
-                            "%03d",
-                            (int)(0.5 + computed_gust));
+                    xastir_snprintf(weather->wx_gust,
+                        sizeof(weather->wx_gust),
+                        "%03d",
+                        (int)(0.5 + computed_gust));
                 }
             } else {
                 if (!from) {    // From local station
@@ -2558,11 +2553,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                         weather->wx_speed_sec_time = sec_now();
-                        if (computed_gust > 0.0)
-                            xastir_snprintf(weather->wx_gust,
-                                sizeof(weather->wx_gust),
-                                "%03d",
-                                (int)(0.5 + computed_gust));
+                        xastir_snprintf(weather->wx_gust,
+                            sizeof(weather->wx_gust),
+                            "%03d",
+                            (int)(0.5 + computed_gust));
 
                         /* high wind gust */
                         xastir_snprintf(temp_data1,
