@@ -190,7 +190,10 @@ void group_build_list(char *filename) {
         }
         if (group_data_count < group_data_max) {
             group_data_list[group_data_count*10] = '\0';
-            (void)fgets(&group_data_list[group_data_count*10], 10, f);
+            if (fgets(&group_data_list[group_data_count*10], 10, f) == NULL) {
+                // Error reading file or end-of-file. Continue processing
+                // the (partial?) string we just read, in the code below.
+            }
             if ((ptr = strchr(&group_data_list[group_data_count*10], '\n')))
                 *ptr = '\0';
             else
