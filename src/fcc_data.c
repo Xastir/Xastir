@@ -145,7 +145,7 @@ int build_fcc_index(int type){
         call_offset = (unsigned long)ftell(fdb);
         if (fgets(fccdata, (int)sizeof(fccdata), fdb) == NULL) {
             // error occurred
-            fprintf(stderr,"Build: Could not read fcc data base\n");
+            fprintf(stderr,"Build: Could not read fcc data base: %s \n", appl_file_path);
             (void)fclose(fdb);
             return(0);
         }
@@ -297,7 +297,12 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     get_user_base_dir("data/appl.ndx", appl_file_path, sizeof(appl_file_path));
     fndx=fopen(appl_file_path,"r");
     if (fndx!=NULL){
-        (void)fgets(index,(int)sizeof(index),fndx);
+        if (fgets(index,(int)sizeof(index),fndx) == NULL) {
+            // Error occurred
+            fprintf(stderr,"Search:Could not read FCC database index(1): %s\n",appl_file_path);
+            return(0);
+        }
+
         xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
 
         // Search through the indexes looking for a callsign which is
@@ -307,7 +312,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
             xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
             if (fgets(index,(int)sizeof(index),fndx) == NULL) {
                 // Error occurred
-                fprintf(stderr,"Search:Could not read FCC database index\n");
+                fprintf(stderr,"Search:Could not read FCC database index(2): %s\n", appl_file_path );
                 return(0);
             }
         }
