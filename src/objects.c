@@ -7315,8 +7315,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     char temp_data[40];
     Atom delw;
     DataRow *p_station = (DataRow *)clientData;
-    Arg al[50];                    /* Arg List */
-    register unsigned int ac;     /* Arg Count */
+    Arg al[50];         /* Arg List */
+    unsigned int ac;    /* Arg Count */
     long x,y;
 
 

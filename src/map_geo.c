@@ -581,8 +581,8 @@ void draw_geo_image_map (Widget w,
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
     float temp_long, temp_lat;
-    register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
-    register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
+    long map_c_T, map_c_L;          // map delta NW edge coordinates, DNN: these should be signed
+    long tp_c_dx, tp_c_dy;          // tiepoint coordinate differences
 // DK7IN--
 //  int test;                       // temporary debugging
 
@@ -593,7 +593,7 @@ void draw_geo_image_map (Widget w,
     double c_y_a;                   // coordinates correction for Transverse Mercator
 
     long map_y_0;                   // map pixel pointer prior to TM adjustment
-    register long map_x, map_y;     // map pixel pointers, DNN: this was a float, chg to long
+    long map_x, map_y;              // map pixel pointers, DNN: this was a float, chg to long
     long map_x_min, map_x_max;      // map boundaries for in screen part of map
     long map_y_min, map_y_max;      //
     long map_x_ctr;                 // half map width in pixel
@@ -1991,8 +1991,8 @@ fprintf(stderr,"2 ");
     //         lower loops to speed them up... 
     if ( do_crop) {
         int x, y;
-        //        PixelPacket target;
-        register PixelPacket *q;
+        //PixelPacket target;
+        PixelPacket *q;
       
         //        target=GetOnePixel(image,0,0);
         for (y=0; y < (long) image->rows; y++) {

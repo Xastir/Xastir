@@ -156,15 +156,15 @@ void draw_WMS_map (Widget w,
     char WMStmp[MAX_FILENAME*2];  // Used for putting together the WMS map query
     int width, height;
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
-    register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
-    register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
+    long map_c_T, map_c_L;          // map delta NW edge coordinates, DNN: these should be signed
+    long tp_c_dx, tp_c_dy;          // tiepoint coordinate differences
     unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
 //  unsigned long c_y_max;          // bottom right coordinates of map inside screen
     double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     double c_y;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
     long map_y_0;                   // map pixel pointer prior to TM adjustment
-    register long map_x, map_y;     // map pixel pointers, DNN: this was a float, chg to long
+    long map_x, map_y;              // map pixel pointers, DNN: this was a float, chg to long
     long map_x_min, map_x_max;      // map boundaries for in screen part of map
     long map_y_min, map_y_max;      //
 //  long map_x_ctr;                 // half map width in pixel
