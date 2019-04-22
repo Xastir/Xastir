@@ -49,6 +49,7 @@ matrix:
             - libgraphicsmagick1-dev
             - gpsman
             - gpsmanshp
+            - libwebp-dev
     - os: linux
       name: "Ubuntu 14.04 light with ImageMagick"
       addons:
