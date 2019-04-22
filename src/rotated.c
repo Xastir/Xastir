@@ -881,7 +881,7 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     Pixmap canvas;
     GC font_gc;
     XImage *I_in;
-    register int i, j;
+    int i, j;
     char *str1, *str2, *str3;
     char *str2_a="\0", *str2_b="\n\0";
     int height;
@@ -1376,7 +1376,7 @@ static XImage *XRotMagnifyImage( Display *dpy, XImage *ximage) {
     XImage *I_out;
     int cols_in, rows_in;
     int cols_out, rows_out;
-    register int i2, j2;
+    int i2, j2;
     float z1, z2, z3, z4;
     int byte_width_in, byte_width_out;
     float mag_inv;
@@ -1483,7 +1483,7 @@ static XImage *XRotMagnifyImage( Display *dpy, XImage *ximage) {
 // is returned.
 //
 XPoint *XRotTextExtents( Display *dpy, XFontStruct *font, float angle, int x, int y, char *text, int align) {
-    register int i;
+    int i;
     char *str1, *str2, *str3;
     char *str2_a="\0", *str2_b="\n\0";
     int height;

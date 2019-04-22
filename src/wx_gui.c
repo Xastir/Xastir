@@ -117,8 +117,8 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_detailed_alert_
 void wx_alert_finger_output( Widget widget, char *handle) {
     static Widget pane, my_form, mess, button_cancel,wx_detailed_alert_list;
     Atom delw;
-    Arg al[50];                     // Arg List
-    register unsigned int ac = 0;   // Arg Count
+    Arg al[50];             // Arg List
+    unsigned int ac = 0;    // Arg Count
     char temp[1024];
     XmString item;
     FILE *fd;
@@ -595,7 +595,7 @@ void Display_Wx_Alert( /*@unused@*/ Widget wdgt, /*@unused@*/ XtPointer clientDa
     static Widget pane, my_form, mess, button_cancel;
     Atom delw;
     Arg al[50];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
+    unsigned int ac = 0;           /* Arg Count */
 
     if(!wx_alert_shell) {
 

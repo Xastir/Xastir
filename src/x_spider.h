@@ -37,8 +37,8 @@ extern int pipe_tcp_server_to_xastir;
 extern int pipe_xastir_to_udp_server;
 extern int pipe_udp_server_to_xastir;
 
-extern int writen(register int fd, register char *ptr, register int nbytes);
-extern int readline(register int fd, register char *ptr, register int maxlen);
+extern int writen(int fd, char *ptr, int nbytes);
+extern int readline(int fd, char *ptr, int maxlen);
 extern int Fork_TCP_server(int argc, char *argv[], char *envp[]);
 extern int Fork_UDP_server(int argc, char *argv[], char *envp[]);
 

@@ -220,7 +220,10 @@ void draw_palm_image_map(Widget w,
     if (debug_level & 512)
         fprintf(stderr,"opened file: %s\n", filename);
 
-    fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
+    if (fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn) == 0) {
+        // We originally ignored the fread return parameter
+        // so don't change operation by returning from here.
+    }
 
     if (strncmp(pdb_hdr.database_type, "map1", 4) != 0
             || strncmp(pdb_hdr.creator_type, "pAPR", 4) != 0) {
@@ -231,7 +234,10 @@ void draw_palm_image_map(Widget w,
 
     records = ntohs(pdb_hdr.number_of_records);
 
-    fread(&prl, sizeof(prl), 1, fn);
+    if (fread(&prl, sizeof(prl), 1, fn) == 0) {
+        // We originally ignored the fread return parameter
+        // so don't change operation by returning from here.
+    }
 
     if (debug_level & 512) {
         fprintf(stderr,"Palm Map: %s, %d records, offset: %8x\n",
@@ -248,7 +254,11 @@ void draw_palm_image_map(Widget w,
     // Point to the map file header corresponding to the record
     // list we just read in & snag it.
     fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
-    fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn);
+
+    if (fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn) == 0) {
+        // We originally ignored the fread return parameter
+        // so don't change operation returning from here.
+    }
 
     scale = ntohs(pmf_hdr.granularity);
     map_left = ntohl(pmf_hdr.left_bounds);
@@ -342,7 +352,11 @@ void draw_palm_image_map(Widget w,
 
         // Point to the next record list header & snag it
         fseek(fn, record_ptr, SEEK_SET);
-        fread(&prl, sizeof(prl), 1, fn);
+
+        if (fread(&prl, sizeof(prl), 1, fn) == 0) {
+            // We originally ignored the fread return parameter
+            // so don't change operation by returning from here.
+        }
 
         if (debug_level & 512) {
             fprintf(stderr,"\tRecord %d, offset: %8x\n",
@@ -355,7 +369,11 @@ void draw_palm_image_map(Widget w,
 
         // Point to the next map file header & snag it
         fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
-        fread(&record_hdr, sizeof(record_hdr), 1, fn);
+
+        if (fread(&record_hdr, sizeof(record_hdr), 1, fn) == 0) {
+            // We originally ignored the fread return parameter
+            // so don't change operation by returning from here.
+        }
 
         if (debug_level & 512) {
             fprintf(stderr,"\tType %d, Sub %d, Zoom %d\n",
@@ -401,7 +419,10 @@ void draw_palm_image_map(Widget w,
 
                     for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
 
-                        fread(&vector_point, sizeof(vector_point), 1, fn);
+                        if (fread(&vector_point, sizeof(vector_point), 1, fn) == 0) {
+                            // We originally ignored the fread return parameter
+                            // so don't change operation by returning from here.
+                        }
 
                         if ((debug_level & 513) == 513) {
                             fprintf(stderr,"\tnext x %d, next y %d\n",
@@ -582,3 +603,5 @@ void draw_palm_image_map(Widget w,
     if (debug_level & 512)
         fprintf(stderr,"Closed file\n");
 }
+
+

@@ -227,7 +227,7 @@ int pipe_udp_server_to_xastir = -1;
 //
 // This routine is not used currently.
 //
-int readn(register int fd, register char *ptr, register int nbytes) {
+int readn(int fd, char *ptr, int nbytes) {
     int nleft, nread;
 
     nleft = nbytes;
@@ -255,7 +255,7 @@ int readn(register int fd, register char *ptr, register int nbytes) {
 // is a stream socket.  This routine is from "Unix Network
 // Programming".
 //
-int writen(register int fd, register char *ptr, register int nbytes) {
+int writen(int fd, char *ptr, int nbytes) {
     int nleft, nwritten;
 
     nleft = nbytes;
@@ -287,7 +287,7 @@ int writen(register int fd, register char *ptr, register int nbytes) {
 // number of characters up to, but not including, the null (the same
 // as strlen(3));  This routine is from "Unix Network Programming".
 //
-int readline(register int fd, register char *ptr, register int maxlen) {
+int readline(int fd, char *ptr, int maxlen) {
     int n, rc;
     char c;
 

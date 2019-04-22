@@ -156,38 +156,38 @@ void draw_WMS_map (Widget w,
     char WMStmp[MAX_FILENAME*2];  // Used for putting together the WMS map query
     int width, height;
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
-    register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
-    register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
+    long map_c_T, map_c_L;          // map delta NW edge coordinates, DNN: these should be signed
+    long tp_c_dx, tp_c_dy;          // tiepoint coordinate differences
     unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
-    unsigned long c_y_max;          // bottom right coordinates of map inside screen
+//  unsigned long c_y_max;          // bottom right coordinates of map inside screen
     double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     double c_y;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
     long map_y_0;                   // map pixel pointer prior to TM adjustment
-    register long map_x, map_y;     // map pixel pointers, DNN: this was a float, chg to long
+    long map_x, map_y;              // map pixel pointers, DNN: this was a float, chg to long
     long map_x_min, map_x_max;      // map boundaries for in screen part of map
     long map_y_min, map_y_max;      //
-    long map_x_ctr;                 // half map width in pixel
-    long map_y_ctr;                 // half map height in pixel
+//  long map_x_ctr;                 // half map width in pixel
+//  long map_y_ctr;                 // half map height in pixel
     int map_seen = 0;
     int map_act;
-    int map_done;
+//  int map_done;
 
-    long map_c_yc;                  // map center, vert coordinate
-    long map_c_xc;                  // map center, hor  coordinate
+//  long map_c_yc;                  // map center, vert coordinate
+//  long map_c_xc;                  // map center, hor  coordinate
     double map_c_dx, map_c_dy;      // map coordinates increment (pixel width)
     double c_dx;                    // adjusted map pixel width
 
     long scr_x,  scr_y;             // screen pixel plot positions
     long scr_xp, scr_yp;            // previous screen plot positions
     int  scr_dx, scr_dy;            // increments in screen plot positions
-    long scr_x_mc;                  // map center in screen units
+//  long scr_x_mc;                  // map center in screen units
 
-    long scr_c_xr;
+//  long scr_c_xr;
 
-    long scale_xa;                  // adjusted for topo maps
-    double scale_x_nm;              // nm per Xastir coordinate unit
-    long scale_x0;                  // at widest map area
+//  long scale_xa;                  // adjusted for topo maps
+//  double scale_x_nm;              // nm per Xastir coordinate unit
+//  long scale_x0;                  // at widest map area
 
     char local_filename[MAX_FILENAME];
     ExceptionInfo exception;
@@ -818,23 +818,23 @@ void draw_WMS_map (Widget w,
     // Get the border values for the X and Y for loops used
     // for the XFillRectangle call later.
 
-    map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
-    map_y_ctr = (long)(height / 2 +0.499);
-    scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
+//  map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
+//  map_y_ctr = (long)(height / 2 +0.499);
+//  scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
 
-    map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
-    map_x_ctr = (long)(width  / 2 +0.499);
-    scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
+//  map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
+//  map_x_ctr = (long)(width  / 2 +0.499);
+//  scr_x_mc  = (map_c_xc - NW_corner_longitude) / scale_x; // screen coordinates of map center
 
     // calculate map pixel range in y direction that falls into screen area
-    c_y_max = 0ul;
+//  c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
     for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
         scr_y = (c_y - NW_corner_latitude) / scale_y;   // current screen position
         if (scr_y > 0) {
             if (scr_y < screen_height) {
                 map_y_max = map_y_0;          // update last map pixel in y
-                c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
+//              c_y_max = (unsigned long)c_y;// bottom map inside screen coordinate
             } else
                 break;                      // done, reached bottom screen border
         } else {                            // pixel is above screen
@@ -858,11 +858,11 @@ void draw_WMS_map (Widget w,
         c_x_min = (unsigned long)(tp[0].x_long + map_x_min * map_c_dx);   // left map inside screen coordinate
 
     scr_yp = -1;
-    scr_c_xr = SE_corner_longitude;
+//  scr_c_xr = SE_corner_longitude;
     c_dx = map_c_dx;                            // map pixel width
-    scale_xa = scale_x0;                        // the compiler likes it ;-)
+//  scale_xa = scale_x0;                        // the compiler likes it ;-)
 
-    map_done = 0;
+//  map_done = 0;
     map_act  = 0;
     map_seen = 0;
     scr_y = screen_height - 1;
@@ -897,7 +897,7 @@ void draw_WMS_map (Widget w,
             scr_xp = -1;
             // loop over map pixel columns
             map_act = 0;
-            scale_x_nm = calc_dscale_x(0,(long)c_y) / 1852.0;  // nm per Xastir coordinate
+//          scale_x_nm = calc_dscale_x(0,(long)c_y) / 1852.0;  // nm per Xastir coordinate
             for (map_x = map_x_min, c_x = (double)c_x_min; map_x <= map_x_max; map_x++, c_x += c_dx) {
                 scr_x = (c_x - NW_corner_longitude) / scale_x;
                 if (scr_x != scr_xp) {      // don't do a pixel twice
@@ -961,8 +961,9 @@ void draw_WMS_map (Widget w,
                     } // check map boundaries in y direction
                 }
             } // loop over map pixel columns
-            if (map_seen && !map_act)
-                map_done = 1;
+            if (map_seen && !map_act) {
+//              map_done = 1;
+            }
         }
     } // loop over map pixel rows
 

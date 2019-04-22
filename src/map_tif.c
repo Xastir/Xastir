@@ -446,9 +446,9 @@ void draw_geotiff_image_map (Widget w,
     int top_crop;               /* Pixel cropping value */
     int bottom_crop;            /* Pixel cropping value */
     double xxx, yyy;            /* LFM: needs more accuracy here */
-    register long sxx, syy;              /* X Y screen plot positions          */
+    long sxx, syy;              /* X Y screen plot positions          */
     float steph;
-    register float stepw;
+    float stepw;
     int stepwc, stephc;
     char map_it[MAX_FILENAME];           /* Used to hold filename for status line */
     int have_fgd;               /* Tells where we have an associated *.fgd file */
@@ -457,7 +457,7 @@ void draw_geotiff_image_map (Widget w,
     //double *GeoTie;
     int crop_it = 0;            /* Flag which tells whether the image should be cropped */
 
-    register uint32 column;
+    uint32 column;
 
     float xastir_left_x_increment;
     float left_x_increment;
@@ -471,17 +471,17 @@ void draw_geotiff_image_map (Widget w,
     float top_y_increment;
     float xastir_bottom_y_increment;
     float bottom_y_increment;
-    float xastir_avg_y_increment;
+//    float xastir_avg_y_increment;
     float avg_y_increment;
     int row_offset;
-    register unsigned long current_xastir_left;
+    unsigned long current_xastir_left;
     unsigned long current_xastir_right;
-    register uint32 current_left;
+    uint32 current_left;
     uint32 current_right;
-    uint32 current_line_width;
-    register unsigned long xastir_current_y;
-    register uint32 column_offset;
-    register unsigned long xastir_current_x;
+//    uint32 current_line_width;
+    unsigned long xastir_current_y;
+    uint32 column_offset;
+    unsigned long xastir_current_x;
     double *PixelScale;
     int have_PixelScale;
     uint16 qty;
@@ -489,7 +489,7 @@ void draw_geotiff_image_map (Widget w,
     unsigned long view_min_x, view_max_x;
     unsigned long view_min_y, view_max_y;
 
-    register unsigned long xastir_total_y;
+    unsigned long xastir_total_y;
     int NW_line_offset;
     int NE_line_offset;
     int NW_xastir_x_offset;
@@ -498,7 +498,7 @@ void draw_geotiff_image_map (Widget w,
     int NW_x_offset;
     int NE_x_offset;
     float xastir_avg_left_right_y_increment;
-    register float total_avg_y_increment;
+    float total_avg_y_increment;
     unsigned long view_left_minus_pixel_width;
     unsigned long view_top_minus_pixel_height;
     int proj_is_latlong;
@@ -2270,7 +2270,7 @@ right_crop = width - 1;
 
 
     // Find the average change in Y as we traverse from left to right one pixel
-    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
+//    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
     avg_y_increment = (float)(top_y_increment + bottom_y_increment) / 2.0;
 
 
@@ -2431,9 +2431,7 @@ right_crop = width - 1;
     // Put row multipliers above loops.  Try to get as many
     // multiplications as possible outside the loops.  Adds and
     // subtracts are ok.  Try to do as little floating point stuff
-    // as possible inside the loops.  I also declared a lot of
-    // the inner loop stuff as register variables.  Saved me about
-    // a second per map (not much, but I'll take what I can get!)
+    // as possible inside the loops.
     //
     for ( row = top_crop; (int)row < bottom_crop + 1; row+= SkipRows )
     {
@@ -2498,7 +2496,7 @@ right_crop = width - 1;
 if (current_right >= width)
     current_right = width - 1;
 
-        current_line_width = current_right - current_left + 1;  // Pixels
+//        current_line_width = current_right - current_left + 1;  // Pixels
 
 
         // if (debug_level & 16)
