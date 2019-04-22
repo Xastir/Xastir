@@ -698,7 +698,7 @@ int pipe_check(char *client_address) {
                 n--;
             }
             // Add the linefeed on the end
-            strncat(line,"\n",1);
+            strncat(line,"\n",sizeof(line)-strlen(line)-1);
             n++;
 
 // Only send to upstream server if this client has authenticated.
@@ -793,7 +793,7 @@ int pipe_check(char *client_address) {
             n--;
         }
         // Add carriage-return/linefeed onto the end
-        strncat(line, "\r\n", 2);
+        strncat(line, "\r\n", sizeof(line)-strlen(line)-1);
         n += 2;
 
         while (q != NULL && q->active) {
