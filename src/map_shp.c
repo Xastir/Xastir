@@ -725,12 +725,12 @@ void draw_shapefile_map (Widget w,
 #endif /*!WITH_DBFAWK*/
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
-    char            search_param1[10];
 #ifndef WITH_DBFAWK
     int             search_field1 = 0;
     int             search_field2 = -1;
-#endif /* !WITH_DBFAWK */
+    char            search_param1[10];
     char            search_param2[10];
+#endif /* !WITH_DBFAWK */
     int             found_shape = -1;
 #ifndef USE_RTREE
     int             start_record;
@@ -837,9 +837,11 @@ void draw_shapefile_map (Widget w,
     if (alert_color != 0xff)
         ok_to_draw++;
 
+#ifndef WITH_DBFAWK
     search_param1[0] = '\0';
     search_param2[0] = '\0';
-
+#endif /* !WITH_DBFAWK */
+ 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
     // Create a shorter filename for display (one that fits the
@@ -3388,10 +3390,10 @@ void draw_shapefile_map (Widget w,
                                 // It's a hole polygon.  Cut the
                                 // hole out of our rectangle region.
                                 int num_vertices = 0;
-                                int nVertStart;
+//                              int nVertStart;
 
  
-                                nVertStart = object->panPartStart[ring];
+//                              nVertStart = object->panPartStart[ring];
 
                                 if( ring == object->nParts-1 )
                                     num_vertices = object->nVertices
