@@ -63,7 +63,7 @@ matrix:
             - libshp-dev
             - libmagickcore-dev
     - os: osx
-      name: "OSX"
+      name: "OSX semi-light with GraphicsMagick"
       addons:
         homebrew:
           packages:
