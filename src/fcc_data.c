@@ -143,7 +143,12 @@ int build_fcc_index(int type){
     xastir_snprintf(fccdata,sizeof(fccdata)," ");
     while(!feof(fdb)) {
         call_offset = (unsigned long)ftell(fdb);
-        (void)fgets(fccdata, (int)sizeof(fccdata), fdb);
+        if (fgets(fccdata, (int)sizeof(fccdata), fdb) == NULL) {
+            // error occurred
+            fprintf(stderr,"Build: Could not read fcc data base\n");
+            (void)fclose(fdb);
+            return(0);
+        }
         found=0;
         num=0;
         if (type==2) {
@@ -300,7 +305,11 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
         // the alphabet than the current index, snag the next index.
         while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
             xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
-            (void)fgets(index,(int)sizeof(index),fndx);
+            if (fgets(index,(int)sizeof(index),fndx) == NULL) {
+                // Error occurred
+                fprintf(stderr,"Search:Could not read FCC database index\n");
+                return(0);
+            }
         }
     } else {
         fprintf(stderr,"Search:Could not open FCC data base index: %s\n", appl_file_path );
