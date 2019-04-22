@@ -453,7 +453,7 @@ void cycle_weather(void) {
                                         last_speed,
                                         &last_speed_time);
             weather->wx_speed_sec_time = sec_now();
-            if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+            if (computed_gust > 0.0)
                 xastir_snprintf(weather->wx_gust,
                 sizeof(weather->wx_gust),
                 "%03d",
@@ -1330,7 +1330,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                         last_speed,
                                         &last_speed_time);
                 weather->wx_speed_sec_time = sec_now();
-                if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                if (computed_gust > 0.0)
                     xastir_snprintf(weather->wx_gust,
                         sizeof(weather->wx_gust),
                         "%03d",
@@ -1446,7 +1446,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                         last_speed,
                                         &last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
-                    if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                    if (computed_gust > 0.0)
                         xastir_snprintf(weather->wx_gust,
                             sizeof(weather->wx_gust),
                             "%03d",
@@ -1644,7 +1644,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                         weather->wx_speed_sec_time = sec_now();
-                        if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                        if (computed_gust > 0.0)
                             xastir_snprintf(weather->wx_gust,
                                 sizeof(weather->wx_gust),
                                 "%03d",
@@ -1808,7 +1808,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                     weather->wx_speed_sec_time = sec_now();
-                    if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                    if (computed_gust > 0.0)
                         xastir_snprintf(weather->wx_gust,
                             sizeof(weather->wx_gust),
                             "%03d",
@@ -2558,7 +2558,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                             last_speed,
                                             &last_speed_time);
                         weather->wx_speed_sec_time = sec_now();
-                        if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                        if (computed_gust > 0.0)
                             xastir_snprintf(weather->wx_gust,
                                 sizeof(weather->wx_gust),
                                 "%03d",
