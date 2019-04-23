@@ -3992,7 +3992,11 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
     xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
-    chdir(temp_base_dir);
+    if (chdir(temp_base_dir) != 0) {
+        fprintf(stderr,"Couldn't chdir to %s directory for print_window\n", temp_base_dir);
+        return;
+    }
+
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),// Display *display
             "print.xpm",                                 // char *filename
             pixmap_final,                                // Pixmap pixmap
@@ -4154,7 +4158,11 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
     xastir_snprintf(temp, sizeof(temp), "%s", langcode("PRINT0012") );
     statusline(temp,1);       // Dumping image to file...
 
-    chdir(temp_base_dir);
+    if (chdir(temp_base_dir) != 0) {
+        fprintf(stderr,"Couldn't chdir to %s directory for print_preview\n", temp_base_dir);
+        return;
+    }
+
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),// Display *display
             "print.xpm",                                 // char *filename
             pixmap_final,                                // Pixmap pixmap
@@ -5380,7 +5388,11 @@ void Snapshot(void) {
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
     // Create an XPM file from pixmap_final.
-    chdir(temp_base_dir);
+    if (chdir(temp_base_dir) != 0) {
+        fprintf(stderr,"Couldn't chdir to %s directory for snapshot\n", temp_base_dir);
+        return;
+    }
+
     xpmretval=XpmWriteFileFromPixmap(XtDisplay(appshell),   // Display *display
             "snapshot.xpm",                             // char *filename
             pixmap_final,                               // Pixmap pixmap
