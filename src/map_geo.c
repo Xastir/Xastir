@@ -1007,10 +1007,18 @@ void draw_geo_image_map (Widget w,
                 if (crop_y1 < 0 ) crop_y1 = 0;
                 if (crop_x2 < 0 ) crop_x2 = 0;
                 if (crop_y2 < 0 ) crop_y2 = 0;
-                if (crop_x2 < crop_x1 ) // swap
-                {do_crop = crop_x1; crop_x1=crop_x2; crop_x2=do_crop;}
-                if (crop_y2 < crop_y1 ) // swap
-                {do_crop = crop_y1; crop_y1=crop_y2; crop_y2=do_crop;}
+                if (crop_x2 < crop_x1 ) {
+                    // swap
+                    do_crop = crop_x1;
+                    crop_x1=crop_x2;
+                    crop_x2=do_crop;
+                }
+                if (crop_y2 < crop_y1 ) {
+                    // swap
+                    do_crop = crop_y1;
+                    crop_y1=crop_y2;
+                    crop_y2=do_crop;
+                }
                 do_crop = 1;
             }   
 #ifdef HAVE_MAGICK
