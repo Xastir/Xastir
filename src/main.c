@@ -1321,8 +1321,9 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
 void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
-        label4, label5, label6, label7,
+        label4, label5, label6,
         button_ok, button_cancel;
+//  static Widget label7;
 
     Atom delw;
     char temp_string[10];
@@ -1645,7 +1646,8 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        label7 = XtVaCreateManagedWidget(langcode("SMARTB010"),
+        //label7
+        XtVaCreateManagedWidget(langcode("SMARTB010"),
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -2733,9 +2735,9 @@ void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer 
 // successful conversion before we could write the value back.
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, form, label1, label2, label3,
-        label4, label5, label6,
+    static Widget  pane, form, label1, label4, 
         button_clear, button_calculate, button_cancel;
+//  static Widget label2, label3, label5, label6;
     Atom delw;
     Arg args[50];                    // Arg List
     register unsigned int n = 0;    // Arg Count
@@ -2791,7 +2793,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("COORD006"),
+        //label2
+        XtVaCreateManagedWidget(langcode("COORD006"),
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_FORM,
@@ -2805,7 +2808,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        label3 = XtVaCreateManagedWidget(langcode("COORD007"),
+        //label3
+        XtVaCreateManagedWidget(langcode("COORD007"),
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_FORM,
@@ -2834,7 +2838,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        label5 = XtVaCreateManagedWidget(langcode("COORD009"),
+        //label5
+        XtVaCreateManagedWidget(langcode("COORD009"),
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -2849,7 +2854,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        label6 = XtVaCreateManagedWidget(langcode("COORD010"),
+        //label6
+        XtVaCreateManagedWidget(langcode("COORD010"),
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -5135,50 +5141,70 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Arg al[100];                 /* Arg List */
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
-    Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3,
+    Widget zoom_in, zoom_out, zoom_sub, zl1, zl2, zl3,
         zl4, zl5, zl6, zl7, zl8, zl9, zlC;
-    Widget sar_object_menu;
+//  Widget zoom_level;
+//  Widget sar_object_menu;
     Widget CAD_sub, CAD1, CAD3, CAD4;
-    Widget pan_sub, pan_menu;
-    Widget move_my_sub, move_my_menu;
+    Widget pan_sub;
+//  Widget pan_menu;
+    Widget move_my_sub;
+//  Widget move_my_menu;
     Widget pan_ctr, last_loc, station_info, send_message_to;
     Widget set_object, modify_object;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
-    Widget filepane, configpane, exitpane, mappane, viewpane,
+    Widget filepane, configpane, mappane, viewpane,
         stationspane, messagepane, ifacepane, helppane,
         filter_data_pane, filter_display_pane, map_config_pane,
         station_config_pane,
-        help_emergency_pane, help_emergency_button;
+        help_emergency_pane;
+//  Widget exitpane,
+//      help_emergency_button,
+//      display_button,
+//      file_button,
+//      view_button,
+//      config_button,
+//      map_button,
+//      map_background_button,
+//      map_config_button,
+//      station_config_button,
+//      raster_intensity_button,
+//      map_station_label_button,
+//      map_icon_outline_button,
+//      iface_button,
+//      message_button,
+//      filter_data_button,
+//      filter_display_button,
+//      draw_CAD_objects_menu,
+//      store_data_button;
 
-    Widget display_button,
-        track_button, download_trail_button, station_clear_button,
+    Widget track_button, download_trail_button, station_clear_button,
         tracks_clear_button, object_history_refresh_button,
         object_history_clear_button, tactical_clear_button,
         tactical_history_clear_button, uptime_button, aloha_button,
         save_button,
-        file_button, open_file_button, exit_button,
-        view_button, view_messages_button, gps_status_button,
+        open_file_button, exit_button,
+        view_messages_button, gps_status_button,
         bullet_button, packet_data_button, mobile_button,
         stations_button, localstations_button, laststations_button,
         objectstations_button, objectmystations_button,
         weather_button, wx_station_button, locate_button, geocode_place_button,
         locate_place_button, jump_button, jump_button2, alert_button,
-        config_button, defaults_button, timing_button,
+        defaults_button, timing_button,
         coordinates_button, station_button, map_lock_pan_zoom_button, map_disable_button,
-        map_button, map_auto_button, map_chooser_button,
+        map_auto_button, map_chooser_button,
         map_grid_button, map_levels_button, map_labels_button,
         map_fill_button, coordinate_calculator_button,
         center_zoom_button,
-        Map_background_color_Pane, map_background_button,
-        map_pointer_menu_button, map_config_button,
-        station_config_button,
+        Map_background_color_Pane,
+        map_pointer_menu_button,
         cad_draw_button, cad_show_label_button,
         cad_show_probability_button, cad_show_area_button,
         cad_show_comment_button,
 #if !defined(NO_GRAPHICS)
-        Raster_intensity_Pane, raster_intensity_button,
+        Raster_intensity_Pane,
 #if defined(HAVE_MAGICK)
         gamma_adjust_button,
 #endif  // HAVE_MAGICK
@@ -5187,25 +5213,23 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif  // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
         font_button,
-        Map_station_label_Pane, map_station_label_button,
-        Map_icon_outline_Pane, map_icon_outline_button,
+        Map_station_label_Pane,
+        Map_icon_outline_Pane,
         map_wx_alerts_button, index_maps_on_startup_button,
         redownload_maps_button, flush_map_cache_button,
         units_choice_button, dbstatus_choice_button,
-        iface_button, iface_connect_button,
+        iface_connect_button,
         tnc_logging, transmit_disable_toggle, net_logging,
         igate_logging, wx_logging, message_logging,
         wx_alert_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
         smart_beacon_button, map_indexer_button,
         map_all_indexer_button, auto_msg_set_button,
-        message_button, send_message_to_button,
+        send_message_to_button,
         show_pending_messages_button, enable_kmlsnapshots,
         open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
-        filter_data_button, filter_display_button,
-        draw_CAD_objects_menu,
-        store_data_pane, store_data_button, store_all_kml_button,
+        store_data_pane, store_all_kml_button,
 #ifdef HAVE_DB        
         store_all_db_button,
 #endif  // HAVE_DB
@@ -5468,7 +5492,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
     ifacepane   = XmCreatePulldownMenu(menubar,"ifacepane",   al, ac);
     helppane    = XmCreatePulldownMenu(menubar,"helppane",    al, ac);
 
-    file_button = XtVaCreateManagedWidget(langcode("MENUTB0001"),
+    //file_button
+    XtVaCreateManagedWidget(langcode("MENUTB0001"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId, filepane,
@@ -5477,7 +5502,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    view_button = XtVaCreateManagedWidget(langcode("MENUTB0002"),
+    //view_button
+    XtVaCreateManagedWidget(langcode("MENUTB0002"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId,viewpane,
@@ -5486,7 +5512,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    map_button = XtVaCreateManagedWidget(langcode("MENUTB0004"),
+    //map_button
+    XtVaCreateManagedWidget(langcode("MENUTB0004"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId,mappane,
@@ -5495,7 +5522,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    display_button = XtVaCreateManagedWidget(langcode("MENUTB0005"),
+    //display_button
+    XtVaCreateManagedWidget(langcode("MENUTB0005"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId,stationspane,
@@ -5504,7 +5532,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    message_button = XtVaCreateManagedWidget(langcode("MENUTB0006"),
+    //message_button
+    XtVaCreateManagedWidget(langcode("MENUTB0006"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId,messagepane,
@@ -5513,7 +5542,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    iface_button = XtVaCreateManagedWidget(langcode("MENUTB0010"),
+    //iface_button
+    XtVaCreateManagedWidget(langcode("MENUTB0010"),
             xmCascadeButtonGadgetClass,
             menubar,
             XmNsubMenuId,ifacepane,
@@ -5559,7 +5589,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
     XtAddCallback( print_button, XmNactivateCallback, Print_Postscript, NULL );
 
-    config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+    //config_button
+    XtVaCreateManagedWidget(langcode("PULDNFI001"),
             xmCascadeButtonGadgetClass,
             filepane,
             XmNsubMenuId,configpane,
@@ -5716,7 +5747,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             NULL);
 
 
-    exitpane  = XmCreatePulldownMenu(filepane,
+    //exitpane
+    XmCreatePulldownMenu(filepane,
             "exitpane",
             al,
             ac);
@@ -6109,7 +6141,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             ac);
 
     // "Draw CAD Objects"
-    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA029"),
+    //draw_CAD_objects_menu
+    XtVaCreateManagedWidget(langcode("POPUPMA029"),
             xmCascadeButtonGadgetClass,
             mappane,
             XmNsubMenuId,CAD_sub,
@@ -6432,7 +6465,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    map_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+    //map_config_button
+    XtVaCreateManagedWidget(langcode("PULDNFI001"),
             xmCascadeButtonGadgetClass,
             mappane,
             XmNsubMenuId,map_config_pane,
@@ -6457,7 +6491,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    map_background_button = XtVaCreateManagedWidget(langcode("PULDNMP005"),
+    //map_background_button
+    XtVaCreateManagedWidget(langcode("PULDNMP005"),
             xmCascadeButtonWidgetClass,
             map_config_pane,
             XmNsubMenuId, Map_background_color_Pane,
@@ -6592,7 +6627,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    raster_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),
+    //raster_intensity_button
+    XtVaCreateManagedWidget(langcode("PULDNMP008"),
             xmCascadeButtonWidgetClass,
             map_config_pane,
             XmNsubMenuId,
@@ -6732,7 +6768,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             "create_appshell map_station_label",
             al,
             ac);
-    map_station_label_button = XtVaCreateManagedWidget(langcode("PULDNMP006"),
+    //map_station_label_button
+    XtVaCreateManagedWidget(langcode("PULDNMP006"),
             xmCascadeButtonWidgetClass,
             map_config_pane,
             XmNsubMenuId, Map_station_label_Pane,
@@ -6794,7 +6831,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             "create_appshell map_icon_outline",
             al,
             ac);
-    map_icon_outline_button = XtVaCreateManagedWidget(langcode("PULDNMP026"),
+    //map_icon_outline_button
+    XtVaCreateManagedWidget(langcode("PULDNMP026"),
             xmCascadeButtonWidgetClass,
             map_config_pane,
             XmNsubMenuId, Map_icon_outline_Pane,
@@ -6989,7 +7027,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             ac);
 
     // Export all > 
-    store_data_button = XtVaCreateManagedWidget(langcode("PULDNDP055"),
+    //store_data_button
+    XtVaCreateManagedWidget(langcode("PULDNDP055"),
             xmCascadeButtonGadgetClass,
             stationspane,
             XmNsubMenuId, store_data_pane,
@@ -7050,7 +7089,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    filter_data_button = XtVaCreateManagedWidget(langcode("PULDNDP032"),
+    //filter_data_button
+    XtVaCreateManagedWidget(langcode("PULDNDP032"),
             xmCascadeButtonGadgetClass,
             stationspane,
             XmNsubMenuId, filter_data_pane,
@@ -7401,7 +7441,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    filter_display_button = XtVaCreateManagedWidget(langcode("PULDNDP033"),
+    //filter_display_button
+    XtVaCreateManagedWidget(langcode("PULDNDP033"),
             xmCascadeButtonGadgetClass,
             stationspane,
             XmNsubMenuId, filter_display_pane,
@@ -7924,7 +7965,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    station_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+    //station_config_button
+    XtVaCreateManagedWidget(langcode("PULDNFI001"),
             xmCascadeButtonGadgetClass,
             stationspane,
             XmNsubMenuId,station_config_pane,
@@ -8317,7 +8359,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    help_emergency_button = XtVaCreateManagedWidget(langcode("PULDNHEL03"),
+    //help_emergency_button
+    XtVaCreateManagedWidget(langcode("PULDNHEL03"),
             xmCascadeButtonGadgetClass,
             helppane,
             XmNsubMenuId,help_emergency_pane,
@@ -9088,7 +9131,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             ac);
 
     // "Zoom level"
-    zoom_level=XtVaCreateManagedWidget(langcode("POPUPMA004"),
+    //zoom_level
+    XtVaCreateManagedWidget(langcode("POPUPMA004"),
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,zoom_sub,
@@ -9357,7 +9401,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             ac);
 
     // "Predefined Objects"
-    sar_object_menu=XtVaCreateManagedWidget(langcode("POPUPMA045"),
+    //sar_object_menu
+    XtVaCreateManagedWidget(langcode("POPUPMA045"),
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,sar_object_sub,
@@ -9403,7 +9448,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     // "Pan"
 //    pan_menu=XtVaCreateManagedWidget(langcode(""),
-    pan_menu=XtVaCreateManagedWidget("Pan",
+    //pan_menu
+    XtVaCreateManagedWidget("Pan",
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,pan_sub,
@@ -9504,7 +9550,8 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
             al,
             ac);
 
-    move_my_menu=XtVaCreateManagedWidget(langcode("POPUPMA025"),
+    //move_my_menu
+    XtVaCreateManagedWidget(langcode("POPUPMA025"),
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,move_my_sub,
@@ -10154,8 +10201,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     XComposeStatus compose;
     int x_center;
     int y_center;
-    int x_distance;
-    int y_distance;
+//  int x_distance;
+//  int y_distance;
     float x_distance_real;
     float y_distance_real;
     float full_distance;
@@ -10354,8 +10401,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     possible_zoom_function = 0;
                     zoom_box_x1 = -1;
 
-                    x_distance = abs(menu_x - input_x);
-                    y_distance = abs(menu_y - input_y);
+//                  x_distance = abs(menu_x - input_x);
+//                  y_distance = abs(menu_y - input_y);
 
                     // Here we need to convert to either English or Metric units of distance.
 
@@ -11217,7 +11264,7 @@ static int last_alert_on_screen = -1;
 void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     Widget w = (Widget) clientData;
     time_t nexttime;
-    int do_time;
+//  int do_time;
     int max;
     int i;
     char station_num[30];
@@ -11234,7 +11281,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
     char temp_file_name[MAX_VALUE];
 
-    do_time = 0;
+//  do_time = 0;
 
     // Start UpdateTime again 10 milliseconds after we've completed.
     // Note:  Setting this too low can cause // some systems
@@ -11803,7 +11850,7 @@ fprintf(stderr,"main, initializing connections");
                     // first update
                     next_time = 120;
                     last_time = current_time;
-                    do_time = 1;
+//                  do_time = 1;
                 } else {
                     // check for update
                     //fprintf(stderr,"Checking --- time %ld time to update %ld\n",current_time,last_time+next_time);
@@ -11813,7 +11860,7 @@ fprintf(stderr,"main, initializing connections");
                             next_time = max_transmit_time;
 
                         last_time = current_time;
-                        do_time = 1;
+//                      do_time = 1;
                     }
                 }
             }
@@ -14699,7 +14746,7 @@ void process_RINO_waypoints(void) {
     FILE *f;
     char temp[MAX_FILENAME * 2];
     char line[301];
-    float UTC_Offset;
+//  float UTC_Offset;
     char temp_file_name[MAX_VALUE];
 
 //    char datum[50];
@@ -14771,8 +14818,7 @@ void process_RINO_waypoints(void) {
                 i++;
             }
 
-            UTC_Offset = atof(temp2);
-
+//            UTC_Offset = atof(temp2);
 //fprintf(stderr,"UTC Offset: %f\n", UTC_Offset);
 
 // NOTE:  This would be the place to snag the datum as well.
@@ -15299,9 +15345,10 @@ void  GPS_operations_color_toggle( /*@unused@*/ Widget widget, XtPointer clientD
 //
 void GPS_transfer_select( void ) {
     static Widget pane, my_form, button_select, button_cancel,
-                  frame,  color_type, type_box, ctyp0, ctyp1,
+                  frame,  type_box, ctyp0, ctyp1,
                   ctyp2, ctyp3, ctyp4, ctyp5, ctyp6, ctyp7,
                   gpsfilename_label;
+//  static Widget color_type;
     Atom delw;
     Arg al[50];                      // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -15393,7 +15440,8 @@ void GPS_transfer_select( void ) {
                 XmNfontList, fontlist1,
                 NULL);
 
-        color_type  = XtVaCreateManagedWidget(  // Select Color
+        //color_type
+        XtVaCreateManagedWidget(  // Select Color
                 langcode("GPS003"),
                 xmLabelWidgetClass,
                 frame,
@@ -18262,7 +18310,8 @@ void map_properties_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientD
 // Fills in the map properties file entries.
 //
 void map_properties_fill_in (void) {
-    int n,i;
+    int n;
+//  int i;
     XmString str_ptr;
     map_index_record *current = map_index_head;
     int top_position;
@@ -18270,7 +18319,7 @@ void map_properties_fill_in (void) {
 
     busy_cursor(appshell);
 
-    i=0;
+//    i=0;
     if (map_properties_dialog) {
         char *current_selections = NULL;
         int kk, mm;
@@ -19305,18 +19354,19 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
 // in-memory list to disk.
 //
 void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    int i;
+//    int i;
 //    int x;
 //    char *temp;
 //    XmString *list;
     static Widget pane, my_form, button_clear, button_close,
-        rowcol1, rowcol2, rowcol3, label1, label2, label3, label4, label5,
+        rowcol1, rowcol2, rowcol3, label1, label2,
         button_filled_auto, button_filled_yes, button_filled_no,
         button_usgs_drg_auto, button_usgs_drg_yes, button_usgs_drg_no,
         button_layer_change,
         button_auto_maps_yes, button_auto_maps_no,
         button_max_zoom_change, button_min_zoom_change,
         button_select_all;
+//  static Widget label3, label4, label5;
     Atom delw;
     Arg al[50];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -19329,7 +19379,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtSetSensitive(map_chooser_button_cancel, FALSE);
     }
 
-    i=0;
+//    i=0;
     if (!map_properties_dialog) {
 
         map_properties_dialog = XtVaCreatePopupShell(langcode("MAPP001"),
@@ -19552,7 +19602,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNfontList, fontlist1,
                 NULL);
 
-        label3  = XtVaCreateManagedWidget(langcode("MAPP005"),
+        //label3
+        XtVaCreateManagedWidget(langcode("MAPP005"),
                 xmLabelWidgetClass,
                 rowcol2,
                 MY_FOREGROUND_COLOR,
@@ -19591,7 +19642,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 // Automaps
-        label4  = XtVaCreateManagedWidget(langcode("MAPP008"),
+        //label4
+        XtVaCreateManagedWidget(langcode("MAPP008"),
                 xmLabelWidgetClass,
                 rowcol2,
                 MY_FOREGROUND_COLOR,
@@ -19620,7 +19672,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 // USGS DRG->
-        label5  = XtVaCreateManagedWidget(langcode("MAPP012"),
+        //label5
+        XtVaCreateManagedWidget(langcode("MAPP012"),
                 xmLabelWidgetClass,
                 rowcol2,
                 MY_FOREGROUND_COLOR,
@@ -20321,7 +20374,7 @@ void sort_list(char *filename,int size, Widget list, int *item) {
     FILE *f_pointer;
     char fill[2000];
     long file_ptr;
-    long ptr;
+//    long ptr;
     char ptr_filename[400];
     XmString str_ptr;
 
@@ -20333,7 +20386,7 @@ void sort_list(char *filename,int size, Widget list, int *item) {
     f_data=fopen(filename,"r");
     if (f_pointer!=NULL && f_data !=NULL) {
         while (!feof(f_pointer)) {
-            ptr=ftell(f_pointer);
+//            ptr=ftell(f_pointer);
             if (fread(&file_ptr,sizeof(file_ptr),1,f_pointer)==1) {
                 (void)fseek(f_data,file_ptr,SEEK_SET);
                 if (fread(fill,(size_t)size,1,f_data)==1) {
@@ -21192,14 +21245,14 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             rowcol, expand_dirs_button, button_properties,
             maps_selected_label, button_apply;
     Atom delw;
-    int i;
+//    int i;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
 
     busy_cursor(appshell);
 
-    i=0;
+//    i=0;
     if (!map_chooser_dialog) {
         map_chooser_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),
                 xmDialogShellWidgetClass, appshell,
@@ -21911,10 +21964,11 @@ void lpomff_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
 void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel,
                 frame4, frame5,
-                station_type, type_box,
+                type_box,
                 styp1, styp2, styp3, styp4, styp5, styp6,
-                igate_option, igate_box,
+                igate_box,
                 igtyp0, igtyp1, igtyp2, altnet_label;
+//  static Widget station_type, igate_option;
     Atom delw;
     Arg al[50];                      /* Arg List */
     register unsigned int ac = 0;   /* Arg Count */
@@ -21929,7 +21983,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     Widget lpomff_widget;
     int i;
     XmString cb_items[4];
+#ifdef OBJECT_DEF_FILE_USER_BASE
     char temp_base_dir[MAX_VALUE];
+#endif
 
                                                                                                                         
 
@@ -21981,7 +22037,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        station_type  = XtVaCreateManagedWidget(langcode("WPUPCFD015"),
+        //station_type
+        XtVaCreateManagedWidget(langcode("WPUPCFD015"),
                 xmLabelWidgetClass,
                 frame4,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -22070,7 +22127,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        igate_option  = XtVaCreateManagedWidget(langcode("IGPUPCF000"),
+        //igate_option
+        XtVaCreateManagedWidget(langcode("IGPUPCF000"),
                 xmLabelWidgetClass,
                 frame5,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -23233,8 +23291,9 @@ void Configure_coordinates_destroy_shell( /*@unused@*/ Widget widget, XtPointer 
 
 void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel, frame,
-                label, coord_box, coord_0, coord_1, coord_2,
+                coord_box, coord_0, coord_1, coord_2,
                 coord_3, coord_4, coord_5;
+//  static Widget label;
     Atom delw;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -23280,7 +23339,8 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        label = XtVaCreateManagedWidget(langcode("WPUPCFC002"),
+        //label
+        XtVaCreateManagedWidget(langcode("WPUPCFC002"),
                 xmLabelWidgetClass,
                 frame,
                 XmNchildType, XmFRAME_TITLE_CHILD,
@@ -23603,9 +23663,10 @@ void Configure_audio_alarm_change_data(Widget widget, XtPointer clientData, XtPo
 void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel,
                 audio_play, file1, file2,
-                min1, min2, max1, max2,
-                minb1, minb2, maxb1, maxb2,
+                min1, max1,
+                minb1, maxb2,
                 sep;
+//  static Widget min2, max2, minb2, maxb1;
     Atom delw;
 
     if (!configure_audio_alarm_dialog) {
@@ -23855,7 +23916,8 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNfontList, fontlist1,
                 NULL);
 
-        min2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        //min2
+        XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -23909,7 +23971,8 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNfontList, fontlist1,
                 NULL);
 
-        max2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        //max2
+        XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -24001,7 +24064,8 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNfontList, fontlist1,
                 NULL);
 
-        minb2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        //minb2
+        XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -24017,7 +24081,8 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNfontList, fontlist1,
                 NULL);
 
-        maxb1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),
+        //maxb1
+        XtVaCreateManagedWidget(langcode("WPUPCFA010"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -25098,18 +25163,18 @@ void Configure_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer 
  */
 void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, cs_form, cs_form1, button_ok, button_cancel, call, frame, frame2,
-                framephg, pg2, formphg,
+                framephg, formphg,
                 power_box,poption0,poption1,poption2,poption3,poption4,poption5,poption6,poption7,poption8,poption9,poption10,
                 height_box,hoption1,hoption2,hoption3,hoption4,hoption5,hoption6,hoption7,hoption8,hoption9,hoption10,
                 gain_box,goption1,goption2,goption3,goption4,goption5,goption6,goption7,goption8,goption9,goption10,
                 directivity_box,doption1,doption2,doption3,doption4,doption5,doption6,doption7,doption8,doption9,
                 slat,
-                slat_deg,  slat_min, slat_ns,
-                slong,
+                slat_deg,  slat_min,
                 slong_deg, slong_min, slong_ew,
-                sts, group, st_symbol, comment,
-                posamb,option_box,
+                group, st_symbol, comment,
+                option_box,
                 sep, configure_button_symbol, compute_button;
+//  static Widget pg2, slat_ns, slong, sts, posamb;
     char temp_data[40];
     Atom delw;
     Arg al[50];                    /* Arg List */
@@ -25299,7 +25364,8 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNfontList, fontlist1,
                 NULL);
 
-        slat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
+        //slat_n
+        XtVaCreateManagedWidget(langcode("WPUPCFS006"),
                 xmLabelWidgetClass, 
                 cs_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -25314,7 +25380,8 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 XmNfontList, fontlist1,
                 NULL);
 
-        slong = XtVaCreateManagedWidget(langcode("WPUPCFS007"),
+        //slong
+        XtVaCreateManagedWidget(langcode("WPUPCFS007"),
                 xmLabelWidgetClass, 
                 cs_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -25485,7 +25552,8 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
         // "Station Symbol"
-        sts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),
+        //sts
+        XtVaCreateManagedWidget(langcode("WPUPCFS009"),
                 xmLabelWidgetClass,
                 frame,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -25638,7 +25706,8 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        pg2  = XtVaCreateManagedWidget(langcode("WPUPCFS012"),
+        //pg2
+        XtVaCreateManagedWidget(langcode("WPUPCFS012"),
                 xmLabelWidgetClass,
                 framephg,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
@@ -26207,7 +26276,8 @@ void Configure_station( /*@unused@*/ Widget ww, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        posamb  = XtVaCreateManagedWidget(langcode("WPUPCFS018"),
+        //posamb
+        XtVaCreateManagedWidget(langcode("WPUPCFS018"),
                 xmLabelWidgetClass,
                 frame2,
                 XmNchildType,               XmFRAME_TITLE_CHILD,
