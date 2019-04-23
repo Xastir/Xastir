@@ -117,9 +117,9 @@ void get_alt_fgd_path(char *fullpath, int fullpath_length) {
         }
     }
     for (++i; i <= len; i++) {
-    fname[j++] = fullpath[i];   // Grab the filename
-    if (fullpath[i] == '\0')
-        break;
+        fname[j++] = fullpath[i];   // Grab the filename
+        if (fullpath[i] == '\0')
+            break;
     }
 
     // We have the filename now.  dir now points to
@@ -136,8 +136,8 @@ void get_alt_fgd_path(char *fullpath, int fullpath_length) {
         }
     }
     for (++i; i <= len; i++) {
-    if (fullpath[i] == '\0')
-        break;
+        if (fullpath[i] == '\0')
+            break;
     }   
 
     // Add "metadata/" into the path
@@ -170,9 +170,9 @@ void get_alt_fgd_path2(char *fullpath, int fullpath_length) {
         }
     }
     for (++i; i <= len; i++) {
-    fname[j++] = fullpath[i];
-    if (fullpath[i] == '\0')
-        break;
+        fname[j++] = fullpath[i];
+        if (fullpath[i] == '\0')
+            break;
     }
 
     // Add "Metadata/" into the path
@@ -206,9 +206,9 @@ int read_fgd_file ( char* tif_filename,
 
     /* Read the .fgd file to find corners of the map neat-line */
     xastir_snprintf(fgd_file,
-        sizeof(fgd_file),
-        "%s",
-        tif_filename);
+                    sizeof(fgd_file),
+                    "%s",
+                    tif_filename);
     length = strlen(fgd_file);
 
     /* Change the extension to ".fgd" */
@@ -245,7 +245,7 @@ int read_fgd_file ( char* tif_filename,
             if (*f_west_bounding == 0.0)
             {
                 if ( ( (ptr = strstr(line, "WEST BOUNDING COORDINATE:") ) != NULL)
-                        || ( (ptr = strstr(line, "West_Bounding_Coordinate:") ) != NULL) )
+                     || ( (ptr = strstr(line, "West_Bounding_Coordinate:") ) != NULL) )
                 {
                     if (1 != sscanf (ptr + 25, " %f", f_west_bounding)) {
                         fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
@@ -259,7 +259,7 @@ int read_fgd_file ( char* tif_filename,
             else if (*f_east_bounding == 0.0)
             {
                 if ( ( (ptr = strstr(line, "EAST BOUNDING COORDINATE:") ) != NULL)
-                        || ( (ptr = strstr(line, "East_Bounding_Coordinate:") ) != NULL) )
+                     || ( (ptr = strstr(line, "East_Bounding_Coordinate:") ) != NULL) )
                 {
                     if (1 != sscanf (ptr + 25, " %f", f_east_bounding)) {
                         fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
@@ -273,7 +273,7 @@ int read_fgd_file ( char* tif_filename,
             else if (*f_north_bounding == 0.0)
             {
                 if ( ( (ptr = strstr(line, "NORTH BOUNDING COORDINATE:") ) != NULL)
-                        || ( (ptr = strstr(line, "North_Bounding_Coordinate:") ) != NULL) )
+                     || ( (ptr = strstr(line, "North_Bounding_Coordinate:") ) != NULL) )
                 {
                     if (1 != sscanf (ptr + 26, " %f", f_north_bounding)) {
                         fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
@@ -287,7 +287,7 @@ int read_fgd_file ( char* tif_filename,
             else if (*f_south_bounding == 0.0)
             {
                 if ( ( (ptr = strstr(line, "SOUTH BOUNDING COORDINATE:") ) != NULL)
-                        || ( (ptr = strstr(line, "South_Bounding_Coordinate:") ) != NULL) )
+                     || ( (ptr = strstr(line, "South_Bounding_Coordinate:") ) != NULL) )
                 {
                     if (1 != sscanf (ptr + 26, " %f", f_south_bounding)) {
                         fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
@@ -325,10 +325,10 @@ int read_fgd_file ( char* tif_filename,
 
     if (debug_level & 512) {
         fprintf(stderr,"%f %f %f %f\n",
-        *f_south_bounding,
-        *f_north_bounding,
-        *f_west_bounding,
-        *f_east_bounding);
+                *f_south_bounding,
+                *f_north_bounding,
+                *f_west_bounding,
+                *f_east_bounding);
     }
 
     return(1);    /* Successful */
@@ -379,7 +379,7 @@ void draw_geotiff_image_map (Widget w,
     uint32 height;              /* Height of the image */
     uint16 bitsPerSample;       /* Should be 8 for USGS DRG's */
     uint16 samplesPerPixel = 1; /* Should be 1 for USGS DRG's.  Some maps
-                                    don't have this tag so we default to 1 */
+                                   don't have this tag so we default to 1 */
     uint32 rowsPerStrip;        /* Should be 1 for USGS DRG's */
     uint16 planarConfig;        /* Should be 1 for USGS DRG's */
     uint16 photometric;         /* DRGs are RGB (2) */
@@ -471,14 +471,14 @@ void draw_geotiff_image_map (Widget w,
     float top_y_increment;
     float xastir_bottom_y_increment;
     float bottom_y_increment;
-//    float xastir_avg_y_increment;
+    //    float xastir_avg_y_increment;
     float avg_y_increment;
     int row_offset;
     unsigned long current_xastir_left;
     unsigned long current_xastir_right;
     uint32 current_left;
     uint32 current_right;
-//    uint32 current_line_width;
+    //    uint32 current_line_width;
     unsigned long xastir_current_y;
     uint32 column_offset;
     unsigned long xastir_current_x;
@@ -522,15 +522,15 @@ void draw_geotiff_image_map (Widget w,
         int new_len = strlen(filenm) - avail;
 
         xastir_snprintf(short_filenm,
-            sizeof(short_filenm),
-            "..%s",
-            &filenm[new_len]);
+                        sizeof(short_filenm),
+                        "..%s",
+                        &filenm[new_len]);
     }
     else {
         xastir_snprintf(short_filenm,
-            sizeof(short_filenm),
-            "%s",
-            filenm);
+                        sizeof(short_filenm),
+                        "%s",
+                        filenm);
     }
 
     /* Check whether we have an associated *.fgd file.  This
@@ -571,24 +571,24 @@ void draw_geotiff_image_map (Widget w,
 
         if (debug_level & 16) {
             fprintf(stderr,"FGD:  W:%f  E:%f  N:%f  S:%f\n",
-                f_west_bounding,
-                f_east_bounding,
-                f_north_bounding,
-                f_south_bounding);
+                    f_west_bounding,
+                    f_east_bounding,
+                    f_north_bounding,
+                    f_south_bounding);
         }
 
         crop_it = 1;        /* The map collar needs to be cropped */
 
         temp_ok1 = convert_to_xastir_coordinates(  &west_bounding,
-                                        &north_bounding,
-                                        f_west_bounding,
-                                        f_north_bounding );
+                                                   &north_bounding,
+                                                   f_west_bounding,
+                                                   f_north_bounding );
 
 
         temp_ok2 = convert_to_xastir_coordinates(  &east_bounding,
-                                        &south_bounding,
-                                        f_east_bounding,
-                                        f_south_bounding );
+                                                   &south_bounding,
+                                                   f_east_bounding,
+                                                   f_south_bounding );
 
         if (!temp_ok1 || !temp_ok2) {
             fprintf(stderr,"draw_geotiff_image_map: problem converting from lat/lon\n");
@@ -620,7 +620,7 @@ void draw_geotiff_image_map (Widget w,
 
         // Check whether we're indexing or drawing the map
         if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
-            && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+             && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
 
             // We're drawing.
             if (!map_visible( south_bounding + 1000,
@@ -742,7 +742,7 @@ void draw_geotiff_image_map (Widget w,
             }
         }
         else {
-                usgs_drg = 0;  // No tag, assume not a usgs topo 
+            usgs_drg = 0;  // No tag, assume not a usgs topo 
         }
             
     }
@@ -893,28 +893,28 @@ void draw_geotiff_image_map (Widget w,
         f_SE_y_bounding = (float)yyy;
 
         if (f_NW_y_bounding > 0) {
-          yyy=((f_NW_y_bounding > f_NE_y_bounding) ? f_NE_y_bounding
-               : f_NW_y_bounding);
-          xxx=((f_SW_y_bounding < f_SE_y_bounding) ? f_SE_y_bounding
-               : f_SW_y_bounding);
+            yyy=((f_NW_y_bounding > f_NE_y_bounding) ? f_NE_y_bounding
+                 : f_NW_y_bounding);
+            xxx=((f_SW_y_bounding < f_SE_y_bounding) ? f_SE_y_bounding
+                 : f_SW_y_bounding);
         } else {
-          yyy=((f_NW_y_bounding < f_NE_y_bounding) ? f_NE_y_bounding
-               : f_NW_y_bounding);
-          xxx=((f_SW_y_bounding > f_SE_y_bounding) ? f_SE_y_bounding
-               : f_SW_y_bounding);
+            yyy=((f_NW_y_bounding < f_NE_y_bounding) ? f_NE_y_bounding
+                 : f_NW_y_bounding);
+            xxx=((f_SW_y_bounding > f_SE_y_bounding) ? f_SE_y_bounding
+                 : f_SW_y_bounding);
         }
         f_north_bounding = (float)yyy;
         f_south_bounding = (float)xxx;
         if (f_NE_x_bounding > 0) {
-          xxx=((f_NE_x_bounding < f_SE_x_bounding) ? f_SE_x_bounding
-               : f_NE_x_bounding);
-          yyy=((f_NW_x_bounding > f_SW_x_bounding) ? f_SW_x_bounding
-               : f_NW_x_bounding);
+            xxx=((f_NE_x_bounding < f_SE_x_bounding) ? f_SE_x_bounding
+                 : f_NE_x_bounding);
+            yyy=((f_NW_x_bounding > f_SW_x_bounding) ? f_SW_x_bounding
+                 : f_NW_x_bounding);
         } else {
-          xxx=((f_NE_x_bounding > f_SE_x_bounding) ? f_SE_x_bounding
-               : f_NE_x_bounding);
-          yyy=((f_NW_x_bounding < f_SW_x_bounding) ? f_SW_x_bounding
-               : f_NW_x_bounding);
+            xxx=((f_NE_x_bounding > f_SE_x_bounding) ? f_SE_x_bounding
+                 : f_NE_x_bounding);
+            yyy=((f_NW_x_bounding < f_SW_x_bounding) ? f_SW_x_bounding
+                 : f_NW_x_bounding);
         }
         f_west_bounding = (float)yyy;
         f_east_bounding = (float)xxx;
@@ -992,8 +992,8 @@ void draw_geotiff_image_map (Widget w,
      * in WGS84 or NAD83 datum, skip the datum conversion code.
      */
     if (   (defn.Datum != 6030)     /* DatumE_WGS84 */
-        && (defn.Datum != 6326)     /*  Datum_WGS84 */
-        && (defn.Datum != 6269) )   /* Datum_North_American_Datum_1983 */ {
+           && (defn.Datum != 6326)     /*  Datum_WGS84 */
+           && (defn.Datum != 6269) )   /* Datum_North_American_Datum_1983 */ {
 
         if (debug_level & 16)
             fprintf(stderr,"***** Attempting Datum Conversions\n");
@@ -1006,27 +1006,27 @@ void draw_geotiff_image_map (Widget w,
 
         // Convert NW corner to WGS84
         wgs84_datum_shift(TO_WGS_84,
-            &f_NW_y_bounding_wgs84,
-            &f_NW_x_bounding_wgs84,
-            D_NAD_27_CONUS);   // NAD27 CONUS
+                          &f_NW_y_bounding_wgs84,
+                          &f_NW_x_bounding_wgs84,
+                          D_NAD_27_CONUS);   // NAD27 CONUS
 
         // Convert NE corner to WGS84
         wgs84_datum_shift(TO_WGS_84,
-            &f_NE_y_bounding_wgs84,
-            &f_NE_x_bounding_wgs84,
-            D_NAD_27_CONUS);   // NAD27 CONUS
+                          &f_NE_y_bounding_wgs84,
+                          &f_NE_x_bounding_wgs84,
+                          D_NAD_27_CONUS);   // NAD27 CONUS
 
         // Convert SW corner to WGS84
         wgs84_datum_shift(TO_WGS_84,
-            &f_SW_y_bounding_wgs84,
-            &f_SW_x_bounding_wgs84,
-            D_NAD_27_CONUS);   // NAD27 CONUS
+                          &f_SW_y_bounding_wgs84,
+                          &f_SW_x_bounding_wgs84,
+                          D_NAD_27_CONUS);   // NAD27 CONUS
 
         // Convert SE corner to WGS84
         wgs84_datum_shift(TO_WGS_84,
-            &f_SE_y_bounding_wgs84,
-            &f_SE_x_bounding_wgs84,
-            D_NAD_27_CONUS);   // NAD27 CONUS (131)
+                          &f_SE_y_bounding_wgs84,
+                          &f_SE_x_bounding_wgs84,
+                          D_NAD_27_CONUS);   // NAD27 CONUS (131)
     }
     else
         if (debug_level & 16)
@@ -1040,9 +1040,9 @@ void draw_geotiff_image_map (Widget w,
      */
     // NW corner
     if (!convert_to_xastir_coordinates(  &NW_x_bounding_wgs84,
-                                        &NW_y_bounding_wgs84,
-                                        (float)f_NW_x_bounding_wgs84,
-                                        (float)f_NW_y_bounding_wgs84 ) ) {
+                                         &NW_y_bounding_wgs84,
+                                         (float)f_NW_x_bounding_wgs84,
+                                         (float)f_NW_y_bounding_wgs84 ) ) {
         fprintf(stderr,"draw_geotiff_image_map: Problem converting from lat/lon\n");
         fprintf(stderr,"Did you follow the instructions for installing PROJ?\n");
         return;
@@ -1050,9 +1050,9 @@ void draw_geotiff_image_map (Widget w,
 
     // NE corner
     if (!convert_to_xastir_coordinates(  &NE_x_bounding_wgs84,
-                                        &NE_y_bounding_wgs84,
-                                        (float)f_NE_x_bounding_wgs84,
-                                        (float)f_NE_y_bounding_wgs84 ) ) {
+                                         &NE_y_bounding_wgs84,
+                                         (float)f_NE_x_bounding_wgs84,
+                                         (float)f_NE_y_bounding_wgs84 ) ) {
         fprintf(stderr,"draw_geotiff_image_map: Problem converting from lat/lon\n");
         fprintf(stderr,"Did you follow the instructions for installing PROJ?\n");
  
@@ -1061,9 +1061,9 @@ void draw_geotiff_image_map (Widget w,
 
     // SW corner
     if (!convert_to_xastir_coordinates(  &SW_x_bounding_wgs84,
-                                        &SW_y_bounding_wgs84,
-                                        (float)f_SW_x_bounding_wgs84,
-                                        (float)f_SW_y_bounding_wgs84 ) ) {
+                                         &SW_y_bounding_wgs84,
+                                         (float)f_SW_x_bounding_wgs84,
+                                         (float)f_SW_y_bounding_wgs84 ) ) {
         fprintf(stderr,"draw_geotiff_image_map: Problem converting from lat/lon\n");
         fprintf(stderr,"Did you follow the instructions for installing PROJ?\n");
  
@@ -1072,9 +1072,9 @@ void draw_geotiff_image_map (Widget w,
 
     // SE corner
     if (!convert_to_xastir_coordinates(  &SE_x_bounding_wgs84,
-                                        &SE_y_bounding_wgs84,
-                                        (float)f_SE_x_bounding_wgs84,
-                                        (float)f_SE_y_bounding_wgs84 ) ) {
+                                         &SE_y_bounding_wgs84,
+                                         (float)f_SE_x_bounding_wgs84,
+                                         (float)f_SE_y_bounding_wgs84 ) ) {
         fprintf(stderr,"draw_geotiff_image_map: Problem converting from lat/lon\n");
         fprintf(stderr,"Did you follow the instructions for installing PROJ?\n");
  
@@ -1113,21 +1113,21 @@ void draw_geotiff_image_map (Widget w,
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+         || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         xastir_snprintf(map_it,
-            sizeof(map_it),
-            langcode ("BBARSTA039"),
-            short_filenm);
+                        sizeof(map_it),
+                        langcode ("BBARSTA039"),
+                        short_filenm);
         statusline(map_it,0);       // Indexing ...
 
         // We're indexing only.  Save the extents in the index.
         index_update_xastir(filenm, // Filename only
-            south_bounding_wgs84,   // Bottom
-            north_bounding_wgs84,   // Top
-            west_bounding_wgs84,    // Left
-            east_bounding_wgs84,    // Right
-            0);                     // Default Map Level
+                            south_bounding_wgs84,   // Bottom
+                            north_bounding_wgs84,   // Top
+                            west_bounding_wgs84,    // Left
+                            east_bounding_wgs84,    // Right
+                            0);                     // Default Map Level
 
         //Free any memory used and return
         /* We're finished with the geoTIFF key parser, so get rid of it */
@@ -1140,9 +1140,9 @@ void draw_geotiff_image_map (Widget w,
     }
     else {
         xastir_snprintf(map_it,
-            sizeof(map_it),
-            langcode ("BBARSTA028"),
-            short_filenm);
+                        sizeof(map_it),
+                        langcode ("BBARSTA028"),
+                        short_filenm);
         statusline(map_it,0);       // Loading ...
     }
 
@@ -1151,9 +1151,9 @@ void draw_geotiff_image_map (Widget w,
 
     // bottom top left right
     if (!map_visible( south_bounding_wgs84,
-                         north_bounding_wgs84,
-                         west_bounding_wgs84,
-                         east_bounding_wgs84 ) )
+                      north_bounding_wgs84,
+                      west_bounding_wgs84,
+                      east_bounding_wgs84 ) )
     {
         if (debug_level & 16) {
             fprintf(stderr,"Map not within current view.\n");
@@ -1181,15 +1181,15 @@ void draw_geotiff_image_map (Widget w,
         XTIFFClose (tif);
         // Update to screen
         (void)XCopyArea(XtDisplay(da),
-            pixmap,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
+                        pixmap,
+                        XtWindow(da),
+                        gc,
+                        0,
+                        0,
+                        (unsigned int)screen_width,
+                        (unsigned int)screen_height,
+                        0,
+                        0);
         return;
     }
 
@@ -1251,8 +1251,8 @@ Samples Per Pixel: 1
      */
     /* if ( (   rowsPerStrip != 1) */
     if ( (samplesPerPixel != 1)
-        || (  bitsPerSample != 8)
-        || (   planarConfig != 1) )
+         || (  bitsPerSample != 8)
+         || (   planarConfig != 1) )
     {
         fprintf(stderr,"*** geoTIFF file %s is not in the proper format:\n", file);
         if (samplesPerPixel != 1)
@@ -1332,7 +1332,7 @@ Samples Per Pixel: 1
 
     if (crop_it)    // USGS geoTIFF map
     {
-         /*
+        /*
          * Next:
          * Convert the map neat-line corners to image x/y coordinates.
          * This will give the map neat-line coordinates in pixels.
@@ -1355,15 +1355,15 @@ Samples Per Pixel: 1
             XTIFFClose (tif);
             // Update to screen
             (void)XCopyArea(XtDisplay(da),
-                pixmap,
-                XtWindow(da),
-                gc,
-                0,
-                0,
-                (unsigned int)screen_width,
-                (unsigned int)screen_height,
-                0,
-                0);
+                            pixmap,
+                            XtWindow(da),
+                            gc,
+                            0,
+                            0,
+                            (unsigned int)screen_width,
+                            (unsigned int)screen_height,
+                            0,
+                            0);
             return;
         }
 
@@ -1396,16 +1396,16 @@ Samples Per Pixel: 1
                 if (NW_x < 0 || NW_y < 0 || NW_x >= (int)width || NW_y >= (int)height) {
 
                     fprintf(stderr,
-                        "\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        NW_x,
-                        NW_y,
-                        filenm);
+                            "\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                            NW_x,
+                            NW_y,
+                            filenm);
                     fprintf(stderr,
-                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
-                        (long int)width,
-                        (long int)height);
+                            "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                            (long int)width,
+                            (long int)height);
                     fprintf(stderr,
-                        "Map may appear in the wrong location or scale incorrectly.\n");
+                            "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (NW_x < 0)
                         NW_x = 0;
@@ -1419,7 +1419,7 @@ Samples Per Pixel: 1
                     if (NW_y >= (int)height)
                         NW_y = height -1;
 
-/*
+                    /*
                     //Free any memory used and return
                     // We're finished with the geoTIFF key parser, so get rid of it
                     GTIFFree (gtif);
@@ -1428,7 +1428,7 @@ Samples Per Pixel: 1
                     XTIFFClose (tif);
  
                     return;
-*/
+                    */
                 }
             }
         }
@@ -1474,16 +1474,16 @@ Samples Per Pixel: 1
                 if (NE_x < 0 || NE_y < 0 || NE_x >= (int)width || NE_y >= (int)height) {
 
                     fprintf(stderr,
-                        "\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        NE_x,
-                        NE_y,
-                        filenm);
+                            "\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                            NE_x,
+                            NE_y,
+                            filenm);
                     fprintf(stderr,
-                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
-                        (long int)width,
-                        (long int)height);
+                            "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                            (long int)width,
+                            (long int)height);
                     fprintf(stderr,
-                        "Map may appear in the wrong location or scale incorrectly.\n");
+                            "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (NE_x < 0)
                         NE_x = 0;
@@ -1497,7 +1497,7 @@ Samples Per Pixel: 1
                     if (NE_y >= (int)height)
                         NE_y = height -1;
 
-/*
+                    /*
                     //Free any memory used and return
                     // We're finished with the geoTIFF key parser, so get rid of it
                     GTIFFree (gtif);
@@ -1506,7 +1506,7 @@ Samples Per Pixel: 1
                     XTIFFClose (tif);
  
                     return;
-*/
+                    */
                 }
             }
         }
@@ -1552,16 +1552,16 @@ Samples Per Pixel: 1
                 if (SW_x < 0 || SW_y < 0 || SW_x >= (int)width || SW_y >= (int)height) {
 
                     fprintf(stderr,
-                        "\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        SW_x,
-                        SW_y,
-                        filenm);
+                            "\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                            SW_x,
+                            SW_y,
+                            filenm);
                     fprintf(stderr,
-                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
-                        (long int)width,
-                        (long int)height);
+                            "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                            (long int)width,
+                            (long int)height);
                     fprintf(stderr,
-                        "Map may appear in the wrong location or scale incorrectly.\n");
+                            "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (SW_x < 0)
                         SW_x = 0;
@@ -1575,7 +1575,7 @@ Samples Per Pixel: 1
                     if (SW_y >= (int)height)
                         SW_y = height -1;
 
-/*
+                    /*
                     //Free any memory used and return
                     // We're finished with the geoTIFF key parser, so get rid of it
                     GTIFFree (gtif);
@@ -1584,7 +1584,7 @@ Samples Per Pixel: 1
                     XTIFFClose (tif);
  
                     return;
-*/
+                    */
                 }
             }
         }
@@ -1615,31 +1615,31 @@ Samples Per Pixel: 1
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
 
-        /* Convert from PCS coordinates to image pixel coordinates */
-        if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )
-        {
-            if (debug_level & 16)
-                fprintf(stderr,"X/Y Pixels: %f, %f\n", xxx, yyy);
+            /* Convert from PCS coordinates to image pixel coordinates */
+            if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )
+            {
+                if (debug_level & 16)
+                    fprintf(stderr,"X/Y Pixels: %f, %f\n", xxx, yyy);
 
-            SE_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
-            SE_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
+                SE_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
+                SE_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
 
-            if (debug_level & 16)
-                fprintf(stderr,"X/Y Pixels: %d, %d\n", SE_x, SE_y);
+                if (debug_level & 16)
+                    fprintf(stderr,"X/Y Pixels: %d, %d\n", SE_x, SE_y);
 
                 if (SE_x < 0 || SE_y < 0 || SE_x >= (int)width || SE_y >= (int)height) {
 
                     fprintf(stderr,
-                        "\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        SE_x,
-                        SE_y,
-                        filenm);
+                            "\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                            SE_x,
+                            SE_y,
+                            filenm);
                     fprintf(stderr,
-                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
-                        (long int)width,
-                        (long int)height);
+                            "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                            (long int)width,
+                            (long int)height);
                     fprintf(stderr,
-                        "Map may appear in the wrong location or scale incorrectly.\n");
+                            "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (SE_x < 0)
                         SE_x = 0;
@@ -1653,7 +1653,7 @@ Samples Per Pixel: 1
                     if (SE_y >= (int)height)
                         SE_y = height -1;
 
-/*
+                    /*
                     //Free any memory used and return
                     // We're finished with the geoTIFF key parser, so get rid of it
                     GTIFFree (gtif);
@@ -1662,7 +1662,7 @@ Samples Per Pixel: 1
                     XTIFFClose (tif);
  
                     return;
-*/
+                    */
                 }
             }
         }
@@ -1742,10 +1742,10 @@ Samples Per Pixel: 1
 
     if (!crop_it)       /* If we shouldn't crop the map collar... */
     {
-      top_crop = 0;
-      bottom_crop = height - 1;
-      left_crop = 0;
-      right_crop = width - 1;
+        top_crop = 0;
+        bottom_crop = height - 1;
+        left_crop = 0;
+        right_crop = width - 1;
     }
 
     // The four crop variables are the maximum rectangle that we
@@ -1753,26 +1753,26 @@ Samples Per Pixel: 1
     // part of some lines due to rotation).  Crop all lines/pixels
     // outside these ranges.
 
-//WE7U
-if (top_crop < 0 || top_crop >= (int)height)
-top_crop = 0;
+    //WE7U
+    if (top_crop < 0 || top_crop >= (int)height)
+        top_crop = 0;
 
-if (bottom_crop < 0 || bottom_crop >= (int)height)
-bottom_crop = height - 1;
+    if (bottom_crop < 0 || bottom_crop >= (int)height)
+        bottom_crop = height - 1;
 
-if (left_crop < 0 || left_crop >= (int)width)
-left_crop = 0;
+    if (left_crop < 0 || left_crop >= (int)width)
+        left_crop = 0;
 
-if (right_crop < 0 || right_crop >= (int)width)
-right_crop = width - 1;
+    if (right_crop < 0 || right_crop >= (int)width)
+        right_crop = width - 1;
 
     if (debug_level & 16) {
         fprintf(stderr,"Crop points (pixels):\n");
         fprintf(stderr,"Top: %d\tBottom: %d\tLeft: %d\tRight: %d\n",
-        top_crop,
-        bottom_crop,
-        left_crop,
-        right_crop);
+                top_crop,
+                bottom_crop,
+                left_crop,
+                right_crop);
     }
 
 
@@ -1804,7 +1804,7 @@ right_crop = width - 1;
                 my_colors[l].blue  =  (uint16)(blue_orig[l] * raster_map_intensity);
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+                    //                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1821,7 +1821,7 @@ right_crop = width - 1;
                     (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+                    //                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1835,10 +1835,10 @@ right_crop = width - 1;
             {
                 int v = (((num_colors-1)-l) * 255) / (num_colors-1);
                 my_colors[l].red = my_colors[l].green = my_colors[l].blue =
-                  (uint16)(v * raster_map_intensity) << 8;
+                    (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT) {
-//                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
+                    //                    XFreeColors(XtDisplay(w), cmap, &(my_colors[l].pixel),1,0);
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
                 }
                 else {
@@ -1997,11 +1997,11 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_left_x_increment = (float)
             (1.0 * abs(SW_x_bounding_wgs84 - NW_x_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(SW_y - NW_y));
+             / abs(SW_y - NW_y));
 
         // Pixel coordinates
         left_x_increment = (float)(1.0 * abs(SW_x - NW_x)
-                            / abs(SW_y - NW_y));
+                                   / abs(SW_y - NW_y));
 
         if (SW_x_bounding_wgs84 < NW_x_bounding_wgs84)
             xastir_left_x_increment = -xastir_left_x_increment;
@@ -2009,22 +2009,22 @@ right_crop = width - 1;
         if (SW_x < NW_x)
             left_x_increment = -left_x_increment;
 
-//WE7U
-//if (abs(left_x_increment) > (width/10)) {
-//    left_x_increment = 0.0;
-//    xastir_left_x_increment = 0.0;
-//}
+        //WE7U
+        //if (abs(left_x_increment) > (width/10)) {
+        //    left_x_increment = 0.0;
+        //    xastir_left_x_increment = 0.0;
+        //}
 
         if (debug_level & 16)
-             fprintf(stderr,"xastir_left_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-             xastir_left_x_increment,
-             SW_x_bounding_wgs84,
-             NW_x_bounding_wgs84,
-             left_x_increment,
-             SW_x,
-             NW_x,
-             bottom_crop,
-             top_crop);
+            fprintf(stderr,"xastir_left_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
+                    xastir_left_x_increment,
+                    SW_x_bounding_wgs84,
+                    NW_x_bounding_wgs84,
+                    left_x_increment,
+                    SW_x,
+                    NW_x,
+                    bottom_crop,
+                    top_crop);
     }
     else
     {
@@ -2046,7 +2046,7 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_left_y_increment = (float)
             (1.0 * abs(SW_y_bounding_wgs84 - NW_y_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(SW_y - NW_y));
+             / abs(SW_y - NW_y));
 
         // Pixel coordinates
         left_y_increment = (float)1.0; // Aren't we going down one pixel each time?
@@ -2054,21 +2054,21 @@ right_crop = width - 1;
         if (SW_y_bounding_wgs84 < NW_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_left_y_increment = -xastir_left_y_increment;
 
-//WE7U
-//if (abs(left_y_increment) > (width/10)) {
-//    xastir_left_y_increment = 0.0;
-//}
+        //WE7U
+        //if (abs(left_y_increment) > (width/10)) {
+        //    xastir_left_y_increment = 0.0;
+        //}
 
         if (debug_level & 16)
-             fprintf(stderr,"xastir_left_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-             xastir_left_y_increment,
-             SW_y_bounding_wgs84,
-             NW_y_bounding_wgs84,
-             left_y_increment,
-             SW_y,
-             NW_y,
-             bottom_crop,
-             top_crop);
+            fprintf(stderr,"xastir_left_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
+                    xastir_left_y_increment,
+                    SW_y_bounding_wgs84,
+                    NW_y_bounding_wgs84,
+                    left_y_increment,
+                    SW_y,
+                    NW_y,
+                    bottom_crop,
+                    top_crop);
     }
     else
     {
@@ -2090,11 +2090,11 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_right_x_increment = (float)
             (1.0 * abs(SE_x_bounding_wgs84 - NE_x_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(SE_y - NE_y));
+             / abs(SE_y - NE_y));
 
         // Pixel coordinates
         right_x_increment = (float)(1.0 * abs(SE_x - NE_x)
-                            / abs(SE_y - NE_y));
+                                    / abs(SE_y - NE_y));
 
         if (SE_x_bounding_wgs84 < NE_x_bounding_wgs84)
             xastir_right_x_increment = -xastir_right_x_increment;
@@ -2102,22 +2102,22 @@ right_crop = width - 1;
         if (SE_x < NE_x)
             right_x_increment = -right_x_increment;
 
-//WE7U
-//if (abs(right_x_increment) > (width/10)) {
-//    right_x_increment = 0.0;
-//    xastir_right_x_increment = 0.0;
-//}
+        //WE7U
+        //if (abs(right_x_increment) > (width/10)) {
+        //    right_x_increment = 0.0;
+        //    xastir_right_x_increment = 0.0;
+        //}
 
         if (debug_level & 16)
             fprintf(stderr,"xastir_right_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-            xastir_right_x_increment,
-            SE_x_bounding_wgs84,
-            NE_x_bounding_wgs84,
-            right_x_increment,
-            SE_x,
-            NE_x,
-            bottom_crop,
-            top_crop);
+                    xastir_right_x_increment,
+                    SE_x_bounding_wgs84,
+                    NE_x_bounding_wgs84,
+                    right_x_increment,
+                    SE_x,
+                    NE_x,
+                    bottom_crop,
+                    top_crop);
     }
     else
     {
@@ -2139,7 +2139,7 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_right_y_increment = (float)
             (1.0 * abs(SE_y_bounding_wgs84 - NE_y_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(SE_y - NE_y));
+             / abs(SE_y - NE_y));
 
         // Pixel coordinates
         right_y_increment = (float)1.0;    // Aren't we going down one pixel each time?
@@ -2147,21 +2147,21 @@ right_crop = width - 1;
         if (SE_y_bounding_wgs84 < NE_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_right_y_increment = -xastir_right_y_increment;
 
-//WE7U
-//if (abs(right_y_increment) > (width/10)) {
-//    xastir_right_y_increment = 0.0;
-//}
+        //WE7U
+        //if (abs(right_y_increment) > (width/10)) {
+        //    xastir_right_y_increment = 0.0;
+        //}
 
         if (debug_level & 16)
             fprintf(stderr,"xastir_right_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-            xastir_right_y_increment,
-            SE_y_bounding_wgs84,
-            NE_y_bounding_wgs84,
-            right_y_increment,
-            SE_y,
-            NE_y,
-            bottom_crop,
-            top_crop);
+                    xastir_right_y_increment,
+                    SE_y_bounding_wgs84,
+                    NE_y_bounding_wgs84,
+                    right_y_increment,
+                    SE_y,
+                    NE_y,
+                    bottom_crop,
+                    top_crop);
     }
     else
     {
@@ -2192,11 +2192,11 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_top_y_increment = (float)
             (1.0 * abs(NE_y_bounding_wgs84 - NW_y_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(NE_x - NW_x));    // And a "+ 1.0" here?
+             / abs(NE_x - NW_x));    // And a "+ 1.0" here?
 
         // Pixel coordinates
         top_y_increment = (float)(1.0 * abs(NE_y - NW_y)
-                    / abs(NE_x - NW_x));
+                                  / abs(NE_x - NW_x));
 
         if (NE_y_bounding_wgs84 < NW_y_bounding_wgs84)
             xastir_top_y_increment = -xastir_top_y_increment;
@@ -2206,14 +2206,14 @@ right_crop = width - 1;
 
         if (debug_level & 16)
             fprintf(stderr,"xastir_top_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-            xastir_top_y_increment,
-            NE_y_bounding_wgs84,
-            NW_y_bounding_wgs84,
-            top_y_increment,
-            NE_y,
-            NW_y,
-            right_crop,
-            left_crop);
+                    xastir_top_y_increment,
+                    NE_y_bounding_wgs84,
+                    NW_y_bounding_wgs84,
+                    top_y_increment,
+                    NE_y,
+                    NW_y,
+                    right_crop,
+                    left_crop);
     }
     else
     {
@@ -2236,11 +2236,11 @@ right_crop = width - 1;
         // Xastir coordinates
         xastir_bottom_y_increment = (float)
             (1.0 * abs(SE_y_bounding_wgs84 - SW_y_bounding_wgs84)   // Need to add one pixel worth here yet
-            / abs(SE_x - SW_x));    // And a "+ 1.0" here?
+             / abs(SE_x - SW_x));    // And a "+ 1.0" here?
 
         // Pixel coordinates
         bottom_y_increment = (float)(1.0 * abs(SE_y - SW_y)
-                        / abs(SE_x - SW_x));
+                                     / abs(SE_x - SW_x));
 
         if (SE_y_bounding_wgs84 < SW_y_bounding_wgs84)  
             xastir_bottom_y_increment = -xastir_bottom_y_increment;
@@ -2250,14 +2250,14 @@ right_crop = width - 1;
 
         if (debug_level & 16)
             fprintf(stderr,"xastir_bottom_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
-            xastir_bottom_y_increment,
-            SE_y_bounding_wgs84,
-            SW_y_bounding_wgs84,
-            bottom_y_increment,
-            SE_y,
-            SW_y,
-            right_crop,
-            left_crop);
+                    xastir_bottom_y_increment,
+                    SE_y_bounding_wgs84,
+                    SW_y_bounding_wgs84,
+                    bottom_y_increment,
+                    SE_y,
+                    SW_y,
+                    right_crop,
+                    left_crop);
     }
     else
     {
@@ -2270,7 +2270,7 @@ right_crop = width - 1;
 
 
     // Find the average change in Y as we traverse from left to right one pixel
-//    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
+    //    xastir_avg_y_increment = (float)(xastir_top_y_increment + xastir_bottom_y_increment) / 2.0;
     avg_y_increment = (float)(top_y_increment + bottom_y_increment) / 2.0;
 
 
@@ -2298,9 +2298,9 @@ right_crop = width - 1;
     if (debug_level & 16) {
         if (have_PixelScale) {
             fprintf(stderr,"PixelScale: %f %f %f\n",
-                *PixelScale,
-                *(PixelScale + 1),
-                *(PixelScale + 2) );
+                    *PixelScale,
+                    *(PixelScale + 1),
+                    *(PixelScale + 2) );
         }
         else {
             fprintf(stderr,"No PixelScale tag found in file\n");
@@ -2389,7 +2389,7 @@ right_crop = width - 1;
     //steph = (double)( (left_y_increment + right_y_increment) / 2); 
     // NOTE:  This one does not take into account current height
     steph = (float)( (SW_y_bounding_wgs84 - NW_y_bounding_wgs84)
-                      / (1.0 * (SW_y - NW_y) ) );
+                     / (1.0 * (SW_y - NW_y) ) );
 
     // Compute scaled pixel size for XFillRectangle
     stephc = (int)( ( (1.50 * steph / scale_x) + 1.0) + 1.5);
@@ -2416,10 +2416,10 @@ right_crop = width - 1;
     if (DRG_XOR_colors) {
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
 
-//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);  // yellow
-//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x0f]); // White
-//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x03]); // cyan
-//        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x06]); // orange
+        //        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);  // yellow
+        //        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x0f]); // White
+        //        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x03]); // cyan
+        //        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x06]); // orange
  
         (void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
     }
@@ -2461,14 +2461,14 @@ right_crop = width - 1;
         // equations below.
 
         current_xastir_left = (unsigned long)
-              ( NW_x_bounding_wgs84
-            + ( 1.0 * xastir_left_x_increment * row_offset )
-            -   NW_xastir_x_offset );
+            ( NW_x_bounding_wgs84
+              + ( 1.0 * xastir_left_x_increment * row_offset )
+              -   NW_xastir_x_offset );
 
         current_xastir_right = (unsigned long)
-              ( NE_x_bounding_wgs84
-            + ( 1.0 * xastir_right_x_increment * row_offset )
-            -   NE_xastir_x_offset );
+            ( NE_x_bounding_wgs84
+              + ( 1.0 * xastir_right_x_increment * row_offset )
+              -   NE_xastir_x_offset );
 
 
         //if (debug_level & 16)
@@ -2479,24 +2479,24 @@ right_crop = width - 1;
 
         // In pixel coordinates:
         current_left = (int)
-                          ( NW_x
-                        + ( 1.0 * left_x_increment * row_offset ) + 0.5
-                        -   NW_x_offset );
+            ( NW_x
+              + ( 1.0 * left_x_increment * row_offset ) + 0.5
+              -   NW_x_offset );
 
         current_right = (int)
-                          ( NE_x
-                        + ( 1.0 * right_x_increment * row_offset ) + 0.5
-                        -   NE_x_offset );
+            ( NE_x
+              + ( 1.0 * right_x_increment * row_offset ) + 0.5
+              -   NE_x_offset );
 
-//WE7U:  This comparison is always false:  current_left is unsigned
-//therefore always positive!
-//if (current_left < 0)
-//    current_left = 0;
+        //WE7U:  This comparison is always false:  current_left is unsigned
+        //therefore always positive!
+        //if (current_left < 0)
+        //    current_left = 0;
 
-if (current_right >= width)
-    current_right = width - 1;
+        if (current_right >= width)
+            current_right = width - 1;
 
-//        current_line_width = current_right - current_left + 1;  // Pixels
+        //        current_line_width = current_right - current_left + 1;  // Pixels
 
 
         // if (debug_level & 16)
@@ -2511,7 +2511,7 @@ if (current_right >= width)
         // (Xastir right - Xastir left) / width-of-line
         // Need the "1.0 *" or the math will be incorrect (won't be a float)
         stepw = (float)( (current_xastir_right - current_xastir_left)
-                      / (1.0 * (current_right - current_left) ) );
+                         / (1.0 * (current_right - current_left) ) );
 
 
 
@@ -2524,7 +2524,7 @@ if (current_right >= width)
 
         // In Xastir coordinates
         xastir_current_y = (unsigned long)(NW_y_bounding_wgs84
-                  + (xastir_left_y_increment * row_offset) );
+                                           + (xastir_left_y_increment * row_offset) );
 
         xastir_current_y = (unsigned long)(xastir_current_y - NW_xastir_y_offset);
 
@@ -2538,13 +2538,13 @@ if (current_right >= width)
 
         // Compute right edge of image
         xastir_total_y = (unsigned long)
-                           ( xastir_current_y
-                         - ( total_avg_y_increment * (current_right - current_left) ) );
+            ( xastir_current_y
+              - ( total_avg_y_increment * (current_right - current_left) ) );
 
         // Check left edge y-value then right edge y-value.
         // If either are within view, process the line, else skip it.
         if ( ( ( xastir_current_y <= view_max_y) && (xastir_total_y >= view_top_minus_pixel_height) )
-            || ( ( xastir_total_y <= view_max_y ) && ( xastir_total_y >= view_top_minus_pixel_height ) ) )
+             || ( ( xastir_total_y <= view_max_y ) && ( xastir_total_y >= view_top_minus_pixel_height ) ) )
         {
             // Read one geoTIFF scanline
             if (TIFFReadScanline(tif, imageMemory, row, 0) < 0)
@@ -2565,14 +2565,14 @@ if (current_right >= width)
                 //fprintf(stderr,"Current Left: %ld\n", current_left);    // Pixels
 
                 xastir_current_x = (unsigned long)
-                                    current_xastir_left
-                                    + (stepw * column_offset);    // In Xastir coordinates
+                    current_xastir_left
+                    + (stepw * column_offset);    // In Xastir coordinates
 
                 // Left line y value minus
                 // avg y-increment per scanline * avg y-increment per x-pixel * column_offset
                 xastir_total_y = (unsigned long)
-                                  ( xastir_current_y
-                                - ( total_avg_y_increment * column_offset ) );
+                    ( xastir_current_y
+                      - ( total_avg_y_increment * column_offset ) );
 
                 //fprintf(stderr,"Xastir current: %ld %ld\n", xastir_current_x, xastir_current_y);
 
@@ -2583,8 +2583,8 @@ if (current_right >= width)
                 if (have_fgd)   // USGS map
                 {
                     if (   (xastir_total_y > SW_y_bounding_wgs84)
-                        || (xastir_total_y < NW_y_bounding_wgs84) )
-                    skip++;
+                           || (xastir_total_y < NW_y_bounding_wgs84) )
+                        skip++;
 
 
                     // Here's a trick to make it look like the map pages join better.
@@ -2593,19 +2593,19 @@ if (current_right >= width)
                     if ( *(imageMemory + column) == 0x00 )  // If pixel is Black
                     {
                         if ( (xastir_total_y > (SW_y_bounding_wgs84 - 25) )
-                            || (xastir_total_y < (NW_y_bounding_wgs84 + 25) )
-                            || (xastir_current_x < (SW_x_bounding_wgs84 + 25) )
-                            || (xastir_current_x > (SE_x_bounding_wgs84 - 25) ) )
+                             || (xastir_total_y < (NW_y_bounding_wgs84 + 25) )
+                             || (xastir_current_x < (SW_x_bounding_wgs84 + 25) )
+                             || (xastir_current_x > (SE_x_bounding_wgs84 - 25) ) )
                         {
-//WE7U: column is unsigned so "column >= 0" is always true
-//                            if ((int)column < bytesPerRow && column >= 0) {
+                            //WE7U: column is unsigned so "column >= 0" is always true
+                            //                            if ((int)column < bytesPerRow && column >= 0) {
                             if ((int)column < bytesPerRow) {
  
                                 *(imageMemory + column) = 0x01; // Change to White
                             }
                             else {
-//WE7U
-//                                fprintf(stderr,"draw_geotiff_image_map: Bad fgd file for map?: %s\n", filenm);
+                                //WE7U
+                                //                                fprintf(stderr,"draw_geotiff_image_map: Bad fgd file for map?: %s\n", filenm);
                             }
                         }
                     }
@@ -2614,10 +2614,10 @@ if (current_right >= width)
 
                 /* Look for left or right map boundaries inside view */    
                 if ( !skip
-                    && ( xastir_current_x <= view_max_x )
-                    && ( xastir_current_x >= view_left_minus_pixel_width )    
-                    && ( xastir_total_y <= view_max_y )
-                    && ( xastir_total_y >= view_top_minus_pixel_height ) )
+                     && ( xastir_current_x <= view_max_x )
+                     && ( xastir_current_x >= view_left_minus_pixel_width )    
+                     && ( xastir_total_y <= view_max_y )
+                     && ( xastir_total_y >= view_top_minus_pixel_height ) )
                 {
                     // Here are the corners of our viewport, using the Xastir
                     // coordinate system.  Notice that Y is upside down:
@@ -2634,39 +2634,39 @@ if (current_right >= width)
 
 
 
-// If we wish some colors to be transparent, we could check for a
-// color match here and refuse to draw those that are on our list of
-// transparent colors.  Might be useful for drawing say contour
-// lines on top of satellite images.  Since the USGS topo's use the
-// same colormap for all of the topo's (I believe that is true) then
-// we could just compare on the index into the array instead of the
-// color contents in the array.
-//
-    // Example output from a USGS 7.5' map:
-    //
-    //   0:     0     0     0   black
-    //   1: 65280 65280 65280   light grey
-    //   2:     0 38656 41984
-    //   3: 51968     0  5888
-    //   4: 33536 16896  9472   contour lines, brownish-red
-    //   5: 51456 59904 40192   green
-    //   6: 35072 13056 32768   purple?  freeways, some roads
-    //   7: 65280 59904     0
-    //   8: 42752 57856 57856   blue, bodies of water
-    //   9: 65280 47104 47104   red brick color, cities?
-    //  10: 55808 45824 54784   purple.  freeways, some roads
-    //  11: 53504 53504 53504   grey
-    //  12: 52992 41984 36352   contour lines, tan, more dots/less lines
-    //  13:     0     0     0   black, unused slot?
-    //  14:     0     0     0   black, unused slot?
-    //  15:     0     0     0   black, unused slot?
-    //  16:     0     0     0   black, unused slot?
-    // The rest are all 0's.
+                    // If we wish some colors to be transparent, we could check for a
+                    // color match here and refuse to draw those that are on our list of
+                    // transparent colors.  Might be useful for drawing say contour
+                    // lines on top of satellite images.  Since the USGS topo's use the
+                    // same colormap for all of the topo's (I believe that is true) then
+                    // we could just compare on the index into the array instead of the
+                    // color contents in the array.
+                    //
+                    // Example output from a USGS 7.5' map:
+                    //
+                    //   0:     0     0     0   black
+                    //   1: 65280 65280 65280   light grey
+                    //   2:     0 38656 41984
+                    //   3: 51968     0  5888
+                    //   4: 33536 16896  9472   contour lines, brownish-red
+                    //   5: 51456 59904 40192   green
+                    //   6: 35072 13056 32768   purple?  freeways, some roads
+                    //   7: 65280 59904     0
+                    //   8: 42752 57856 57856   blue, bodies of water
+                    //   9: 65280 47104 47104   red brick color, cities?
+                    //  10: 55808 45824 54784   purple.  freeways, some roads
+                    //  11: 53504 53504 53504   grey
+                    //  12: 52992 41984 36352   contour lines, tan, more dots/less lines
+                    //  13:     0     0     0   black, unused slot?
+                    //  14:     0     0     0   black, unused slot?
+                    //  15:     0     0     0   black, unused slot?
+                    //  16:     0     0     0   black, unused slot?
+                    // The rest are all 0's.
                     // either show all colors (usgs_drg==0) or show selected
                     // colors (usgs_drg == 1) 
                     if ( usgs_drg == 0 ||
                          (usgs_drg ==1 && (*(imageMemory + column) >= 13
-                          || DRG_show_colors[*(imageMemory + column)] == 1))) {
+                                           || DRG_show_colors[*(imageMemory + column)] == 1))) {
 
 
                         // If this is set, use gc_tint for drawing
