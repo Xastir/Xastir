@@ -89,7 +89,7 @@
 
 #if defined(HAVE_MAGICK) || !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
   #define NO_XPM 1
-#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
+#endif  // HAVE_MAGICK ||  !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
 
 
 #ifdef HAVE_MAGICK
