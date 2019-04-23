@@ -609,20 +609,22 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int port) {
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
-                setup, setup1, setup2, setup3, setup4,
-                device, converse, comment, speed, speed_box,
+                setup1, setup3, setup4,
+                device, converse, comment, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400;
+//  static Widget setup, setup2, speed;
 #ifndef __LSB__
     static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
-    static Widget style, style_box,
+    static Widget style_box,
                 style_8n1, style_7e1, style_7o1,
-                igate, igate_box,
+                igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
                 igate_label,
                 proto, proto1, proto2, proto3,
                 radio_port_label;
+//  static Widget style, igate;
     char temp[50];
     Atom delw;
     Arg al[50];                      /* Arg List */
@@ -962,7 +964,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-        speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
+        // speed
+        XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -1067,7 +1070,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-                style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
+                //style
+                XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -1114,7 +1118,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                      XmNfontList, fontlist1,
                                      NULL);
 
-        igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame4,
+        //igate
+        XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame4,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -1326,7 +1331,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     NULL);
 
                 // KISS Parameters
-                setup = XtVaCreateManagedWidget(langcode("WPUPCFT034"),xmLabelWidgetClass, frame3,
+                //setup
+                XtVaCreateManagedWidget(langcode("WPUPCFT034"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -1370,7 +1376,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     NULL);
 
                 // Persistence (0 to 255)
-                setup2 = XtVaCreateManagedWidget(langcode("WPUPCFT036"), xmLabelWidgetClass, form2,
+                //setup2
+                XtVaCreateManagedWidget(langcode("WPUPCFT036"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 10,
@@ -1514,7 +1521,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup = XtVaCreateManagedWidget(langcode("WPUPCFT031"),xmLabelWidgetClass, frame3,
+                //setup
+                XtVaCreateManagedWidget(langcode("WPUPCFT031"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -1555,7 +1563,8 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
                                     XmNfontList, fontlist1,
                                     NULL);
 
-                setup2 = XtVaCreateManagedWidget(langcode("WPUPCFT033"), xmLabelWidgetClass, form2,
+                //setup2
+                XtVaCreateManagedWidget(langcode("WPUPCFT033"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 10,
@@ -2091,15 +2100,17 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
 void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2,
-                device, comment, speed, speed_box,
+                device, comment, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400;
+//  static Widget speed;
 #ifndef __LSB__
     static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
-    static Widget style, style_box,
+    static Widget style_box,
                 style_8n1, style_7e1, style_7o1,
                 sep;
+//  static Widget style;
     Atom delw;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -2242,7 +2253,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground, colors[0xff],
             NULL);
 
-        speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
+        //speed
+        XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
             XmNchildType, XmFRAME_TITLE_CHILD,
             XmNbackground, colors[0xff],
             XmNfontList, fontlist1,
@@ -2341,7 +2353,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmNbackground, colors[0xff],
             NULL);
 
-        style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
+        //style
+        XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
             XmNchildType, XmFRAME_TITLE_CHILD,
             XmNbackground, colors[0xff],
             XmNfontList, fontlist1,
@@ -2672,18 +2685,21 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2, frame3, frame4, WX_none,
-                device, comment, speed, speed_box,
+                device, comment, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400;
+//  static Widget speed;
 #ifndef __LSB__
     static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
-    static Widget style, style_box,
+    static Widget style_box,
                 style_8n1, style_7e1, style_7o1,
-                data_type, data_box,
+                data_box,
                 data_auto, data_bin, data_ascii,
-                gauge_type, gauge_box,
+                gauge_box,
                 sep;
+//  static Widget data_type, gauge_type;
+//  static Widget style;
     Atom delw;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -2803,7 +2819,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                     XmNfontList, fontlist1,
                                     NULL);
 
-        speed = XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
+        // speed
+        XtVaCreateManagedWidget(langcode("WPUPCFT004"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -2904,7 +2921,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
+        // style
+        XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -2949,7 +2967,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        data_type= XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
+        // data_type
+        XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -2995,7 +3014,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                         NULL);
 
         // Rain Gauge Type
-        gauge_type= XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
+        // gauge_type
+        XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
                                         XmNchildType, XmFRAME_TITLE_CHILD,
                                         XmNbackground, colors[0xff],
                                         XmNfontList, fontlist1,
@@ -3373,10 +3393,11 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, frame3, frame4, WX_none,
                 button_ok, button_cancel,
                 hostn, portn, comment,
-                data_type, data_box,
+                data_box,
                 data_auto, data_bin, data_ascii,
-                gauge_type, gauge_box,
+                gauge_box,
                 sep;
+//  static Widget data_type, gauge_type;
     char temp[20];
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -3550,7 +3571,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        data_type= XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
+        // data_type
+        XtVaCreateManagedWidget(langcode("WPUPCFT024"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -3596,7 +3618,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                         NULL);
 
         // Rain Gauge Type
-        gauge_type= XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
+        // gauge_type
+        XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
                                         XmNchildType, XmFRAME_TITLE_CHILD,
                                         XmNbackground, colors[0xff],
                                         XmNfontList, fontlist1,
@@ -4378,10 +4401,11 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel, frame,
                 devn, comment,
                 proto, proto1, proto2, proto3,
-                igate, igate_box,
+                igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
                 igate_label,
                 sep;
+//  static Widget igate;
 
     char temp[50];
     Atom delw;
@@ -4530,7 +4554,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
+        // igate
+        XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     XmNfontList, fontlist1,
@@ -5013,8 +5038,9 @@ end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
 void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl,
+                ihost, iport, password,
                 filter, comment, sep;
+//  static Widget password_fl;
 
     Atom delw;
     char temp[40];
@@ -5164,7 +5190,8 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        password_fl = XtVaCreateManagedWidget(langcode("WPUPCFI010"),xmLabelWidgetClass, form,
+        // password_fl
+        XtVaCreateManagedWidget(langcode("WPUPCFI010"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, ihost,
                                       XmNtopOffset, 20,
@@ -5516,8 +5543,9 @@ end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
 void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl,
+                ihost, iport, password,
                 filter, sep, comment;
+//  static Widget password_fl;
 
     Atom delw;
     char temp[40];
@@ -5667,7 +5695,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        password_fl = XtVaCreateManagedWidget(langcode("WPUPCFID10"),xmLabelWidgetClass, form,
+        // password_fl
+        XtVaCreateManagedWidget(langcode("WPUPCFID10"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, ihost,
                                       XmNtopOffset, 20,
@@ -7176,10 +7205,11 @@ end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
 void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl, sep,
-                igate, igate_box, igate_o_0, igate_o_1, igate_o_2,
+                ihost, iport, password, sep,
+                igate_box, igate_o_0, igate_o_1, igate_o_2,
                 igate_label, frame, proto, proto1, proto2, proto3,
                 radioport_label, comment;
+//  static Widget igate, password_fl;
     Atom delw;
     char temp[40];
     Arg al[50];                      // Arg list
@@ -7377,7 +7407,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNfontList, fontlist1,
                                       NULL);
 
-        password_fl = XtVaCreateManagedWidget(langcode("WPUPCFIA10"),xmLabelWidgetClass, form,
+        // password_fl
+        XtVaCreateManagedWidget(langcode("WPUPCFIA10"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, ihost,
                                       XmNtopOffset, 20,
@@ -7449,7 +7480,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
+        // igate
+        XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                       XmNfontList, fontlist1,
@@ -8330,15 +8362,15 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
     char temp2[50];
     int port;
     XmString *list;
-    int data_on,pos;
+//  int data_on,pos;
     int found;
     Atom delw;
     XmString str_ptr;
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
-    data_on=0;
-    pos=0;
+//  data_on=0;
+//  pos=0;
     found=0;
     do_w=atoi(what);
     switch (do_w) {
