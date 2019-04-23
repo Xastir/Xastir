@@ -458,7 +458,11 @@ void draw_dos_map(Widget w,
         return;
     }
 
-    (void)fread (map_type, 4, 1, f);
+    if (fread (map_type, 4, 1, f) == 0) {
+        // Ignoring fread errors as we've done here since forever.
+        // Would be good to take another look at this later.
+    }
+ 
     map_type[4] = '\0';
     dos_labels = FALSE;
     points_per_degree = 300;
@@ -484,7 +488,11 @@ void draw_dos_map(Widget w,
 
         for (j = 0; j < DOS_HDR_LINES; strlen(Buffer) ? 1 : j++) {
 
-            (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
+            if (fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f) == 0) {
+                // Ignoring fgets errors as we've done here since forever.
+                // Would be good to take another look at this later.
+            }
+ 
 
 //            if (!strlen(Buffer))
 //                j++;
@@ -551,23 +559,43 @@ void draw_dos_map(Widget w,
         if (debug_level & 512)
             fprintf(stderr,"\nWindows map\n");
 	
-        (void)fread (map_version, 4, 1, f);
+        if (fread (map_version, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         map_version[4] = '\0';
       
-        (void)fread (file_name, 32, 1, f);
+        if (fread (file_name, 32, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         file_name[32] = '\0';
       
-        (void)fread (map_title, 32, 1, f);
+        if (fread (map_title, 32, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         map_title[32] = '\0';
         if (debug_level & 16)
             fprintf(stderr,"Map Title %s\n", map_title);
       
-        (void)fread (map_creator, 8, 1, f);
+        if (fread (map_creator, 8, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         map_creator[8] = '\0';
         if (debug_level & 16)
             fprintf(stderr,"Map Creator %s\n", map_creator);
       
-        (void)fread (&temp, 4, 1, f);
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         creation_date = ntohl (temp);
         if (debug_level & 16)
             fprintf(stderr,"Creation Date %lX\n", creation_date);
@@ -577,16 +605,32 @@ void draw_dos_map(Widget w,
         if (debug_level & 16)
             fprintf(stderr,"year is %ld + days %ld\n", 1904l + year, (long)days);
       
-        (void)fread (&temp, 4, 1, f);
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         left_boundary = ntohl (temp);
       
-        (void)fread (&temp, 4, 1, f);
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         right_boundary = ntohl (temp);
       
-        (void)fread (&temp, 4, 1, f);
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         top_boundary = ntohl (temp);
       
-        (void)fread (&temp, 4, 1, f);
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         bottom_boundary = ntohl (temp);
       
         if (strcmp (map_version, "2.00") != 0) {
@@ -596,13 +640,30 @@ void draw_dos_map(Widget w,
             bottom_boundary *= 10;
         }
 
-        (void)fread (map_reserved1, 8, 1, f);
-        (void)fread (&temp, 4, 1, f);
+        if (fread (map_reserved1, 8, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
         total_vector_points = (long)ntohl (temp);
-        (void)fread (&temp, 4, 1, f);
-        total_labels = (long)ntohl (temp);
-        (void)fread (map_reserved2, 140, 1, f);
 
+        if (fread (&temp, 4, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
+        total_labels = (long)ntohl (temp);
+
+        if (fread (map_reserved2, 140, 1, f) == 0) {
+            // Ignoring fread errors as we've done here since forever.
+            // Would be good to take another look at this later.
+        }
+ 
     }   // End of Windows-type map header portion
       
       
@@ -716,8 +777,11 @@ void draw_dos_map(Widget w,
  
         if (strncmp ("DOS ", map_type, 4) == 0) {
 
-            (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
-
+            if (fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f) == 0) {
+                // Ignoring fgets errors as we've done here since forever.
+                // Would be good to take another look at this later.
+            }
+ 
             while ((ptr = strpbrk (Buffer, "\r\n")) != NULL && !dos_labels) {
                 long LatHld = 0, LongHld;
                 char *trailer;
@@ -970,30 +1034,58 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
 // Windows type map...
 
             last_behavior = object_behavior;
-            (void)fread (&vector_start, 1, 1, f);
-            (void)fread (&object_behavior, 1, 1, f);      // Fill Color?
 
+            if (fread (&vector_start, 1, 1, f) == 0) {
+                // Ignoring fread errors as we've done here since forever.
+                // Would be good to take another look at this later.
+            }
+ 
+            if (fread (&object_behavior, 1, 1, f) == 0) {      // Fill Color?
+                // Ignoring fread errors as we've done here since forever.
+                // Would be good to take another look at this later.
+            }
+ 
             if (strcmp (map_type, "COMP") == 0) {
                 short temp_short;
                 long LatOffset, LongOffset;
 
                 LatOffset  = (long)(top_boundary  - top_boundary  % 6000);
                 LongOffset = (long)(left_boundary - left_boundary % 6000);
-                (void)fread (&temp_short, 2, 1, f);
+
+                if (fread (&temp_short, 2, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+
                 x_long_cord = (ntohs (temp_short) * 10 + LongOffset);
-                (void)fread (&temp_short, 2, 1, f);
+
+                if (fread (&temp_short, 2, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+ 
                 y_lat_cord  = (ntohs (temp_short) * 10 + LatOffset);
             }
             else {
-                (void)fread (&temp, 4, 1, f);
+                if (fread (&temp, 4, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+
                 x_long_cord = ntohl (temp);
+
                 if (strcmp (map_version, "2.00") != 0)
-                x_long_cord *= 10;
+                    x_long_cord *= 10;
             
-                (void)fread (&temp, 4, 1, f);
+                if (fread (&temp, 4, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+ 
                 y_lat_cord = ntohl (temp);
+
                 if (strcmp (map_version, "2.00") != 0)
-                y_lat_cord *= 10;
+                    y_lat_cord *= 10;
             }
 
             if (alert_color && last_behavior & 0x80 && (int)vector_start == 0xff) {
@@ -1078,8 +1170,11 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
             if (strcmp (map_type, "DOS ") == 0) {   // Handle DOS-type map labels/embedded objects
                 char *trailer;
 
-                (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
-
+                if (fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f) == 0) {
+                    // Ignoring fgets errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+ 
                 for (; (ptr = strpbrk (Buffer, "\r\n")) != NULL;xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr)) {
 
                     *ptr = '\0';
@@ -1171,23 +1266,42 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                 char label_type_1[2], label_type_2[2];
             
                 // Snag first two bytes of label
-                (void)fread (label_type_1, 1, 1, f);
-                (void)fread (label_type_2, 1, 1, f);
+                if (fread (label_type_1, 1, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
+ 
+                if (fread (label_type_2, 1, 1, f) == 0) {
+                    // Ignoring fread errors as we've done here since forever.
+                    // Would be good to take another look at this later.
+                }
             
                 if (label_type_2[0] == '\0') {  // Found a label
               
                     // Found text label
-                    (void)fread (&temp, 4, 1, f);           /* x */
+                    if (fread (&temp, 4, 1, f) == 0) {           /* x */
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+ 
                     label_x_cord = ntohl (temp);
                     if (strcmp (map_version, "2.00") != 0)
                         label_x_cord *= 10;
               
-                    (void)fread (&temp, 4, 1, f);           /* y */
+                    if (fread (&temp, 4, 1, f) == 0) {           /* y */
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+ 
                     label_y_cord = ntohl (temp);
                     if (strcmp (map_version, "2.00") != 0)
                         label_y_cord *= 10;
               
-                    (void)fread (&temp_mag, 2, 1, f);       /* mag */
+                    if (fread (&temp_mag, 2, 1, f) == 0) {       /* mag */
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+
                     label_mag = (int)ntohs (temp_mag);
                     if (strcmp (map_version, "2.00") != 0)
                         label_mag *= 10;
@@ -1195,7 +1309,11 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     if (strcmp (map_type, "COMP") == 0) {
 
                         for (i = 0; i < 32; i++) {
-                            (void)fread (&label_text[i], 1, 1, f);
+                            if (fread (&label_text[i], 1, 1, f) == 0) {
+                                // Ignoring fread errors as we've done here since forever.
+                                // Would be good to take another look at this later.
+                            }
+ 
                             if (label_text[i] == '\0') {
                                 break;
                             }
@@ -1203,7 +1321,11 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                         label_text[32] = '\0';  // Make sure we have a terminator
                     }
                     else {
-                        (void)fread (label_text, 32, 1, f);   /* text */
+                        if (fread (label_text, 32, 1, f) == 0) {   /* text */
+                            // Ignoring fread errors as we've done here since forever.
+                            // Would be good to take another look at this later.
+                        }
+ 
                         label_text[32] = '\0';  // Make sure we have a terminator
                     }
               
@@ -1302,24 +1424,47 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     //fprintf(stderr,"Found windows embedded symbol\n");
               
                     /* label is an embedded symbol */
-                    (void)fread (&temp, 4, 1, f);
+                    if (fread (&temp, 4, 1, f) == 0) {
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+
                     label_x_cord = ntohl (temp);
                     if (strcmp (map_version, "2.00") != 0)
                         label_x_cord *= 10;
           
-                    (void)fread (&temp, 4, 1, f);
+                    if (fread (&temp, 4, 1, f) == 0) {
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+
                     label_y_cord = ntohl (temp);
                     if (strcmp (map_version, "2.00") != 0)
                         label_y_cord *= 10;
               
-                    (void)fread (&temp_mag, 2, 1, f);
+                    if (fread (&temp_mag, 2, 1, f) == 0) {
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+ 
                     label_mag = (int)ntohs (temp_mag);
                     if (strcmp (map_version, "2.00") != 0)
                         label_mag *= 10;
               
-                    (void)fread (&label_symbol_del, 1, 1, f);   // Snag symbol table char
-                    (void)fread (&label_symbol_char, 1, 1, f);  // Snag symbol char
-                    (void)fread (&label_text_color, 1, 1, f);   // Snag text color (should be 1-9, others should default to black)
+                    if (fread (&label_symbol_del, 1, 1, f) == 0) { // Snag symbol table char
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+
+                    if (fread (&label_symbol_char, 1, 1, f) == 0) { // Snag symbol char
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+                    if (fread (&label_text_color, 1, 1, f) == 0) { // Snag text color (should be 1-9, others should default to black)
+                        // Ignoring fread errors as we've done here since forever.
+                        // Would be good to take another look at this later.
+                    }
+
                     if (label_text_color < '1' && label_text_color > '9')
                         label_text_color = '0'; // Default to black
               
@@ -1330,13 +1475,20 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     if (strcmp (map_type, "COMP") == 0) {
 
                         for (i = 0; i < 32; i++) {
-                            (void)fread (&label_text[i], 1, 1, f);
+                            if (fread (&label_text[i], 1, 1, f) == 0) {
+                                // Ignoring fread errors as we've done here since forever.
+                                // Would be good to take another look at this later.
+                            }
+
                             if (label_text[i] == '\0')
                                 break;
                         }
                     }
                     else {
-                        (void)fread (label_text, 29, 1, f);
+                        if (fread (label_text, 29, 1, f) == 0) {
+                            // Ignoring fread errors as we've done here since forever.
+                            // Would be good to take another look at this later.
+			}
                     }
               
                     // NOTE: 0x21 is the first color for the area object or "DOS" colors
