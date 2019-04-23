@@ -2211,8 +2211,9 @@ void draw_geo_image_map (Widget w,
 #else   // HAVE_MAGICK
 
         // We don't have ImageMagick libs compiled in, so use the
-        // XPM library instead.
+        // XPM library instead, but only if we HAVE XPM.
 
+#ifndef NO_XPM
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             // Update to screen
@@ -2284,7 +2285,9 @@ void draw_geo_image_map (Widget w,
 
         width  = atb.width;
         height = atb.height;
-
+#else // NO_XPM
+        fprintf(stderr,"Xastir was configured with neither XPM library nor (Image/Graphics)Magick, cannot display map %s\n",filenm);
+#endif // NO_XPM
 #endif  // HAVE_MAGICK
 
         // draw the image from the file out to the map screen
