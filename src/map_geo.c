@@ -2060,7 +2060,19 @@ void draw_geo_image_map (Widget w,
                             &exception, &da, &pixmap, &gc, screen_width, screen_height))
             return;
 
+#if defined(HAVE_GRAPHICSMAGICK)
+  #if (MagickLibVersion < 0x201702)
         index_pack = GetIndexes(image);
+  #else
+        index_pack = AccessMutableIndexes(image);
+  #endif
+#else
+  #if (MagickLibVersion < 0x0669)
+        index_pack = GetIndexes(image);
+#else
+        index_pack = GetAuthenticIndexQueue(image);
+  #endif
+#endif
         if (image->storage_class == PseudoClass && !index_pack) {
             fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
             if (image)
