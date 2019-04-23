@@ -22589,42 +22589,39 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         if(predefined_menu_from_file) {
             // Option to load the predefined SAR objects menu items from a file.
             // Display the filename if one is currently selected and option is enabled.
-            if (predefined_object_definition_filename != NULL ) { 
 
 #ifdef USE_COMBO_BOX            
-                XmString tempSelection = XmStringCreateLocalized(predefined_object_definition_filename);
-                XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
-                XmStringFree(tempSelection);
+            XmString tempSelection = XmStringCreateLocalized(predefined_object_definition_filename);
+            XmComboBoxSelectItem(load_predefined_objects_menu_from_file, tempSelection);
+            XmStringFree(tempSelection);
 #else
-                x = -1;
-                if (strncmp(predefined_object_definition_filename,"predefined_SAR.sys",strlen(predefined_object_definition_filename)) == 0) 
-                    x = 0;
-                if (strncmp(predefined_object_definition_filename,"predefined_EVENT.sys",strlen(predefined_object_definition_filename)) == 0)
-                    x = 1;
-                if (strncmp(predefined_object_definition_filename,"predefined_USER.sys",strlen(predefined_object_definition_filename)) == 0)
-                    x = 2;
-                i = 3;
-                // allow display of another filename from the config file.
-                // user won't be able to edit it, but they will see it.
-                if (x==-1) { 
-                    ac = 0;
-                    cb_items[i] = XmStringCreateLocalized(predefined_object_definition_filename);
-                    XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
-                    XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
-                    XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
-                    sprintf(buf,"button%d",i);
-                    lpomff_button = XmCreatePushButton(lpomff_menuPane, buf, al, ac);
-                    XtManageChild(lpomff_button);
-                    XtAddCallback(lpomff_button, XmNactivateCallback, lpomff_menuCallback, Configure_defaults);
-                    lpomff_buttons[i] = lpomff_button;
-                    XmStringFree(cb_items[i]);
-                    x = i;
-                }
-                XtVaSetValues(lpomff_menu, XmNmenuHistory, lpomff_buttons[x], NULL);
-                lpomff_value = x+1;
-#endif // USE_COMBO_BOX
-
+            x = -1;
+            if (strncmp(predefined_object_definition_filename,"predefined_SAR.sys",strlen(predefined_object_definition_filename)) == 0) 
+                x = 0;
+            if (strncmp(predefined_object_definition_filename,"predefined_EVENT.sys",strlen(predefined_object_definition_filename)) == 0)
+                x = 1;
+            if (strncmp(predefined_object_definition_filename,"predefined_USER.sys",strlen(predefined_object_definition_filename)) == 0)
+                x = 2;
+            i = 3;
+            // allow display of another filename from the config file.
+            // user won't be able to edit it, but they will see it.
+            if (x==-1) { 
+                ac = 0;
+                cb_items[i] = XmStringCreateLocalized(predefined_object_definition_filename);
+                XtSetArg(al[ac], XmNlabelString, cb_items[i]); ac++;
+                XtSetArg(al[ac], XmNuserData, (XtPointer)i); ac++;
+                XtSetArg(al[ac], XmNfontList, fontlist1); ac++;
+                sprintf(buf,"button%d",i);
+                lpomff_button = XmCreatePushButton(lpomff_menuPane, buf, al, ac);
+                XtManageChild(lpomff_button);
+                XtAddCallback(lpomff_button, XmNactivateCallback, lpomff_menuCallback, Configure_defaults);
+                lpomff_buttons[i] = lpomff_button;
+                XmStringFree(cb_items[i]);
+                x = i;
             }
+            XtVaSetValues(lpomff_menu, XmNmenuHistory, lpomff_buttons[x], NULL);
+            lpomff_value = x+1;
+#endif // USE_COMBO_BOX
             XmToggleButtonSetState(load_predefined_objects_menu_from_file_enable,TRUE,FALSE);
         } else {
             // by default combo box is created with no selection
