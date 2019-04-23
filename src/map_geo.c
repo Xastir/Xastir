@@ -87,7 +87,7 @@
   #define NO_GRAPHICS 1
 #endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_MAGICK)
 
-#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
+#if defined(HAVE_MAGICK) || !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
   #define NO_XPM 1
 #endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
 
@@ -576,7 +576,7 @@ void draw_geo_image_map (Widget w,
     int width,height;
 #ifndef NO_XPM
     XpmAttributes atb;              // Map attributes after map's read into an XImage
-#endif  // HAVE_MAGICK
+#endif  // NO_XPM
 
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
