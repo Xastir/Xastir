@@ -830,7 +830,7 @@ clear_dangerous();
 
     if ( debug_level & 512 ) {
         fprintf(stderr,"map_cache_del: file %s unlink returned:%d.\n",
-            (mc_delete_file == NULL) ? "(null)" : mc_delete_file,
+            mc_delete_file,
             mc_ret);
     }
 
