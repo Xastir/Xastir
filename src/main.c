@@ -6941,23 +6941,23 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
         XmToggleButtonSetState(index_maps_on_startup_button,TRUE,FALSE);
 
 
-        map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP023"),
-          xmPushButtonGadgetClass,
-          map_config_pane,
-          XmNmnemonic,langcode_hotkey("PULDNMP023"),
-          XmNfontList, fontlist1,
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
+    map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP023"),
+            xmPushButtonGadgetClass,
+            map_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNMP023"),
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-        map_all_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP024"),
-          xmPushButtonGadgetClass,
-          map_config_pane,
-          XmNmnemonic,langcode_hotkey("PULDNMP024"),
-          XmNfontList, fontlist1,
-          MY_FOREGROUND_COLOR,
-          MY_BACKGROUND_COLOR,
-          NULL);
+    map_all_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP024"),
+            xmPushButtonGadgetClass,
+            map_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNMP024"),
+            XmNfontList, fontlist1,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep2e",
