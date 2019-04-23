@@ -1318,7 +1318,7 @@ void draw_complete_lat_lon_grid(Widget w) {
     int coordinate_format;      // Format to use for coordinates on border (e.g. decimal degrees).
     char grid_label[25];        // String to draw labels on grid lines
     int screen_width_xastir;  // screen width in xastir units (1/100 of a second)
-    int screen_height_xastir; // screen height in xastir units (1/100 of a second)
+//  int screen_height_xastir; // screen height in xastir units (1/100 of a second)
     int border_width;          // the width of the labeled border in pixels.
     int string_width_pixels = 0;// Width of a grid label string in pixels.
     float screen_width_degrees;   // Width of the screen in degrees
@@ -1351,7 +1351,7 @@ void draw_complete_lat_lon_grid(Widget w) {
     xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
     yy2 = NW_corner_latitude   + ((screen_height - border_width) * scale_y);
     screen_width_xastir = xx2 - xx;
-    screen_height_xastir = yy2 - yy;
+//  screen_height_xastir = yy2 - yy;
     // Determine some parameters used in drawing the border.
     string_width_pixels = get_standard_border_string_width_pixels(w, 7);
     // 1 xastir coordinate = 1/100 of a second  
@@ -1770,7 +1770,7 @@ void draw_major_utm_mgrs_grid(Widget w) {
     unsigned int int_utmEasting;
     unsigned int int_utmNorthing; 
     char mgrs_space_string[4] = "   ";
-    int mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+//  int mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
     char mgrs_ul_digraph[3] = "  ";  // MGRS digraph for upper left corner of screen
     char mgrs_lr_digraph[3] = "  ";  // MGRS digraph for lower right corner of screen
 
@@ -1918,10 +1918,10 @@ void draw_major_utm_mgrs_grid(Widget w) {
                 "%s %s %05.0f %05.0f",
                 mgrs_zone,mgrs_lr_digraph,(float)int_utmEasting,(float)int_utmNorthing);
            if (strcmp(mgrs_lr_digraph,mgrs_ul_digraph)==0) {
-                 mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+//             mgrs_single_digraph = TRUE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
            } 
            else {
-                 mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
+//             mgrs_single_digraph = FALSE; // mgrs_ul_digraph and mgrs_ur_digraph are the same.
            }
         } 
         else {
@@ -7359,7 +7359,7 @@ int index_retrieve(char *filename,
 void index_save_to_file(void) {
     FILE *f;
     map_index_record *current;
-    map_index_record *last;
+//  map_index_record *last;
     char out_string[MAX_FILENAME*2];
     char map_index_path[MAX_VALUE];
 
@@ -7377,7 +7377,7 @@ void index_save_to_file(void) {
     }
 
     current = map_index_head;
-    last = current;
+//  last = current;
 
     while (current != NULL) {
         int i;
@@ -7427,7 +7427,7 @@ void index_save_to_file(void) {
                 current = NULL; // All done
             }
             // Set up pointers for next loop iteration
-            last = current;
+//          last = current;
 
             if (current != NULL)
                 current = current->next;
@@ -7435,7 +7435,7 @@ void index_save_to_file(void) {
 
 
         else {
-            last = current;
+//          last = current;
             current = current->next;
         }
 /*
@@ -8227,8 +8227,9 @@ static int alert_count;
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
 void fill_in_new_alert_entries() {
-//    int ii;
-    char alert_scan[MAX_FILENAME], *dir_ptr;
+//  int ii;
+    char alert_scan[MAX_FILENAME];
+//  char *dir_ptr;
     struct hashtable_itr *iterator = NULL;
     alert_entry *temp;
     char dir[MAX_FILENAME];
@@ -8253,7 +8254,7 @@ void fill_in_new_alert_entries() {
     strncat(alert_scan, // Complete alert directory is now set up in the string
         "/",
         sizeof(alert_scan) - 1 - strlen(alert_scan));
-    dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
+//  dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
     // Iterate through the weather alerts.  It looks like we wish to
     // just fill in the alert struct and to determine whether the

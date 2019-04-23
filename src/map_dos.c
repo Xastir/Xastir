@@ -86,9 +86,9 @@ extern int mag;
 
 /* MAP pointers */
 
-static map_vectors *map_vectors_ptr;
-static text_label *map_text_label_ptr;
-static symbol_label *map_symbol_label_ptr;
+//static map_vectors *map_vectors_ptr;
+//static text_label *map_text_label_ptr;
+//static symbol_label *map_symbol_label_ptr;
 
 /* MAP counters */
 
@@ -369,7 +369,7 @@ void draw_dos_map(Widget w,
     int dos_flag;
     long temp;
     int points_per_degree;
-    int map_range;
+//  int map_range;
   
     /* vector info */
     unsigned char vector_start;
@@ -393,12 +393,12 @@ void draw_dos_map(Widget w,
     long count;
     int label_length;
     int i;
-    int map_maxed_vectors;
-    int map_maxed_text_labels;
-    int map_maxed_symbol_labels;
-    map_vectors *vectors_ptr;
-    text_label *text_ptr;
-    symbol_label *symbol_ptr;
+//  int map_maxed_vectors;
+//  int map_maxed_text_labels;
+//  int map_maxed_symbol_labels;
+//  map_vectors *vectors_ptr;
+//  text_label *text_ptr;
+//  symbol_label *symbol_ptr;
     int line_width;
     int x, y;
     int color;
@@ -422,13 +422,13 @@ void draw_dos_map(Widget w,
     mag = (1 * scale_y) / 2;    // determines if details are drawn
   
     /* MAP counters */
-    vectors_ptr = map_vectors_ptr;
-    text_ptr = map_text_label_ptr;
-    symbol_ptr = map_symbol_label_ptr;
+//  vectors_ptr = map_vectors_ptr;
+//  text_ptr = map_text_label_ptr;
+//  symbol_ptr = map_symbol_label_ptr;
   
-    map_maxed_vectors = 0;
-    map_maxed_text_labels = 0;
-    map_maxed_symbol_labels = 0;
+//  map_maxed_vectors = 0;
+//  map_maxed_text_labels = 0;
+//  map_maxed_symbol_labels = 0;
     npoints = 0;
   
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
@@ -526,7 +526,7 @@ void draw_dos_map(Widget w,
 	      
                 	case 5:
 //fprintf(stderr,"map_range: %s\n", Buffer);
-                	    map_range = (int) atof (Buffer);
+//                	    map_range = (int) atof (Buffer);
                 	    break;
 	      
                 	case 7:
