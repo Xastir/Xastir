@@ -4804,6 +4804,12 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
 
 #ifdef HAVE_LIBAX25
         XtAddCallback(button_ok, XmNactivateCallback, Config_AX25_change_data, config_AX25_dialog);
+#else
+        // Need code to use button_ok variable to quiet a compiler warning
+        //when we don't have LIBAX25 linked-in.
+        if (button_ok != null) {
+            // Do nothing
+        }
 #endif /* USE_AX25 */
         XtAddCallback(button_cancel, XmNactivateCallback, Config_AX25_destroy_shell, config_AX25_dialog);
 
