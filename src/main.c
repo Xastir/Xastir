@@ -490,7 +490,7 @@ Selections Select_ = { 0, // none
                        1, // direct
                        1, // via_digi
                        1, // net
-                       0, // tactical only 
+                       0, // tactical
                        1, // old_data
 
                        1, // stations
@@ -502,6 +502,8 @@ Selections Select_ = { 0, // none
                        1, // weather_objects
                        1, // gauge_objects
                        1, // other_objects
+                       1, // aircraft_objects
+                       1, // vessel_objects
 };
 
 What_to_display Display_ = { 1, // callsign
@@ -4519,7 +4521,11 @@ void Query_xfontsel_pipe (void) {
             // data.
             usleep(250000); // 250ms
             
-            fgets(xfontsel_font[i],sizeof(xfontsel_font[0]),f_xfontsel_pipe[i]);
+            if (fgets(xfontsel_font[i],sizeof(xfontsel_font[0]),f_xfontsel_pipe[i]) == NULL) {
+                // We hit end-of-file or there's an error reading
+                // Do nothing here, which was the standard operation
+                // prior to adding the check for the return value.
+            }
  
             if (xfontsel_font[i][l-1] == '\n')
                 xfontsel_font[i][l-1] = '\0';
@@ -16012,13 +16018,18 @@ static void* gps_transfer_thread(void *arg) {
                 gps_base_dir,
                 gps_temp_map_filename);
 
-// Execute the command
-system(temp);
+            // Execute the command
+            if (system(temp) != 0) {
+                // Ignore the return value as we've always done prior,
+                // in other words: No change to the operation.
+            }
+
 //            if ( system(temp) ) {
 //                fprintf(stderr,"Couldn't download the gps waypoints\n");
 //                gps_operation_pending = 0;  // We're done
 //                return(NULL);
 //            }
+
             // Set the got_data flag
             gps_got_data_from++;
             break;
@@ -21606,7 +21617,10 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
         // This is necessary because the resources for setting the
         // directory in the FileSelectionDialog aren't working in Lesstif.
-        chdir( get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir)) );
+        if (chdir( get_user_base_dir("logs", temp_base_dir, sizeof(temp_base_dir)) ) != 0) {
+            fprintf(stderr,"Couldn't chdir to the file selection\n");
+            return;
+        }
 
         /*set args for color */
         ac=0;
@@ -21625,7 +21639,10 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
                 ac);
 
         // Change back to the base directory 
-        chdir( get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)) );
+        if (chdir( get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)) ) != 0) {
+            fprintf(stderr,"Couldn't chdir back to the base directory\n");
+            return;
+        }
 
         fs=XmFileSelectionBoxGetChild(read_selection_dialog,(unsigned char)XmDIALOG_TEXT);
         XtVaSetValues(fs,XmNbackground, colors[0x0f],NULL);
