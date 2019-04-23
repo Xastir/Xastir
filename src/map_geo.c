@@ -87,9 +87,9 @@
   #define NO_GRAPHICS 1
 #endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_MAGICK)
 
-#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
+#if defined(HAVE_MAGICK) || !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
   #define NO_XPM 1
-#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
+#endif  // HAVE_MAGICK ||  !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
 
 
 #ifdef HAVE_MAGICK
@@ -576,7 +576,7 @@ void draw_geo_image_map (Widget w,
     int width,height;
 #ifndef NO_XPM
     XpmAttributes atb;              // Map attributes after map's read into an XImage
-#endif  // HAVE_MAGICK
+#endif  // NO_XPM
 
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -2211,8 +2211,9 @@ void draw_geo_image_map (Widget w,
 #else   // HAVE_MAGICK
 
         // We don't have ImageMagick libs compiled in, so use the
-        // XPM library instead.
+        // XPM library instead, but only if we HAVE XPM.
 
+#ifndef NO_XPM
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             // Update to screen
@@ -2284,7 +2285,9 @@ void draw_geo_image_map (Widget w,
 
         width  = atb.width;
         height = atb.height;
-
+#else // NO_XPM
+        fprintf(stderr,"Xastir was configured with neither XPM library nor (Image/Graphics)Magick, cannot display map %s\n",filenm);
+#endif // NO_XPM
 #endif  // HAVE_MAGICK
 
         // draw the image from the file out to the map screen
