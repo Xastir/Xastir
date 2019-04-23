@@ -192,7 +192,11 @@ int forked_getaddrinfo(const char *hostname, const char *servname, const struct 
 
                 // Return net connection time out
                 rc = FAI_TIMEOUT;
-                (void)write(fp[1],&rc, sizeof(int));
+
+                if (write(fp[1],&rc, sizeof(int)) == -1) {
+                    // Write error. Do nothing as we did prior
+                    // to checking the return value.
+                }
 
                 if (debug_level & 1024)
                     fprintf(stderr,"Child closing write end of pipe\n");
@@ -214,19 +218,39 @@ int forked_getaddrinfo(const char *hostname, const char *servname, const struct 
             // Reset the SIGALRM handler to its previous value
             (void)signal(SIGALRM, (sighandler_t)previous_loc);
 
-            (void)write(fp[1], &rc, sizeof(int));  // Send status
+            if (write(fp[1], &rc, sizeof(int)) == -1) {  // Send status
+                // Write error. Do nothing as we did prior
+                // to checking the return value.
+            }
 
             for (res = res0; res; res = res->ai_next) {
                 // Signal that an entry is coming.
                 rc = 1;
-                (void)write(fp[1], &rc, sizeof(int));
+
+                if (write(fp[1], &rc, sizeof(int)) == -1) {
+                    // Write error. Do nothing as we did prior
+                    // to checking the return value.
+                }
+
                 // Send  entry
-                (void)write(fp[1], res, sizeof(struct addrinfo));
-                (void)write(fp[1], res->ai_addr, res->ai_addrlen);
+                if (write(fp[1], res, sizeof(struct addrinfo)) == -1) {
+                    // Write error. Do nothing as we did prior
+                    // to checking the return value.
+                }
+
+                if (write(fp[1], res->ai_addr, res->ai_addrlen) == -1) {
+                    // Write error. Do nothing as we did prior
+                    // to checking the return value.
+                }
+
             }
             // Signal that there is nothing left
             rc = 0;
-            (void)write(fp[1], &rc, sizeof(int));
+
+            if (write(fp[1], &rc, sizeof(int)) == -1) {
+                // Write error. Do nothing as we did prior
+                // to checking the return value.
+            }
 
             if (debug_level & 1024)
                 fprintf(stderr,"Child closing write end of pipe\n");
@@ -262,26 +286,47 @@ int forked_getaddrinfo(const char *hostname, const char *servname, const struct 
                 }
             }
             // Get the return code
-            (void)read(fp[0],&rc,sizeof(int));
+            if (read(fp[0],&rc,sizeof(int)) == -1) {
+                // Read error. Do nothing as we did prior
+                // to checking the return value.
+            }
+
             if(rc!=0)
             {
                 close(fp[0]);
                 return rc;
             }
 
-            (void)read(fp[0], &status, sizeof(int));
+            if (read(fp[0], &status, sizeof(int)) == -1) {
+                // Read error. Do nothing as we did prior
+                // to checking the return value.
+            }
+
             while(status)
             {
                 *resout = (struct addrinfo*) malloc(sizeof(struct addrinfo));
                 res = *resout;
-                (void)read(fp[0], res, sizeof(struct addrinfo));
+
+                if (read(fp[0], res, sizeof(struct addrinfo)) == -1) {
+                    // Read error. Do nothing as we did prior
+                    // to checking the return value.
+                }
+
                 res->ai_addr = (struct sockaddr*) malloc(res->ai_addrlen);
-                (void)read(fp[0], res->ai_addr, res->ai_addrlen);
+
+                if (read(fp[0], res->ai_addr, res->ai_addrlen) == -1) {
+                    // Read error. Do nothing as we did prior
+                    // to checking the return value.
+                }
+
                 res->ai_canonname = NULL;
                 resout = &res->ai_next;
 
                 // See if there is another
-                (void)read(fp[0], &status, sizeof(int));
+                if (read(fp[0], &status, sizeof(int)) == -1) {
+                    // Read error. Do nothing as we did prior
+                    // to checking the return value.
+                }
             }
             *resout = NULL;
 
@@ -312,3 +357,5 @@ void forked_freeaddrinfo(struct addrinfo *ai) {
         free(current);
     }
 }
+
+
