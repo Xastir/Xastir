@@ -4553,7 +4553,7 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
 #if defined(HAVE_XFONTSEL)
  
     int fontsize = XTPOINTER_TO_INT(clientData);
-    char xfontsel[50];
+    char xfontsel[70];
 
     /* invoke xfontsel -print and stick into map_font_text */
     sprintf(xfontsel,
