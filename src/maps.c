@@ -3887,7 +3887,8 @@ begin_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_d
             // Empty path
             xastir_snprintf(printer_program,
                 sizeof(printer_program),
-                "");
+                "%s",
+                "\0");
 #endif // LPR_PATH
         }
 
