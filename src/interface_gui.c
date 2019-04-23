@@ -4807,7 +4807,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
 #else
         // Need code to use button_ok variable to quiet a compiler warning
         //when we don't have LIBAX25 linked-in.
-        if (button_ok == button_ok) {
+        if (button_ok != button_cancel) {
             // Do nothing (to shut up a compiler warning)
         }
 #endif /* USE_AX25 */
