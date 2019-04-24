@@ -1526,7 +1526,7 @@ int ui_connect( int port, char *to[]) {
     if (to == NULL)
         return(-1);
 
-    if (to[0] == '\0')
+    if (*to[0] == '\0')
         return(-1);
 
     /*
