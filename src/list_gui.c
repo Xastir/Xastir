@@ -617,7 +617,13 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
 
-                if (SL_callback[type][row]) XtFree(SL_callback[type][row]);
+                if (SL_callback[type][row]) {
+                    XtRemoveCallback((XtPointer)SL_da[type][row],
+                                     XmNactivateCallback,
+                                     Call_locate_station,
+                                     SL_callback[type][row]);
+                    XtFree(SL_callback[type][row]);
+                }
                 SL_callback[type][row] = XmTextFieldGetString(SL_call[type][row]);
 
                 // Pressing the icon button centers the map on the station.
