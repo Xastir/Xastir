@@ -230,9 +230,9 @@ int load_language_file(char *filename) {
                         if (ok) {
                             if (debug_level & 32)
                                 fprintf(stderr,"Code #%d <%s> data <%s> hotkey <%c>\n",lang_code_number,
-                                    lang_code[lang_code_number],lang_code_ptr[lang_code_number],
-                                    lang_hotkey[lang_code_number]);
-                                lang_code_number++;
+                                        lang_code[lang_code_number],lang_code_ptr[lang_code_number],
+                                        lang_hotkey[lang_code_number]);
+                            lang_code_number++;
                         }
                         line[0]='\0';
                     }
