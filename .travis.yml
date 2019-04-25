@@ -1,10 +1,9 @@
-# gcc8 additions modeled somewhat after this .travis.yml file:
-# https://chromium.googlesource.com/external/github.com/google/crc32c/+/refs/heads/master/.travis.yml
-
 language: c
 
 script:
   - ./bootstrap.sh
+    # This export won't hurt GraphicsMagick install: Needed for Ubuntu-16.04 Imagemagick.
+  - export MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
   - ./configure CPPFLAGS="-I/usr/include/geotiff"
   - make
   - sudo make install
@@ -17,7 +16,8 @@ matrix:
   include:
 
     - os: linux
-      name: "Ubuntu 14.04 light with ImageMagick"
+      dist: xenial
+      name: "Ubuntu 16.04 light w/ImageMagick"
       addons:
         apt:
           packages:
@@ -30,51 +30,9 @@ matrix:
             - libshp-dev
             - libmagickcore-dev
 
-# Can't figure out ImageMagick packages to get it recognized
-# here. Leaving above 14.04 build in-place until we do.
-#    - os: linux
-#      dist: xenial
-#      name: "Ubuntu 16.04 light w/ImageMagick"
-#      addons:
-#        apt:
-#          packages:
-#            - imagemagick
-#            - libmotif-dev
-#            - libcurl4-openssl-dev
-#            - libpcre3-dev
-#            - libdb5.3-dev
-#            - shapelib
-#            - libshp-dev
-#            - libmagickcore-dev
-
-# This build seems redundant when we build with gcc-8 next.
-# Commenting it out for now.
-#    - os: linux
-#      dist: xenial
-#      name: "Ubuntu 16.04 full-featured with GraphicsMagick"
-#      addons:
-#        apt:
-#          packages:
-#            - graphicsmagick
-#            - libmotif-dev
-#            - libcurl4-openssl-dev
-#            - libpcre3-dev
-#            - libproj-dev
-#            - libdb5.3-dev
-#            - libax25-dev
-#            - shapelib
-#            - libshp-dev
-#            - festival
-#            - festival-dev
-#            - libgeotiff-dev
-#            - libgraphicsmagick1-dev
-#            - gpsman
-#            - gpsmanshp
-#            - libwebp-dev
-
     - os: linux
       dist: xenial
-      name: "Ubuntu 16.04 gcc8 full-featured with GraphicsMagick"
+      name: "Ubuntu 16.04 gcc8 full-featured w/GraphicsMagick"
       install:
         - export CC="gcc-8" CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
         - echo ${CC}
@@ -104,7 +62,7 @@ matrix:
             - libwebp-dev
 
     - os: osx
-      name: "OSX semi-light with GraphicsMagick"
+      name: "OSX semi-light w/GraphicsMagick"
       addons:
         homebrew:
           packages:
