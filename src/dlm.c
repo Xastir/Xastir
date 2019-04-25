@@ -44,7 +44,7 @@
 #include <strings.h>
 #endif  // HAVE_STRINGS_H
 
-#include <Xm/XmAll.h>
+//#include <Xm/XmAll.h>
 
 #ifdef HAVE_LIBCURL
 #include <curl/curl.h>
@@ -604,8 +604,8 @@ static void *DLM_transfer_thread(void *arg) {
                 //xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
                 //         1, DLM_queue_len());  // Downloading tile %ls of %ls
                 xastir_snprintf(map_it, sizeof(map_it), "Fetch %s", tile->desc);
-                statusline(map_it,0);
-                XmUpdateDisplay(text);
+                //statusline(map_it,0);
+                //XmUpdateDisplay(text);
 
 #ifdef HAVE_LIBCURL
 #ifdef USE_CURL_MULTI
