@@ -2664,6 +2664,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     time_t secs_now = sec_now();
     int ambiguity_flag;
     long ambiguity_coord_lon, ambiguity_coord_lat;
+    size_t temp_len;
  
 
     if (debug_level & 128)
@@ -2886,13 +2887,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     sizeof(temp_wx_wind) - 1 - strlen(temp_wx_wind));
             }
 
-            if (temp_wx_wind[strlen(temp_wx_wind)-1] == ' ') {
-                temp_wx_wind[strlen(temp_wx_wind)-1] = '\0';  // delete blank at EOL
+            temp_len = strlen(temp_wx_wind);
+            if ((temp_len > 0) && (temp_wx_wind[temp_len-1] == ' ')){
+                temp_wx_wind[temp_len-1] = '\0';  // delete blank at EOL
             }
         }
 
-        if (temp_wx_temp[strlen(temp_wx_temp)-1] == ' ')
-            temp_wx_temp[strlen(temp_wx_temp)-1] = '\0';  // delete blank at EOL
+        temp_len = strlen(temp_wx_temp);
+        if ((temp_len > 0) && (temp_wx_temp[strlen(temp_wx_temp)-1] == ' '))
+            temp_wx_temp[temp_len-1] = '\0';  // delete blank at EOL
     }
 
 
