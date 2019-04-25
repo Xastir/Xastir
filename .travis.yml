@@ -2,8 +2,6 @@ language: c
 
 script:
   - ./bootstrap.sh
-    # This export won't hurt GraphicsMagick install: Needed for Ubuntu-16.04 Imagemagick.
-  - export MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
   - ./configure CPPFLAGS="-I/usr/include/geotiff"
   - make
   - sudo make install
@@ -18,6 +16,8 @@ matrix:
     - os: linux
       dist: xenial
       name: "Ubuntu 16.04 light w/ImageMagick"
+      env:
+        - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
       addons:
         apt:
           packages:
@@ -34,6 +34,7 @@ matrix:
       dist: xenial
       name: "Ubuntu 16.04 gcc8 full-featured w/GraphicsMagick"
       install:
+        # Can't use "env:" for the CC variable: It gets overwritten by Travis-CI
         - export CC="gcc-8" CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
         - echo ${CC}
         - ${CC} --version
