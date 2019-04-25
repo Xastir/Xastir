@@ -33,9 +33,11 @@ matrix:
     - os: linux
       dist: xenial
       name: "Ubuntu 16.04 gcc8 full-featured w/GraphicsMagick"
+      env:
+        - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
       install:
-        # Can't use "env:" for the CC variable: It gets overwritten by Travis-CI
-        - export CC="gcc-8" CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
+          # Can't put CC in "env:" section: It gets overwritten by Travis-CI
+        - export CC="gcc-8"
         - echo ${CC}
         - ${CC} --version
       addons:
