@@ -44,8 +44,6 @@
 #include <strings.h>
 #endif  // HAVE_STRINGS_H
 
-//#include <Xm/XmAll.h>
-
 #ifdef HAVE_LIBCURL
 #include <curl/curl.h>
 #endif
@@ -501,7 +499,6 @@ static CURL *DLM_curl_init(char *errBuf) {
  * DLM_transfer_thread() - retrieve item queued for download
  **********************************************************/
 static void *DLM_transfer_thread(void *arg) {
-//    char map_it[MAX_FILENAME];
     struct DLM_queue_entry *tile;
 #ifdef DLM_QUEUE_THREADED
     int idleCnt;
@@ -600,12 +597,6 @@ static void *DLM_transfer_thread(void *arg) {
 #endif
                 end_critical_section(&(tile->lock), "DLM_transfer_thread: tile unlock");
                 //fprintf(stderr,"DLM_transfer_queue: started item %s, qlen=%d\n",tile->desc,DLM_queue_len());
-
-                //xastir_snprintf(map_it, sizeof(map_it), langcode("BBARSTA051"),
-                //         1, DLM_queue_len());  // Downloading tile %ls of %ls
-                //xastir_snprintf(map_it, sizeof(map_it), "Fetch %s", tile->desc);
-                //statusline(map_it,0);
-                //XmUpdateDisplay(text);
 
 #ifdef HAVE_LIBCURL
 #ifdef USE_CURL_MULTI
