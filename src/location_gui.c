@@ -181,7 +181,7 @@ void jump_sort(void) {
     f=fopen(location_file_path,"r");
     if (f!=NULL) {
         while (!feof(f)) {
-            (void)get_line(f,temp,sizeof(temp));
+            (void)get_line(f,temp,200);
             if (!feof(f) && strlen(temp)>8) {
                 temp_ptr=strtok(temp,"|");  /* get the name */
                 if (temp_ptr!=NULL) {
@@ -189,7 +189,7 @@ void jump_sort(void) {
                         sizeof(name),
                         "%s",
                         temp);
-                    (void)sort_input_database(location_db_file_path,name,sizeof(name));
+                    (void)sort_input_database(location_db_file_path,name,200);
                 }
             }
         }
