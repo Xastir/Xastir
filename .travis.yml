@@ -2,10 +2,10 @@ language: c
 
 matrix:
 
-#  exclude:
-#    - compiler: gcc
+  exclude:
+    - compiler: gcc
 
-#  include:
+  include:
 
 
     - os: linux
