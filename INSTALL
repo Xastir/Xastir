@@ -1476,7 +1476,9 @@ page for more info.
 For more thorough checks, use libgc:
 
 1) Install libgc, the conservative garbage collector for C and C++.
-Find it at:
+
+SuSE packages needed are "libgc1" and "gc-devel". If you must compile
+from sources instead, find libgc at:
 
     http://www.hpl.hp.com/personal/Hans_Boehm/gc
 
