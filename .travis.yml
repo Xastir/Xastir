@@ -90,11 +90,10 @@ matrix:
 #        - make
 #        - sudo make install
 
-# Error in make install here?
-        - ./configure --without-libcurl CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
-        - make
-        - sudo make install
+#        - ./configure --without-libcurl CPPFLAGS="-I/usr/include/geotiff"
+#        - make clean
+#        - make
+#        - sudo make install
 
 #        - ./configure --without-libproj CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
@@ -122,9 +121,9 @@ matrix:
 #        - sudo make install
  
         - ./configure --without-dbfawk CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
+#        - make clean
         - make
-        - sudo make install
+#        - sudo make install
  
 #        - ./configure --without-rtree CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
@@ -137,34 +136,39 @@ matrix:
 #        - sudo make install
  
         - ./configure --without-graphicsmagick CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
+#        - make clean
         - make
-        - sudo make install
+#        - sudo make install
  
         - ./configure --without-graphicsmagick --without-imagemagick CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
+#        - make clean
         - make
-        - sudo make install
+#        - sudo make install
 
         - ./configure --without-shapelib --without-graphicsmagick --without-imagemagick CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
+#        - make clean
         - make
-        - sudo make install
- 
+#        - sudo make install
+
+        - ./configure --without-imagemagick --without-graphicsmagick --without-shapelib --without-pcre --without-dbfawk --without-rtree --without-map-caching --without-libcurl --without-ax25 --without-libproj --without-geotiff --without-festival --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
+#        - make clean
+        - make
+#        - sudo make install
+
 #        - ./configure --with-errorpopups CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
 #        - make
 #        - sudo make install
  
         - ./configure --with-libgc CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
+#        - make clean
         - make
-        - sudo make install
+#        - sudo make install
 
-        - ./configure --with-profiling CPPFLAGS="-I/usr/include/geotiff"
-        - make clean
-        - make
-        - sudo make install
+#        - ./configure --with-profiling CPPFLAGS="-I/usr/include/geotiff"
+#        - make clean
+#        - make
+#        - sudo make install
 
 ##        - ./configure --with-lsb CPPFLAGS="-I/usr/include/geotiff"
 ##        - make clean
