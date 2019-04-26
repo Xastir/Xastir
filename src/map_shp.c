@@ -2321,7 +2321,7 @@ void draw_shapefile_map (Widget w,
                             }
                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                         }
-                        if (lanes != (int)NULL) {
+                        if (lanes != 0) {
                             if (dashed_line) {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
                             }

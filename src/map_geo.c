@@ -673,7 +673,9 @@ void draw_geo_image_map (Widget w,
     char geo_projection[256+1];   // TM, UTM, GK, LATLON etc.
     int map_proj=0;
     int map_refresh_interval_temp = 0;
+#ifdef HAVE_MAGICK
     int nocache = 0;            // Don't cache the file if non-zero
+#endif  // HAVE_MAGICK
 #ifdef FUZZYRASTER
     int rasterfuzz = 3;    // ratio to skip 
 #endif //FUZZYRASTER
@@ -693,7 +695,10 @@ void draw_geo_image_map (Widget w,
 #endif  // USE_MAP_CACHE
 #endif  // HAVE_MAGICK
 
+#ifdef HAVE_MAGICK
     char temp_file_path[MAX_VALUE];
+#endif  // HAVE_MAGICK
+
     KeySym OSM_key = 0;
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
@@ -934,7 +939,9 @@ void draw_geo_image_map (Widget w,
                         if (debug_level & 512)
                             fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
                     }
+#ifdef HAVE_MAGICK
                     nocache = map_refresh_interval_temp;
+#endif  // HAVE_MAGICK
                 }
             }
 

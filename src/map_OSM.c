@@ -289,8 +289,8 @@ void set_OSM_report_scale_key(KeySym key) {
     return;
 }
 
-static void get_OSM_local_file(char * local_filename, char * fileimg){
 #ifdef HAVE_MAGICK
+static void get_OSM_local_file(char * local_filename, char * fileimg){
     time_t query_start_time, query_end_time; 
 
 #ifdef USE_MAP_CACHE 
@@ -387,11 +387,12 @@ clear_dangerous();
     // Set permissions on the file so that any user can overwrite it.
     chmod(local_filename, 0666);
 
+} // end get_OSM_local_file
 #endif  //HAVE_MAGICK
 
-} // end get_OSM_local_file
 
 
+#ifdef HAVE_MAGICK
 static long xastirLat2pixelLat(
         long xlat, int osm_zoom ) {
     double lat;  // in radians
@@ -417,8 +418,10 @@ static long xastirLat2pixelLat(
     pixelLat = (long)((y * (double)(1<<(osm_zoom + 8))) / 2.0);
     return(pixelLat);
 } // xastirLat2pixelLat()
+#endif  // HAVE_MAGICK
   
 
+#ifdef HAVE_MAGICK
 static double pixelLat2Lat(long osm_lat, int osm_zoom){
     double lat, projection, y;
     y = (double)osm_lat * 2.0 / (double)(1<<(osm_zoom + 8));
@@ -428,8 +431,10 @@ static double pixelLat2Lat(long osm_lat, int osm_zoom){
     lat = (lat * 180.0 ) / M_PI;
     return(lat);
 } // pixelLat2Lat()
+#endif  // HAVE_MAGICK
 
 
+#ifdef HAVE_MAGICK
 static long pixelLat2xastirLat(long osm_lat, int osm_zoom) {
     double lat;
     long xastirLat;
@@ -437,8 +442,10 @@ static long pixelLat2xastirLat(long osm_lat, int osm_zoom) {
     xastirLat = (long)((90.0 - lat) * 3600.0 * 100.0);
     return (xastirLat);
 } // pixelLat2xastirLat()
+#endif  // HAVE_MAGICK
 
 
+#ifdef HAVE_MAGICK
 static long xastirLon2pixelLon(
         long xlon, int osm_zoom) {
     double lon;
@@ -449,21 +456,26 @@ static long xastirLon2pixelLon(
     pixelLon = lon;
     return(pixelLon);
 } // xastirLon2pixelLon()
+#endif  // HAVE_MAGICK
 
 
+#ifdef HAVE_MAGICK
 static double pixelLon2Lon(long osm_lon, int osm_zoom) {
     double lon;
     lon = osm_lon * 360.0 ;
     lon = lon / (1<<(osm_zoom + 8));
     return(lon);
 } // pixelLon2Lon()
+#endif  // HAVE_MAGICK
 
 
+#ifdef HAVE_MAGICK
 static long pixelLon2xastirLon(long osm_lon, int osm_zoom) {
     long xastirLon;
     xastirLon = (long)(pixelLon2Lon(osm_lon, osm_zoom) * 3600.0 * 100.0);
     return(xastirLon);
 } // pixelLon2xastirLon()
+#endif  // HAVE_MAGICK
 
 
 #ifdef HAVE_MAGICK
