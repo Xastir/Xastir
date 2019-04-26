@@ -1,44 +1,51 @@
 language: c
 
-script:
-  - ./bootstrap.sh
-  - ./configure CPPFLAGS="-I/usr/include/geotiff"
-  - make
-  - sudo make install
-
 matrix:
 
-  exclude:
-    - compiler: gcc
+#  exclude:
+#    - compiler: gcc
 
-  include:
+#  include:
+
 
     - os: linux
       dist: xenial
-      name: "Ubuntu 16.04 light w/ImageMagick"
+      name: "Ubuntu-16.04 light w/ImageMagick"
       env:
         - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
       addons:
         apt:
           packages:
             - imagemagick
+            - libmagickcore-dev
             - libmotif-dev
             - libcurl4-openssl-dev
             - libpcre3-dev
             - libdb5.3-dev
             - shapelib
             - libshp-dev
-            - libmagickcore-dev
+
+
 
     - os: linux
       dist: xenial
-      name: "Ubuntu 16.04 gcc8 full-featured w/GraphicsMagick"
+      name: "Ubuntu-16.04 gcc8 full-featured w/GraphicsMagick"
       env:
         - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
       before_script:
         - export CC="gcc-8"
         - echo ${CC}
         - ${CC} --version
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
       addons:
         apt:
           sources:
@@ -63,8 +70,128 @@ matrix:
             - gpsmanshp
             - libwebp-dev
 
+
+
+    - os: linux
+      dist: xenial
+      name: "Ubuntu-16.04 Exercise Configure Options"
+      env:
+        - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
+      script:
+        - ./bootstrap.sh
+
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+        - ./configure --without-festival CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+        - ./configure --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+        - ./configure --without-libcurl CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+         - ./configure --without-libproj CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-shapelib CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-pcre CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-geotiff CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-ax25 CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-dbfawk CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-rtree CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-map-cache CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-graphicsmagick CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --without-graphicsmagick --without-imagemagick CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --with-errorpopups CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+ 
+        - ./configure --with-libgc CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+        - ./configure --with-profiling CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+
+#        - ./configure --with-lsb CPPFLAGS="-I/usr/include/geotiff"
+#        - make
+#        - sudo make install
+
+#        - ./configure --with-postgis CPPFLAGS="-I/usr/include/geotiff"
+#        - make
+#        - sudo make install
+
+#        - ./configure --with-mysql CPPFLAGS="-I/usr/include/geotiff"
+#        - make
+#        - sudo make install
+ 
+      addons:
+        apt:
+          packages:
+            - imagemagick
+            - libmagickcore-dev
+            - graphicsmagick
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libproj-dev
+            - libdb5.3-dev
+            - libax25-dev
+            - shapelib
+            - libshp-dev
+            - festival
+            - festival-dev
+            - libgeotiff-dev
+            - libgraphicsmagick1-dev
+            - gpsman
+            - gpsmanshp
+            - libwebp-dev
+            - libgc-dev
+
+
+
     - os: osx
       name: "OSX semi-light w/GraphicsMagick"
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
       addons:
         homebrew:
           packages:
