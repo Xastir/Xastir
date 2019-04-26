@@ -575,7 +575,7 @@ fi
 
 # Check for Berkeley DB.
 use_map_cache=yes
-AC_ARG_WITH(map_cache,[  --without-map-cache       Disable Map Caching.],use_map_cache=$withval)
+AC_ARG_WITH(map_cache,[  --without-map-cache       Disable Berkeley DB Map Caching.],use_map_cache=$withval)
 if test "${use_map_cache}" = "yes"; then
   XASTIR_BERKELEY_DB_CHK
 fi
@@ -899,11 +899,11 @@ echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured to use the following
 echo options and external libraries:
 echo
 echo MINIMUM OPTIONS:
-echo "  ShapeLib (Vector maps) ................. : $use_shapelib"
+echo "  ShapeLib (Vector maps) .................... : $use_shapelib"
 echo
 echo RECOMMENDED OPTIONS:
 
-echo -n "  GraphicsMagick/ImageMagick (Raster maps) : "
+echo -n "  GraphicsMagick/ImageMagick (Raster maps) .. : "
 if test "${use_graphicsmagick}" = "yes"; then 
   echo "yes (GraphicsMagick)"
 else
@@ -913,31 +913,31 @@ else
     echo "no"
   fi
 fi
-echo "  pcre (Shapefile customization) ......... : $use_pcre"
-echo "  dbfawk (Shapefile customization) ....... : $use_dbfawk"
-echo "  rtree indexing (Shapefile speedups) .... : $use_rtree"
-echo "  map caching (Raster map speedups) ...... : $use_map_cache"
-echo "  internet map retrieval ................. : $use_retrieval"
+echo "  pcre (Shapefile customization) ............ : $use_pcre"
+echo "  dbfawk (Shapefile customization) .......... : $use_dbfawk"
+echo "  rtree indexing (Shapefile speedups) ....... : $use_rtree"
+echo "  Berkeley DB map caching-Raster map speedups : $use_map_cache"
+echo "  internet map retrieval .................... : $use_retrieval"
 echo
 echo FOR THE ADVENTUROUS:
-echo "  AX25 (Linux Kernel I/O Drivers) ........ : $use_ax25"
-echo "  libproj (USGS Topos & Aerial Photos) ... : $use_proj"
-echo "  GeoTiff (USGS Topos & Aerial Photos) ... : $use_geotiff"
-echo "  Festival (Text-to-speech) .............. : $use_festival"
-echo "  GPSMan/gpsmanshp (GPS downloads) ....... : $use_gpsman"
-#echo "  GPSD Client (libgps) ................... : $use_libgps"
+echo "  AX25 (Linux Kernel I/O Drivers) ........... : $use_ax25"
+echo "  libproj (USGS Topos & Aerial Photos) ...... : $use_proj"
+echo "  GeoTiff (USGS Topos & Aerial Photos) ...... : $use_geotiff"
+echo "  Festival (Text-to-speech) ................. : $use_festival"
+echo "  GPSMan/gpsmanshp (GPS downloads) .......... : $use_gpsman"
+#echo "  GPSD Client (libgps) ...................... : $use_libgps"
 
 if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo
   echo DEVELOPER OPTIONS:
-  echo "  ErrorPopups (Old Method) ............... : $use_err_popups"
-  echo "  libgc (Debug memory usage) ............. : $use_libgc"
-  echo "  profiling (Debug code efficiency) ...... : $use_profiling"
-  echo "  Linux Standard Base (LSB) .............. : $use_lsb"
-  echo "  Spatial database support ............... : $use_spatial_db"
-  echo "  Spatial database Postgresql/Postgis .... : $use_postgis"
-  echo "  MySQL .................................. : $use_mysql_any"
-  echo "  MySQL Spatial database support ......... : $use_mysql_spatial"
+  echo "  ErrorPopups (Old Method) .................. : $use_err_popups"
+  echo "  libgc (Debug memory usage) ................ : $use_libgc"
+  echo "  profiling (Debug code efficiency) ......... : $use_profiling"
+  echo "  Linux Standard Base (LSB) ................. : $use_lsb"
+  echo "  Spatial database support .................. : $use_spatial_db"
+  echo "  Spatial database Postgresql/Postgis ....... : $use_postgis"
+  echo "  MySQL ..................................... : $use_mysql_any"
+  echo "  MySQL Spatial database support ............ : $use_mysql_spatial"
 fi
 
 #echo   Davis/MySQL............................. : $davis
