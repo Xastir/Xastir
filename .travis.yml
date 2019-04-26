@@ -72,6 +72,27 @@ matrix:
 
 
 
+    - os: osx
+      name: "OSX semi-light w/GraphicsMagick"
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+      addons:
+        homebrew:
+          packages:
+            - berkeley-db
+            - graphicsmagick
+            - libgeotiff
+            - openmotif
+            - pcre
+            - proj
+            - shapelib
+            - wget
+
+
+
     - os: linux
       dist: xenial
       name: "Ubuntu-16.04 Exercise Configure Options"
@@ -150,7 +171,7 @@ matrix:
         - make
 #        - sudo make install
 
-        - ./configure --without-imagemagick --without-graphicsmagick --without-shapelib --without-pcre --without-dbfawk --without-rtree --without-map-caching --without-libcurl --without-ax25 --without-libproj --without-geotiff --without-festival --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
+        - ./configure --without-imagemagick --without-graphicsmagick --without-shapelib --without-pcre --without-dbfawk --without-rtree --without-map-cache --without-libcurl --without-ax25 --without-libproj --without-geotiff --without-festival --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
         - make
 #        - sudo make install
@@ -207,26 +228,5 @@ matrix:
             - gpsmanshp
             - libwebp-dev
             - libgc-dev
-
-
-
-    - os: osx
-      name: "OSX semi-light w/GraphicsMagick"
-      script:
-        - ./bootstrap.sh
-        - ./configure CPPFLAGS="-I/usr/include/geotiff"
-        - make
-        - sudo make install
-      addons:
-        homebrew:
-          packages:
-            - berkeley-db
-            - graphicsmagick
-            - libgeotiff
-            - openmotif
-            - pcre
-            - proj
-            - shapelib
-            - wget
 
 
