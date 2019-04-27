@@ -131,9 +131,9 @@ int main(int argc, char *argv[]) {
     //    int args;
     awk_symtab *symtbl;
     /* variables to bind to: */
-    int color;
-    int lanes;
-    int font_size;
+    int color = 0;
+    int lanes = 0;
+    int font_size = 0;
     char dbfinfo[1024];		/* list of DBF field names */
     char dbffields[1024];	/* subset we want to read */
     char name[128];
