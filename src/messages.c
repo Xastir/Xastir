@@ -1000,7 +1000,7 @@ void transmit_message_data_delayed(char *to, char *message,
             // We have matches on call_sign and message.  Check the
             // time next.
             //
-            if (abs(when - ptr->active_time) < 30) {
+            if (labs(when - ptr->active_time) < 30) {
                 //
                 // We're within 30 seconds of an identical ack.
                 // Drop this new one (don't add it).

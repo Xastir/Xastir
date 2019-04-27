@@ -2334,7 +2334,7 @@ void Update_CAD_objects_list_dialog() {
          while (object_ptr != NULL) {
 
             //  If no label, use the string "<Empty Label>" instead
-            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+            if (object_ptr->label[0] == '\0')
                 cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
             else
                 cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
@@ -3275,7 +3275,7 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
         while (object_ptr != NULL) {
 
             //  If no label, use the string "<Empty Label>" instead
-            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+            if (object_ptr->label[0] == '\0')
                 cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
             else
                 cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
@@ -3549,7 +3549,7 @@ void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
         while (object_ptr != NULL) {
 
             //  If no label, use the string "<Empty Label>" instead
-            if (object_ptr->label == NULL || object_ptr->label[0] == '\0')
+            if (object_ptr->label[0] == '\0')
                 cb_item = XmStringCreateLtoR("<Empty Label>", XmFONTLIST_DEFAULT_TAG);
             else
                 cb_item = XmStringCreateLtoR(object_ptr->label, XmFONTLIST_DEFAULT_TAG);
@@ -3878,7 +3878,7 @@ void Draw_All_CAD_Objects(Widget w) {
                             x_offset=((x_long-NW_corner_longitude)/scale_x);
                             y_offset=((y_lat -NW_corner_latitude) /scale_y);
     
-                            if ((object_ptr->label!=NULL) & ((int)strlen(object_ptr->label)>0) & (CAD_show_label==TRUE)) {
+                            if (((int)strlen(object_ptr->label)>0) & (CAD_show_label==TRUE)) {
                                 // Draw Label   
                                 // 0x08 is background color
                                 // 0x40 is foreground color (yellow)
@@ -3894,7 +3894,7 @@ void Draw_All_CAD_Objects(Widget w) {
                                 y_offset=y_offset+15;
                             }
     
-                            if ((CAD_show_comment==TRUE) & (object_ptr->comment!=NULL) & ((int)strlen(object_ptr->comment)>0)) {
+                            if ((CAD_show_comment==TRUE) & ((int)strlen(object_ptr->comment)>0)) {
                                 // draw comment
                                 draw_nice_string(w,pixmap_final,letter_style,x_offset,y_offset,object_ptr->comment,0x08,0x40,strlen(object_ptr->comment));
                                 y_offset=y_offset+15;
