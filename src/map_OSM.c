@@ -195,7 +195,7 @@ static long osm_scale_x(long xastir_scale_x) {
        if (xastir_scale_x > osm_level[i]) {
             continue;
         } else {
-            if (abs(osm_level[i - 1] - xastir_scale_x) < abs(osm_level[i] - xastir_scale_x)) {
+            if (labs(osm_level[i - 1] - xastir_scale_x) < labs(osm_level[i] - xastir_scale_x)) {
                 osm_scale_x = osm_level[i - 1];
             } else {
                 osm_scale_x = osm_level[i];
