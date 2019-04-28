@@ -12349,9 +12349,11 @@ if (!skip_decode) {
                                 // next block to log and decode the
                                 // packet.
                             }
+                            /* Falls through. */
 
                         case DEVICE_SERIAL_TNC:
                             tnc_data_clean((char *)data_string);
+                            /* Falls through. */
 
                         case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:

@@ -1567,12 +1567,15 @@ time_t time_from_aprsstring(char *aprs_time) {
     switch (sscanf(aprs_time, "%2d%2d%2d%19s", &day, &hour, &minute, tz)) {
         case 0:
             day = 0;
+            /* Falls through. */
 
         case 1:
             hour = 0;
+            /* Falls through. */
 
         case 2:
             minute = 0;
+            /* Falls through. */
  
         default:
             break;
