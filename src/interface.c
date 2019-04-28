@@ -541,42 +541,49 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
             }
             else
                 return;
+	    /* Falls through. */
         case 7:
             if (ViaCall[6]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 6:
             if (ViaCall[5]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+50]), ViaCall[5], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 5:
             if (ViaCall[4]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+40]), ViaCall[4], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 4:
             if (ViaCall[3]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+30]), ViaCall[3], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 3:
             if (ViaCall[2]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+20]), ViaCall[2], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 2:
             if (ViaCall[1]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+10]), ViaCall[1], 10);
             }
             else
                 return;
+            /* Falls through. */
         case 1:
         default:
             if (ViaCall[0]) {
@@ -6372,6 +6379,7 @@ void output_my_aprs_data(void) {
             if (port_data[port].status == DEVICE_UP) {
                 port_dtr(port,0);
             }
+            /* Falls through. */
 
         case DEVICE_SERIAL_TNC_AUX_GPS:
         case DEVICE_SERIAL_KISS_TNC:
@@ -7167,6 +7175,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                 if (port_data[port].status == DEVICE_UP && !loopback_only && !transmit_disable) {
                     port_dtr(port,0);           // make DTR normal (talk to TNC)
                 }
+                /* Falls through. */
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
             case DEVICE_SERIAL_KISS_TNC:

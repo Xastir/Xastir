@@ -3202,6 +3202,7 @@ void draw_shapefile_map (Widget w,
                         switch ( shape_ring_direction( object, ring) ) {
                             case  0:    // Error in trying to compute whether fill or hole
                                 fprintf(stderr,"Error in computing fill/hole ring\n");
+                                /* Falls through. */
                             case  1:    // It's a fill ring
                                 // Do nothing for these two cases
                                 // except clear the flag in our

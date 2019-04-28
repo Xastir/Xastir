@@ -2031,6 +2031,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
             switch (hold[0]) {
                 case 'A':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'P':
                     if (('0' <= hold[1] && hold[1] <= '9') || ('A' <= hold[1] && hold[1] <= 'Z'))
@@ -2040,6 +2041,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                 case 'O':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'B':
                     switch (hold[1]) {
@@ -2093,6 +2095,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                 case 'D':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'H':
                     switch (hold[1]) {
@@ -2119,6 +2122,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                 case 'N':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'M':
                     switch (hold[1]) {
@@ -2148,6 +2152,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                 case 'Q':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'J':
                     switch (hold[1]) {
@@ -2168,6 +2173,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                 case 'S':
                     symbol.aprs_type = '\\';
+                    /* Falls through. */
 
                 case 'L':
                     if ('A' <= hold[1] && hold[1] <= 'Z')
