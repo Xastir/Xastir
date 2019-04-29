@@ -1996,7 +1996,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_left_x_increment = (float)
-            (1.0 * (SW_x_bounding_wgs84 - NW_x_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)SW_x_bounding_wgs84 - (long)NW_x_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(SW_y - NW_y));
 
         // Pixel coordinates
@@ -2045,7 +2045,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_left_y_increment = (float)
-            (1.0 * (SW_y_bounding_wgs84 - NW_y_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)SW_y_bounding_wgs84 - (long)NW_y_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(SW_y - NW_y));
 
         // Pixel coordinates
@@ -2089,7 +2089,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_right_x_increment = (float)
-            (1.0 * (SE_x_bounding_wgs84 - NE_x_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)SE_x_bounding_wgs84 - (long)NE_x_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(SE_y - NE_y));
 
         // Pixel coordinates
@@ -2138,7 +2138,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_right_y_increment = (float)
-            (1.0 * (SE_y_bounding_wgs84 - NE_y_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)SE_y_bounding_wgs84 - (long)NE_y_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(SE_y - NE_y));
 
         // Pixel coordinates
@@ -2191,7 +2191,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_top_y_increment = (float)
-            (1.0 * (NE_y_bounding_wgs84 - NW_y_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)NE_y_bounding_wgs84 - (long)NW_y_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(NE_x - NW_x));    // And a "+ 1.0" here?
 
         // Pixel coordinates
@@ -2235,7 +2235,7 @@ Samples Per Pixel: 1
     {
         // Xastir coordinates
         xastir_bottom_y_increment = (float)
-            (1.0 * (SE_y_bounding_wgs84 - SW_y_bounding_wgs84)   // Need to add one pixel worth here yet
+            (1.0 * labs( (long)SE_y_bounding_wgs84 - (long)SW_y_bounding_wgs84 )   // Need to add one pixel worth here yet
              / abs(SE_x - SW_x));    // And a "+ 1.0" here?
 
         // Pixel coordinates
