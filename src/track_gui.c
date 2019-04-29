@@ -577,7 +577,7 @@ static void* findu_transfer_thread(void *arg) {
 /*
 #ifdef HAVE_HTML2TEXT
     // Create temp filename
-    snprintf(log_filename_tmp, sizeof(log_filename_tmp), "%s%s",
+    xastir_snprintf(log_filename_tmp, sizeof(log_filename_tmp), "%s%s",
         log_filename,
         ".tmp");
     // Create html2text command
