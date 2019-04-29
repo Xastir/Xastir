@@ -205,11 +205,11 @@ if test "${curl_desired}" = "yes"; then
       AC_CHECK_LIB([curl], [curl_global_init], 
                    [use_curl="yes"
                     LIBS="${LIBS} -lcurl"
-                    AC_DEFINE(HAVE_LIBCURL, ,
+                    AC_DEFINE(HAVE_LIBCURL, 1,
                               [Define to 1 if your `curl' library has curl_global_init.])
                     ])
     else
-      AC_DEFINE(HAVE_LIBCURL, , [Define to 1 if your `curl' library has curl_global_init.] )
+      AC_DEFINE(HAVE_LIBCURL, 1, [Define to 1 if your `curl' library has curl_global_init.] )
       LIBS="${LIBS} -lcurl"
       use_curl=yes
     fi
@@ -246,7 +246,7 @@ fi
 #  AC_CHECK_LIB([gps], [gps_open],
 #               [use_libgps="yes"
 #                LIBS="${LIBS} -lgps"
-#                AC_DEFINE(HAVE_LIBGPS, ,
+#                AC_DEFINE(HAVE_LIBGPS, 1,
 #                          [Define to 1 if your `libgps' library has gps_open.])
 #                ])
 #fi
@@ -364,7 +364,7 @@ AC_ARG_WITH(libproj,[  --without-libproj         Disable libproj features.],use_
 if test "${use_proj}" = "yes"; then
   use_proj=no
   AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
-    AC_DEFINE(HAVE_PROJ, , Define to 1 if you have the `libproj' library (-lproj). )
+    AC_DEFINE(HAVE_PROJ, 1, Define to 1 if you have the `libproj' library (-lproj). )
   )
 fi
 
@@ -384,8 +384,8 @@ if test "${shapelib_desired}" = "yes" ; then
   AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
     LIBS="$LIBS -lshp"
     AC_CHECK_LIB(shp,DBFGetFieldIndex,
-      AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
-    AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
+      AC_DEFINE(HAVE_DBFGETFIELDINDEX, 1, Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
+    AC_DEFINE(HAVE_LIBSHP, 1, Define to 1 if you have the `shp' library (-lshp). )
     break)])
 fi
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
@@ -404,19 +404,19 @@ if test "${use_pcre}" = "yes"; then
   use_pcre=no
   AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
   LIBS="$LIBS -lpcre"
-  AC_DEFINE(HAVE_LIBPCRE, , Define to 1 if you have the `pcre' library (-lpcre). )
+  AC_DEFINE(HAVE_LIBPCRE, 1, Define to 1 if you have the `pcre' library (-lpcre). )
   break)])
 fi
 
 
 # Check for XPM
 if test "${use_lsb}" = "no"; then 
-  AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
-  AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
+  AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, 1, Define to 1 if you have the `Xpm' library (-lXpm). )))
+  AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
 else
-  AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )
-  AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )
-  AC_DEFINE(HAVE_X11_XPM_H, , Define to 1 if you have 'X11/xpm.h' )
+  AC_DEFINE(HAVE_LIBXPM, 1, Define to 1 if you have the `Xpm' library (-lXpm). )
+  AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, Define to 1 if the `Xm' library (-lXm) is used for Xpm. )
+  AC_DEFINE(HAVE_X11_XPM_H, 1, Define to 1 if you have 'X11/xpm.h' )
 fi
  
  
@@ -432,19 +432,19 @@ if test "${use_geotiff}" = "yes"; then
             use_tiff=yes
             use_geotiff=yes
             LIBS="$LIBS -lgeotiff -ltiff -ljpeg -lz -lproj"
-            AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff))
-            AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).)
+            AC_DEFINE(HAVE_TIFF, 1,Define to 1 if you have the 'tiff' library (-ltiff))
+            AC_DEFINE(HAVE_LIBGEOTIFF, 1,Define to 1 if you have the `geotiff' library (-lgeotiff).)
         else
             AC_CHECK_HEADER(xtiffio.h, , use_geotiff="no")
             if test "${use_geotiff}" = "yes"; then
                 AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
                 LIBS="$LIBS -ltiff"
-                AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff)))
+                AC_DEFINE(HAVE_TIFF, 1,Define to 1 if you have the 'tiff' library (-ltiff)))
                 if test "${use_tiff}" = "yes"; then
                     use_geotiff=no
                     AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
                         LIBS="$LIBS -lgeotiff"
-                        AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+                        AC_DEFINE(HAVE_LIBGEOTIFF, 1,Define to 1 if you have the `geotiff' library (-lgeotiff).))
                 else
                     echo "*** Warning: geotiff requires libtiff."
                     use_geotiff=no
@@ -491,7 +491,7 @@ if test "${use_ax25}" = "yes"; then
   use_ax25=no
   AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, use_ax25=yes
   LIBS="$LIBS -lax25"
-  AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
+  AC_DEFINE(HAVE_LIBAX25, 1, Define to 1 if you have the `ax25' library (-lax25). )
   break)])
 fi
 
@@ -502,7 +502,7 @@ AC_ARG_WITH(dbfawk,[  --without-dbfawk          Disable dbfawk features.],use_db
 # dbfawk requires shapelib and pcre.  Make sure:
 if test "${use_dbfawk}" = "yes"; then
   if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
-    AC_DEFINE(WITH_DBFAWK, , Define to 1 to use dbfawk features. )
+    AC_DEFINE(WITH_DBFAWK, 1, Define to 1 to use dbfawk features. )
   else
     echo "*** Warning: dbfawk requires both pcre and shapelib."
     use_dbfawk=no
