@@ -1276,10 +1276,10 @@ void draw_geo_image_map (Widget w,
 
         // This number gets messed up if we cross zones.  UTM lines
         // are slanted, so we _can_ cross zones vertically!
-        geo_image_height = abs( (int)((map_top_n - bottom_n) * 200 / t_scale) );
+        geo_image_height = abs( (((int)map_top_n - (int)bottom_n) * 200 / t_scale) );
 
         // This number gets messed up if we cross zones
-        geo_image_width  = abs( (int)((right_e - map_left_e) * 200 / t_scale) );
+        geo_image_width  = abs( (((int)right_e - (int)map_left_e) * 200 / t_scale) );
 
  
         //fprintf(stderr,"\ngeo_image_height:%d\tmap_top_n:%0.1f\tbottom_n:%0.1f\tt_scale:%d\n",
