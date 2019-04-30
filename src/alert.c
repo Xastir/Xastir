@@ -360,17 +360,17 @@ int alert_redraw_on_update = 0;
 //
 void alert_fill_unique_string(alert_entry *alert) {
     xastir_snprintf(alert->unique_string,
-        sizeof(alert->unique_string),
-        "%s%s%c%c%c%c",
-        alert->from,
-        alert->title,
-        alert->seq[0],
-        alert->seq[1],
-        alert->seq[2],
-        alert->seq[3]);
+                    sizeof(alert->unique_string),
+                    "%s%s%c%c%c%c",
+                    alert->from,
+                    alert->title,
+                    alert->seq[0],
+                    alert->seq[1],
+                    alert->seq[2],
+                    alert->seq[3]);
 
     //fprintf(stderr,"'%s'\t'%s'\t'%s'\n", alert->from, alert->title, alert->seq);
-//    fprintf(stderr,"Unique string:'%s'\n", alert->unique_string);
+    //    fprintf(stderr,"Unique string:'%s'\n", alert->unique_string);
 }
 
 
@@ -394,7 +394,7 @@ unsigned int wx_alert_hash_from_key(void *key) {
 
     hash = hash % ALERT_HASH_SIZE;
 
-//fprintf(stderr,"%d\n", hash);
+    //fprintf(stderr,"%d\n", hash);
 
     return ((unsigned int)hash);
 }
@@ -423,18 +423,18 @@ int wx_alert_keys_equal(void *key1, void *key2) {
     // unique_string's hash to the same value, we run through this
     // compare once for each already-inserted record that also has
     // the same hash vaue.
-//    fprintf(stderr,"Comparing %s to %s\t",(char *)key1,(char *)key2);
+    //    fprintf(stderr,"Comparing %s to %s\t",(char *)key1,(char *)key2);
 
     if (strlen((char *)t1->unique_string) == strlen((char *)t2->unique_string)
-            && strncmp((char *)t1->unique_string,
-                    (char *)t2->unique_string,
-                    strlen((char *)t1->unique_string))==0) {
+        && strncmp((char *)t1->unique_string,
+                   (char *)t2->unique_string,
+                   strlen((char *)t1->unique_string))==0) {
 
-//        fprintf(stderr,"    match %s = %s\n", t1->unique_string, t2->unique_string);
+        //        fprintf(stderr,"    match %s = %s\n", t1->unique_string, t2->unique_string);
         return(1);
     }
     else {
-//        fprintf(stderr,"  no match\n");
+        //        fprintf(stderr,"  no match\n");
         return(0);
     }
 }
@@ -447,24 +447,24 @@ int wx_alert_keys_equal(void *key1, void *key2) {
 // non-zero, destroys any existing hash then creates a new one.
 //
 void init_wx_alert_hash(int clobber) {
-//    fprintf(stderr," Initializing wx_alert_hash \n");
+    //    fprintf(stderr," Initializing wx_alert_hash \n");
     // make sure we don't leak
-//fprintf(stderr,"init_wx_alert_hash\n");
+    //fprintf(stderr,"init_wx_alert_hash\n");
     if (wx_alert_hash) {
-//fprintf(stderr,"Already have one!\n");
+        //fprintf(stderr,"Already have one!\n");
         if (clobber) {
-//fprintf(stderr,"Clobbering hash table\n");
+            //fprintf(stderr,"Clobbering hash table\n");
             hashtable_destroy(wx_alert_hash, 1);
             wx_alert_hash = create_hashtable(ALERT_HASH_SIZE,
-                wx_alert_hash_from_key,
-                wx_alert_keys_equal);
+                                             wx_alert_hash_from_key,
+                                             wx_alert_keys_equal);
         }
     }
     else {
-//fprintf(stderr,"Creating hash table from scratch\n");
+        //fprintf(stderr,"Creating hash table from scratch\n");
         wx_alert_hash = create_hashtable(ALERT_HASH_SIZE,
-            wx_alert_hash_from_key,
-            wx_alert_keys_equal);
+                                         wx_alert_hash_from_key,
+                                         wx_alert_keys_equal);
     }
 }
 
@@ -490,12 +490,12 @@ alert_entry *get_wx_alert_from_hash(char *unique_string) {
     }
 
     if (!wx_alert_hash) {  // no table to search
-//fprintf(stderr,"Creating hash table\n");
+        //fprintf(stderr,"Creating hash table\n");
         init_wx_alert_hash(1); // so create one
         return NULL;
     }
 
-//fprintf(stderr,"   searching for %s...",unique_string);
+    //fprintf(stderr,"   searching for %s...",unique_string);
 
     result = hashtable_search(wx_alert_hash, unique_string);
     return (result);
@@ -523,15 +523,15 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         fprintf(stderr,"add_wx_alert_to_hash start\n");
 
     if (unique_string == NULL
-            || unique_string[0] == '\0'
-            || alert_record == NULL) {
+        || unique_string[0] == '\0'
+        || alert_record == NULL) {
         if (debug_level & 2)
             fprintf(stderr,"add_wx_alert_to_hash finish\n");
         return;
     }
 
     if (!wx_alert_hash) {  // no table to add to
-//fprintf(stderr,"init_wx_alert_hash\n");
+        //fprintf(stderr,"init_wx_alert_hash\n");
         init_wx_alert_hash(1); // so create one
     }
 
@@ -543,7 +543,7 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         free(temp);
     }
 
-//fprintf(stderr, "\t\t\tAdding %s...\n", unique_string);
+    //fprintf(stderr, "\t\t\tAdding %s...\n", unique_string);
 
     // Allocate new space for the key and the record
     new_unique_str = (char *)malloc(50);
@@ -561,7 +561,7 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         fprintf(stderr,"Insert failed on wx alert hash --- fatal\n");
         free(new_unique_str);
         free(new_record);
-//        exit(1);
+        //        exit(1);
     }
 
     // Yet another check to see whether hash insert/update worked
@@ -571,9 +571,9 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
         fprintf(stderr,"***Failed wx alert hash insert/update***\n");
     }
     else {
-//fprintf(stderr,"Current: %s -> %s\n",
-//    unique_string,
-//    temp);
+        //fprintf(stderr,"Current: %s -> %s\n",
+        //    unique_string,
+        //    temp);
     }
 
     if (debug_level & 2)
@@ -608,8 +608,8 @@ alert_entry *get_next_wx_alert(struct hashtable_itr *iterator) {
     alert_entry *temp = NULL;
 
     if (wx_alert_hash
-            && iterator
-            && hashtable_count(wx_alert_hash) > 0) {
+        && iterator
+        && hashtable_count(wx_alert_hash) > 0) {
 
         // Get record
         temp = hashtable_iterator_value(iterator);
@@ -652,7 +652,7 @@ static time_t last_alert_expire = 0;
 // Returns the quantity of alerts that were just expired.
 //
 int alert_expire(int curr_sec) {
-//    int ii;
+    //    int ii;
     int expire_count = 0;
     struct hashtable_itr *iterator;
     alert_entry *temp;
@@ -675,7 +675,7 @@ int alert_expire(int curr_sec) {
 
         if (!temp) {
 #ifndef USING_LIBGC
-//fprintf(stderr,"free iterator 1\n");
+            //fprintf(stderr,"free iterator 1\n");
             if (iterator) free(iterator);
 #endif  // USING_LIBGC
             return(expire_count);
@@ -686,10 +686,10 @@ int alert_expire(int curr_sec) {
 
             if (debug_level & 2) {
                 fprintf(stderr,
-                    "alert_expire: Clearing %s, current: %lu, alert: %lu\n",
-                    temp->unique_string,
-                    (unsigned long)time(NULL),
-                    (unsigned long)temp->expiration);
+                        "alert_expire: Clearing %s, current: %lu, alert: %lu\n",
+                        temp->unique_string,
+                        (unsigned long)time(NULL),
+                        (unsigned long)temp->expiration);
             }
 
             // Free the storage space
@@ -708,7 +708,7 @@ int alert_expire(int curr_sec) {
         }
     }
 #ifndef USING_LIBGC
-//fprintf(stderr,"free iterator 2\n");
+    //fprintf(stderr,"free iterator 2\n");
     if (iterator) free(iterator);
 #endif  // USING_LIBGC
 
@@ -734,10 +734,10 @@ int alert_expire(int curr_sec) {
 // Called from alert_build_list() function.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
-//    alert_entry *ptr;
-//    int i;
+    //    alert_entry *ptr;
+    //    int i;
 
-set_dangerous("alert.c:alert_add_entry()");
+    set_dangerous("alert.c:alert_add_entry()");
 
     if (debug_level & 2)
         fprintf(stderr,"alert_add_entry\n");
@@ -746,7 +746,7 @@ set_dangerous("alert.c:alert_add_entry()");
         if (debug_level & 2)
             fprintf(stderr,"alert_add_entry: Empty title!\n");
 
-clear_dangerous();
+        clear_dangerous();
 
         return(NULL);
     }
@@ -754,11 +754,11 @@ clear_dangerous();
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
     if ( (strcmp(entry->to, "NWS-SOLAR") == 0)
-            || (strcmp(entry->to, "NWS_SOLAR") == 0) ) {
+         || (strcmp(entry->to, "NWS_SOLAR") == 0) ) {
         if (debug_level & 2)
             fprintf(stderr,"NWS-SOLAR, skipping\n");
 
-clear_dangerous();
+        clear_dangerous();
 
         return(NULL);
     }
@@ -766,7 +766,7 @@ clear_dangerous();
         if (debug_level & 2)
             fprintf(stderr,"NoActivationExpected, skipping\n");
 
-clear_dangerous();
+        clear_dangerous();
 
         return(NULL);
     }
@@ -776,12 +776,12 @@ clear_dangerous();
     if (entry->expiration < time(NULL)) {
         if (debug_level & 2) {
             fprintf(stderr,
-                "Newest Alert Expired->Clearing, current: %lu, alert: %lu\n",
-                (unsigned long)time(NULL),
-                (unsigned long)entry->expiration );
+                    "Newest Alert Expired->Clearing, current: %lu, alert: %lu\n",
+                    (unsigned long)time(NULL),
+                    (unsigned long)entry->expiration );
         }
 
-clear_dangerous();
+        clear_dangerous();
 
         return(NULL);
     }
@@ -793,15 +793,15 @@ clear_dangerous();
         // Schedule a screen update 'cuz we have a new alert
         alert_redraw_on_update = redraw_on_new_data = 2;
 
-//WE7U
+        //WE7U
 
-set_dangerous("alert.c:add_wx_alert_to_hash()");
+        set_dangerous("alert.c:add_wx_alert_to_hash()");
 
-add_wx_alert_to_hash(entry->unique_string, entry);
+        add_wx_alert_to_hash(entry->unique_string, entry);
 
-clear_dangerous();
+        clear_dangerous();
 
-return(entry);
+        return(entry);
 
     }
 
@@ -810,12 +810,12 @@ return(entry);
     if (debug_level & 2) {
         fprintf(stderr,"Exiting alert_add_entry() without actually adding the alert:\n");
         fprintf(stderr,"%s %s %lu\n",
-            entry->to,
-            entry->title,
-            (unsigned long)entry->expiration);
+                entry->to,
+                entry->title,
+                (unsigned long)entry->expiration);
     }
 
-clear_dangerous();
+    clear_dangerous();
 
     return(NULL);
 }
@@ -858,7 +858,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
     (void)time(&now);
 
-//    if ((a_ptr = alert_match(alert, match_level))) {
+    //    if ((a_ptr = alert_match(alert, match_level))) {
     if ((a_ptr = get_wx_alert_from_hash(alert->unique_string))) {
         if (a_ptr->expiration >= now) {
             for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
@@ -866,7 +866,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list by clearing
                                                         // out the title.
-//WE7U
+            //WE7U
 
             // Schedule an update 'cuz we need to delete an expired
             // alert from the list.
@@ -892,7 +892,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 // Called from maps.c:load_alert_maps() function.
 //
 int alert_display_request(void) {
-//    int i;
+    //    int i;
     int alert_count;
     static int last_alert_count;
 
@@ -900,7 +900,7 @@ int alert_display_request(void) {
     if (debug_level & 2)
         fprintf(stderr,"alert_display_request\n");
 
-//WE7U
+    //WE7U
     if (wx_alert_hash)
         alert_count = hashtable_count(wx_alert_hash);
     else
@@ -920,9 +920,9 @@ int alert_display_request(void) {
 int alert_list_count(void) {
     int count = 0;
     if (wx_alert_hash)
-      return(hashtable_count(wx_alert_hash));
+        return(hashtable_count(wx_alert_hash));
     else
-      return count;
+        return count;
 }
 
 
@@ -934,7 +934,7 @@ int alert_list_count(void) {
 // alarm if a new weather alert appears on screen.
 //
 int alert_on_screen(void) {
-//    int i;
+    //    int i;
     int alert_count = 0;
     struct hashtable_itr *iterator;
     alert_entry *temp;
@@ -943,19 +943,19 @@ int alert_on_screen(void) {
     if (debug_level & 2)
         fprintf(stderr,"alert_on_screen\n");
 
-//WE7U
+    //WE7U
 
     iterator = create_wx_alert_iterator();
     temp = get_next_wx_alert(iterator);
     while (iterator != NULL && temp) {
         if (alert_active(temp, ALERT_ALL)
-                && temp->flags[on_screen] == 'Y') {
+            && temp->flags[on_screen] == 'Y') {
             alert_count++;
         }
         temp = get_next_wx_alert(iterator);
     }
 #ifndef USING_LIBGC
-//fprintf(stderr,"free iterator 3\n");
+    //fprintf(stderr,"free iterator 3\n");
     if (iterator) free(iterator);
 #endif  // USING_LIBGC
 
@@ -1072,9 +1072,9 @@ void alert_build_list(Message *fill) {
 
     if (debug_level & 2) {
         fprintf(stderr,"alert_build_list:%s>%s:%s\n",
-            fill->from_call_sign,
-            fill->call_sign,
-            fill->message_line);
+                fill->from_call_sign,
+                fill->call_sign,
+                fill->message_line);
     }
 
     // Empty this string first
@@ -1113,56 +1113,56 @@ void alert_build_list(Message *fill) {
 
         // Run through the alert list looking for a match to the
         // FROM and first four chars of SEQ
-//WE7U
+        //WE7U
         iterator = create_wx_alert_iterator();
         for (list_ptr = get_next_wx_alert(iterator); iterator != NULL && list_ptr; list_ptr = get_next_wx_alert(iterator)) {
             if ( (strcasecmp(list_ptr->from, fill->from_call_sign) == 0)
-                    && ( strncmp(list_ptr->seq,fill->seq,4) == 0 ) ) {
+                 && ( strncmp(list_ptr->seq,fill->seq,4) == 0 ) ) {
 
                 if (debug_level & 2)
                     fprintf(stderr,"%s:Found a matching alert to a SKY message:\t",list_ptr->seq);
 
                 switch (fill->seq[4]) {
-                    case 'B':
-                        xastir_snprintf(list_ptr->desc0,
-                            sizeof(list_ptr->desc0),
-                            "%s",
-                            fill->message_line);
-                        if (debug_level & 2)
-                            fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
-                        break;
-                    case 'C':
-                        xastir_snprintf(list_ptr->desc1,
-                            sizeof(list_ptr->desc1),
-                            "%s",
-                            fill->message_line);
-                        if (debug_level & 2)
-                            fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
-                        break;
-                    case 'D':
-                        xastir_snprintf(list_ptr->desc2,
-                            sizeof(list_ptr->desc2),
-                            "%s",
-                            fill->message_line);
-                        if (debug_level & 2)
-                            fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
-                        break;
-                    case 'E':
-                    default:
-                        xastir_snprintf(list_ptr->desc3,
-                            sizeof(list_ptr->desc3),
-                            "%s",
-                            fill->message_line);
-                        if (debug_level & 2)
-                            fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
-                        break;
+                case 'B':
+                    xastir_snprintf(list_ptr->desc0,
+                                    sizeof(list_ptr->desc0),
+                                    "%s",
+                                    fill->message_line);
+                    if (debug_level & 2)
+                        fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
+                    break;
+                case 'C':
+                    xastir_snprintf(list_ptr->desc1,
+                                    sizeof(list_ptr->desc1),
+                                    "%s",
+                                    fill->message_line);
+                    if (debug_level & 2)
+                        fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
+                    break;
+                case 'D':
+                    xastir_snprintf(list_ptr->desc2,
+                                    sizeof(list_ptr->desc2),
+                                    "%s",
+                                    fill->message_line);
+                    if (debug_level & 2)
+                        fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
+                    break;
+                case 'E':
+                default:
+                    xastir_snprintf(list_ptr->desc3,
+                                    sizeof(list_ptr->desc3),
+                                    "%s",
+                                    fill->message_line);
+                    if (debug_level & 2)
+                        fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
+                    break;
                 }
             }
         }
         if (debug_level & 2)
             fprintf(stderr,"alert_build_list return 1\n");
 #ifndef USING_LIBGC
-//fprintf(stderr,"free iterator a4\n");
+        //fprintf(stderr,"free iterator a4\n");
         if (iterator) free(iterator);
 #endif  // USING_LIBGC
         return;
@@ -1204,18 +1204,18 @@ void alert_build_list(Message *fill) {
         // alerts with up to five alerts per message.  This doesn't
         // handle filling in the title for compressed alerts though.
         ret = sscanf(fill->message_line,
-                "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
-                entry.activity,      // 191700z
-                entry.alert_tag,     // WIND
-                &title[0][0],        // CA_Z007
-                &title[1][0],        // ...
-                &title[2][0],        // ...
-                &title[3][0],        // ...
-                &title[4][0]);       // ...
+                     "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+                     entry.activity,      // 191700z
+                     entry.alert_tag,     // WIND
+                     &title[0][0],        // CA_Z007
+                     &title[1][0],        // ...
+                     &title[2][0],        // ...
+                     &title[3][0],        // ...
+                     &title[4][0]);       // ...
 
         if (ret < 3)
-          fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret, 
-                  fill->from_call_sign, fill->call_sign, fill->message_line);
+            fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret, 
+                    fill->from_call_sign, fill->call_sign, fill->message_line);
 
         // Force a termination for each
         entry.activity[20]  = '\0';
@@ -1236,22 +1236,22 @@ void alert_build_list(Message *fill) {
         // alerts in uncompressed clothing.
 
         if ((strncmp(fill->call_sign,"NWS_",4) == 0) |
-           ((strncmp(fill->call_sign,"NWS-",4) == 0) &
-            (strstr(title[0], "_") == NULL))) {
+            ((strncmp(fill->call_sign,"NWS-",4) == 0) &
+             (strstr(title[0], "_") == NULL))) {
 
             char compressed_wx[512];
             char *ptr;
 
-/////////////////////////////////////////////////////////////////////
-// Compressed weather alert special code
-/////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////
+            // Compressed weather alert special code
+            /////////////////////////////////////////////////////////////////////
 
             compressed_wx_packet++; // Set the flag
 
-//fprintf(stderr, "Found compressed alert packet via NWS_!\n");
+            //fprintf(stderr, "Found compressed alert packet via NWS_!\n");
 
-//fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
-//fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
+            //fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
+            //fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
 
             // Create a new weather alert for each of these and then
             // call this function on each one?  Seems like it might
@@ -1262,9 +1262,9 @@ void alert_build_list(Message *fill) {
             // in which case we'd exit from this routine as soon as
             // it was submitted.
             ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
-                entry.activity,
-                entry.alert_tag,
-                compressed_wx);     // Stick the long string in here
+                         entry.activity,
+                         entry.alert_tag,
+                         compressed_wx);     // Stick the long string in here
 
             if (ret != 3) {
                 fprintf(stderr,"sscanf parsed %d/3 values in alert.c\n", ret);
@@ -1274,7 +1274,7 @@ void alert_build_list(Message *fill) {
 
             compressed_wx[255] = '\0';
 
-//fprintf(stderr,"Line:%s\n",compressed_wx);
+            //fprintf(stderr,"Line:%s\n",compressed_wx);
 
             // Snag alpha characters (should be three) at the start
             // of the string.  Use those until we hit more alpha
@@ -1282,9 +1282,9 @@ void alert_build_list(Message *fill) {
             // alpha group are the state, last character is the
             // zone/county/marine-zone indicator.
 
-// Need to be very careful here to validate the letters/numbers, and
-// to not run off the end of the string.  Need more code here to do
-// this validation.
+            // Need to be very careful here to validate the letters/numbers, and
+            // to not run off the end of the string.  Need more code here to do
+            // this validation.
 
 
             // Scan through entire string
@@ -1299,9 +1299,9 @@ void alert_build_list(Message *fill) {
 
                 // Snag the ALPHA portion
                 xastir_snprintf(prefix,
-                    sizeof(prefix),
-                    "%s",
-                    ptr);
+                                sizeof(prefix),
+                                "%s",
+                                ptr);
                 ptr += 2;
                 prefix[2] = '_';
                 prefix[3] = ptr[0];
@@ -1314,9 +1314,9 @@ void alert_build_list(Message *fill) {
                 // width can vary between 1 and 3.  The leading
                 // zeroes have been removed.
                 xastir_snprintf(temp_suffix,
-                    sizeof(temp_suffix),
-                    "%s",
-                    ptr);
+                                sizeof(temp_suffix),
+                                "%s",
+                                ptr);
 
                 temp_suffix[3] = '\0';   // Terminate the string
                 if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
@@ -1336,48 +1336,48 @@ void alert_build_list(Message *fill) {
                 // "039" or "45" or "2".  Add leading zeroes to give
                 // "suffix" a length of 3.
                 xastir_snprintf(suffix,
-                    sizeof(suffix),
-                    "000");
+                                sizeof(suffix),
+                                "000");
                 switch (strlen(temp_suffix)) {
-                    case 1: // Copy one char across
-                        suffix[2] = temp_suffix[0];
-                        break;
-                    case 2: // Copy two chars across
-                        suffix[1] = temp_suffix[0];
-                        suffix[2] = temp_suffix[1];
-                        break;
-                    case 3: // Copy all three chars across
-                        xastir_snprintf(suffix,
-                            sizeof(suffix),
-                            "%s",
-                            temp_suffix);
-                        break;
+                case 1: // Copy one char across
+                    suffix[2] = temp_suffix[0];
+                    break;
+                case 2: // Copy two chars across
+                    suffix[1] = temp_suffix[0];
+                    suffix[2] = temp_suffix[1];
+                    break;
+                case 3: // Copy all three chars across
+                    xastir_snprintf(suffix,
+                                    sizeof(suffix),
+                                    "%s",
+                                    temp_suffix);
+                    break;
                 }
                 // Make sure suffix is terminated properly
                 suffix[3] = '\0';
 
-// We have our first zone (of this loop) extracted!
-if (debug_level & 2)
-    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+                // We have our first zone (of this loop) extracted!
+                if (debug_level & 2)
+                    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
 
                 // Add it to our zone string.  In this case we know
                 // that the lengths of the strings we're working
                 // with are quite short.  Little danger of
                 // overrunning our destination string.
                 strncat(uncompressed_wx,
-                    ",",
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                        ",",
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                 strncat(uncompressed_wx,
-                    prefix,
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                        prefix,
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                 strncat(uncompressed_wx,
-                    suffix,
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                        suffix,
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                 // Terminate it every time
                 uncompressed_wx[9999] = '\0';
 
-if (debug_level & 2)
-    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+                if (debug_level & 2)
+                    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
 
                 // Here we keep looping until we hit another alpha
                 // portion.  We need to look at the field separator
@@ -1410,9 +1410,9 @@ if (debug_level & 2)
                         // Snag the NUMERIC portion.  May be between
                         // 1 and three digits long.
                         xastir_snprintf(ending,
-                            sizeof(ending),
-                            "%s",
-                            ptr);
+                                        sizeof(ending),
+                                        "%s",
+                                        ptr);
 
                         // Terminate the string and advance the
                         // pointer past it.
@@ -1437,16 +1437,16 @@ if (debug_level & 2)
                         
                         // ending should now contain something like
                         // "046" or "35" or "2"
-if (debug_level & 2)
-    fprintf(stderr,"Ending:%s\n",ending);
+                        if (debug_level & 2)
+                            fprintf(stderr,"Ending:%s\n",ending);
 
                         start_number = (int)atoi(suffix);
                         end_number = (int)atoi(ending);
                         for ( kk=start_number+1; kk<=end_number; kk++) {
                             xastir_snprintf(suffix,4,"%03d",kk);
 
-if (debug_level & 2)
-    fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
+                            if (debug_level & 2)
+                                fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
 
                             // And another zone... Ennumerate
                             // through the sequence, adding each
@@ -1456,14 +1456,14 @@ if (debug_level & 2)
                             // short.  Little danger of overrunning
                             // our destination string.
                             strncat(uncompressed_wx,
-                                ",",
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    ",",
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             strncat(uncompressed_wx,
-                                prefix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                                    prefix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                             strncat(uncompressed_wx,
-                                suffix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    suffix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             // Terminate it every time
                             uncompressed_wx[9999] = '\0';
                         }
@@ -1483,9 +1483,9 @@ if (debug_level & 2)
                             // width can vary between 1 and 3.  The leading
                             // zeroes have been removed.
                             xastir_snprintf(temp_suffix,
-                                sizeof(temp_suffix),
-                                "%s",
-                                ptr);
+                                            sizeof(temp_suffix),
+                                            "%s",
+                                            ptr);
 
                             // Terminate the string and advance the
                             // pointer past it.
@@ -1512,26 +1512,26 @@ if (debug_level & 2)
                             // "039" or "45" or "2".  Add leading zeroes to give
                             // "suffix" a length of 3.
                             xastir_snprintf(suffix,
-                                sizeof(suffix),
-                                "000");
+                                            sizeof(suffix),
+                                            "000");
                             switch (strlen(temp_suffix)) {
-                                case 1: // Copy one char across
-                                    suffix[2] = temp_suffix[0];
-                                    break;
-                                case 2: // Copy two chars across
-                                    suffix[1] = temp_suffix[0];
-                                    suffix[2] = temp_suffix[1];
-                                                break;
-                                case 3: // Copy all three chars across
-                                    xastir_snprintf(suffix,
-                                        sizeof(suffix),
-                                        "%s",
-                                        temp_suffix);
-                                    break;
+                            case 1: // Copy one char across
+                                suffix[2] = temp_suffix[0];
+                                break;
+                            case 2: // Copy two chars across
+                                suffix[1] = temp_suffix[0];
+                                suffix[2] = temp_suffix[1];
+                                break;
+                            case 3: // Copy all three chars across
+                                xastir_snprintf(suffix,
+                                                sizeof(suffix),
+                                                "%s",
+                                                temp_suffix);
+                                break;
                             }
 
-if (debug_level & 2)
-    fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+                            if (debug_level & 2)
+                                fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
 
                             // And another zone...
                             // Add it to our zone string.  In this
@@ -1540,14 +1540,14 @@ if (debug_level & 2)
                             // short.  Little danger of overrunning
                             // our destination string.
                             strncat(uncompressed_wx,
-                                ",",
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    ",",
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             strncat(uncompressed_wx,
-                                prefix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                                    prefix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                             strncat(uncompressed_wx,
-                                suffix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    suffix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             // Terminate it every time
                             uncompressed_wx[9999] = '\0';
                         }
@@ -1566,11 +1566,11 @@ if (debug_level & 2)
 
             if (debug_level & 2)
                 fprintf(stderr,"Uncompressed: %s\n",
-                    uncompressed_wx);
+                        uncompressed_wx);
         }
-/////////////////////////////////////////////////////////////////////
-// End of compressed weather alert special code
-/////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+        // End of compressed weather alert special code
+        /////////////////////////////////////////////////////////////////////
 
         // Australian Buerau of Meeorology alerts (BOM)
         // Geoff VK2XJG
@@ -1582,21 +1582,21 @@ if (debug_level & 2)
         // non-compressed format, although this has not been implemented on the server.
 
         if (       (strncmp(fill->call_sign,"BOM_",4) == 0)
-                || (strncmp(fill->call_sign,"BOM-",4) == 0) ) {
+                   || (strncmp(fill->call_sign,"BOM-",4) == 0) ) {
 
             char compressed_wx[512];
             char *ptr;
 
-/////////////////////////////////////////////////////////////////////
-// Compressed weather alert (BOM) special code
-/////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////
+            // Compressed weather alert (BOM) special code
+            /////////////////////////////////////////////////////////////////////
 
             compressed_wx_packet++; // Set the flag
 
-//fprintf(stderr, "Found compressed alert packet via BOM_!\n");
+            //fprintf(stderr, "Found compressed alert packet via BOM_!\n");
 
-//fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
-//fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
+            //fprintf(stderr,"Compressed Weather Alert:%s\n",fill->message_line);
+            //fprintf(stderr,"Compressed alerts are not fully implemented yet.\n");
 
             // Create a new weather alert for each of these and then
             // call this function on each one?  Seems like it might
@@ -1607,9 +1607,9 @@ if (debug_level & 2)
             // in which case we'd exit from this routine as soon as
             // it was submitted.
             ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
-                entry.activity,
-                entry.alert_tag,
-                compressed_wx);     // Stick the long string in here
+                         entry.activity,
+                         entry.alert_tag,
+                         compressed_wx);     // Stick the long string in here
 
             if (ret != 3) {
                 fprintf(stderr,"sscanf parsed %d/3 values in alert.c\n", ret);
@@ -1619,7 +1619,7 @@ if (debug_level & 2)
 
             compressed_wx[255] = '\0';
 
-//fprintf(stderr,"Line:%s\n",compressed_wx);
+            //fprintf(stderr,"Line:%s\n",compressed_wx);
 
             // Snag alpha characters (should be five) at the start
             // of the string.  Use those until we hit more alpha
@@ -1627,9 +1627,9 @@ if (debug_level & 2)
             // alpha group are the state, last two characters are the
             // zone/county/marine-zone indicator.
 
-// Need to be very careful here to validate the letters/numbers, and
-// to not run off the end of the string.  Need more code here to do
-// this validation.
+            // Need to be very careful here to validate the letters/numbers, and
+            // to not run off the end of the string.  Need more code here to do
+            // this validation.
 
 
             // Scan through entire string
@@ -1644,9 +1644,9 @@ if (debug_level & 2)
 
                 // Snag the ALPHA portion
                 xastir_snprintf(prefix,
-                    sizeof(prefix),
-                    "%s",
-                    ptr);
+                                sizeof(prefix),
+                                "%s",
+                                ptr);
                 ptr += 3;
                 // Handle a 2 letter state abbreviation (SA/WA/NT)
                 if (prefix[2] == '_' ) {
@@ -1667,9 +1667,9 @@ if (debug_level & 2)
                 // width can vary between 1 and 3.  The leading
                 // zeroes have been removed.
                 xastir_snprintf(temp_suffix,
-                    sizeof(temp_suffix),
-                    "%s",
-                    ptr);
+                                sizeof(temp_suffix),
+                                "%s",
+                                ptr);
 
                 temp_suffix[3] = '\0';   // Terminate the string
                 if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
@@ -1689,48 +1689,48 @@ if (debug_level & 2)
                 // "039" or "45" or "2".  Add leading zeroes to give
                 // "suffix" a length of 3.
                 xastir_snprintf(suffix,
-                    sizeof(suffix),
-                    "000");
+                                sizeof(suffix),
+                                "000");
                 switch (strlen(temp_suffix)) {
-                    case 1: // Copy one char across
-                        suffix[2] = temp_suffix[0];
-                        break;
-                    case 2: // Copy two chars across
-                        suffix[1] = temp_suffix[0];
-                        suffix[2] = temp_suffix[1];
-                        break;
-                    case 3: // Copy all three chars across
-                        xastir_snprintf(suffix,
-                            sizeof(suffix),
-                            "%s",
-                            temp_suffix);
-                        break;
+                case 1: // Copy one char across
+                    suffix[2] = temp_suffix[0];
+                    break;
+                case 2: // Copy two chars across
+                    suffix[1] = temp_suffix[0];
+                    suffix[2] = temp_suffix[1];
+                    break;
+                case 3: // Copy all three chars across
+                    xastir_snprintf(suffix,
+                                    sizeof(suffix),
+                                    "%s",
+                                    temp_suffix);
+                    break;
                 }
                 // Make sure suffix is terminated properly
                 suffix[3] = '\0';
 
-// We have our first zone (of this loop) extracted!
-if (debug_level & 2)
-    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+                // We have our first zone (of this loop) extracted!
+                if (debug_level & 2)
+                    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
 
                 // Add it to our zone string.  In this case we know
                 // that the lengths of the strings we're working
                 // with are quite short.  Little danger of
                 // overrunning our destination string.
                 strncat(uncompressed_wx,
-                    ",",
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                        ",",
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                 strncat(uncompressed_wx,
-                    prefix,
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                        prefix,
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                 strncat(uncompressed_wx,
-                    suffix,
-                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                        suffix,
+                        sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                 // Terminate it every time
                 uncompressed_wx[9999] = '\0';
 
-if (debug_level & 2)
-    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+                if (debug_level & 2)
+                    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
 
                 // Here we keep looping until we hit another alpha
                 // portion.  We need to look at the field separator
@@ -1763,9 +1763,9 @@ if (debug_level & 2)
                         // Snag the NUMERIC portion.  May be between
                         // 1 and three digits long.
                         xastir_snprintf(ending,
-                            sizeof(ending),
-                            "%s",
-                            ptr);
+                                        sizeof(ending),
+                                        "%s",
+                                        ptr);
 
                         // Terminate the string and advance the
                         // pointer past it.
@@ -1790,16 +1790,16 @@ if (debug_level & 2)
                         
                         // ending should now contain something like
                         // "046" or "35" or "2"
-if (debug_level & 2)
-    fprintf(stderr,"Ending:%s\n",ending);
+                        if (debug_level & 2)
+                            fprintf(stderr,"Ending:%s\n",ending);
 
                         start_number = (int)atoi(suffix);
                         end_number = (int)atoi(ending);
                         for ( kk=start_number+1; kk<=end_number; kk++) {
                             xastir_snprintf(suffix,4,"%03d",kk);
 
-if (debug_level & 2)
-    fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
+                            if (debug_level & 2)
+                                fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
 
                             // And another zone... Ennumerate
                             // through the sequence, adding each
@@ -1809,14 +1809,14 @@ if (debug_level & 2)
                             // short.  Little danger of overrunning
                             // our destination string.
                             strncat(uncompressed_wx,
-                                ",",
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    ",",
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             strncat(uncompressed_wx,
-                                prefix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                                    prefix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                             strncat(uncompressed_wx,
-                                suffix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    suffix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             // Terminate it every time
                             uncompressed_wx[9999] = '\0';
                         }
@@ -1836,9 +1836,9 @@ if (debug_level & 2)
                             // width can vary between 1 and 3.  The leading
                             // zeroes have been removed.
                             xastir_snprintf(temp_suffix,
-                                sizeof(temp_suffix),
-                                "%s",
-                                ptr);
+                                            sizeof(temp_suffix),
+                                            "%s",
+                                            ptr);
 
                             // Terminate the string and advance the
                             // pointer past it.
@@ -1865,26 +1865,26 @@ if (debug_level & 2)
                             // "039" or "45" or "2".  Add leading zeroes to give
                             // "suffix" a length of 3.
                             xastir_snprintf(suffix,
-                                sizeof(suffix),
-                                "000");
+                                            sizeof(suffix),
+                                            "000");
                             switch (strlen(temp_suffix)) {
-                                case 1: // Copy one char across
-                                    suffix[2] = temp_suffix[0];
-                                    break;
-                                case 2: // Copy two chars across
-                                    suffix[1] = temp_suffix[0];
-                                    suffix[2] = temp_suffix[1];
-                                                break;
-                                case 3: // Copy all three chars across
-                                    xastir_snprintf(suffix,
-                                        sizeof(suffix),
-                                        "%s",
-                                        temp_suffix);
-                                    break;
+                            case 1: // Copy one char across
+                                suffix[2] = temp_suffix[0];
+                                break;
+                            case 2: // Copy two chars across
+                                suffix[1] = temp_suffix[0];
+                                suffix[2] = temp_suffix[1];
+                                break;
+                            case 3: // Copy all three chars across
+                                xastir_snprintf(suffix,
+                                                sizeof(suffix),
+                                                "%s",
+                                                temp_suffix);
+                                break;
                             }
 
-if (debug_level & 2)
-    fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+                            if (debug_level & 2)
+                                fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
 
                             // And another zone...
                             // Add it to our zone string.  In this
@@ -1893,14 +1893,14 @@ if (debug_level & 2)
                             // short.  Little danger of overrunning
                             // our destination string.
                             strncat(uncompressed_wx,
-                                ",",
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    ",",
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             strncat(uncompressed_wx,
-                                prefix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                                    prefix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
                             strncat(uncompressed_wx,
-                                suffix,
-                                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
+                                    suffix,
+                                    sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
                             // Terminate it every time
                             uncompressed_wx[9999] = '\0';
                         }
@@ -1919,18 +1919,18 @@ if (debug_level & 2)
 
             if (debug_level & 2)
                 fprintf(stderr,"Uncompressed: %s\n",
-                    uncompressed_wx);
+                        uncompressed_wx);
         }
-/////////////////////////////////////////////////////////////////////
-// End of compressed weather (BOM) alert special code
-/////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+        // End of compressed weather (BOM) alert special code
+        /////////////////////////////////////////////////////////////////////
 
 
 
         if (debug_level & 2)
             fprintf(stderr,"3\n");
 
-       // Terminate the strings
+        // Terminate the strings
         entry.activity[20] = entry.alert_tag[20] = '\0';
 
         // If the expire time is missing, shift fields to the right
@@ -1949,20 +1949,20 @@ if (debug_level & 2)
             // the strings.
             for (jj = 4; jj > 0; jj--) {
                 xastir_snprintf(&title[jj][0],
-                    TITLE_SIZE,
-                    "%s",
-                    &title[jj-1][0]);
+                                TITLE_SIZE,
+                                "%s",
+                                &title[jj-1][0]);
             }
  
             xastir_snprintf(&title[0][0],
-                TITLE_SIZE,
-                "%s",
-                entry.alert_tag);
+                            TITLE_SIZE,
+                            "%s",
+                            entry.alert_tag);
  
             xastir_snprintf(entry.alert_tag,
-                sizeof(entry.alert_tag),
-                "%s",
-                entry.activity);
+                            sizeof(entry.alert_tag),
+                            "%s",
+                            entry.activity);
             entry.alert_tag[20] = '\0';
  
             // Shouldn't we clear out entry.activity in this
@@ -2028,25 +2028,25 @@ if (debug_level & 2)
                 fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
 
             xastir_snprintf(entry.issue_date_time,
-                sizeof(entry.issue_date_time),
-                "%s",
-                date_time);
+                            sizeof(entry.issue_date_time),
+                            "%s",
+                            date_time);
             //entry.issue_date_time = time_from_aprsstring(date_time);
         } else {
             xastir_snprintf(entry.issue_date_time,
-                sizeof(entry.issue_date_time),
-                "%s",
-                "312359z");
+                            sizeof(entry.issue_date_time),
+                            "%s",
+                            "312359z");
         }
 
         if (debug_level & 2)
             fprintf(stderr,"6\n");
 
 
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
 
  
         // Iterate through up to five uncompressed alerts, or
@@ -2062,9 +2062,9 @@ if (debug_level & 2)
             // Feed &uncompressed_wx[1] to split_string to fill in
             // an array with the various zone names.
             split_string(&uncompressed_wx[1],
-                title_ptr,
-                MAX_SUB_ALERTS,
-                ',');
+                         title_ptr,
+                         MAX_SUB_ALERTS,
+                         ',');
         }
         else {  // Handle non-compressed packet
             // We have up to five alerts to process.
@@ -2080,8 +2080,8 @@ if (debug_level & 2)
             title_ptr[5] = NULL;    // Make sure we terminate
         }
 
-// We now have all of our titles pointed to by the title_ptr[]
-// array.  Either type of alert can be processed identically now.
+        // We now have all of our titles pointed to by the title_ptr[]
+        // array.  Either type of alert can be processed identically now.
 
 
         // Try to create alerts out of each one.
@@ -2090,13 +2090,13 @@ if (debug_level & 2)
 
             // Copy into our entry.title variable
             xastir_snprintf(entry.title,
-                sizeof(entry.title),
-                "%s",
-                title_ptr[ii]);
+                            sizeof(entry.title),
+                            "%s",
+                            title_ptr[ii]);
 
             // Terminate title string
             entry.title[sizeof(entry.title)-1] = '\0';
-//fprintf(stderr,"Title: %s\n",entry.title);
+            //fprintf(stderr,"Title: %s\n",entry.title);
 
             // This one removes spaces from the title.
             //while ((ptr = strpbrk(entry.title, " ")))
@@ -2119,11 +2119,11 @@ if (debug_level & 2)
             if ((ptr = strpbrk(entry.title, "}>=!:/*+;"))) {
                 if (debug_level & 2) {
                     fprintf(stderr,
-                        "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
-                        (long)fill->sec_heard,
-                        fill->from_call_sign,
-                        fill->call_sign,
-                        fill->message_line);
+                            "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
+                            (long)fill->sec_heard,
+                            fill->from_call_sign,
+                            fill->call_sign,
+                            fill->message_line);
                 }
                 *ptr = '\0';
             }
@@ -2134,17 +2134,17 @@ if (debug_level & 2)
                 continue;
 
             xastir_snprintf(entry.from,
-                sizeof(entry.from),
-                "%s",
-                fill->from_call_sign);
+                            sizeof(entry.from),
+                            "%s",
+                            fill->from_call_sign);
             xastir_snprintf(entry.to,
-                sizeof(entry.to),
-                "%s",
-                fill->call_sign);
+                            sizeof(entry.to),
+                            "%s",
+                            fill->call_sign);
             xastir_snprintf(entry.seq,
-                sizeof(entry.seq),
-                "%s",
-                fill->seq);
+                            sizeof(entry.seq),
+                            "%s",
+                            fill->seq);
 
             // NWS_ADVIS or NWS_CANCL normally appear in the "to"
             // field.  ADVIS can appear in the alert_tag field on a
@@ -2182,66 +2182,66 @@ if (debug_level & 2)
             // Look for a similar alert
 
 
-// We need some improvements here.  We compare these fields:
-//
-// from         SFONPW      SFONPW
-// to           NWS-ADVIS   NWS-CANCL
-// alert_tag    WIND        WIND_ADVIS_CANCEL
-// title        CA_Z007     CA_Z007
-//
-// Of these, "from" and "title" should remain the same between an
-// alert and a cancelled alert.  "to" and "alert_tag" change.  Since
-// we're comparing all four fields, the cancels don't match any
-// existing alerts.
+            // We need some improvements here.  We compare these fields:
+            //
+            // from         SFONPW      SFONPW
+            // to           NWS-ADVIS   NWS-CANCL
+            // alert_tag    WIND        WIND_ADVIS_CANCEL
+            // title        CA_Z007     CA_Z007
+            //
+            // Of these, "from" and "title" should remain the same between an
+            // alert and a cancelled alert.  "to" and "alert_tag" change.  Since
+            // we're comparing all four fields, the cancels don't match any
+            // existing alerts.
 
 
-//WE7U
+            //WE7U
             // Fill in the unique_string variable.  We need this for
             // our hash code.
             alert_fill_unique_string(&entry);
  
             if ((list_ptr = get_wx_alert_from_hash(entry.unique_string))) {
-//fprintf(stderr,"alert_build_list: found match: %s\n",entry.unique_string);
+                //fprintf(stderr,"alert_build_list: found match: %s\n",entry.unique_string);
 
 
-// We found a match!  We probably need to copy some more data across
-// between the records:  seq, alert_tag, alert_level, from, to,
-// issue_date_time, expiration?
-// If it's a CANCL or CANCEL, we need to make sure the cancel
-// packet's information is kept and the other's info is tossed, so
-// that the alert doesn't get drawn anymore.
+                // We found a match!  We probably need to copy some more data across
+                // between the records:  seq, alert_tag, alert_level, from, to,
+                // issue_date_time, expiration?
+                // If it's a CANCL or CANCEL, we need to make sure the cancel
+                // packet's information is kept and the other's info is tossed, so
+                // that the alert doesn't get drawn anymore.
 
                 // If we're not trying to replace a cancelled alert with
                 // a new non-cancelled alert, go ahead and copy the
                 // fields across.
                 if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
-                        || (entry.alert_level == 'C') ) { // Or new one _is_ a CANCEL
+                     || (entry.alert_level == 'C') ) { // Or new one _is_ a CANCEL
                     list_ptr->expiration = entry.expiration;
                     xastir_snprintf(list_ptr->activity,
-                        sizeof(list_ptr->activity),
-                        "%s",
-                        entry.activity);
+                                    sizeof(list_ptr->activity),
+                                    "%s",
+                                    entry.activity);
                     xastir_snprintf(list_ptr->alert_tag,
-                        sizeof(list_ptr->alert_tag),
-                        "%s",
-                        entry.alert_tag);
+                                    sizeof(list_ptr->alert_tag),
+                                    "%s",
+                                    entry.alert_tag);
                     list_ptr->alert_level = entry.alert_level;
                     xastir_snprintf(list_ptr->seq,
-                        sizeof(list_ptr->seq),
-                        "%s",
-                        entry.seq);
+                                    sizeof(list_ptr->seq),
+                                    "%s",
+                                    entry.seq);
                     xastir_snprintf(list_ptr->from,
-                        sizeof(list_ptr->from),
-                        "%s",
-                        entry.from);
+                                    sizeof(list_ptr->from),
+                                    "%s",
+                                    entry.from);
                     xastir_snprintf(list_ptr->to,
-                        sizeof(list_ptr->to),
-                        "%s",
-                        entry.to);
+                                    sizeof(list_ptr->to),
+                                    "%s",
+                                    entry.to);
                     xastir_snprintf(list_ptr->issue_date_time,
-                        sizeof(list_ptr->issue_date_time),
-                        "%s",
-                        entry.issue_date_time);
+                                    sizeof(list_ptr->issue_date_time),
+                                    "%s",
+                                    entry.issue_date_time);
                 }
                 else {
                     // Don't copy the info across, as we'd be making a

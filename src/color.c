@@ -79,11 +79,11 @@ int load_color_file(void) {
                     if (ok) {
                        
                         xastir_snprintf(color_choice[colors_loaded].colorname,
-                            MAX_COLORNAME,
-                            "%s",
-                            colorname);
+                                        MAX_COLORNAME,
+                                        "%s",
+                                        colorname);
 
-// Do we really want to assign to unsigned short int's here?
+                        // Do we really want to assign to unsigned short int's here?
                         color_choice[colors_loaded].color.red=(unsigned short)(r*257);
                         color_choice[colors_loaded].color.blue=(unsigned short)(b*257);
                         color_choice[colors_loaded].color.green=(unsigned short)(g*257);
@@ -268,17 +268,17 @@ void pack_pixel_bits(unsigned short r, unsigned short g, unsigned short b, unsig
     case RGB_565:
         *pixel = (( r       & 0xf800) |
                   ((g >> 5) & 0x07e0) |
-                   (b >> 11));
+                  (b >> 11));
         break;
     case RGB_555:
         *pixel = (((r >> 1) & 0x7c00) |
                   ((g >> 6) & 0x03e0) |
-                   (b >> 11));
+                  (b >> 11));
         break;
     case RGB_888:
         *pixel = (((r << 8) & 0xff0000) |
                   ( g       & 0x00ff00) |
-                   (b >> 8));
+                  (b >> 8));
         break;
     case RGB_OTHER:
         if (rs >= 0)

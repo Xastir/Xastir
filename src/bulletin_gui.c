@@ -152,24 +152,24 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
 
     distance = distance_from_my_station(call_sign,temp_my_course);
     xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
-            call_sign, &tag[3], time_str, distance,
-            english_units ? langcode("UNIOP00004"): langcode("UNIOP00005"),
-            packet_message);
+                    call_sign, &tag[3], time_str, distance,
+                    english_units ? langcode("UNIOP00004"): langcode("UNIOP00005"),
+                    packet_message);
 
-// Operands of <= have incompatible types (double, int):
+    // Operands of <= have incompatible types (double, int):
     if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
-            || (view_zero_distance_bulletins && distance == 0.0)
-            || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
+         || (view_zero_distance_bulletins && distance == 0.0)
+         || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
 
-begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
+        begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
         if ((Display_bulletins_dialog != NULL) && Display_bulletins_text != NULL) {   // Dialog is up
 
             eod = XmTextGetLastPosition(Display_bulletins_text);
             xastir_snprintf(temp_text,
-                sizeof(temp_text),
-                "%s",
-                temp);
+                            sizeof(temp_text),
+                            "%s",
+                            temp);
 
             temp_text[14] = '\0';
 
@@ -178,13 +178,13 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
 
                 // Found it, so now find the end-of-line for it
                 if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
-                  eol++;
+                    eol++;
                 else 
-                  eol = eod;
+                    eol = eod;
 
                 // And replace the old bulletin with a new copy
                 if (eol == eod)
-                  temp[strlen(temp)-1] = '\0';
+                    temp[strlen(temp)-1] = '\0';
                 XmTextReplace(Display_bulletins_text, pos, eol, temp);
             } else {
                 for (pos = 0; strlen(temp_text) > 12 && pos < eod;) {
@@ -195,16 +195,16 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
                         break;
 
                     if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
-                      pos = ++eol;
+                        pos = ++eol;
                     else
-                      pos = eod;
+                        pos = eod;
                 }
                 if (pos == eod) {
-                  temp[strlen(temp)-1] = '\0'; // End-of-Data remove trailing LF
-                  if (pos > 0) { // Already have text. Need to insert LF between items
-                    memmove(&temp[1], temp, strlen(temp));
-                    temp[0] = '\n';
-                  }
+                    temp[strlen(temp)-1] = '\0'; // End-of-Data remove trailing LF
+                    if (pos > 0) { // Already have text. Need to insert LF between items
+                        memmove(&temp[1], temp, strlen(temp));
+                        temp[0] = '\n';
+                    }
                 }
                 XmTextInsert(Display_bulletins_text,pos,temp);
             }
@@ -213,7 +213,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_
             XtFree(temp_ptr);
         }
 
-end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
+        end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
     }
 }
@@ -247,24 +247,24 @@ static void scan_bulletin_file(void) {
 long temp_bulletin_record;
 
 void bulletin_data_add(char *call_sign, char *from_call, char *data,
-        char *seq, char type, char from) {
+                       char *seq, char type, char from) {
     int distance = -1;
 
     // Add to the message database
     (void)msg_data_add(call_sign,
-        from_call,
-        data,
-        " ",    // Need something here.  Empty string no good.
-        MESSAGE_BULLETIN,
-        from,
-        &temp_bulletin_record);
+                       from_call,
+                       data,
+                       " ",    // Need something here.  Empty string no good.
+                       MESSAGE_BULLETIN,
+                       from,
+                       &temp_bulletin_record);
 
     // If we received a NEW bulletin
     if (temp_bulletin_record == -1L) {
         char temp[10];
 
 
-//fprintf(stderr,"We think it's a new bulletin!\n");
+        //fprintf(stderr,"We think it's a new bulletin!\n");
  
         // We add to the distance in order to come up with 0.0
         // if the distance is not known at all (no position
@@ -272,8 +272,8 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
         distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
 
         if ( (bulletin_range == 0)
-                || (distance <= bulletin_range && distance > 0)
-                || (view_zero_distance_bulletins && distance == 0.0) ) {
+             || (distance <= bulletin_range && distance > 0)
+             || (view_zero_distance_bulletins && distance == 0.0) ) {
             // We have a _new_ bulletin that's within our
             // current range setting.  Note that it's also possible
             // to have a zero distance for the bulletin (we haven't
@@ -283,18 +283,18 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
             if (debug_level & 1) {
                 fprintf(stderr,"New bulletin:");
                 fprintf(stderr,"%05d:%9s:%c:%c:%9s:%s:%s  ",
-                    distance,
-                    call_sign,
-                    type,
-                    from,
-                    from_call,
-                    data,
-                    seq);
+                        distance,
+                        call_sign,
+                        type,
+                        from,
+                        from_call,
+                        data,
+                        seq);
                 fprintf(stderr,"  Distance ok:%d miles",distance);
             }
 
             if (pop_up_new_bulletins) {
-//fprintf(stderr,"bulletin_data_add: popping up bulletins\n");
+                //fprintf(stderr,"bulletin_data_add: popping up bulletins\n");
                 popup_bulletins();
                 if (debug_level & 1)
                     fprintf(stderr,"\n");
@@ -306,14 +306,14 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
             }
         }
         else {
-//            fprintf(stderr,", but distance didn't work out!\n");
+            //            fprintf(stderr,", but distance didn't work out!\n");
         }
     }
     // Update the View->Bulletins dialog if it's up
     bulletin_message(from_call,
-        call_sign,
-        data,
-        sec_now());
+                     call_sign,
+                     data,
+                     sec_now());
 
 }
 
@@ -336,10 +336,10 @@ void count_bulletin_messages(char *call_sign, char *packet_message, time_t sec_h
 
     distance = distance_from_my_station(call_sign,temp_my_course);
 
-// Operands of <= have incompatible types (double, int):
+    // Operands of <= have incompatible types (double, int):
     if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
-            || (view_zero_distance_bulletins && distance == 0.0)
-            || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
+         || (view_zero_distance_bulletins && distance == 0.0)
+         || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
 
         // Is it newer than our first new_bulletin timestamp?
         if (sec_heard >= first_new_bulletin_time) {
@@ -392,7 +392,7 @@ static void zero_bulletin_processing(Message *fill) {
             // position!
 
             if ( (p_station->coord_lon == 0l)
-                    && (p_station->coord_lat == 0l) ) {
+                 && (p_station->coord_lat == 0l) ) {
                 //fprintf(stderr,"Found it but still no valid position!\n");
             }
             else { // Found valid position for this bulletin
@@ -418,13 +418,13 @@ static void zero_bulletin_processing(Message *fill) {
                     char temp_my_course[10];
  
                     distance = (int)(distance_from_my_station(fill->from_call_sign,
-                        temp_my_course) + 0.9999);
+                                                              temp_my_course) + 0.9999);
 
                     if ( (bulletin_range == 0)
-                            || (distance <= bulletin_range && distance > 0) ) {
+                         || (distance <= bulletin_range && distance > 0) ) {
                         if (debug_level & 1) {
                             fprintf(stderr,"Filled in distance for earlier bulletin:%d miles\n",
-                                distance);
+                                    distance);
                         }
 
                         // If view_zero_distance_bulletins was not
@@ -432,7 +432,7 @@ static void zero_bulletin_processing(Message *fill) {
                         // this bulletin until now.  Popup up the
                         // Bulletin dialog.
                         if (!view_zero_distance_bulletins) {
-//fprintf(stderr,"zero_bulletin_processing: popping up bulletins\n");
+                            //fprintf(stderr,"zero_bulletin_processing: popping up bulletins\n");
                             popup_bulletins();
                         }
                     }
@@ -480,7 +480,7 @@ void check_for_new_bulletins(int curr_sec) {
     // any older bulletins, then cause a popup for those that fit
     // our parameters.  The below function sets new_bulletin_flag if
     // it is able to fill in a distance for an older bulletin.
-// Note:  This is time-consuming!
+    // Note:  This is time-consuming!
     find_zero_position_bulletins();
 
     // Any new bulletins to check?  If not, return
@@ -503,14 +503,14 @@ void check_for_new_bulletins(int curr_sec) {
 
     new_bulletin_count = 0;
 
-//fprintf(stderr,"Checking for new bulletins\n");
+    //fprintf(stderr,"Checking for new bulletins\n");
 
     count_new_bulletins();
 
-//fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
+    //fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
 
     if (new_bulletin_count) {
-//fprintf(stderr,"check_for_new_bulletins: popping up bulletins\n");
+        //fprintf(stderr,"check_for_new_bulletins: popping up bulletins\n");
         popup_bulletins();
 
         if (debug_level & 1)
@@ -543,12 +543,12 @@ void Display_bulletins_destroy_shell(/*@unused@*/ Widget widget, XtPointer clien
 
     XtPopdown(shell);
 
-begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Display_bulletins_destroy_shell" );
+    begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Display_bulletins_destroy_shell" );
 
     XtDestroyWidget(shell);
     Display_bulletins_dialog = (Widget)NULL;
 
-end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Display_bulletins_destroy_shell" );
+    end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Display_bulletins_destroy_shell" );
 
 }
 
@@ -604,116 +604,116 @@ void Bulletins(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
     if(!Display_bulletins_dialog) {
 
 
-begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
+        begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
 
 
         Display_bulletins_dialog = XtVaCreatePopupShell(langcode("BULMW00001"),
-                xmDialogShellWidgetClass,
-                appshell,
-                XmNdeleteResponse,XmDESTROY,
-                XmNdefaultPosition, FALSE,
-                XmNfontList, fontlist1,
-                NULL);
+                                                        xmDialogShellWidgetClass,
+                                                        appshell,
+                                                        XmNdeleteResponse,XmDESTROY,
+                                                        XmNdefaultPosition, FALSE,
+                                                        XmNfontList, fontlist1,
+                                                        NULL);
 
         pane = XtVaCreateWidget("Bulletins pane",
-                xmPanedWindowWidgetClass,
-                Display_bulletins_dialog,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
+                                xmPanedWindowWidgetClass,
+                                Display_bulletins_dialog,
+                                MY_FOREGROUND_COLOR,
+                                MY_BACKGROUND_COLOR,
+                                NULL);
 
         form =  XtVaCreateWidget("Bulletins form",
-                xmFormWidgetClass,
-                pane,
-                XmNfractionBase, 5,
-                XmNautoUnmanage, FALSE,
-                XmNshadowThickness, 1,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
+                                 xmFormWidgetClass,
+                                 pane,
+                                 XmNfractionBase, 5,
+                                 XmNautoUnmanage, FALSE,
+                                 XmNshadowThickness, 1,
+                                 MY_FOREGROUND_COLOR,
+                                 MY_BACKGROUND_COLOR,
+                                 NULL);
 
         dist = XtVaCreateManagedWidget(langcode("BULMW00002"),
-                xmLabelWidgetClass, 
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                XmNfontList, fontlist1,
-                NULL);
+                                       xmLabelWidgetClass, 
+                                       form,
+                                       XmNtopAttachment, XmATTACH_FORM,
+                                       XmNtopOffset, 10,
+                                       XmNbottomAttachment, XmATTACH_NONE,
+                                       XmNleftAttachment, XmATTACH_FORM,
+                                       XmNleftOffset, 10,
+                                       XmNrightAttachment, XmATTACH_NONE,
+                                       MY_FOREGROUND_COLOR,
+                                       MY_BACKGROUND_COLOR,
+                                       XmNfontList, fontlist1,
+                                       NULL);
 
         dist_data = XtVaCreateManagedWidget("dist_data", 
-                xmTextFieldWidgetClass, 
-                form,
-                XmNeditable,   TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive, TRUE,
-                XmNshadowThickness,    1,
-                XmNcolumns, 8,
-                XmNwidth, ((8*7)+2),
-                XmNmaxLength, 8,
-                XmNbackground, colors[0x0f],
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, dist,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNfontList, fontlist1,
-                NULL);
+                                            xmTextFieldWidgetClass, 
+                                            form,
+                                            XmNeditable,   TRUE,
+                                            XmNcursorPositionVisible, TRUE,
+                                            XmNsensitive, TRUE,
+                                            XmNshadowThickness,    1,
+                                            XmNcolumns, 8,
+                                            XmNwidth, ((8*7)+2),
+                                            XmNmaxLength, 8,
+                                            XmNbackground, colors[0x0f],
+                                            XmNtopAttachment, XmATTACH_FORM,
+                                            XmNtopOffset, 5,
+                                            XmNbottomAttachment,XmATTACH_NONE,
+                                            XmNleftAttachment, XmATTACH_WIDGET,
+                                            XmNleftWidget, dist,
+                                            XmNleftOffset, 10,
+                                            XmNrightAttachment,XmATTACH_NONE,
+                                            XmNnavigationType, XmTAB_GROUP,
+                                            XmNfontList, fontlist1,
+                                            NULL);
 
         dist_units = XtVaCreateManagedWidget((english_units?langcode("UNIOP00004"):langcode("UNIOP00005")),
-                xmLabelWidgetClass, 
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, dist_data,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                XmNfontList, fontlist1,
-                NULL);
+                                             xmLabelWidgetClass, 
+                                             form,
+                                             XmNtopAttachment, XmATTACH_FORM,
+                                             XmNtopOffset, 10,
+                                             XmNbottomAttachment, XmATTACH_NONE,
+                                             XmNleftAttachment, XmATTACH_WIDGET,
+                                             XmNleftWidget, dist_data,
+                                             XmNleftOffset, 10,
+                                             XmNrightAttachment, XmATTACH_NONE,
+                                             MY_FOREGROUND_COLOR,
+                                             MY_BACKGROUND_COLOR,
+                                             XmNfontList, fontlist1,
+                                             NULL);
 
         button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),
-                xmPushButtonGadgetClass, 
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, dist_units,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                XmNfontList, fontlist1,
-                NULL);
+                                               xmPushButtonGadgetClass, 
+                                               form,
+                                               XmNtopAttachment, XmATTACH_FORM,
+                                               XmNtopOffset, 5,
+                                               XmNbottomAttachment, XmATTACH_NONE,
+                                               XmNleftAttachment, XmATTACH_WIDGET,
+                                               XmNleftWidget, dist_units,
+                                               XmNleftOffset, 10,
+                                               XmNrightAttachment, XmATTACH_NONE,
+                                               XmNnavigationType, XmTAB_GROUP,
+                                               MY_FOREGROUND_COLOR,
+                                               MY_BACKGROUND_COLOR,
+                                               XmNfontList, fontlist1,
+                                               NULL);
 
         zero_bulletin_data = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
-                xmToggleButtonWidgetClass,
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, button_range,
-                XmNleftOffset,10,
-                XmNrightAttachment, XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                XmNfontList, fontlist1,
-                NULL);
+                                                     xmToggleButtonWidgetClass,
+                                                     form,
+                                                     XmNtopAttachment, XmATTACH_FORM,
+                                                     XmNtopOffset, 5,
+                                                     XmNbottomAttachment, XmATTACH_NONE,
+                                                     XmNleftAttachment, XmATTACH_WIDGET,
+                                                     XmNleftWidget, button_range,
+                                                     XmNleftOffset,10,
+                                                     XmNrightAttachment, XmATTACH_NONE,
+                                                     XmNnavigationType, XmTAB_GROUP,
+                                                     MY_FOREGROUND_COLOR,
+                                                     MY_BACKGROUND_COLOR,
+                                                     XmNfontList, fontlist1,
+                                                     NULL);
         XtAddCallback(zero_bulletin_data,XmNvalueChangedCallback,Zero_Bulletin_Data_toggle,"1");
         if (view_zero_distance_bulletins)
             XmToggleButtonSetState(zero_bulletin_data,TRUE,FALSE);
@@ -745,24 +745,24 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
 
 
         Display_bulletins_text = XmCreateScrolledText(form,
-                "Bulletins text",
-                args,
-                n);
+                                                      "Bulletins text",
+                                                      args,
+                                                      n);
 
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
-                xmPushButtonGadgetClass, 
-                form,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                XmNfontList, fontlist1,
-                NULL);
+                                               xmPushButtonGadgetClass, 
+                                               form,
+                                               XmNtopAttachment, XmATTACH_NONE,
+                                               XmNbottomAttachment, XmATTACH_FORM,
+                                               XmNbottomOffset, 5,
+                                               XmNleftAttachment, XmATTACH_POSITION,
+                                               XmNleftPosition, 2,
+                                               XmNrightAttachment, XmATTACH_POSITION,
+                                               XmNrightPosition, 3,
+                                               MY_FOREGROUND_COLOR,
+                                               MY_BACKGROUND_COLOR,
+                                               XmNfontList, fontlist1,
+                                               NULL);
 
         XtAddCallback(button_range, XmNactivateCallback, Display_bulletins_change_range, Display_bulletins_dialog);
         XtAddCallback(button_close, XmNactivateCallback, Display_bulletins_destroy_shell, Display_bulletins_dialog);
@@ -783,7 +783,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         redraw_on_new_packet_data=1;
         XtPopup(Display_bulletins_dialog,XtGrabNone);
 
-end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
+        end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
 
         scan_bulletin_file();
 

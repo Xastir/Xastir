@@ -135,7 +135,7 @@ void awk_free_symtab(awk_symtab *s) {
 
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
         awk_symbol *p,*x;
-        
+
         for (x = s->hash[i]; x ; x = p) {
             p = x->next_sym;
 
@@ -152,10 +152,10 @@ void awk_free_symtab(awk_symtab *s) {
  * awk_declare_sym: declare a symbol and bind to storage for its value.
  */
 int awk_declare_sym(awk_symtab *this,
-                const char *name, 
-                enum awk_symtype type,
-                const void *val,
-                const int size) {
+                    const char *name, 
+                    enum awk_symtype type,
+                    const void *val,
+                    const int size) {
     awk_symbol *s = calloc(1,sizeof(awk_symbol));
     awk_symbol *p;
     u_int i;
@@ -189,8 +189,8 @@ int awk_declare_sym(awk_symtab *this,
  * awk_find_sym: search symtab for symbol
  */
 awk_symbol *awk_find_sym(awk_symtab *this,
-                 const char *name,
-                 const int len) {
+                         const char *name,
+                         const int len) {
     awk_symbol *s;
     char c;
 
@@ -277,9 +277,9 @@ int awk_set_sym(awk_symbol *s,
  * awk_get_sym: copy (and cast) symbol's value into supplied string buffer 
  */
 int awk_get_sym(awk_symbol *s,          /* symbol */
-            char *store,        /* store result here */
-            int size,           /* sizeof(*store) */
-            int *len) {         /* store length here */
+                char *store,        /* store result here */
+                int size,           /* sizeof(*store) */
+                int *len) {         /* store length here */
     int minlen;
     char cbuf[128];             /* conversion buffer for int/float */
     int cbl;
@@ -294,9 +294,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             minlen = min(s->len,size-1);
             if (minlen > 0) {
                 xastir_snprintf(store,
-                    size,
-                    "%s",
-                    (char *)(s->val));
+                                size,
+                                "%s",
+                                (char *)(s->val));
                 *len = minlen;
             } else 
                 *len = 0;
@@ -310,9 +310,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             minlen = min(cbl,size-1);
             if (minlen > 0) {
                 xastir_snprintf(store,
-                    size,
-                    "%s",
-                    cbuf);
+                                size,
+                                "%s",
+                                cbuf);
                 *len = minlen;
             } else
                 *len = 0;
@@ -326,9 +326,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             minlen = min(cbl,size-1);
             if (minlen > 0) {
                 xastir_snprintf(store,
-                    size,
-                    "%s",
-                    cbuf);
+                                size,
+                                "%s",
+                                cbuf);
                 *len = minlen;
             } else
                 *len = 0;
@@ -361,9 +361,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
  * awk_compile_stmt: "Compiles" a single action statement.
  */
 int awk_compile_stmt(awk_symtab *this,
-             awk_action *p,
-             const char *stmt,
-             int len) {
+                     awk_action *p,
+                     const char *stmt,
+                     int len) {
     const char *s = stmt, *op, *ep;
   
     while (isspace((int)*s)) {               /* clean up leading white space */
@@ -463,9 +463,9 @@ void awk_free_action(awk_action *a) {
  *  ints/floats, write to a temp buffer and then atoi() or atof().
  */
 void awk_eval_expr(awk_symtab *this,
-               awk_symbol *dest, 
-               const char *expr,
-               int exprlen) {
+                   awk_symbol *dest, 
+                   const char *expr,
+                   int exprlen) {
     int i,dmax,dl,newlen;
     char c,delim;
     char *dp;

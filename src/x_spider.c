@@ -269,10 +269,10 @@ int writen(int fd, char *ptr, int nbytes) {
         ptr += nwritten;
     }
 
-//    fprintf(stderr,
-//        "writen: %d bytes written, %d bytes left to write\n",
-//        nleft,
-//        nbytes - nleft);
+    //    fprintf(stderr,
+    //        "writen: %d bytes written, %d bytes left to write\n",
+    //        nleft,
+    //        nbytes - nleft);
 
     return(nbytes - nleft);
 }
@@ -398,16 +398,16 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
             }
             else {  // Non-normal error.  Report it.
                 fprintf(stderr,"str_echo2: Readline error socket: %d\n",errno);
-//close(sockfd);
-return;
+                //close(sockfd);
+                return;
             }
         }
         else {  // We received some data.  Send it down the pipe.
-//            fprintf(stderr,"str_echo2: %s\n",line);
+            //            fprintf(stderr,"str_echo2: %s\n",line);
             if (writen(pipe_to_parent, line, n) != n) {
                 fprintf(stderr,"str_echo2: Writen error socket: %d\n",errno);
-//close(sockfd);
-return;
+                //close(sockfd);
+                return;
             }
         }
 
@@ -430,25 +430,25 @@ return;
             }
             else {  // Non-normal error.  Report it.
                 fprintf(stderr,"str_echo2: Readline error pipe: %d\n",errno);
-//close(pipe_from_parent);
-return;
+                //close(pipe_from_parent);
+                return;
             }
         }
         else {  // We received some data.  Send it down the socket.
-//            fprintf(stderr,"str_echo2: %s\n",line);
+            //            fprintf(stderr,"str_echo2: %s\n",line);
 
             if (writen(sockfd, line, n) != n) {
                 fprintf(stderr,"str_echo2: Writen error pipe: %d\n",errno);
-//close(pipe_from_parent);
-return;
+                //close(pipe_from_parent);
+                return;
             }
         }
 
         // Slow the loop down to prevent excessive CPU.
 
-// NOTE:  We must be faster at processing packets than the
-// main.c:UpdateTime() can send them to us through the pipe!  If
-// we're not, we lose or corrupt packets.
+        // NOTE:  We must be faster at processing packets than the
+        // main.c:UpdateTime() can send them to us through the pipe!  If
+        // we're not, we lose or corrupt packets.
 
         usleep(1000); // 1ms
     }
@@ -491,9 +491,9 @@ int pipe_check(char *client_address) {
     // connects that go away?  We need a way to free up the pipes
     // and sockets in that case, and revise the select bits again.
 
-//    select();
+    //    select();
 
-//fprintf(stderr,"pipe_check()\n");
+    //fprintf(stderr,"pipe_check()\n");
 
     // All of the read ends of the pipes have been set non-blocking
     // by this point.
@@ -501,7 +501,7 @@ int pipe_check(char *client_address) {
     // Check all the pipes in the linked list looking for something
     // to read.
     while (p != NULL) {
-//        fprintf(stderr,"Running through pipes\n");
+        //        fprintf(stderr,"Running through pipes\n");
 
         //
         // Read data from pipe, write to all pipes except the one
@@ -515,16 +515,16 @@ int pipe_check(char *client_address) {
 
             if (p->authenticated) { 
                 fprintf(stderr,
-                    "%s X_spider session terminated, callsign: %s, address: %s\n",
-                    timestring,
-                    p->callsign,
-                    client_address);
+                        "%s X_spider session terminated, callsign: %s, address: %s\n",
+                        timestring,
+                        p->callsign,
+                        client_address);
             }
             else {
                 fprintf(stderr,
-                    "%s X_spider session terminated, unauthenticated user, address %s\n",
-                    timestring,
-                    client_address);
+                        "%s X_spider session terminated, unauthenticated user, address %s\n",
+                        timestring,
+                        client_address);
             }
 
             // Close the pipe
@@ -546,15 +546,15 @@ int pipe_check(char *client_address) {
             }
         }
         else if (p->active) {  // We received some data.  Send it down all of the
-                // pipes except the one that sent it.
+            // pipes except the one that sent it.
 
             pipe_object *q;
 
 
-// Check for an authentication string.  If the pipe has not been
-// authenticated, we don't allow it to send anything to the upstream
-// server.  It's probably ok to send it to downstream connections
-// though.
+            // Check for an authentication string.  If the pipe has not been
+            // authenticated, we don't allow it to send anything to the upstream
+            // server.  It's probably ok to send it to downstream connections
+            // though.
 
             // Check for "user" "pass" string.
             // "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
@@ -569,15 +569,15 @@ int pipe_check(char *client_address) {
                 // can be anywhere along the line.  We'll have to
                 // search for each piece.
 
-//fprintf(stderr,"x_spider:Found an authentication string\n");
+                //fprintf(stderr,"x_spider:Found an authentication string\n");
 
                 // Copy the line
                 xastir_snprintf(line2, sizeof(line2), "%s", line);
 
                 // Add white space to the end.
                 strncat(line2,
-                    "                                    ",
-                    sizeof(line2) - 1 - strlen(line2));
+                        "                                    ",
+                        sizeof(line2) - 1 - strlen(line2));
 
                 // Find the "user" string position
                 callsign = strstr(line2,"user");
@@ -640,7 +640,7 @@ int pipe_check(char *client_address) {
 
                 passcode = atoi(passcode_str);
 
-//fprintf(stderr,"x_spider: user:.%s., pass:%d\n", callsign, passcode);
+                //fprintf(stderr,"x_spider: user:.%s., pass:%d\n", callsign, passcode);
 
                 if (checkHash(callsign, passcode)) {
                     // Authenticate the pipe.  It is now allowed to send
@@ -650,26 +650,26 @@ int pipe_check(char *client_address) {
                     //    callsign);
                     p->authenticated = 1;
                     xastir_snprintf(p->callsign,
-                        sizeof(p->callsign),
-                        "%s",
-                        callsign);
+                                    sizeof(p->callsign),
+                                    "%s",
+                                    callsign);
                     p->callsign[19] = '\0';
                 }
                 else {
                     fprintf(stderr,
-                        "X_spider: Bad authentication, user %s, pass %d\n",
-                        callsign,
-                        passcode);
+                            "X_spider: Bad authentication, user %s, pass %d\n",
+                            callsign,
+                            passcode);
                     fprintf(stderr,
-                        "Line: %s\n",
-                        line);
+                            "Line: %s\n",
+                            line);
                 }
             }
 
             q = pipe_head;
 
             while (q != NULL) {
-//                fprintf(stderr,"pipe_check: %s\n",line);
+                //                fprintf(stderr,"pipe_check: %s\n",line);
 
                 // Only send to active pipes
                 if (q != p && q->active) {
@@ -686,9 +686,9 @@ int pipe_check(char *client_address) {
             // we only have one process on each end.
             //
 
-// Send it down the pipe to Xastir's main thread.  Knock off any
-// carriage return that might be present.  We only want a linefeed
-// on the end.
+            // Send it down the pipe to Xastir's main thread.  Knock off any
+            // carriage return that might be present.  We only want a linefeed
+            // on the end.
             if (n > 0 && (line[n-1] == '\r' || line[n-1] == '\n')) {
                 line[n-1] = '\0';
                 n--;
@@ -701,11 +701,11 @@ int pipe_check(char *client_address) {
             strncat(line,"\n",sizeof(line)-strlen(line)-1);
             n++;
 
-// Only send to upstream server if this client has authenticated.
+            // Only send to upstream server if this client has authenticated.
             if (p->authenticated) {
 
-//fprintf(stderr,"Data available, sending to server\n");
-//fprintf(stderr,"\t%s\n",line);
+                //fprintf(stderr,"Data available, sending to server\n");
+                //fprintf(stderr,"\t%s\n",line);
 
                 if (writen(pipe_tcp_server_to_xastir, line, n) != n) {
                     fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
@@ -738,7 +738,7 @@ int pipe_check(char *client_address) {
 
     else {  // We received some data.  Send it down all of the
             // pipes.
-// Also send it down the socket.
+        // Also send it down the socket.
 
         // Check for disconnected clients and delete their records
         // from the chain.
@@ -797,7 +797,7 @@ int pipe_check(char *client_address) {
         n += 2;
 
         while (q != NULL && q->active) {
-//          fprintf(stderr,"pipe_check: %s\n",line);
+            //          fprintf(stderr,"pipe_check: %s\n",line);
 
             if (writen(q->to_child[1], line, n) != n) {
                 fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
@@ -842,20 +842,20 @@ static char *old_progname, *old_progname_full;
 
 void clear_proc_title(void)
 {
-  int i;
-  for(i = 0; local_environ && local_environ[i] != NULL; i++) {
-    free(local_environ[i]);
-  }
-  if (local_environ) {
-    free(local_environ);
-    local_environ = NULL;
-  }
+    int i;
+    for(i = 0; local_environ && local_environ[i] != NULL; i++) {
+        free(local_environ[i]);
+    }
+    if (local_environ) {
+        free(local_environ);
+        local_environ = NULL;
+    }
 #ifdef __linux__
 #ifndef __LSB__
-  free(__progname);
-  free(__progname_full);
-  __progname = old_progname;
-  __progname_full = old_progname_full;
+    free(__progname);
+    free(__progname_full);
+    __progname = old_progname;
+    __progname_full = old_progname_full;
 #endif  // __LSB__
 #endif  // __linux__
 }
@@ -870,21 +870,21 @@ void init_set_proc_title(int argc, char *argv[], char *envp[]) {
     if((p = (char **) malloc((i + 1) * sizeof(char *))) != NULL ) {
         local_environ = p;
 
-    for(i = 0; envp[i] != NULL; i++) {
-        if((local_environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
-            xastir_snprintf(local_environ[i],
-                strlen(envp[i])+1,
-                "%s",
-                envp[i]);
+        for(i = 0; envp[i] != NULL; i++) {
+            if((local_environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
+                xastir_snprintf(local_environ[i],
+                                strlen(envp[i])+1,
+                                "%s",
+                                envp[i]);
         }
     }
     local_environ[i] = NULL;
 
     Argv = argv;
-  
+
     for(i = 0; argv[i] != NULL; i++) {
         if((LastArgv + 1) == argv[i]) // Not sure if this conditional is needed
-        LastArgv = envp[i] + strlen(envp[i]);
+            LastArgv = envp[i] + strlen(envp[i]);
     }
 #ifdef __linux__
 #ifndef __LSB__
@@ -918,7 +918,7 @@ void set_proc_title(char *fmt,...) {
 
     xastir_snprintf(Argv[0], maxlen, "%s", statbuf);
     p = &Argv[0][i];
-  
+
     while(p < LastArgv)
         *p++ = '\0';
     Argv[1] = ((void *)0) ;
@@ -951,52 +951,52 @@ char *addr_str(const struct sockaddr *sa, char *s) {
 #define MAXSOCK 8
 int open_spider_server_sockets(int socktype, int port, int **s_in)
 {
-   struct addrinfo hints, *res, *res0;
-   int error;
-   int nsock;
-   int buf;
-   int *s;
-   char port_str[16];
+    struct addrinfo hints, *res, *res0;
+    int error;
+    int nsock;
+    int buf;
+    int *s;
+    char port_str[16];
 
-   xastir_snprintf(port_str, 16, "%d", port);
+    xastir_snprintf(port_str, 16, "%d", port);
 
-   *s_in = calloc(MAXSOCK, sizeof(int));
-   s = *s_in;
+    *s_in = calloc(MAXSOCK, sizeof(int));
+    s = *s_in;
 
-   // Query for socketrs we need to create (probably 1 each for IPv4 + IPv6)
-   memset(&hints, 0, sizeof(hints));
-   hints.ai_family = PF_UNSPEC;
-   hints.ai_socktype = socktype;
-   hints.ai_flags = AI_PASSIVE;
+    // Query for socketrs we need to create (probably 1 each for IPv4 + IPv6)
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = PF_UNSPEC;
+    hints.ai_socktype = socktype;
+    hints.ai_flags = AI_PASSIVE;
 
-   error = getaddrinfo(NULL, port_str, &hints, &res0);
-   if (error) {
-           fprintf(stderr, "Error: Unable to lookup addresses for port %s\n", port_str);
-           return 0;
-   }
+    error = getaddrinfo(NULL, port_str, &hints, &res0);
+    if (error) {
+        fprintf(stderr, "Error: Unable to lookup addresses for port %s\n", port_str);
+        return 0;
+    }
 
-   // Create and setup each socket
-   nsock = 0;
-   for (res = res0; res && nsock < MAXSOCK; res = res->ai_next) {
-       s[nsock] = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    // Create and setup each socket
+    nsock = 0;
+    for (res = res0; res && nsock < MAXSOCK; res = res->ai_next) {
+        s[nsock] = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-       if (s[nsock] < 0) {
+        if (s[nsock] < 0) {
             fprintf(stderr, "Error: Opening socket (family %d protocol %d\n",
                     res->ai_family, res->ai_protocol);
             fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
             continue;
-       }
+        }
 
 #ifdef IPV6_V6ONLY
-       if(res->ai_family == AF_INET6) {
+        if(res->ai_family == AF_INET6) {
             buf = 1;
             if (setsockopt(s[nsock], IPPROTO_IPV6, IPV6_V6ONLY, (char *)&buf, sizeof(buf)) < 0) {
                 fprintf(stderr, "x_spider: Unable to set IPV6_V6ONLY.\n");
             }
-       }
+        }
 
 #endif
-       if(socktype == SOCK_STREAM) {
+        if(socktype == SOCK_STREAM) {
             // Set the new socket to be non-blocking.
             //
             if (fcntl(s[nsock], F_SETFL, O_NONBLOCK) < 0) {
@@ -1011,40 +1011,40 @@ int open_spider_server_sockets(int socktype, int port, int **s_in)
                 fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
                 fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
             }
-       }
+        }
 
-       if (bind(s[nsock], res->ai_addr, res->ai_addrlen) < 0) {
+        if (bind(s[nsock], res->ai_addr, res->ai_addrlen) < 0) {
             fprintf(stderr, "x_spider: Can't bind local address for AF %d: %d - %s\n",
                     res->ai_family, errno, strerror(errno));
             fprintf(stderr, "Either this OS maps IPv4 addresses to IPv6 and this may be expected or\n");
             fprintf(stderr,"could some processes still be running from a previous run of Xastir?\n");
             close(s[nsock]);
             continue;
-       }
+        }
 
-       if(socktype == SOCK_STREAM) {
+        if(socktype == SOCK_STREAM) {
             // Set up to listen.  We allow up to five backlog connections
             // (unserviced connects that get put on a queue until we can
             // service them).
             (void) listen(s[nsock], 5);
         }
 
-       nsock++;
+        nsock++;
     }
-   if (nsock == 0) {
-           fprintf(stderr, "x_spider: Couldn't open any sockets\n");
-   }
-   freeaddrinfo(res0);
-   return nsock;
+    if (nsock == 0) {
+        fprintf(stderr, "x_spider: Couldn't open any sockets\n");
+    }
+    freeaddrinfo(res0);
+    return nsock;
 }
 
 
 // Create a poll structure from an array of sockets
 struct pollfd* setup_poll_array(int nsock, int* sockfds) {
-   int i;
-   struct pollfd* polls;
+    int i;
+    struct pollfd* polls;
 
-   polls = calloc(nsock, sizeof(struct pollfd));
+    polls = calloc(nsock, sizeof(struct pollfd));
     for(i=0; i<nsock; i++) {
         polls[i].fd = sockfds[i];
         polls[i].events = POLLIN;
@@ -1081,7 +1081,7 @@ struct pollfd* setup_poll_array(int nsock, int* sockfds) {
 //
 #ifdef STANDALONE_PROGRAM
 int main(int argc, char *argv[]) {
-#else   // !STANDALONE_PROGRAM 
+#else   // !STANDALONE_PROGRAM
 void TCP_Server(int argc, char *argv[], char *envp[]) {
 #endif  // STANDALONE_PROGRAM
 
@@ -1098,7 +1098,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
     char timestring[101];
     char addrstring[ADDR_STR_LEN+1];
 
-    
+
     nsock = open_spider_server_sockets(SOCK_STREAM, SERV_TCP_PORT, &sockfds);
     if(!nsock) {
         fprintf(stderr, "Unable to setup any x_spider server sockets.\n");
@@ -1166,8 +1166,8 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         // connections for incoming data periodically.
         //
         newsockfd = accept(sockfd,
-                        (struct sockaddr *)&cli_addr,
-                        &clilen);
+                           (struct sockaddr *)&cli_addr,
+                           &clilen);
 
         if (newsockfd == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -1206,8 +1206,8 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
         get_timestamp(timestring);
 
         fprintf(stderr,"%s X_spider client connected from address %s\n",
-            timestring,
-            addr_str((struct sockaddr*)&cli_addr, addrstring));
+                timestring,
+                addr_str((struct sockaddr*)&cli_addr, addrstring));
  
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
@@ -1263,11 +1263,11 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             (void) signal(SIGHUP,SIG_DFL);
 
 
-/*
-            fprintf(stderr,
-                "Client address: %s\n",
-                inet_ntoa(cli_addr.sin_addr));
-*/
+            /*
+              fprintf(stderr,
+              "Client address: %s\n",
+              inet_ntoa(cli_addr.sin_addr));
+            */
 
             // Change the name of the new child process.  So far
             // this only works for "ps" listings, not for "top".
@@ -1276,17 +1276,17 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
 #ifdef __linux__
             init_set_proc_title(argc, argv, envp);
             set_proc_title("%s%s %s",
-                "x-spider client @",
-                addr_str((struct sockaddr*)&cli_addr, addrstring),
-                "(xastir)");
+                           "x-spider client @",
+                           addr_str((struct sockaddr*)&cli_addr, addrstring),
+                           "(xastir)");
             //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-        (void) signal(SIGHUP, exit);
+            (void) signal(SIGHUP, exit);
 #endif  // __linux__
 
-// It'd be very cool here to include the IP address of the remote
-// client on the "ps" line, and include the callsign of the
-// connecting client once the client authenticates.  Both of these
-// are do-able.
+            // It'd be very cool here to include the IP address of the remote
+            // client on the "ps" line, and include the callsign of the
+            // connecting client once the client authenticates.  Both of these
+            // are do-able.
 
 
             // New naming system so that we don't have to remember
@@ -1301,10 +1301,10 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             close(p->to_child[1]);  // Close write end of pipe
             close(p->to_parent[0]); // Close read end of pipe
 
-//            str_echo(newsockfd);    // Process the request
+            //            str_echo(newsockfd);    // Process the request
             str_echo2(newsockfd,
-                pipe_from_parent,
-                pipe_to_parent);
+                      pipe_from_parent,
+                      pipe_to_parent);
  
 
             // Clean up and exit
@@ -1329,16 +1329,16 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
             fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
         }
 
-finis:
+    finis:
         // Need a delay so that we don't use too much CPU, at least
         // for debug.  Put the delay into the select() call in the
         // pipe_check() function once we get to that stage of
         // coding.
         //
 
-// NOTE:  We must be faster at processing packets than the
-// main.c:UpdateTime() can send them to us through the pipe!  If
-// we're not, we lose or corrupt packets.
+        // NOTE:  We must be faster at processing packets than the
+        // main.c:UpdateTime() can send them to us through the pipe!  If
+        // we're not, we lose or corrupt packets.
 
         usleep(1000); // 1ms
     }
@@ -1347,22 +1347,21 @@ finis:
 
 
 
-
-// Send a nack back to the xastir_udp_client program 
+// Send a nack back to the xastir_udp_client program
 void send_udp_nack(int sock, struct sockaddr *from, int fromlen) {
     int n;
 
     n = sendto(sock,
-        "NACK", // Negative Acknowledgment
-        5,
-        0,
-        (struct sockaddr *)from,
-        fromlen);
+               "NACK", // Negative Acknowledgment
+               5,
+               0,
+               (struct sockaddr *)from,
+               fromlen);
     if (n < 0) {
         fprintf(stderr, "Error: sendto");
     }
 }
- 
+
 
 
 
@@ -1424,11 +1423,11 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
         fromlen = sizeof(struct sockaddr_storage);
         n1 = recvfrom(sock,
-            buf,
-            1024,
-            0,
-            (struct sockaddr *)&from,
-            &fromlen);
+                      buf,
+                      1024,
+                      0,
+                      (struct sockaddr *)&from,
+                      &fromlen);
         if (n1 < 0) {
             fprintf(stderr, "Error: recvfrom");
         }
@@ -1473,7 +1472,7 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
 
         passcode = atoi(cptr[1]);
 
-fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
+        fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
 
         if (checkHash(callsign, passcode)) {
             // Authenticate the pipe.  It is now allowed to send
@@ -1484,12 +1483,12 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
         }
         else {
             fprintf(stderr,
-                "X_spider: Bad authentication, user %s, pass %d\n",
-                callsign,
-                passcode);
+                    "X_spider: Bad authentication, user %s, pass %d\n",
+                    callsign,
+                    passcode);
             fprintf(stderr,
-                "UDP Packet: %s\n",
-                buf);
+                    "UDP Packet: %s\n",
+                    buf);
             send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
@@ -1509,11 +1508,11 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
             // Send the callsign back to the xastir_udp_client
             // program
             n1 = sendto(sock,
-                my_callsign,
-                strlen(my_callsign)+1,
-                0,
-                (struct sockaddr *)&from,
-                fromlen);
+                        my_callsign,
+                        strlen(my_callsign)+1,
+                        0,
+                        (struct sockaddr *)&from,
+                        fromlen);
             if (n1 < 0) {
                 fprintf(stderr, "Error: sendto");
             }
@@ -1524,7 +1523,7 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
         // Look for the "-to_inet" flag in the UDP packet
         //
         if (strstr(buf, "-to_inet")) {
-//fprintf(stderr,"Sending to INET\n");
+            //fprintf(stderr,"Sending to INET\n");
             send_to_inet++;
         }
 
@@ -1532,7 +1531,7 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
         // Look for the "-to_rf" flag in the UDP packet
         //
         if (strstr(buf, "-to_rf")) {
-//fprintf(stderr,"Sending to local RF\n");
+            //fprintf(stderr,"Sending to local RF\n");
             send_to_rf++;
         }
 
@@ -1544,36 +1543,36 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
         message++;  // Point to the first char after the '\n'
 
         if (message == NULL || message[0] == '\0') {
-//fprintf(stderr,"Empty message field\n");
+            //fprintf(stderr,"Empty message field\n");
             send_udp_nack(sock, (struct sockaddr *)&from, fromlen);
             continue;
         }
 
-//fprintf(stderr,"Message:  %s", message);
+        //fprintf(stderr,"Message:  %s", message);
 
         xastir_snprintf(message2,
-            sizeof(message2),
-            "%s%s%s",
-            (send_to_inet) ? "TO_INET," : "",
-            (send_to_rf) ? "TO_RF," : "",
-            message);
+                        sizeof(message2),
+                        "%s%s%s",
+                        (send_to_inet) ? "TO_INET," : "",
+                        (send_to_rf) ? "TO_RF," : "",
+                        message);
 
-//fprintf(stderr,"Message2: %s", message2);
+        //fprintf(stderr,"Message2: %s", message2);
 
 
 
-//
-//
-// NOTE:
-// Should we refuse to send the message on if "callsign" and the
-// FROM callsign in the packet don't match?
-//
-// Should we change to third-party format if "my_callsign" and the
-// FROM callsign in the packet don't match?
-//
-// Require all three callsigns to match?
-//
-//
+        //
+        //
+        // NOTE:
+        // Should we refuse to send the message on if "callsign" and the
+        // FROM callsign in the packet don't match?
+        //
+        // Should we change to third-party format if "my_callsign" and the
+        // FROM callsign in the packet don't match?
+        //
+        // Require all three callsigns to match?
+        //
+        //
 
 
 
@@ -1583,25 +1582,25 @@ fprintf(stderr,"x_spider udp:  user:%s  pass:%d\n", callsign, passcode);
 
         // Send to Xastir udp pipe
         //
-//fprintf(stderr,"Sending to Xastir itself\n");
+        //fprintf(stderr,"Sending to Xastir itself\n");
         if (writen(pipe_udp_server_to_xastir, message2, n2) != n2) {
             fprintf(stderr,"UDP_Server: Writen error1: %d\n", errno);
         }
 
         // Send to the x_spider TCP server, so it can go to all
         // connected TCP clients
-//fprintf(stderr,"Sending to TCP clients\n");
+        //fprintf(stderr,"Sending to TCP clients\n");
         if (writen(pipe_xastir_to_tcp_server, message, n1) != n1) {
             fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
         }
  
         // Send an ACK back to the xastir_udp_client program 
         n1 = sendto(sock,
-            "ACK",  // Acknowledgment.  Good UDP packet.
-            4,
-            0,
-            (struct sockaddr *)&from,
-            fromlen);
+                    "ACK",  // Acknowledgment.  Good UDP packet.
+                    4,
+                    0,
+                    (struct sockaddr *)&from,
+                    fromlen);
         if (n1 < 0) {
             fprintf(stderr, "Error: sendto");
         }
@@ -1676,7 +1675,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider TCP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-    (void) signal(SIGHUP, exit);
+        (void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 
@@ -1717,11 +1716,11 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
-//    // Set write-end of pipe to be non-blocking.
-//    //
-//    if (fcntl(pipe_xastir_to_tcp_server, F_SETFL, O_NONBLOCK) < 0) {
-//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_tcp_server non-blocking\n");
-//    }
+    //    // Set write-end of pipe to be non-blocking.
+    //    //
+    //    if (fcntl(pipe_xastir_to_tcp_server, F_SETFL, O_NONBLOCK) < 0) {
+    //        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_tcp_server non-blocking\n");
+    //    }
 
     // We don't need to do anything here except return back to the
     // calling routine with the PID of the new server process, so
@@ -1788,7 +1787,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider UDP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-    (void) signal(SIGHUP, exit);
+        (void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 
@@ -1801,10 +1800,10 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
 
         // Set read-end of pipe to be non-blocking.
         //
-//        if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
-//            fprintf(stderr,
-//                "x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
-//        }
+        //        if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
+        //            fprintf(stderr,
+        //                "x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
+        //        }
 
         UDP_Server(argc, argv, envp);
         fprintf(stderr,"UDP_Server process died.\n");
@@ -1830,11 +1829,11 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"Could some processes still be running from a previous run of Xastir?\n");
     }
 
-//    // Set write-end of pipe to be non-blocking.
-//    //
-//    if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
-//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
-//    }
+    //    // Set write-end of pipe to be non-blocking.
+    //    //
+    //    if (fcntl(pipe_xastir_to_udp_server, F_SETFL, O_NONBLOCK) < 0) {
+    //        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_udp_server non-blocking\n");
+    //    }
 
 
     // We don't need to do anything here except return back to the
@@ -1843,5 +1842,3 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
     // when Xastir quits or segfaults.
     return(childpid);   // Really the parent PID in this case
 }
-
- 
