@@ -1,4 +1,4 @@
-/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+/*
  *
  * $Id: dlm.c,v 1.10 2018/07/14 21:32:43 MikeNix Exp $
  *

@@ -1,4 +1,4 @@
-/* -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+/*
  *
  *
  * Copyright (C) 2000-2018 The Xastir Group
