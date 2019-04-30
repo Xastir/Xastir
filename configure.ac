@@ -410,9 +410,37 @@ fi
 
 
 # Check for XPM
+use_xpm="no"
 if test "${use_lsb}" = "no"; then 
-  AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, 1, Define to 1 if you have the `Xpm' library (-lXpm). )))
-  AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
+  AC_CHECK_HEADERS(X11/xpm.h,
+  [
+    #action if found in addition to setting HAVE_X11_XPM_H
+    AC_SEARCH_LIBS(XpmWriteFileFromPixmap, [Xpm],
+    [
+      # action if found (in addition to adding -lXpm to LIBS
+      use_xpm="yes"
+      AC_DEFINE(HAVE_LIBXPM, 1, [Define to 1 if you have the `Xpm' library (-lXpm).] )
+    ])
+  ],
+  [
+    # Action if X11/xpm.h is not found: look for Xm/XpmI.h instead
+    AC_CHECK_HEADERS(Xm/XpmI.h,
+    [ # Action if found, in addition to setting HAVE_XM_XPMI_H
+
+      AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, [Xm],
+      [
+        # action if -lXm is found, in addition to adding -lXm to LIBS
+        use_xpm="yes"
+        AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, [Define to 1 if the `Xm' library (-lXm) is used for Xpm.])
+      ],
+      [ #action if -lXm not found: issue warning
+         AC_MSG_WARN([**************************************************************** ])
+         AC_MSG_WARN([Your system does not have a library that contains XpmWriteFileFromPixmap])
+ AC_MSG_WARN([PNG snapshots cannot work.       ])
+ AC_MSG_WARN([**************************************************************** ])
+      ])
+    ])
+  ])
 else
   AC_DEFINE(HAVE_LIBXPM, 1, Define to 1 if you have the `Xpm' library (-lXpm). )
   AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, Define to 1 if the `Xm' library (-lXm) is used for Xpm. )
@@ -903,6 +931,7 @@ echo "  ShapeLib (Vector maps) .................... : $use_shapelib"
 echo
 echo RECOMMENDED OPTIONS:
 
+echo "  Xpm / Snapshots ............................: $use_xpm"
 echo -n "  GraphicsMagick/ImageMagick (Raster maps) .. : "
 if test "${use_graphicsmagick}" = "yes"; then 
   echo "yes (GraphicsMagick)"
