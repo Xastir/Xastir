@@ -10,7 +10,7 @@ are simpler.
 Xastir migrated to git and github instead of cvs and sourceforge, and
 therefore creating "development snapshots" isn't necessary, because
 every commit is essentially a development snapshot that can be checked
-out by referencing its SHA-1 has.  However, if one wants to make it
+out by referencing its SHA-1 hash.  However, if one wants to make it
 easy to grab a specific snapshot via a tar or zip file, one merely
 needs to create a tag and push it to github.  It will then be
 available as a tar.gz or zip download without using git.
@@ -33,7 +33,7 @@ available as a tar.gz or zip download without using git.
 
   But if you have a good reason for declaring today's code worthy of a
   development snapshot, you do this by making a tag.
-  
+
 - First create an "annotated tag" for the snapshot
 
       git tag -a -m "Xastir development snapshot" dev-snapshot-DD-MM-YY
@@ -42,7 +42,7 @@ available as a tar.gz or zip download without using git.
   snapshot releases, and even for stable releases, but by using a tag
   similar to the one above it is more clear that this is just a
   snapshot of the development branch of code, and when it was created.
-  
+
 - Push the tag to github
 
       git push origin dev-snapshot-DD-MM-YY
@@ -116,7 +116,7 @@ script (and to have automake and autoconf installed).
   Mention why you're doing this in the commit message (e.g., "Update
   release version number").  Follow our commit log message guidance in
   CONTRIBUTING.md
-  
+
 - Edit .gitignore and comment out the lines of file names that relate
   to the files that bootstrap.sh creates.  These are all at the top of
   the file and the comments should tell you where to start commenting
@@ -208,7 +208,7 @@ script (and to have automake and autoconf installed).
       cd build
       ../configure [options]
       make
-    
+
 
 - If the sanity check above worked, you can throw away the testing
   tarball and unpacked code:
@@ -303,7 +303,7 @@ to change .gitignore so it doesn't ignore those files, then commit
 them.
 
 Because of this, we never want to do a release branch to master merge.
-Just don't do it.  Leave the release branch unmerged forever.  
+Just don't do it.  Leave the release branch unmerged forever.
 
 #### Getting master ready to move on
 
