@@ -541,7 +541,7 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
             }
             else
                 return;
-	    /* Falls through. */
+            /* Falls through. */
         case 7:
             if (ViaCall[6]) {
                 strncpy((char *)(&output_string[agwpe_header_size+1+60]), ViaCall[6], 10);
@@ -6246,7 +6246,7 @@ void output_my_aprs_data(void) {
             // "Global transmit is DISABLED.  Emergency beacons are NOT going out!"
             popup_message_always( langcode("POPEM00035"),
                                   langcode("POPEM00047") );
-	}
+        }
         return;
     }
 
@@ -7004,7 +7004,7 @@ void output_my_aprs_data(void) {
 
         if (interfaces_ok_for_transmit) {
 
-	    // Beacons are going out in emergency beacon mode.  Alert the
+            // Beacons are going out in emergency beacon mode.  Alert the
             // operator so that he/she knows they've enabled that mode.
             //
             // "Emergency Beacon Mode"
@@ -7019,7 +7019,7 @@ void output_my_aprs_data(void) {
             // nobody will know it 'cuz there are no interfaces enabled for
             // transmit.
             //
-	    // "Warning"
+            // "Warning"
             // "Interfaces or posits/transmits DISABLED.  Emergency beacons are NOT going out!"
             popup_message_always( langcode("POPEM00035"),
                                   langcode("POPEM00050") );
