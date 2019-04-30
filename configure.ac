@@ -931,7 +931,7 @@ echo "  ShapeLib (Vector maps) .................... : $use_shapelib"
 echo
 echo RECOMMENDED OPTIONS:
 
-echo "  Xpm / Snapshots ............................: $use_xpm"
+echo "  Xpm / Snapshots ........................... : $use_xpm"
 echo -n "  GraphicsMagick/ImageMagick (Raster maps) .. : "
 if test "${use_graphicsmagick}" = "yes"; then 
   echo "yes (GraphicsMagick)"
