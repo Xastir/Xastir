@@ -176,8 +176,6 @@ script (and to have automake and autoconf installed).
       scripts/Makefile.in
       src/Makefile.in
       src/rtree/Makefile.in
-      src/shapelib/Makefile.in
-      src/shapelib/contrib/Makefile.in
       symbols/Makefile.in
 
   This is just what we want, so commit it:
