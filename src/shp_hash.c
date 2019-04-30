@@ -295,12 +295,12 @@ shpinfo *get_shp_from_hash(char *filename) {
 void build_rtree (struct Node **root, SHPHandle sHP) {
     int nEntities;
     intptr_t i;
-    SHPObject	*psCShape;
+    SHPObject    *psCShape;
     struct Rect bbox_shape;
     SHPGetInfo(sHP, &nEntities, NULL, NULL, NULL);
     for( i = 0; i < nEntities; i++ ) {
         psCShape = SHPReadObject ( sHP, i );
-     	if (psCShape != NULL) {
+         if (psCShape != NULL) {
             bbox_shape.boundary[0]=(RectReal) psCShape->dfXMin;
             bbox_shape.boundary[1]=(RectReal) psCShape->dfYMin;
             bbox_shape.boundary[2]=(RectReal) psCShape->dfXMax;

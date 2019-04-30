@@ -15,35 +15,35 @@
 #include <stdio.h>
 
 int main(int argc,char *argv[]) {
-	struct io_file *index;
-	char input[82];
-	if (2 != argc) {
-		fprintf(stderr,"usage: %s map-file\n",argv[0]);
-		return 2;
-	}
+    struct io_file *index;
+    char input[82];
+    if (2 != argc) {
+        fprintf(stderr,"usage: %s map-file\n",argv[0]);
+        return 2;
+    }
 
-	index = io_open(argv[1]);
-	while (fgets(input,sizeof input,stdin)) {
-		struct geo_location loc;
-		if (!geo_find(index,input,strlen(input),&loc))
-			printf("FAILURE: %s\n",input);
-		else {
-			printf("SUCCESS: %d/%s/%s/%s/%d\n",
-			       loc.at.address,
-			       loc.street_name,loc.city_name,loc.state_name,
-			       loc.zip_code);
-			printf("   Side = %c\n",loc.side);
-			printf("  Start = %d @ %.8g, %.8g\n",
-				loc.before.address,
-				loc.before.longitude,loc.before.latitude);
-			printf("     At = %d @ %.8g, %.8g\n",
-				loc.at.address,
-				loc.at.longitude,loc.at.latitude);
-			printf("    End = %d @ %.8g, %.8g\n",
-				loc.after.address,
-				loc.after.longitude,loc.after.latitude);
-		}
-	}
+    index = io_open(argv[1]);
+    while (fgets(input,sizeof input,stdin)) {
+        struct geo_location loc;
+        if (!geo_find(index,input,strlen(input),&loc))
+            printf("FAILURE: %s\n",input);
+        else {
+            printf("SUCCESS: %d/%s/%s/%s/%d\n",
+                   loc.at.address,
+                   loc.street_name,loc.city_name,loc.state_name,
+                   loc.zip_code);
+            printf("   Side = %c\n",loc.side);
+            printf("  Start = %d @ %.8g, %.8g\n",
+                loc.before.address,
+                loc.before.longitude,loc.before.latitude);
+            printf("     At = %d @ %.8g, %.8g\n",
+                loc.at.address,
+                loc.at.longitude,loc.at.latitude);
+            printf("    End = %d @ %.8g, %.8g\n",
+                loc.after.address,
+                loc.after.longitude,loc.after.latitude);
+        }
+    }
 
-	return 0;
+    return 0;
 }

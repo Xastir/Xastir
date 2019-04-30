@@ -1258,7 +1258,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 // "OWW" docs exactly which of the four rain fields did what.  If
 // someone can help me with that I'll add rain gauge code for the
 // Dallas One-Wire.
-              		
+                      
 
 
             break;
@@ -2655,7 +2655,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_hum,0,5);
             memset(weather->wx_baro,0,10);
             memset(weather->wx_station,0,MAX_WXSTATION);
-			
+            
             if ((temp_conv=strchr((char *)data,'c'))) { // Wind Direction in Degrees 
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
@@ -2670,7 +2670,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_course),
                 "360");
             }
-				
+                
             if ((temp_conv=strchr((char *)data,'s'))) { // Wind Speed in MPH - not snowfall
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
@@ -2703,7 +2703,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(weather->wx_temp),
                     "%s",
                     temp_conv+1);
-                weather->wx_temp[3] = '\0';  	
+                weather->wx_temp[3] = '\0';      
 
                 // compute hi temp, since APRS doesn't send that
                 if(wx_hi_temp[0] == '\0' || // first time 
@@ -2788,23 +2788,23 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
             if ((temp_conv=strchr((char *)data,'h'))) { // Humidity %
 
-                if (!strncmp(temp_conv+1,"00",2)) {  // APRS says 00 is	
+                if (!strncmp(temp_conv+1,"00",2)) {  // APRS says 00 is    
                     xastir_snprintf(weather->wx_hum, // 100% humidity
                         sizeof(weather->wx_hum),
                         "%s",
                         "100");
                         weather->wx_hum[3] = '\0';
-    		    } else {
+                } else {
                     xastir_snprintf(weather->wx_hum, // humidity less than
                         sizeof(weather->wx_hum),     // 100%
                         "%s",
                         temp_conv+1);
                         weather->wx_hum[2] = '\0';
                 }
-            } 	 
+            }      
 
             if ((temp_conv=strchr((char *)data,'b'))) { // Air Pressure in 1/10 hPa
-			    memset(temp_data1,0,sizeof(temp_data1));
+                memset(temp_data1,0,sizeof(temp_data1));
 
                 xastir_snprintf(temp_data1,
                     sizeof(temp_data1),
@@ -2812,7 +2812,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp_conv+1);
                 temp_data1[5] = '\0';
 
-			    temp_temp = (float)(atof(temp_data1))/10.0;
+                temp_temp = (float)(atof(temp_data1))/10.0;
                 xastir_snprintf(temp_data1,
                     sizeof(temp_data1),
                     "%0.1f",
@@ -2844,7 +2844,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(wx_wind_chill),
                     "%.0f",
                     wind_chill);
-                wx_wind_chill_on = 1;	
+                wx_wind_chill_on = 1;    
             }
             else {
                 wx_wind_chill_on = 0;
@@ -2880,7 +2880,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_hum,0,5);
             memset(weather->wx_baro,0,10);
             memset(weather->wx_station,0,MAX_WXSTATION);
-			
+            
             if (sscanf((char *)data,
                        "%*27s%3s/%3sg%3st%3sr%3sp%3sP%3sh%2sb%5s.DsVP",
                        weather->wx_course,
@@ -2980,7 +2980,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                 sizeof(wx_wind_chill),
                                 "%.0f",
                                 wind_chill);
-                wx_wind_chill_on = 1;	
+                wx_wind_chill_on = 1;    
               }
               else {
                 wx_wind_chill_on = 0;
@@ -3349,7 +3349,7 @@ void wx_decode(unsigned char *wx_line, int data_length, int port) {
                   wx_fill_data(0,DAVISAPRSDL,wx_line,p_station);
                   decoded=1;
                 }
-                else {	// ASCII data of undetermined type
+                else {    // ASCII data of undetermined type
 
                     // Davis Weather via meteo -> db2APRS -> TCP port
 
@@ -3357,7 +3357,7 @@ void wx_decode(unsigned char *wx_line, int data_length, int port) {
 
                         if (debug_level & 1)
                             fprintf(stdout,"Davis Data found... %s\n",wx_line);
-			    
+                
                         xastir_snprintf(wx_station_type,
                             sizeof(wx_station_type),
                             "%s",

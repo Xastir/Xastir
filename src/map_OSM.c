@@ -318,9 +318,9 @@ static void get_OSM_local_file(char * local_filename, char * fileimg){
             }
         }
 
-set_dangerous("map_OSM: map_cache_get");
-	map_cache_return = map_cache_get(fileimg,local_filename); 
-clear_dangerous();
+        set_dangerous("map_OSM: map_cache_get");
+        map_cache_return = map_cache_get(fileimg,local_filename); 
+        clear_dangerous();
     }
 
     if (debug_level & 512) {
@@ -331,7 +331,7 @@ clear_dangerous();
    
     if (map_cache_return != 0 ) {
 
-set_dangerous("map_OSM: map_cache_fileid");
+        set_dangerous("map_OSM: map_cache_fileid");
         cache_file_id = map_cache_fileid();
         xastir_snprintf(local_filename,
             MAX_FILENAME,           // hardcoded to avoid sizeof()
@@ -370,9 +370,9 @@ clear_dangerous();
  
 #ifdef USE_MAP_CACHE
 
-set_dangerous("map_OSM: map_cache_put");
-	map_cache_put(fileimg,local_filename); 
-clear_dangerous();
+    set_dangerous("map_OSM: map_cache_put");
+    map_cache_put(fileimg,local_filename); 
+    clear_dangerous();
 
         } // end if is cached  DHBROWN
 
@@ -1605,7 +1605,7 @@ void draw_OSM_map (Widget w,
          
         if (image_info)
             DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
+    DestroyExceptionInfo(&exception);
         return;
     }
     (void)fclose (f);
@@ -1628,7 +1628,7 @@ void draw_OSM_map (Widget w,
 
         if (image_info)
             DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
+    DestroyExceptionInfo(&exception);
         return;
 
     } else if ( (image->columns != map_image_width)

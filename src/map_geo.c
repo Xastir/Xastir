@@ -195,7 +195,7 @@ int check_interrupt(
 #endif // HAVE_MAGICK
         return(~0);
     } else
-	return(0);
+    return(0);
 }
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm, 
@@ -548,12 +548,12 @@ void draw_toporama_map (Widget w,
  **********************************************************/
 
 void draw_geo_image_map (Widget w, 
-			 char *dir,
-			 char *filenm, 
-			 alert_entry *alert,
-			 u_char alert_color,
-			 int destination_pixmap,
-			 map_draw_flags *mdf) {
+             char *dir,
+             char *filenm, 
+             alert_entry *alert,
+             u_char alert_color,
+             int destination_pixmap,
+             map_draw_flags *mdf) {
 #ifdef NO_GRAPHICS
     fprintf(stderr,"XPM and/or ImageMagick support have not been compiled in.\n");
 #else   // NO_GRAPHICS
@@ -1872,7 +1872,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     // gamma setup
     if (imagemagick_options.gamma_flag == 0 ||
@@ -1908,7 +1908,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.gamma_flag) {
         if (debug_level & 16)
@@ -1918,7 +1918,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.contrast != 0) {
         if (debug_level & 16)
@@ -1928,7 +1928,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.negate != -1) {
         if (debug_level & 16)
@@ -1938,7 +1938,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.equalize) {
         if (debug_level & 16)
@@ -1948,7 +1948,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.normalize) {
         if (debug_level & 16)
@@ -1958,7 +1958,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
 #if (MagickLibVersion >= 0x0539)
     if (imagemagick_options.level[0] != '\0') {
@@ -1970,7 +1970,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     if (imagemagick_options.modulate[0] != '\0') {
         if (debug_level & 16)
@@ -1998,7 +1998,7 @@ void draw_geo_image_map (Widget w,
 
     if (check_interrupt(image, image_info, 
                         &exception, &da, &pixmap, &gc, screen_width, screen_height))
-	return;
+    return;
 
     // crop image: if we just use CropImage(), then the tiepoints will be off
     // make border pixels transparent.  
@@ -2023,7 +2023,7 @@ void draw_geo_image_map (Widget w,
             }
             if (!SyncImagePixels(image))
                 fprintf(stderr, "SyncImagePixels Failed....\n");
-	}
+    }
         DestroyImagePixels(image);
     }
 

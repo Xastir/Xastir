@@ -103,7 +103,7 @@
 #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
 
-extern int npoints;		/* tsk tsk tsk -- globals */
+extern int npoints;        /* tsk tsk tsk -- globals */
 
 #ifdef USE_RTREE
 #include <rtree/index.h>    

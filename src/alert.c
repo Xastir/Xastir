@@ -1215,7 +1215,7 @@ void alert_build_list(Message *fill) {
 
         if (ret < 3)
           fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret, 
-			fill->from_call_sign, fill->call_sign, fill->message_line);
+                  fill->from_call_sign, fill->call_sign, fill->message_line);
 
         // Force a termination for each
         entry.activity[20]  = '\0';
@@ -1226,14 +1226,14 @@ void alert_build_list(Message *fill) {
         title[3][TITLE_SIZE]        = '\0';
         title[4][TITLE_SIZE]        = '\0';
 
-	// Check for "NWS_" in the call_sign field.  Underline
-	// signifies compressed alert format.  Dash signifies
-	// non-compressed format.
+        // Check for "NWS_" in the call_sign field.  Underline
+        // signifies compressed alert format.  Dash signifies
+        // non-compressed format.
 
         // K2DLS 08/25/17
-	// Also check for NWS- where title[0] does not contain
-	// an underscore.  This is to identify AE5PL's compressed
-	// alerts in uncompressed clothing.
+        // Also check for NWS- where title[0] does not contain
+        // an underscore.  This is to identify AE5PL's compressed
+        // alerts in uncompressed clothing.
 
         if ((strncmp(fill->call_sign,"NWS_",4) == 0) |
            ((strncmp(fill->call_sign,"NWS-",4) == 0) &

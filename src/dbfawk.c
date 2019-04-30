@@ -231,7 +231,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
             if (symtbl)
                 awk_free_symtab(symtbl);
             fprintf(stderr,"failed to malloc in dbfawk.c!\n");
-	    closedir(d);
+            closedir(d);
             return NULL;
         }
  
@@ -245,7 +245,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                     free(path);
                     if (symtbl)
                       awk_free_symtab(symtbl);
-		    closedir(d);
+                    closedir(d);
                     return NULL;
                 }
             } else {
@@ -256,7 +256,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                     free(path);
                     if (symtbl)
                       awk_free_symtab(symtbl);
-		    closedir(d);
+                    closedir(d);
                     return head; // Return what we were able to gather.
                 }
 
@@ -413,18 +413,18 @@ void dbfawk_parse_record(awk_program *rs,
 
         switch (finfo->type) {
         case FTString:
-	    sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
-	    break;
+            sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
+            break;
         case FTInteger:
-	    sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
-	    break;
+            sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
+            break;
         case FTDouble:
-	    sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
-	    break;
+            sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
+            break;
         case FTInvalid:
         default:
-	    sprintf(qbuf,"%s=??",finfo->name);
-	    break;
+            sprintf(qbuf,"%s=??",finfo->name);
+            break;
         }
         if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
             break;
@@ -485,7 +485,7 @@ int DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
       str_to_upper(name2);
 
       if(!strncmp(name1,name2,10))
-	return(i);
+          return(i);
     }
   return(-1);
 }

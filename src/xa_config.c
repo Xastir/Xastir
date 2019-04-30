@@ -381,7 +381,7 @@ char *get_user_base_dir(char *dir, char * base, size_t base_size) {
 
     switch (xa_config_dir[0]) {
     case '/':
-	//have some path
+        //have some path
         xastir_snprintf(base, base_size, "%s",xa_config_dir);
         break; 
 
@@ -403,7 +403,7 @@ char *get_user_base_dir(char *dir, char * base, size_t base_size) {
         xastir_snprintf(base, base_size, "%s",
             ((env_ptr = getenv ("PWD")) != NULL) ? env_ptr : user_dir);
 
-       	if (base[strlen (base) - 1] != '/')
+        if (base[strlen (base) - 1] != '/')
             strncat (base, "/", base_size - 1 - strlen(base));
 
         strncat (base, xa_config_dir, base_size - 1 - strlen(base));

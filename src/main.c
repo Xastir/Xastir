@@ -9683,7 +9683,7 @@ fprintf(stderr,"Setting up widget's X/Y position at X:%d  Y:%d\n",
 
     if (title) {
         free(title);
-	title = NULL;
+    title = NULL;
     }
 
     if (track_me)
@@ -10846,7 +10846,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
         // We want to branch from the keysym instead of the keycode
         (void)XLookupString( (XKeyEvent *)event, buffer, bufsize, &key, &compose );
-	//fprintf(stderr,"main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
+    //fprintf(stderr,"main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
 
         // keycode ??, keysym 65360 is Home (0x???? on sun kbd)
 //        if ((key == 65360) || (key == 0x????)) {
@@ -12794,9 +12794,9 @@ static int pid_file_check(int hold){
             fprintf(stderr,
                 "Other Xastir process, pid: %d does not appear be running. \n",
                 other_pid);
-	    // nuke from orbit
-	    if (unlink(pidfile_name)) {
-	            fprintf(stderr,"Error unlinking pid file: %s, %d\n",
+        // nuke from orbit
+        if (unlink(pidfile_name)) {
+                fprintf(stderr,"Error unlinking pid file: %s, %d\n",
                         pidfile_name,errno);
             }
         } else {
@@ -12811,7 +12811,7 @@ static int pid_file_check(int hold){
         }
 
     } else {
-    	
+        
     // if we're here - ok to truncate & open pidfile. 
 
 #ifdef N8YSZ
@@ -14253,12 +14253,12 @@ void Menu_Quit( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
 void save_state( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client, /*@unused@*/ XtPointer calldata) {
     if (((XtCheckpointToken)calldata)->shutdown) {
-	save_data();
+    save_data();
 
-	// shutdown all interfaces
-	shutdown_all_active_or_defined_port(-1);
+    // shutdown all interfaces
+    shutdown_all_active_or_defined_port(-1);
 
-	shut_down_server();
+    shut_down_server();
     }
 
 }
@@ -16156,7 +16156,7 @@ void Set_Log_Indicator(void) {
         XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
         XtVaSetValues(log_indicator,
             XmNbackground, GetPixelByName(appshell,"RosyBrown"),
-	    NULL);
+        NULL);
     } else {
         XmTextFieldSetString(log_indicator, NULL);
         XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
@@ -18440,7 +18440,7 @@ void map_properties_fill_in (void) {
             {
                 if (XmListPosSelected(map_list,x)) {
                     // Snag the filename portion from the line
-		    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+            temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
                     if (temp) {
 
                         // Update this file or directory in the in-memory
@@ -18689,7 +18689,7 @@ if (current->temp_select) {
                     current->filename);
 
                 str_ptr = XmStringCreateLocalized(temp);
-		XmListAddItem(map_properties_list, str_ptr, n);
+        XmListAddItem(map_properties_list, str_ptr, n);
                 n++;
                 XmStringFree(str_ptr);
             }
@@ -19962,7 +19962,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     // big speed improvement when you have 1000's of maps.
     //
     for(x=1; x<=i;x++) {
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if (temp) {
             // Update this file or directory in the in-memory map
             // index, setting/resetting the "selected" field as
@@ -19972,7 +19972,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
                 &ptr);
             XtFree(temp);
         }
-	//fprintf(stderr,"Passed back: %s\n", ptr->filename);
+    //fprintf(stderr,"Passed back: %s\n", ptr->filename);
         ptr = ptr->next;
     }
 
@@ -20059,7 +20059,7 @@ void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callD
     // big speed improvement when you have 1000's of maps.
     //
     for(x=1; x<=i;x++) {
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if (temp) {
             // Update this file or directory in the in-memory map
             // index, setting/resetting the "selected" field as
@@ -20176,7 +20176,7 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
 //            XmListDeselectPos(map_list,x);
 //        }
 
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if(temp) {
             ext = get_map_ext (temp);
             if ( (ext != NULL)
@@ -20234,7 +20234,7 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
 //            XmListDeselectPos(map_list,x);
 //        }
 
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
@@ -20274,7 +20274,7 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
 //            XmListDeselectPos(map_list,x);
 //        }
 
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
@@ -20314,7 +20314,7 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 //            XmListDeselectPos(map_list,x);
 //        }
 
-	temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
+    temp = XmStringUnparse(list[(x-1)], NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_BEGINNING);
         if(temp) {
             ext = get_map_ext (temp);
             length = (int)strlen(temp);
@@ -20403,7 +20403,7 @@ void sort_list(char *filename,int size, Widget list, int *item) {
             if (fread(&file_ptr,sizeof(file_ptr),1,f_pointer)==1) {
                 (void)fseek(f_data,file_ptr,SEEK_SET);
                 if (fread(fill,(size_t)size,1,f_data)==1) {
-		    str_ptr = XmStringCreateLocalized(fill);
+            str_ptr = XmStringCreateLocalized(fill);
                     XmListAddItem(list, str_ptr,*item);
                     XmStringFree(str_ptr);
                     (*item)++;
@@ -22814,7 +22814,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNminimum, 0,          // Zero minutes (disables the function)
                 XmNmaximum, 60*10,      // 60 minutes
                 XmNdecimalPoints, 1,    // Move decimal point over one
-	        XmNscaleMultiple, 5,	// Move 30 seconds per left mouse
+            XmNscaleMultiple, 5,    // Move 30 seconds per left mouse
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
                 XmNtitleString, x_str,
@@ -22873,7 +22873,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNborderWidth, 1,
                 XmNminimum, 5,      // Five minutes
                 XmNmaximum, 120,    // 120 minutes
-	        XmNscaleMultiple, 5,	// Move 5 minutes per left mouse
+            XmNscaleMultiple, 5,    // Move 5 minutes per left mouse
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(OBJECT_rate / 60),
                 XmNtitleString, x_str,
@@ -23183,7 +23183,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
 //                XmNtopWidget, clearing_time,
-		XmNtopWidget, RINO_download_timeout,
+        XmNtopWidget, RINO_download_timeout,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -27090,10 +27090,10 @@ int main(int argc, char *argv[], char *envp[]) {
                     Geometry = argv[optind++];
                 break;
 
-	    case 'x':   // -xtsessionID
-		optind++; // swallow argument, let XtIntrinsics deal with it.
-		xt = 1;
-		break;
+        case 'x':   // -xtsessionID
+        optind++; // swallow argument, let XtIntrinsics deal with it.
+        xt = 1;
+        break;
 
             case 'p':   // Disable popups
                 disable_all_popups = 1;
@@ -27209,8 +27209,8 @@ int main(int argc, char *argv[], char *envp[]) {
                 fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
                         get_user_base_dir("", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
 
-               	// Creature to feep later? 
-               	// needs <libgen.h> 
+                   // Creature to feep later? 
+                   // needs <libgen.h> 
                 // fprintf(stderr,"Check to see if '%s' exists \n", 
                 //    dirname(get_user_base_dir("")) );
 
@@ -27225,7 +27225,7 @@ int main(int argc, char *argv[], char *envp[]) {
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
                 get_user_base_dir("config", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
-        }        	
+        }            
     }
 
     if (filethere(get_user_base_dir("data", temp_base_dir, sizeof(temp_base_dir))) != 1) {
@@ -27252,7 +27252,7 @@ int main(int argc, char *argv[], char *envp[]) {
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
                 get_user_base_dir("tracklogs", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
-        }        	
+        }            
     }
 
     if (filethere(get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir))) != 1) {
@@ -27261,7 +27261,7 @@ int main(int argc, char *argv[], char *envp[]) {
             fprintf(stderr,"Fatal error making user dir '%s':\n\t%s \n", 
                 get_user_base_dir("tmp", temp_base_dir, sizeof(temp_base_dir)), strerror(errno) );
             exit(errno);
-        }        	
+        }
     }
 
     if (filethere(get_user_base_dir("gps", temp_base_dir, sizeof(temp_base_dir))) != 1) {

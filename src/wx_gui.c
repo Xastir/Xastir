@@ -401,7 +401,7 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
         "%s",
         choice);
 
-    XtFree(choice);	// Release as soon as we're done!
+    XtFree(choice);    // Release as soon as we're done!
 
     handle[13] = '\0';  // Terminate the string
     // Remove spaces
@@ -493,17 +493,17 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &max_item_count, NULL);
 
-	if ((nn = alert_list_count()) > alert_list_limit) {
-	    alert_entry **tmp = realloc(alert_list, nn * sizeof(alert_entry *));
-	    if (tmp) {
-		alert_list = tmp;
-		alert_list_limit = nn;
-	    } else {
-		fprintf(stderr, "wx_gui: Alert list allocation error\n");
-		exit(1);
-	    }
+    if ((nn = alert_list_count()) > alert_list_limit) {
+        alert_entry **tmp = realloc(alert_list, nn * sizeof(alert_entry *));
+        if (tmp) {
+        alert_list = tmp;
+        alert_list_limit = nn;
+        } else {
+        fprintf(stderr, "wx_gui: Alert list allocation error\n");
+        exit(1);
+        }
 
-	}
+    }
         // Iterate through the alert hash.  Create a string for each
         // non-expired/non-blank entry.
         iterator = create_wx_alert_iterator();
@@ -515,13 +515,13 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // probably don't need this anymore.
             //
 //            if (alert->title[0] == '\0') {    // It's empty
-//		fprintf(stderr, "wx_gui:alert->title NULL\n");
+//        fprintf(stderr, "wx_gui:alert->title NULL\n");
 //                break;
 //            }
-	    alert_list[nn++] = alert;
-	}
-	qsort(alert_list, nn, sizeof(alert_entry *), alert_comp);
-	for (ii = 0; ii < nn; 
+        alert_list[nn++] = alert;
+    }
+    qsort(alert_list, nn, sizeof(alert_entry *), alert_comp);
+    for (ii = 0; ii < nn; 
 ) {
             alert = alert_list[ii];
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
@@ -565,7 +565,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             if (max_item_count < ii) {
                 XmListAddItemUnselected(wx_alert_list, item, 0);
             } else {
-		// Replace it in the window.  Note: This might re-order the list each time.
+        // Replace it in the window.  Note: This might re-order the list each time.
                 XmListReplaceItemsPos(wx_alert_list, &item, 1, ii);
             }
 

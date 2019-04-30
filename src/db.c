@@ -2537,15 +2537,15 @@ int ok_to_draw_station(DataRow *p_station) {
                 return 0;
         }
 
-	//N7IPB - check for aircraft and if so check aircraft timeout
-	// return 0 if timedout - else continue
+        //N7IPB - check for aircraft and if so check aircraft timeout
+        // return 0 if timedout - else continue
         if ((aircraft_sec_clear != 0) 
            && ((p_station->aprs_symbol.aprs_symbol == '^')
            || (p_station->aprs_symbol.aprs_symbol == '\'')
            || (p_station->aprs_symbol.aprs_symbol == 'X'))) { 
               if ((p_station->sec_heard + (aircraft_sec_clear * 5)) < secs_now)
                   return 0;
-	      }
+        }
         // Check if we want to display data past the clear time
         if (!Select_.old_data) {
             if ((p_station->sec_heard + sec_clear) < secs_now)
@@ -6609,15 +6609,15 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                             // bounding box, count it.
                             if ((diff_y < min_diff_y) && (diff_x < min_diff_x)) {
                                 /*fprintf(stderr,"Station %s\n",p_station->call_sign);*/
-				if (p_station->tactical_call_sign) {
+                                if (p_station->tactical_call_sign) {
                                     xastir_snprintf(tactical_string, sizeof(tactical_string), "%s (%s)", p_station->call_sign,
                                                     p_station->tactical_call_sign);
                                     XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(tactical_string,
                                         XmFONTLIST_DEFAULT_TAG), (int)n++);
-				} else {
+                                } else {
                                 XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(p_station->call_sign,
                                     XmFONTLIST_DEFAULT_TAG), (int)n++);
-				}
+                                }
                                 XmStringFree(str_ptr);
                             }
                         }
@@ -10099,90 +10099,90 @@ void delete_object(char *name) {
  * Tapio Sokura OH2KKU <tapio.sokura@iki.fi> 2007-11-15
  */
 int decode_dao (int *lat, int *lon, char *datumch, char *daocomment) {
-	char *searchval, *rval;
-	size_t slen;
+    char *searchval, *rval;
+    size_t slen;
 
-	// Loop around searching for !DAO!, return the first valid match.
-	// The first '!' is found using strchr, the rest of the
-	// string is validated more manually.
-	searchval = daocomment;
-	rval = strchr(searchval, '!');
-	while (rval != NULL) {
+    // Loop around searching for !DAO!, return the first valid match.
+    // The first '!' is found using strchr, the rest of the
+    // string is validated more manually.
+    searchval = daocomment;
+    rval = strchr(searchval, '!');
+    while (rval != NULL) {
 
-		// Check the remaining string length so we don't
-		// run past string end
-		slen = strlen(rval);
-		if (slen < 5) {
-			break;
-		}
+        // Check the remaining string length so we don't
+        // run past string end
+        slen = strlen(rval);
+        if (slen < 5) {
+            break;
+        }
 
-		if (rval[4] == '!' && rval[1] >= '!' && rval[1] <= '{') {
-			// found the !DAO! terminator and datum char is
-			// within the allowable range
+        if (rval[4] == '!' && rval[1] >= '!' && rval[1] <= '{') {
+            // found the !DAO! terminator and datum char is
+            // within the allowable range
 
-			if (rval[1] >= 'A' && rval[1] <= 'Z') {
-				// looks like human readable format
+            if (rval[1] >= 'A' && rval[1] <= 'Z') {
+                // looks like human readable format
 
-				if (rval[2] == ' ' && rval[3] == ' ') {
-					// only datum information present
-					*datumch = rval[1];
-					memmove(rval, rval + 5, slen - 4);
-					return 1;
+                if (rval[2] == ' ' && rval[3] == ' ') {
+                    // only datum information present
+                    *datumch = rval[1];
+                    memmove(rval, rval + 5, slen - 4);
+                    return 1;
 
-				} else if (rval[2] >= '0' && rval[2] <= '9' &&
-					   rval[3] >= '0' && rval[3] <= '9') {
-					// human readable format 0-9 lat/lon ok
+                } else if (rval[2] >= '0' && rval[2] <= '9' &&
+                       rval[3] >= '0' && rval[3] <= '9') {
+                    // human readable format 0-9 lat/lon ok
 
-					// ASCII - 48 = the integer digit we want.
-					// Multiply by 10, because we only get
-					// thousandths of a minute with human
-					// readable format.
-					*lat = ((int)rval[2] - 48) * 10;
-					*lon = ((int)rval[3] - 48) * 10;
-					*datumch = rval[1];
-					memmove(rval, rval + 5, slen - 4);
-					return 2;
-				}
-				// not ok for human readable format, continue searching
+                    // ASCII - 48 = the integer digit we want.
+                    // Multiply by 10, because we only get
+                    // thousandths of a minute with human
+                    // readable format.
+                    *lat = ((int)rval[2] - 48) * 10;
+                    *lon = ((int)rval[3] - 48) * 10;
+                    *datumch = rval[1];
+                    memmove(rval, rval + 5, slen - 4);
+                    return 2;
+                }
+                // not ok for human readable format, continue searching
 
-			} else if (rval[1] >= 'a' && rval[1] <= 'z') {
-				// looks like base-91 format
+            } else if (rval[1] >= 'a' && rval[1] <= 'z') {
+                // looks like base-91 format
 
-				if (rval[2] == ' ' && rval[3] == ' ') {
-					// only datum information present
-					*datumch = rval[1];
-					memmove(rval, rval + 5, slen - 4);
-					return 1;
+                if (rval[2] == ' ' && rval[3] == ' ') {
+                    // only datum information present
+                    *datumch = rval[1];
+                    memmove(rval, rval + 5, slen - 4);
+                    return 1;
 
-				} else if (rval[2] >= '!' && rval[2] <= '{' &&
-					   rval[3] >= '!' && rval[3] <= '{') {
-					// base-91 lat/lon ok
-					unsigned int lats, lons;
-					float latval, lonval;
-					lats = rval[2] - 33; // get base91 values
-					lons = rval[3] - 33;
-					latval = lats / 91.0 * 100; // do proper scaling
-					lonval = lons / 91.0 * 100;
-					*lat = (int)(latval + 0.5); // round and store
-					*lon = (int)(lonval + 0.5);
-					*datumch = rval[1];
-					memmove(rval, rval + 5, slen - 4);
-					return 3;
-				}
-				// not ok for base91 format, continue searching
-			}
-			// Datum chars outside A-Z and a-z are not
-			// handled (here at least).
-		}
-		
-		// If we end up here, we didn't find a match.
-		// Search for the next '!' char.
-		searchval = rval + 1;
-		rval = strchr(searchval, '!');
-	}
+                } else if (rval[2] >= '!' && rval[2] <= '{' &&
+                       rval[3] >= '!' && rval[3] <= '{') {
+                    // base-91 lat/lon ok
+                    unsigned int lats, lons;
+                    float latval, lonval;
+                    lats = rval[2] - 33; // get base91 values
+                    lons = rval[3] - 33;
+                    latval = lats / 91.0 * 100; // do proper scaling
+                    lonval = lons / 91.0 * 100;
+                    *lat = (int)(latval + 0.5); // round and store
+                    *lon = (int)(lonval + 0.5);
+                    *datumch = rval[1];
+                    memmove(rval, rval + 5, slen - 4);
+                    return 3;
+                }
+                // not ok for base91 format, continue searching
+            }
+            // Datum chars outside A-Z and a-z are not
+            // handled (here at least).
+        }
 
-	// No more string left to search and no match.
-	return 0;
+        // If we end up here, we didn't find a match.
+        // Search for the next '!' char.
+        searchval = rval + 1;
+        rval = strchr(searchval, '!');
+    }
+
+    // No more string left to search and no match.
+    return 0;
 }
 
 
@@ -10274,22 +10274,22 @@ int extract_position(DataRow *p_station, char **info, int type) {
             // are overridden in the calling function.
             dao_rval = decode_dao(&dao_lat, &dao_lon, &dao_datumch, my_data + 19);
             if (dao_rval == 2 || dao_rval == 3) {
-            	// 48 is the magic number to add to a single digit integer to
-            	// get the same digit in ASCII.
-            	temp_lat[7] = (char)(dao_lat / 10 + 48);
-            	temp_lat[8] = (char)(dao_lat % 10 + 48);
-            	temp_lon[8] = (char)(dao_lon / 10 + 48);
-            	temp_lon[9] = (char)(dao_lon % 10 + 48);
-            	// Signal that this is an accuracy-enhanced !DAO! position,
-            	// so the calling function can set the error boxes accordingly
-            	// (once somebody implements it).
-            	ok = dao_rval;
+                // 48 is the magic number to add to a single digit integer to
+                // get the same digit in ASCII.
+                temp_lat[7] = (char)(dao_lat / 10 + 48);
+                temp_lat[8] = (char)(dao_lat % 10 + 48);
+                temp_lon[8] = (char)(dao_lon / 10 + 48);
+                temp_lon[9] = (char)(dao_lon % 10 + 48);
+                // Signal that this is an accuracy-enhanced !DAO! position,
+                // so the calling function can set the error boxes accordingly
+                // (once somebody implements it).
+                ok = dao_rval;
             } else {
-            	// no valid !DAO! _location_ found, pad with zeroes instead
-            	temp_lat[7] = '0';
-            	temp_lat[8] = '0';
-            	temp_lon[8] = '0';
-            	temp_lon[9] = '0';
+                // no valid !DAO! _location_ found, pad with zeroes instead
+                temp_lat[7] = '0';
+                temp_lat[8] = '0';
+                temp_lon[8] = '0';
+                temp_lon[9] = '0';
             }
 
             // Callsign check here also checks SSID for an exact
@@ -13856,7 +13856,7 @@ fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
                 statusline(station_id,0);
                 play_sound(sound_command,sound_band_open_message);
                 /*fprintf(stderr,"%s> BO distance %f\n",p_station->call_sign, distance);*/
-	    }
+            }
 #ifdef HAVE_FESTIVAL
             if (festival_speak_band_opening && from == DATA_VIA_TNC && !(p_station->flag & ST_3RD_PT) &&
                 (distance > atof(bando_min)) && (distance < atof(bando_max))) {

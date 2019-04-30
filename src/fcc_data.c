@@ -75,8 +75,8 @@ char *call_only(char *callsign) {
 
 
 /* ====================================================================  */
-/*    build a new (or newer if I check the file date) index file	 */
-/*    check for current ic index file					 */
+/*    build a new (or newer if I check the file date) index file     */
+/*    check for current ic index file                     */
 /*    FG: added a date check in case the FCC file has been updated.    */
 /*      appl.dat must have a time stamp newer than the index file time  */
 /*      stamp. Use the touch command on the appl.dat file to make the   */

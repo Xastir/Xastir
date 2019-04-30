@@ -139,23 +139,23 @@ int SayTextInit(void) {
 
     err = Gestalt(gestaltSpeechAttr, &response);
     if (err != noErr) {
-	fprintf(stderr,"can't init Mac Speech Synthesis\n");
-	return(1);
+    fprintf(stderr,"can't init Mac Speech Synthesis\n");
+    return(1);
     }
-    
+
     mask = 1 << gestaltSpeechMgrPresent;
     if ((response & mask) == 0) {
-	fprintf(stderr,"Mac Speech not supported\n");
-	return(1);
+    fprintf(stderr,"Mac Speech not supported\n");
+    return(1);
     }
 
     err = GetVoiceDescription(nil, &voiceDesc, sizeof(voiceDesc));
     defaultVoiceSpec = voiceDesc.voice;
     err = NewSpeechChannel( &defaultVoiceSpec, &channel );
     if (err != noErr) {
-	DisposeSpeechChannel(channel);
-	fprintf(stderr,"Failed to open a speech channel\n");
-	return(1);
+    DisposeSpeechChannel(channel);
+    fprintf(stderr,"Failed to open a speech channel\n");
+    return(1);
     }
  
     last_speech_text[0] = '\0';

@@ -93,12 +93,12 @@
 // unsigned, we may have to explicitly define the long's as well.  -KD6ZWR
 //
 void draw_palm_image_map(Widget w, 
-			 char *dir,
-			 char *filenm,
-			 alert_entry *alert, 
-			 u_char alert_color,
-			 int destination_pixmap, 
-			 map_draw_flags *mdf) {
+             char *dir,
+             char *filenm,
+             alert_entry *alert, 
+             u_char alert_color,
+             int destination_pixmap, 
+             map_draw_flags *mdf) {
 
 // Do NOT change any of these structs.  They have to match the
 // structs  that the palm maps were made with.

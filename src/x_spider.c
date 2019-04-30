@@ -197,7 +197,7 @@ typedef struct _pipe_object {
     int to_parent[2];
     char callsign[20];
     int authenticated;
-    int active;		// Mark for deletion after every task is finished
+    int active;        // Mark for deletion after every task is finished
     struct _pipe_object *next;
 } pipe_object;
 
@@ -531,7 +531,7 @@ int pipe_check(char *client_address) {
             close(p->to_child[1]);
             close(p->to_parent[0]);
 
-            p->active = 0;	// This task is ready to let go.
+            p->active = 0;    // This task is ready to let go.
 
             wait(NULL); // Reap the status of the dead process
         }
@@ -1280,7 +1280,7 @@ void TCP_Server(int argc, char *argv[], char *envp[]) {
                 addr_str((struct sockaddr*)&cli_addr, addrstring),
                 "(xastir)");
             //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	    (void) signal(SIGHUP, exit);
+        (void) signal(SIGHUP, exit);
 #endif  // __linux__
 
 // It'd be very cool here to include the IP address of the remote
@@ -1676,7 +1676,7 @@ int Fork_TCP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider TCP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	(void) signal(SIGHUP, exit);
+    (void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 
@@ -1788,7 +1788,7 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[]) {
         init_set_proc_title(argc, argv, envp);
         set_proc_title("%s", "x-spider UDP daemon (xastir)");
         //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
-	(void) signal(SIGHUP, exit);
+    (void) signal(SIGHUP, exit);
 #endif  // __linux__
  
 

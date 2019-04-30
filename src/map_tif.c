@@ -78,7 +78,7 @@
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
 
-extern int npoints;		/* tsk tsk tsk -- globals */
+extern int npoints;        /* tsk tsk tsk -- globals */
 extern int mag;
 
 #ifdef HAVE_LIBGEOTIFF
@@ -363,12 +363,12 @@ int read_fgd_file ( char* tif_filename,
  * 'o': Good from x064 to x004.  Not very readable at x64.
  ***********************************************************/
 void draw_geotiff_image_map (Widget w, 
-			     char *dir, 
-			     char *filenm,
-			     alert_entry *alert,
-			     u_char alert_color,
-			     int destination_pixmap,
-			     map_draw_flags *mdf) {
+                 char *dir, 
+                 char *filenm,
+                 alert_entry *alert,
+                 u_char alert_color,
+                 int destination_pixmap,
+                 map_draw_flags *mdf) {
     char file[MAX_FILENAME];    /* Complete path/name of image file */
     char short_filenm[MAX_FILENAME];
     TIFF *tif = (TIFF *) 0;     /* Filehandle for tiff image file */

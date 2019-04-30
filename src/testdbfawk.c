@@ -134,8 +134,8 @@ int main(int argc, char *argv[]) {
     int color = 0;
     int lanes = 0;
     int font_size = 0;
-    char dbfinfo[1024];		/* list of DBF field names */
-    char dbffields[1024];	/* subset we want to read */
+    char dbfinfo[1024];        /* list of DBF field names */
+    char dbffields[1024];    /* subset we want to read */
     char name[128];
     char key[128];
     char symbol[4];
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
       argc -= 2;
       sigs = dbfawk_load_sigs(dir,".dbfawk");
       if (!sigs) 
-	die("Couldn't find dbfawk sigs\n");
+    die("Couldn't find dbfawk sigs\n");
     } else if (argc > 2 && strcmp(argv[1],"-f") == 0) {
       file = argv[2];
       argv++; argv++;
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
     awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
     awk_declare_sym(symtbl,"font_size",INT,&font_size,sizeof(font_size));
 
-    if (dfile) {		/* parse dbf file */
+    if (dfile) {        /* parse dbf file */
       DBFHandle dbf = DBFOpen(dfile,"rb");
       int i;
       char sig[sizeof(dbfinfo)]; /* write the signature here */
@@ -197,51 +197,51 @@ int main(int argc, char *argv[]) {
       dbfawk_field_info *fi;
 
       if (!dbf)
-	die("DBFopen");
+    die("DBFopen");
 
       nf = dbfawk_sig(dbf,sig,sizeof(sig));
       fprintf(stderr,"%d Columns,  %d Records in file\n",nf,
-	      DBFGetRecordCount(dbf));
+          DBFGetRecordCount(dbf));
       fprintf(stderr,"sig: %s\n",sig);
 
       /* If -D then search for matching sig; else use the supplied awk_prog */
       if (sigs) {
-	si = dbfawk_find_sig(sigs,sig,dfile);
-	if (!si)
-	  die("No matching dbfawk signature found");
-	rs = si->prog;
+    si = dbfawk_find_sig(sigs,sig,dfile);
+    if (!si)
+      die("No matching dbfawk signature found");
+    rs = si->prog;
       }
       if (awk_compile_program(symtbl,rs) < 0) {
         die("couldn't compile rules");
       }
       
-      awk_exec_begin(rs);		/* execute a BEGIN rule if any */
+      awk_exec_begin(rs);        /* execute a BEGIN rule if any */
       //    print_symtbl(symtbl);
 
       if (strcmp(sig,dbfinfo) == 0) {
-	fprintf(stderr,"DBF Signatures match!\n");
+    fprintf(stderr,"DBF Signatures match!\n");
       } else {
-	fprintf(stderr,"DBF Signatures DON'T match\n");
+    fprintf(stderr,"DBF Signatures DON'T match\n");
       }
       fi = dbfawk_field_list(dbf, dbffields);
       /* now actually read the whole file */
       for (i = 0; i < DBFGetRecordCount(dbf); i++ ) {
-	dbfawk_parse_record(rs,dbf,fi,i);
-	fprintf(stderr,"name=%s, ",name);
-	fprintf(stderr,"key=%s, ",key);
-	fprintf(stderr,"symbol=%s, ",symbol);
-	fprintf(stderr,"color=%d, ", color);
-	fprintf(stderr,"lanes=%d, ", lanes);
-	fprintf(stderr,"filled=%d, ",filled);
-	fprintf(stderr,"pattern=%d, ",pattern);
-	fprintf(stderr,"display_level=%d, ",display_level);
-	fprintf(stderr,"font_size=%d, ", font_size);
-	fprintf(stderr,"label_level=%d\n",label_level);
-	fprintf(stderr,"label_color=%d\n",label_color);
-	//	print_symtbl(symtbl);
+    dbfawk_parse_record(rs,dbf,fi,i);
+    fprintf(stderr,"name=%s, ",name);
+    fprintf(stderr,"key=%s, ",key);
+    fprintf(stderr,"symbol=%s, ",symbol);
+    fprintf(stderr,"color=%d, ", color);
+    fprintf(stderr,"lanes=%d, ", lanes);
+    fprintf(stderr,"filled=%d, ",filled);
+    fprintf(stderr,"pattern=%d, ",pattern);
+    fprintf(stderr,"display_level=%d, ",display_level);
+    fprintf(stderr,"font_size=%d, ", font_size);
+    fprintf(stderr,"label_level=%d\n",label_level);
+    fprintf(stderr,"label_color=%d\n",label_color);
+    //    print_symtbl(symtbl);
       }
       DBFClose(dbf);
-    } else {			/* use cmdline args */
+    } else {            /* use cmdline args */
         usage();
         exit(1);
         /*
@@ -250,14 +250,14 @@ int main(int argc, char *argv[]) {
          * better to just print usage string 
       awk_exec_begin_record(rs);
       for (args = 1; args < argc; args++) {
-	fprintf(stderr,"==> %s\n",argv[args]);
+    fprintf(stderr,"==> %s\n",argv[args]);
         awk_exec_program(rs,argv[args],strlen(argv[args]));
-	// print_symtbl(symtbl);
+    // print_symtbl(symtbl);
       }
       awk_exec_end_record(rs);
         */
     }
-    awk_exec_end(rs);		/* execute an END rule if any */
+    awk_exec_end(rs);        /* execute an END rule if any */
     //    print_symtbl(symtbl);
     if (si)
       dbfawk_free_sigs(si);

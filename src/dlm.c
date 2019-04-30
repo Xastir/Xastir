@@ -49,7 +49,7 @@
 #endif
 
 #include "xastir.h"
-#include "maps.h"	// only for MAX_FILENAME
+#include "maps.h"    // only for MAX_FILENAME
 #include "main.h"
 
 #include "dlm.h"
@@ -114,13 +114,13 @@
 #define USE_CURL_MULTI 8
 
 
-#define DLM_Q_STOP	0
-#define DLM_Q_STARTING	1
-#define DLM_Q_RUN	5
-#define DLM_Q_IDLE	8
-#define DLM_Q_QUIT	9
+#define DLM_Q_STOP    0
+#define DLM_Q_STARTING    1
+#define DLM_Q_RUN    5
+#define DLM_Q_IDLE    8
+#define DLM_Q_QUIT    9
 
-#define MAX_DESCLEN	40
+#define MAX_DESCLEN    40
 
 struct DLM_queue_entry {
     struct DLM_queue_entry *next;
@@ -129,22 +129,22 @@ struct DLM_queue_entry {
     // These are only used by DLM_queue_tile for
     // checking if a tile is already queued
     // osm_zl is also used as a type flag (>=0 for tile, <0 for file)
-    unsigned long	  x;
-    unsigned long	  y;
-    int			  osm_zl;
+    unsigned long      x;
+    unsigned long      y;
+    int              osm_zl;
 
-    int			  state;
-    xastir_mutex	  lock;
-    char		  fileName[MAX_FILENAME];
-    char		  desc[MAX_DESCLEN];
-    char		  *tempName;
-    char		  *url;
+    int              state;
+    xastir_mutex      lock;
+    char          fileName[MAX_FILENAME];
+    char          desc[MAX_DESCLEN];
+    char          *tempName;
+    char          *url;
 
 #ifdef HAVE_LIBCURL
-    FILE		  *stream;
+    FILE          *stream;
 #ifdef USE_CURL_MULTI
-    char		  *curlErrBuf;
-    CURL		  *curlSession;
+    char          *curlErrBuf;
+    CURL          *curlSession;
 #endif
 #endif
 };
@@ -765,12 +765,12 @@ static void DLM_queue_add(struct DLM_queue_entry *ent) {
  * Written for OpenStreetMap but generic enough to live here.
  **********************************************************/
 void DLM_queue_tile(
-                    char		  *serverURL,
-                    unsigned long	  x,
-                    unsigned long	  y,
-                    int			  osm_zl,
-                    char		  *baseDir,
-                    char		  *ext ) {
+                    char          *serverURL,
+                    unsigned long      x,
+                    unsigned long      y,
+                    int              osm_zl,
+                    char          *baseDir,
+                    char          *ext ) {
 
     struct DLM_queue_entry *tile, *q;
     struct stat sb;
@@ -853,9 +853,9 @@ void DLM_queue_tile(
  * DLM_queue_file() - Queue a file for download.
  **********************************************************/
 void DLM_queue_file(
-                    char		  *url,
-                    char		  *filename,
-                    time_t		  expiry ) {
+                    char          *url,
+                    char          *filename,
+                    time_t          expiry ) {
 
     struct DLM_queue_entry *tile, *q;
     struct stat sb;

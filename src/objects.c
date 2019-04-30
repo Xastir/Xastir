@@ -2800,8 +2800,8 @@ static Cursor cs_CAD = (Cursor)NULL;
 
 void free_cs_CAD(void)
 {
-	XFreeCursor(XtDisplay(da), cs_CAD);
-	cs_CAD = (Cursor)NULL;
+    XFreeCursor(XtDisplay(da), cs_CAD);
+    cs_CAD = (Cursor)NULL;
 }
 
 // This is the callback for the Draw togglebutton

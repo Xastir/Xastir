@@ -81,7 +81,7 @@
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
 
-extern int npoints;		/* tsk tsk tsk -- globals */
+extern int npoints;        /* tsk tsk tsk -- globals */
 extern int mag;
 
 /* MAP pointers */
@@ -497,7 +497,7 @@ void draw_dos_map(Widget w,
 //            if (!strlen(Buffer))
 //                j++;
  
-	        while ((ptr = strpbrk (Buffer, "\r\n")) != NULL && j < DOS_HDR_LINES) {
+            while ((ptr = strpbrk (Buffer, "\r\n")) != NULL && j < DOS_HDR_LINES) {
 
                 *ptr = '\0';
 
@@ -507,41 +507,41 @@ void draw_dos_map(Widget w,
 
                     case 0:
 //fprintf(stderr,"top_boundary: %s\n", Buffer);
-                	    top_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
-                	    break;
-	      
+                        top_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
+                        break;
+
                     case 1:
 //fprintf(stderr,"left_boundary: %s\n", Buffer);
-                	    left_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
-                	    break;
-	      
+                        left_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
+                        break;
+
                     case 2:
 //fprintf(stderr,"points_per_degree: %s\n", Buffer);
-                	    points_per_degree = (int) atof (Buffer);
-                	    break;
-	      
+                        points_per_degree = (int) atof (Buffer);
+                        break;
+
                     case 3:
 //fprintf(stderr,"bottom_boundary: %s\n", Buffer);
-                	    bottom_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
-                	    bottom_boundary = bottom_boundary + bottom_boundary - top_boundary;
-                	    break;
-	      
+                        bottom_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
+                        bottom_boundary = bottom_boundary + bottom_boundary - top_boundary;
+                        break;
+
                     case 4:
 //fprintf(stderr,"right_boundary: %s\n", Buffer);
-                	    right_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
-                	    right_boundary = right_boundary + right_boundary - left_boundary;
-                	    break;
-	      
-                	case 5:
+                        right_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
+                        right_boundary = right_boundary + right_boundary - left_boundary;
+                        break;
+
+                    case 5:
 //fprintf(stderr,"map_range: %s\n", Buffer);
-//                	    map_range = (int) atof (Buffer);
-                	    break;
-	      
-                	case 7:
+//                        map_range = (int) atof (Buffer);
+                        break;
+
+                    case 7:
 //fprintf(stderr,"Map Version: %s\n", Buffer);
                         xastir_snprintf(map_version,sizeof(map_version),"%s",Buffer);
 //fprintf(stderr,"MAP VERSION: %s\n", map_version);
-                	    break;
+                        break;
                 } // end of switch
 
                 xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr);
@@ -555,10 +555,10 @@ void draw_dos_map(Widget w,
     else {
 
 // Windows-type map header portion
-	
+
         if (debug_level & 512)
             fprintf(stderr,"\nWindows map\n");
-	
+
         if (fread (map_version, 4, 1, f) == 0) {
             // Ignoring fread errors as we've done here since forever.
             // Would be good to take another look at this later.
@@ -738,7 +738,7 @@ void draw_dos_map(Widget w,
     statusline(map_it,0);       // Loading/Indexing ...
 
     object_behavior = '\0';
-	
+
     if (debug_level & 16)
         fprintf(stderr,"in Boundary %s\n", map_it);
       
@@ -1488,13 +1488,13 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                         if (fread (label_text, 29, 1, f) == 0) {
                             // Ignoring fread errors as we've done here since forever.
                             // Would be good to take another look at this later.
-			}
+            }
                     }
-              
+
                     // NOTE: 0x21 is the first color for the area object or "DOS" colors
                     draw_label_text (w, x+10, y+5, strlen(label_text),colors[0x21 + label_text_color],label_text);
                     symbol(w,0,label_symbol_del,label_symbol_char,' ',pixmap,1,x-10,y-10,' ');
-              
+
                     if (debug_level & 512)
                         fprintf(stderr,"Windows map, embedded object: %c %c %c %s\n",
 

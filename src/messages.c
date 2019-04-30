@@ -199,7 +199,7 @@ void group_build_list(char *filename) {
             else
                 while ((i = fgetc(f)) != EOF && i != '\n'); // clean-up after long group name
 
-	// check for DOS EOL markup!
+    // check for DOS EOL markup!
             if ((ptr = strchr(&group_data_list[group_data_count*10], '\r')))
                 *ptr = '\0';
             if (group_data_list[group_data_count*10])
@@ -717,7 +717,7 @@ void output_message(char *from, char *to, char *message, char *path) {
 
                 // Increment the message sequence ID variable
                 if (bump_message_counter(message_counter)) 
-		   fprintf(stderr, "!WARNING!: Wrap around Message Counter");
+           fprintf(stderr, "!WARNING!: Wrap around Message Counter");
 
 
 // Note that Xastir's messaging can lock up if we do a rollover and

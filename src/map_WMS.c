@@ -419,16 +419,16 @@ void draw_WMS_map (Widget w,
     }
     else {
         // Else look for the file in the cache
-    	map_cache_return = map_cache_get(fileimg,local_filename); 
+        map_cache_return = map_cache_get(fileimg,local_filename); 
     }
 
-	if (debug_level & 512) {
-		fprintf(stderr,"map_cache_return: %d\n", map_cache_return);
-	}
+    if (debug_level & 512) {
+        fprintf(stderr,"map_cache_return: %d\n", map_cache_return);
+    }
  
 
     // Don't use cached version if "nocache" is non-zero
-    //	   
+    //       
     if (nocache || map_cache_return != 0 ) {
         // Caching has not been requested or cached file not found.
         // We must snag the remote file via libcurl or wget.
@@ -552,7 +552,7 @@ void draw_WMS_map (Widget w,
          
         if (image_info)
             DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
+    DestroyExceptionInfo(&exception);
         return;
     }
     (void)fclose (f);
@@ -575,7 +575,7 @@ void draw_WMS_map (Widget w,
 
         if (image_info)
             DestroyImageInfo(image_info);
-	DestroyExceptionInfo(&exception);
+        DestroyExceptionInfo(&exception);
         return;
     }
 

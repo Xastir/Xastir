@@ -960,7 +960,7 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     char temp_line2[23] = "";
     char temp_line3[23] = "";
     char temp_line4[10] = "";
-#endif	// NO_DYNAMIC_WIDGETS
+#endif    // NO_DYNAMIC_WIDGETS
 
     char path[200];
     int ii, jj;

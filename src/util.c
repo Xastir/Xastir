@@ -3642,9 +3642,9 @@ void rotate_file(char *file, int max_keep ){
     }
 
     if ( rename (file, file_a) ) {
-	fprintf(stderr,
-	"Couldn't rename %s to %s, cancelling log_rotate()\n",
-		file,
+    fprintf(stderr,
+    "Couldn't rename %s to %s, cancelling log_rotate()\n",
+        file,
                 file_a);
     }
   

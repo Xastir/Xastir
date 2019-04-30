@@ -172,8 +172,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     if ( mc_ret < 37 ) { 
         if (debug_level & 512 ) {
             fprintf(stderr,
-            	"map_cache_put: Unusable filename: %s. Skipping encaching\n",
-            	(map_cache_file == NULL) ? "(null)" : map_cache_file);
+                "map_cache_put: Unusable filename: %s. Skipping encaching\n",
+                (map_cache_file == NULL) ? "(null)" : map_cache_file);
         }
         return (-1 * mc_ret); 
     } 
@@ -183,8 +183,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     if ((mc_file_stat=stat(map_cache_file, &file_status)) !=0) {
         if (debug_level & 512 ) {
             fprintf(stderr,
-            	"map_cache_put: File Error: %s. Skipping encaching\n",
-            	(map_cache_file == NULL) ? "(null)" : map_cache_file);
+                "map_cache_put: File Error: %s. Skipping encaching\n",
+                (map_cache_file == NULL) ? "(null)" : map_cache_file);
         } 
        
         return (mc_file_stat); 
@@ -272,7 +272,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
                 fprintf (stderr, "map_cache_put: Unable to check CACHE_SPACE_USED: %s\n",
                             db_strerror(mc_ret)); 
             }
-	}
+    }
 
         // for now let us assume this is the first map entry and  we
         // just flag an error. Better procedure for later might be to
@@ -497,8 +497,8 @@ clear_dangerous();
     // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
     //                                   1234567890123456789012345678901234567
 
-    	mc_ret=strlen(map_cache_file);
-	
+        mc_ret=strlen(map_cache_file);
+    
         if ( mc_ret < 37 ) { 
  
             if (debug_level & 512 ) {
@@ -561,7 +561,7 @@ clear_dangerous();
         }
 
         if ( mc_file_stat == -1 ) {
-	// 		
+    // 
             if ( debug_level & 512 ) {
                 fprintf(stderr,"map_cache_get: attempting to delete map_cache_file %s \n",
                     (map_cache_file == NULL) ? "(null)" : map_cache_file);
@@ -613,7 +613,6 @@ clear_dangerous();
             statusline(langcode("CACHE002"), 1);
             return (0); 
         }
-		
     }
     else {
         if ( debug_level & 512 ) {
@@ -631,19 +630,19 @@ clear_dangerous();
 
         // Map not found in cache...
         statusline(langcode("CACHE003"), 1);
-	set_dangerous("map_cache_get: dbp->close 3");
-	// Only try the close if we have a valid handle
-	if (dbp != NULL) {
-	    if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0){
-		mc_ret = mc_t_ret;
-		// db_strerror(mc_ret);
-	    }
-	}
-	clear_dangerous();
+        set_dangerous("map_cache_get: dbp->close 3");
+        // Only try the close if we have a valid handle
+        if (dbp != NULL) {
+            if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0){
+                mc_ret = mc_t_ret;
+                // db_strerror(mc_ret);
+            }
+        }
+        clear_dangerous();
         return (mc_ret); 
     }
 
-clear_dangerous();
+    clear_dangerous();
 
 /** end map_cache_get **/  
 }
@@ -699,7 +698,7 @@ int map_cache_del( char * map_cache_url ){
         return(1);
     }
 #else
-	
+    
     if ((mc_ret = dbp->open(dbp,
             NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
         if (debug_level & 512) {
@@ -713,7 +712,7 @@ int map_cache_del( char * map_cache_url ){
 
     memset(&mc_key, 0, sizeof(mc_key));
     memset(&mc_data, 0, sizeof(mc_data));
-	
+    
     mc_key.data=map_cache_url ; 
     mc_key.size=strlen(map_cache_url); 
 
@@ -775,7 +774,7 @@ clear_dangerous();
     mc_size_key.size = sizeof("CACHE_SPACE_USED"); 
 
 // check "CACHE_SPACE_USED" record in db
-	
+    
     if (((mc_ret = dbp->get(dbp, NULL, &mc_size_key, &mc_size_data, 0)) == 0)
             && ( mc_size_data.data != NULL )
             && ( strlen(mc_size_data.data) != 0 ) ) {
@@ -843,7 +842,7 @@ clear_dangerous();
         return(mc_ret);
     }
 
-	
+    
 // Update cache_space_used
 
 // setup 
@@ -897,9 +896,9 @@ clear_dangerous();
             (mc_size_key.data == NULL) ? "(null)" : (char *)mc_size_key.data);
     }
 
-	
+
     // remove entry from cache url->filename database 
-	
+
     if ((mc_ret = dbp->del(dbp, NULL, &mc_key, 0)) != 0){
         // Failed the "dbp->del" operation
 
@@ -910,7 +909,7 @@ clear_dangerous();
 
 // RETURN() HERE?
 
-    }							
+    }
 
     if ( debug_level & 512 ) {
         fprintf(stderr, "map_cache_del: %s: key was deleted.\n",

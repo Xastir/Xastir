@@ -5371,7 +5371,7 @@ void Snapshot(void) {
 #ifndef NO_XPM
 
     if (debug_level & 512)
-	    fprintf(stderr,"Taking Snapshot\n");
+        fprintf(stderr,"Taking Snapshot\n");
 
     doing_snapshot++;
 
@@ -5752,16 +5752,16 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
                     "draw_map: Found map driver: %s: %d\n",
                     ext,
                     map_driver_ptr->type);
-            break;			/* found our map_driver */
+            break;            /* found our map_driver */
         }
     }
     if (map_driver_ptr->type == none) {    /* fall thru: unknown map driver */
         // Check whether we're indexing or drawing the map
         if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
-	            && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
-	        // We're drawing, not indexing.  Output a warning
-	        // message.
-	        fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
+                && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+            // We're drawing, not indexing.  Output a warning
+            // message.
+            fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
         }
         else {  // We're indexing
             if (debug_level & 16)
@@ -5786,7 +5786,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
         // See if map is visible.  If not, skip it.
         if (onscreen == MAP_NOT_VIS) {  // Map is not visible, skip it.
             //fprintf(stderr,"map not visible\n");
-	    if (alert) alert->flags[on_screen] = 'N';
+        if (alert) alert->flags[on_screen] = 'N';
             return;
         }
     }
@@ -8412,10 +8412,10 @@ void load_alert_maps (Widget w, char *dir) {
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
 
-		if (debug_level & 16) {
-	            fprintf(stderr,"load_alert_maps() Drawing %s\n",temp->filename);
-	            fprintf(stderr,"load_alert_maps() Title4:%s\n",temp->title);
-		}
+        if (debug_level & 16) {
+                fprintf(stderr,"load_alert_maps() Drawing %s\n",temp->filename);
+                fprintf(stderr,"load_alert_maps() Title4:%s\n",temp->title);
+        }
 
             // Attempt to draw alert
             if ( temp->index != -1 ) {          // Shape found in shapefile
@@ -8477,7 +8477,7 @@ void load_alert_maps (Widget w, char *dir) {
     if (iterator) free(iterator);
 #endif  // USING_LIBGC
 
-	if (debug_level & 16) fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
+    if (debug_level & 16) fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
 
     if (alert_display_request()) {
         alert_redraw_on_update = redraw_on_new_data = 2;
