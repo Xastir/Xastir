@@ -29,6 +29,7 @@ matrix:
             - libdb5.3-dev
             - shapelib
             - libshp-dev
+            - libxpm-dev
 
 
 
@@ -69,6 +70,7 @@ matrix:
             - gpsman
             - gpsmanshp
             - libwebp-dev
+            - libxpm-dev
 
 
 
@@ -228,5 +230,6 @@ matrix:
             - gpsmanshp
             - libwebp-dev
             - libgc-dev
+            - libxpm-dev
 
 
