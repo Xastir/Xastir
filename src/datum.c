@@ -331,8 +331,7 @@ static const double PI = 3.14159265358979323846;
 
 
 /* As you can see this little function is just a 2 step datum shift, going through WGS84. */
-void datum_shift(double *latitude, double *longitude, short fromDatumID, short toDatumID)
-{
+void datum_shift(double *latitude, double *longitude, short fromDatumID, short toDatumID) {
     wgs84_datum_shift(TO_WGS_84,   latitude, longitude, fromDatumID);
     wgs84_datum_shift(FROM_WGS_84, latitude, longitude, toDatumID);
 }
@@ -342,13 +341,12 @@ void datum_shift(double *latitude, double *longitude, short fromDatumID, short t
 
 
 /*
-        Function to convert latitude and longitude in decimal degrees from WGS84 to
-        another datum or from another datum to WGS84. The arguments to this function
-        include a direction flag 'fromWGS84', pointers to double precision latitude
-        and longitude, and an index to the gDatum[] array.
+  Function to convert latitude and longitude in decimal degrees from WGS84 to
+  another datum or from another datum to WGS84. The arguments to this function
+  include a direction flag 'fromWGS84', pointers to double precision latitude
+  and longitude, and an index to the gDatum[] array.
 */
-void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID)
-{
+void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID) {
     double dx = gDatum[datumID].dx;
     double dy = gDatum[datumID].dy;
     double dz = gDatum[datumID].dz;
@@ -459,8 +457,7 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 //
 // Convert lat/long to UTM/UPS coordinates
 void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
-        double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength)
-{
+                   double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength) {
     //converts lat/long to UTM coords.  Equations from USGS Bulletin 1532
     //East Longitudes are positive, West longitudes are negative.
     //North latitudes are positive, South latitudes are negative
@@ -487,7 +484,7 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
     ZoneNumber = (int)((LongTemp + 180)/6) + 1;
 
     if (coordinate_system == USE_UTM_SPECIAL
-            || coordinate_system == USE_MGRS) {
+        || coordinate_system == USE_MGRS) {
 
         // Special zone for southern Norway.  Used for military
         // version of UTM (MGRS) only.
@@ -515,17 +512,17 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
         // We're in the UPS areas (near the poles).  ZoneNumber
         // should not be printed in this case.
         xastir_snprintf(utmZone,
-            utmZoneLength,
-            "%c",
-            utm_letter_designator(lat, lon));
+                        utmZoneLength,
+                        "%c",
+                        utm_letter_designator(lat, lon));
     }
     else {  // We're in the UTM areas (not near the poles).
         //compute the UTM Zone from the latitude and longitude
         xastir_snprintf(utmZone,
-            utmZoneLength,
-            "%d%c",
-            ZoneNumber,
-            utm_letter_designator(lat, lon));
+                        utmZoneLength,
+                        "%d%c",
+                        ZoneNumber,
+                        utm_letter_designator(lat, lon));
     }
 
     eccPrimeSquared = (eccSquared)/(1-eccSquared);
@@ -566,22 +563,22 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
         A = cos(LatRad)*(LongRad-LongOriginRad);
 
         M = a*((1 -
-            eccSquared/4 -
-            3*eccSquared*eccSquared/64 -
-            5*eccSquared*eccSquared*eccSquared/256) * LatRad -
-            (3*eccSquared/8 +
-            3*eccSquared*eccSquared/32 +
-            45*eccSquared*eccSquared*eccSquared/1024) * sin(2*LatRad) +
-            (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024) * sin(4*LatRad) -
-            (35*eccSquared*eccSquared*eccSquared/3072) * sin(6*LatRad));
+                eccSquared/4 -
+                3*eccSquared*eccSquared/64 -
+                5*eccSquared*eccSquared*eccSquared/256) * LatRad -
+               (3*eccSquared/8 +
+                3*eccSquared*eccSquared/32 +
+                45*eccSquared*eccSquared*eccSquared/1024) * sin(2*LatRad) +
+               (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024) * sin(4*LatRad) -
+               (35*eccSquared*eccSquared*eccSquared/3072) * sin(6*LatRad));
 
         *utmEasting = (double)(k0*N*(A+(1-T+C)*A*A*A/6
-            + (5-18*T+T*T+72*C-58*eccPrimeSquared)*A*A*A*A*A/120)
-            + 500000.0);
+                                     + (5-18*T+T*T+72*C-58*eccPrimeSquared)*A*A*A*A*A/120)
+                               + 500000.0);
 
         *utmNorthing = (double)(k0*(M+N*tan(LatRad)*
-            (A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24
-            + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
+                                    (A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24
+                                     + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
 
         if (lat < 0)
             *utmNorthing += 10000000.0; //10000000 meter offset for southern hemisphere
@@ -594,8 +591,7 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
 
 // Handles UPS/UTM coordinates equally well!
 //
-char utm_letter_designator(double lat, double lon)
-{
+char utm_letter_designator(double lat, double lon) {
     // This routine determines the correct UTM/UPS letter designator
     // for the given latitude.  Originally written by Chuck Gantz-
     // chuck.gantz@globalstar.com
@@ -650,15 +646,14 @@ char utm_letter_designator(double lat, double lon)
 // derived from code that John Waers <jfwaers@csn.net> placed in
 // the public domain.  It's from his program "MacGPS45".
 // 
-static void calcPhi(double *phi, double e, double t)
-{
-        double old = PI/2.0 - 2.0 * atan(t);
-        short maxIterations = 20;
+static void calcPhi(double *phi, double e, double t) {
+    double old = PI/2.0 - 2.0 * atan(t);
+    short maxIterations = 20;
         
-        while ( (fabs((*phi - old) / *phi) > 1.0e-8) && maxIterations-- ) { 
-                old = *phi;
-                *phi = PI/ 2.0 - 2.0 * atan( t * pow((1.0 - e * sin(*phi)) / ((1.0 + e * sin(*phi))), (e / 2.0)) );
-        }
+    while ( (fabs((*phi - old) / *phi) > 1.0e-8) && maxIterations-- ) {
+        old = *phi;
+        *phi = PI/ 2.0 - 2.0 * atan( t * pow((1.0 - e * sin(*phi)) / ((1.0 + e * sin(*phi))), (e / 2.0)) );
+    }
 }
 
 
@@ -668,8 +663,7 @@ static void calcPhi(double *phi, double e, double t)
 // Converts from UTM/UPS coordinates to Lat/Long coordinates.
 //
 void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
-               const char* utmZone, double *lat,  double *lon)
-{
+                   const char* utmZone, double *lat,  double *lon) {
     // Converts UTM coords to lat/long.  Equations from USGS
     // Bulletin 1532.  East Longitudes are positive, West longitudes
     // are negative.  North latitudes are positive, South latitudes
@@ -695,10 +689,10 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
     // int NorthernHemisphere; // 1=northern hemisphere, 0=southern
 
 
-//fprintf(stderr,"%s  %f  %f\n",
-//    utmZone,
-//    utmEasting,
-//    utmNorthing);
+    //fprintf(stderr,"%s  %f  %f\n",
+    //    utmZone,
+    //    utmEasting,
+    //    utmNorthing);
 
     x = utmEasting;
     y = utmNorthing;
@@ -711,12 +705,12 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
     // Make sure the zone letter is upper-case
     *ZoneLetter = toupper(*ZoneLetter);
 
-//fprintf(stderr,"ZoneLetter: %s\n", ZoneLetter);
+    //fprintf(stderr,"ZoneLetter: %s\n", ZoneLetter);
 
     if (       *ZoneLetter == 'Y'       // North Pole
-            || *ZoneLetter == 'Z'       // North Pole
-            || *ZoneLetter == 'A'       // South Pole
-            || *ZoneLetter == 'B') {    // South Pole
+               || *ZoneLetter == 'Z'       // North Pole
+               || *ZoneLetter == 'A'       // South Pole
+               || *ZoneLetter == 'B') {    // South Pole
 
         // The following piece of code which implements UPS
         // conversion is derived from code that John Waers
@@ -732,7 +726,7 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
         const double k0 = 0.994;
 
 
-//fprintf(stderr,"UPS Coordinates\n");
+        //fprintf(stderr,"UPS Coordinates\n");
 
 
         e = sqrt(eccSquared);
@@ -789,8 +783,7 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
     y = utmNorthing;
  
 
-    if ((*ZoneLetter - 'N') >= 0)
-    {
+    if ((*ZoneLetter - 'N') >= 0) {
         // We never use this variable
         // NorthernHemisphere = 1;//point is in northern hemisphere
     }
@@ -808,8 +801,8 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
     mu = M/(a*(1-eccSquared/4-3*eccSquared*eccSquared/64-5*eccSquared*eccSquared*eccSquared/256));
 
     phi1Rad = mu + (3*e1/2-27*e1*e1*e1/32)*sin(2*mu)
-                 + (21*e1*e1/16-55*e1*e1*e1*e1/32)*sin(4*mu)
-                 + (151*e1*e1*e1/96)*sin(6*mu);
+        + (21*e1*e1/16-55*e1*e1*e1*e1/32)*sin(4*mu)
+        + (151*e1*e1*e1/96)*sin(6*mu);
     // This variable is never used, it is just phi1Rad converted to degrees
     //    phi1 = phi1Rad*rad2deg;
 
