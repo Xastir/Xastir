@@ -1,4 +1,4 @@
-# Copyright (C) 2000-2018 The Xastir Group
+# Copyright (C) 2000-2019 The Xastir Group
 #
 # This dbfawk file is used to map arbitrary dbf data that
 # accompanies a shapefile into Xastir canonical values of:

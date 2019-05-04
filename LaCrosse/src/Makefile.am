@@ -1,6 +1,6 @@
 #
 #
-# Copyright (C) 2000-2018 The Xastir Group
+# Copyright (C) 2000-2019 The Xastir Group
 #
 
 bin_PROGRAMS = open2300db2APRS

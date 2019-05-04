@@ -1,6 +1,6 @@
 // Modification for Xastir CVS purposes
 //
-// Portions Copyright (C) 2000-2018 The Xastir Group
+// Portions Copyright (C) 2000-2019 The Xastir Group
 //
 // End of modification
 

@@ -4,7 +4,7 @@ use warnings;
 #
 #
 # XASTIR, Amateur Station Tracking and Information Reporting
-# Copyright (C) 2000-2018 The Xastir Group
+# Copyright (C) 2000-2019 The Xastir Group
 #
 # "ais.pl", a Perl script to connect aisdecoder and Xastir for receiving
 # packets from ships. This script will create a UDP server at localhost:10110

@@ -3,7 +3,7 @@ use warnings;
 #
 # Script to convert a UI-View log file to an Xastir log file.
 #
-# Copyright (C) 2000-2018 The Xastir Group
+# Copyright (C) 2000-2019 The Xastir Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

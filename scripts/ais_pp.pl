@@ -3,7 +3,7 @@ use warnings;
 ###########################################################################
 #
 # XASTIR, Amateur Station Tracking and Information Reporting
-# Copyright (C) 2000-2018 The Xastir Group
+# Copyright (C) 2000-2019 The Xastir Group
 #
 # "ais_pp.pl", a Perl script that prints a formatted list of the 
 # ships found in the vessel hash checkpoint file created by ais.pl
