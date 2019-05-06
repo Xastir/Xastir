@@ -18,6 +18,7 @@ XASTIR_SRC = \
     db.c database.h \
     db_gis.c db_gis.h \
     dbfawk.c dbfawk.h \
+    dlm.c dlm.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
     festival.c festival.h \
@@ -38,7 +39,6 @@ XASTIR_SRC = \
     locate_gui.c \
     location.c \
     location_gui.c \
-    dlm.c dlm.h \
     main.c main.h \
     maps.c maps.h \
     map_cache.c map_cache.h \
