@@ -14,16 +14,16 @@ set nocompatible
 " Turn on syntax highlighting
 syntax on
 
-" Tab equals 4 columns
-set tabstop=4
-set softtabstop=4
+" Tab equals 2 columns
+set tabstop=2
+set softtabstop=2
 
 " Insert spaces instead of tab characters
 set expandtab
 
 " Control how many columns text is indented with the reindent
 " operations (<< and >>) and automatic C-style indentation.
-set shiftwidth=4
+set shiftwidth=2
 
 " When off, a <Tab> always inserts blanks according to 'tabstop' or
 " 'softtabstop'.  'shiftwidth' is only used for shifting text left or
