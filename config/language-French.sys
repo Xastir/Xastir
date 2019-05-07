@@ -502,7 +502,7 @@ WPUPCFT025|Auto detection||
 WPUPCFT026|Type binaire||
 WPUPCFT027|Type ASCII||
 WPUPCFT028|Configurer TNC +AUX GPS||
-WPUPCFT029|COnfigurer TNC +INVALID ENUM||
+WPUPCFT029|COnfigurer TNC +INVALID ENUM: %d||
 WPUPCFT030|Configurer TNC KISS||
 WPUPCFT031|Fichiers de configuration du TNC||
 WPUPCFT032|Nom du fichier de démarrage du TNC||

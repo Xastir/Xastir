@@ -498,7 +498,7 @@ WPUPCFT025|Auto deteccao||
 WPUPCFT026|Tipo Binario||
 WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar TNC com GPS AUX||
-WPUPCFT029|Configurar TNC com ENUM INVALIDO||
+WPUPCFT029|Configurar TNC com ENUM INVALIDO: %d||
 WPUPCFT030|Configurar o TNC em KISS||
 WPUPCFT031|Ficheiros de configuracao do TNC||
 WPUPCFT032|Nome do ficheiro de definicoes do TNC||

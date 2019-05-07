@@ -632,7 +632,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         register char *tmp;
 
         tmp=(char *)NULL;
-
+        char tmp_string[100];
+ 
     if(!config_TNC_dialog) {
         TNC_port=port;
         TNC_device=device_type;
@@ -661,7 +662,9 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 break;
 
             default:
-                sprintf(tmp, langcode("WPUPCFT029"), (int)device_type);
+                // "Configure TNC w/INVALID ENUM"
+                sprintf(tmp_string, langcode("WPUPCFT029"), (int)device_type);
+                tmp = tmp_string;
                 break;
         }
 

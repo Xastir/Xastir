@@ -508,8 +508,8 @@ WPUPCFT024|Data type||
 WPUPCFT025|Auto detectie||
 WPUPCFT026|Binair type||
 WPUPCFT027|ASCII type||
-WPUPCFT028|TNC instelling m/HSP GPS||
-WPUPCFT029|TNC instelling m/AUX GPS||
+WPUPCFT028|TNC instelling m/AUX GPS||
+WPUPCFT029|TNC instelling m/ONGELDIG ENUM: %d||
 WPUPCFT030|Configureer KISS TNC||
 WPUPCFT031|TNC configuratie bestanden||
 WPUPCFT032|Bestandsnaam activeren TNC||
