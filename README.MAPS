@@ -225,7 +225,6 @@ Getting Maps and other Data Files for Xastir:
 
       Vector Format:
       .shp/.shx/.dbf  Shapefile vector map (need all three files)
-      .pdb            PocketAPRS vector map
       .map            APRSdos/WinAPRS/MacAPRS vector map
       .gnis           GNIS labels file (actually points instead of vectors)
       .geo            Vector map or Internet vector map.  Note that for
