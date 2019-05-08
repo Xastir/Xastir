@@ -45,8 +45,9 @@ online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
         OSM_tiled_fosm.geo USTigermap.geo USTigermapBorders.geo
 
 nationalmapdir=${pkgdatadir}/maps/Online/nationalmap.gov
-nationalmap_DATA=Aerial.geo Contours.geo Hydrography.geo ShadedRelief.geo \
-        Topo1-10.geo  TopoRelief1-7.geo Transportation.geo
+nationalmap_DATA=WMS_USGS_Hydrography.geo WMS_USGS_ImageryOnly.geo \
+        WMS_USGS_ImageryTopo.geo WMS_USGS_ShadedReliefOnly.geo \
+        WMS_USGS_Topo.geo
 
 geogratismapdir=${pkgdatadir}/maps/Online/geogratis.gc.ca
 geogratismap_DATA=National.geo Regional.geo Sub_national.geo Sub_regional.geo
