@@ -81,7 +81,7 @@
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
 
-extern int npoints;        /* tsk tsk tsk -- globals */
+extern int npoints;        /* Global defined in maps.c: "number of points in a line" */
 extern int mag;
 
 /* MAP pointers */
@@ -313,15 +313,25 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
         points[npoints].y = l16(y);
         last_behavior = (unsigned char)object_behavior;
 
-        if (points[npoints].x != points[npoints - 1].x || points[npoints].y != points[npoints - 1].y) {
-            if (last_behavior & 0x80) {
+        if (npoints == 0) { // First point drawn in the line
+            if (points[npoints].x > (-MAX_OUTBOUND)
+                    && points[npoints].x < (short)max_x
+                    && points[npoints].y > (-MAX_OUTBOUND)
+                    && points[npoints].y < (short)max_y) {
                 npoints++;
             }
-            else if (points[npoints].x > (-MAX_OUTBOUND)
-                     && points[npoints].x < (short)max_x
-                     && points[npoints].y > (-MAX_OUTBOUND)
-                     && points[npoints].y < (short)max_y) {
-                npoints++;
+        }
+        else { 
+            if (points[npoints].x != points[npoints - 1].x || points[npoints].y != points[npoints - 1].y) {
+                if (last_behavior & 0x80) {
+                    npoints++;
+                }
+                else if (points[npoints].x > (-MAX_OUTBOUND)
+                         && points[npoints].x < (short)max_x
+                         && points[npoints].y > (-MAX_OUTBOUND)
+                         && points[npoints].y < (short)max_y) {
+                    npoints++;
+                }
             }
         }
     }
