@@ -265,7 +265,6 @@ Built-in map types:
        pop   USGS GNIS Datapoints w/population
        map   APRSdos Maps
        map   WinAPRS/MacAPRS/X-APRS Maps
-       pdb   PocketAPRS Maps
 
 Support for these additional map types has been compiled in:
        geo   Image Map (ImageMagick/GraphicsMagick library, many
