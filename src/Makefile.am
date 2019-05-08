@@ -47,7 +47,6 @@ XASTIR_SRC = \
     map_gnis.c \
     map_OSM.c map_OSM.h \
     map_pop.c \
-    map_pdb.c \
     map_shp.c \
     map_tif.c \
     map_WMS.c \

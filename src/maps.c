@@ -393,7 +393,6 @@ void maps_init(void)
     fprintf(stderr,"%10s   USGS GNIS Datapoints w/population\n","pop");
     fprintf(stderr,"%10s   APRSdos Maps\n","map");
     fprintf(stderr,"%10s   WinAPRS/MacAPRS/X-APRS Maps\n","map");
-    fprintf(stderr,"%10s   PocketAPRS Maps\n","pdb");
 
     fprintf(stderr,"\nSupport for these additional map types has been compiled in: \n");
  
@@ -5701,7 +5700,7 @@ extern void draw_pop_map(Widget w,
 
 struct {
     char *ext;
-    enum {none=0, map, pdb, tif, geo, gnis, shp, pop} type;
+    enum {none=0, map, tif, geo, gnis, shp, pop} type;
     void (*func)(Widget w,
                char *dir,
                char *filenm,
@@ -5711,7 +5710,6 @@ struct {
                map_draw_flags *draw_flags);
 } map_driver[] = {
   {"map",map,draw_dos_map},
-  {"pdb",pdb,draw_palm_image_map},
 
 #ifdef HAVE_LIBGEOTIFF
   {"tif",tif,draw_geotiff_image_map},

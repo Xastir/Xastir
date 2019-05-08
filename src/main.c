@@ -20182,7 +20182,6 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
             if ( (ext != NULL)
                     && (   (strcasecmp(ext,"map") == 0)
                         || (strcasecmp(ext,"shp") == 0)
-                        || (strcasecmp(ext,"pdb") == 0)
                         || (strcasecmp(ext,"gnis") == 0)
                         || (strcasecmp(ext,"rt1") == 0)
                         || (strcasecmp(ext,"rt2") == 0)
