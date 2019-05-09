@@ -1455,7 +1455,8 @@ void UDP_Server(int argc, char *argv[], char *envp[]) {
         //
 
         // Copy the entire buffer so that we can modify it
-        xastir_snprintf(buf2, sizeof(buf2), "%s", buf);
+        memcpy(buf2, buf, sizeof(buf2));
+        buf2[sizeof(buf2)-1] = '\0';  // Terminate string
         split_string(buf2, cptr, 10, ',');
 
         if (cptr[0] == NULL || cptr[0][0] == '\0') {    // callsign
