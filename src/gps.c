@@ -879,7 +879,7 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
 // Beidou, or GNSS receivers, and multi-constellation receivers.
 int isGGA(char *gps_line_data) {
     int retval;
-    retval = (strncmp(gps_line_data,"$G",2)==0);
+    retval = (strncmp(gps_line_data,"$",1)==0);
     retval = retval && ((strlen(gps_line_data)>7)
                         && strncmp(&(gps_line_data[3]),"GGA,",4)==0);
     retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
@@ -889,7 +889,7 @@ int isGGA(char *gps_line_data) {
 // Test if this is an RMC string.   See comments for isGGA.
 int isRMC(char *gps_line_data) {
     int retval;
-    retval = (strncmp(gps_line_data,"$G",2)==0);
+    retval = (strncmp(gps_line_data,"$",1)==0);
     retval = retval && ((strlen(gps_line_data)>7)
                         && strncmp(&(gps_line_data[3]),"RMC,",4)==0);
     retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
