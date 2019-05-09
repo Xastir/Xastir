@@ -2572,9 +2572,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
-                            "%02d%01d",
-                            rswnc(data[3]),
-                            (data[2]&0xf0)>>4);
+                            "%03d",
+                            ( ((rswnc(data[3])*10) + ((data[2]&0xf0)>>4)) %1000 ) );
 
                         // Check for course = 0.  Change to 360.
                         if (strncmp(weather->wx_course,"000",3) == 0) {

@@ -214,7 +214,7 @@ XmNminHeight, 80,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-            xastir_snprintf(pw[i].name,10,"%d",i);
+            xastir_snprintf(pw[i].name,10,"%9d",i%1000);
 
             msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
             XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);

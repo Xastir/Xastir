@@ -1001,7 +1001,8 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     if (trailer) {
                         if (*trailer == ',' || *trailer == ' ') {
                             if (LongHld == 0) {
-                                xastir_snprintf(map_version,sizeof(map_version),"ASCII");
+                                memcpy(map_version, "ASCII", sizeof(map_version));
+                                map_version[sizeof(map_version)-1] = '\0';  // Terminate string
                             }
     
                             map_version[4] = '\0';

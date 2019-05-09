@@ -6167,10 +6167,11 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                                 || dl->d_name[strlen(dl->d_name)-1] == 'P') ) {
                                             // We have an exact match.
                                             // Save the filename in the alert
-                                            xastir_snprintf(alert->filename,
-                                                sizeof(alert->filename),
-                                                "%s",
-                                                dl->d_name);
+                                            memcpy(alert->filename,
+                                                dl->d_name,
+                                                sizeof(alert->filename));
+                                            // Terminate string
+                                            alert->filename[sizeof(alert->filename)-1] = '\0';
                                             done++;
                                             //fprintf(stderr,"%s\n",dl->d_name);
                                         }

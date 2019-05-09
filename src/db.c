@@ -6895,14 +6895,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            xastir_snprintf(speed,
-                            sizeof(speed),
-                            "%s",
-                            p_station->speed);
-            xastir_snprintf(course,
-                            sizeof(course),
-                            "%s",
-                            p_station->course);
+            memcpy(speed, p_station->speed, sizeof(speed));
+            speed[sizeof(speed)-1] = '\0';  // Terminate string
+            memcpy(course, p_station->course, sizeof(course));
+            course[sizeof(course)-1] = '\0';  // Terminate string
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed wx\n");
@@ -6918,14 +6914,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            xastir_snprintf(speed,
-                            sizeof(speed),
-                            "%s",
-                            p_station->speed);
-            xastir_snprintf(course,
-                            sizeof(course),
-                            "%s",
-                            p_station->course);
+            memcpy(speed, p_station->speed, sizeof(speed));
+            speed[sizeof(speed)-1] = '\0';  // Terminate string
+            memcpy(course, p_station->course, sizeof(course));
+            course[sizeof(course)-1] = '\0';  // Terminate string
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed WX in non-fixed locations! %s:%s\n",
