@@ -503,7 +503,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             // Must convert from meters to feet before transmitting
             temp2 = (int)( (atof(p_station->altitude) / 0.3048) + 0.5);
             if ( (temp2 >= 0) && (temp2 <= 99999l) ) {
-                xastir_snprintf(altitude, sizeof(altitude), "/A=%06ld",temp2);
+                char temp_alt[20];
+                xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",temp2);
+                memcpy(altitude, temp_alt, sizeof(altitude) - 1);
+                altitude[sizeof(altitude)-1] = '\0';  // Terminate string
             }
         }
     }
@@ -530,8 +533,11 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         complete_corridor[0] = '\0';
         if ( (complete_area_type == 1) || (complete_area_type == 6)) {
             if (p_station->aprs_symbol.area_object.corridor_width > 0) {
-                xastir_snprintf(complete_corridor, sizeof(complete_corridor), "{%d}",
+                char temp_corridor[10];
+                xastir_snprintf(temp_corridor, sizeof(temp_corridor), "{%d}",
                         p_station->aprs_symbol.area_object.corridor_width);
+                memcpy(complete_corridor, temp_corridor, sizeof(complete_corridor) - 1);
+                complete_corridor[sizeof(complete_corridor)-1] = '\0';  // Terminate string
             }
         }
 
@@ -669,7 +675,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     else if ( (p_station->aprs_symbol.aprs_type == '\\') // We have a signpost object
             && (p_station->aprs_symbol.aprs_symbol == 'm' ) ) {
         if (strlen(p_station->signpost) > 0) {
-            xastir_snprintf(signpost, sizeof(signpost), "{%s}", p_station->signpost);
+            char temp_sign[10];
+            xastir_snprintf(temp_sign, sizeof(temp_sign), "{%s}", p_station->signpost);
+            memcpy(signpost, temp_sign, sizeof(signpost));
+            signpost[sizeof(signpost)-1] = '\0';  // Terminate string
         }
         else {  // No signpost data entered, blank it out
             signpost[0] = '\0';
@@ -4377,7 +4386,10 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         if (isdigit((int)line[0])) {
             temp2 = atoi(line);
             if ( (temp2 >= 0) && (temp2 <= 999999) ) {
-                xastir_snprintf(altitude, sizeof(altitude), "/A=%06ld", temp2);
+                char temp_alt[20];
+                xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld", temp2);
+                memcpy(altitude, temp_alt, sizeof(altitude));
+                altitude[sizeof(altitude)-1] = '\0';  // Terminate string
                 //fprintf(stderr,"Altitude string: %s\n",altitude);
             }
         }
@@ -5171,7 +5183,10 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         if (isdigit((int)line[0])) {
             temp2 = atoi(line);
             if ((temp2 >= 0) && (temp2 <= 999999)) {
-                xastir_snprintf(altitude, sizeof(altitude), "/A=%06ld",temp2);
+                char temp_alt[20];
+                xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",temp2);
+                memcpy(altitude, temp_alt, sizeof(altitude));
+                altitude[sizeof(altitude)-1] = '\0';  // Terminate string
             }
         }
     }
@@ -7206,11 +7221,13 @@ fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin
         // Append extra_num to the object name (starts at "2"), try
         // again to see if it is unique.
         //
+        // Note: Converting to float only to use width specifiers
+        // properly and quiet a compiler warning.
         xastir_snprintf(call,
             sizeof(call),
-            "%s%d",
+            "%s%2.0f",
             orig_call,
-            extra_num);
+            (float)extra_num);
 // ****** Bug ********
 // need to check length of call - if it has gone over 9 characters only 
 // the first 9 will be treated as unique, thus FirstAid11 will become FirstAid1 

@@ -37,7 +37,7 @@ matrix:
       dist: xenial
       name: "Ubuntu-16.04 gcc8 full-featured w/GraphicsMagick"
       env:
-        - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
+#        - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
       before_script:
         - export CC="gcc-8"
         - echo ${CC}

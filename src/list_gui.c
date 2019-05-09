@@ -430,7 +430,7 @@ void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
  */
 void Station_List_fill(int type, int new_offset) {
     int row;
-    char temp[8];
+    char temp[11];
     char *temp_ptr;
     Dimension w,h;            // size of scrollbar in pixel
     Dimension ww,wh;          // size of entire widget in pixel
@@ -875,14 +875,14 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                                     weather->wx_baro);
                             }
                             else {  // Inches Mercury
-                                float temp;
+                                float tempf;
                                 char temp2[15];
 
-                                temp = atof(weather->wx_baro)*0.02953;
+                                tempf = atof(weather->wx_baro)*0.02953;
                                 xastir_snprintf(temp2,
                                     sizeof(temp2),
                                     "%0.2f",
-                                    temp);
+                                    tempf);
                                 XmTextFieldSetString(SL_wx_baro[type][row],
                                     temp2);
                             }

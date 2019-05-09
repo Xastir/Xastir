@@ -2005,17 +2005,23 @@ void alert_build_list(Message *fill) {
                 if (is_num_chr(c)) {    // Found numeric char
                     temp[0] = '0';
                     temp[1] = c;
-                    temp[2] = '\0';
+                    temp[2] = '\0'; // Terminate the string
                 }
 
                 else if (c >= 'A' && c <= 'Z') {    // Found upper-case letter
                     // Need to take ord(c) - 55 to get the number
-                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 55);
+                    char temp_string[5];
+                    xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 55);
+                    memcpy(temp, &temp_string[2], 2);
+                    temp[2] = '\0'; // Terminate the string
                 }
 
                 else if (c >= 'a' && c <= 'z') {    // Found lower-case letter
                     // Need to take ord(c) - 61 to get the number
-                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 61);
+                    char temp_string[5];
+                    xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 61);
+                    memcpy(temp, &temp_string[2], 2);
+                    temp[2] = '\0'; // Terminate the string 
                 }
 
                 strncat(date_time,temp,sizeof(date_time)-strlen(date_time)-1);  // Concatenate the strings

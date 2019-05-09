@@ -2142,14 +2142,18 @@ void Coordinate_calc_output(char *full_zone, long northing,
 
     // Fill in the global dd mm.mmm values in case we wish to write
     // the result back to the calling dialog.
+
+    // Changing to double to make "%02.0f" formatting work / get rid of compiler warning
     xastir_snprintf(coordinate_calc_lat_deg, sizeof(coordinate_calc_lat_deg),
-        "%02d", lat_deg_int);
+        "%02.0f", (double)lat_deg_int);
     xastir_snprintf(coordinate_calc_lat_min, sizeof(coordinate_calc_lat_min),
         "%06.3f", lat_min);
     xastir_snprintf(coordinate_calc_lat_dir, sizeof(coordinate_calc_lat_dir),
         "%c", (south) ? 'S':'N');
+
+    // Changing to double to make "%03.0f" formatting work / get rid of compiler warning
     xastir_snprintf(coordinate_calc_lon_deg, sizeof(coordinate_calc_lon_deg),
-        "%03d", lon_deg_int);
+        "%03.0f", (double)lon_deg_int);
     xastir_snprintf(coordinate_calc_lon_min, sizeof(coordinate_calc_lon_min),
         "%06.3f", lon_min);
     xastir_snprintf(coordinate_calc_lon_dir, sizeof(coordinate_calc_lon_dir),
@@ -4046,15 +4050,22 @@ void display_zoom_status(void) {
     char zoom[30];
     char siz_str[6];
 
-    if (scale_y < 9000)
+    if (scale_y < 9000) {
         xastir_snprintf(siz_str, sizeof(siz_str), "%ld", scale_y);
-    else
-        xastir_snprintf(siz_str, sizeof(siz_str), "%ldk", scale_y/1024);
+    }
+    else {
+        char temp_scale[20];
+        xastir_snprintf(temp_scale, sizeof(temp_scale), "%ldk", scale_y/1024);
+        memcpy(siz_str, temp_scale, sizeof(siz_str));
+        siz_str[sizeof(siz_str)-1] = '\0';  // Terminate string
+    }
 
-    if (track_station_on == 1)
+    if (track_station_on == 1) {
         xastir_snprintf(zoom, sizeof(zoom), langcode("BBARZM0002"), siz_str);
-    else
-        xastir_snprintf(zoom, sizeof(zoom), langcode("BBARZM0001"), siz_str);
+    }
+    else {
+        xastir_snprintf(zoom, sizeof(zoom), langcode("BBARZM0001"), siz_str);\
+    }
 
     XmTextFieldSetString(text4,zoom);
 }
@@ -18466,7 +18477,7 @@ if (current->temp_select) {
 
             // Make sure it's a file and not a directory
             if (current->filename[strlen(current->filename)-1] != '/') {
-                char temp[MAX_FILENAME];
+                char temp[MAX_FILENAME+100];
                 char temp_layer[10];
                 char temp_max_zoom[10];
                 char temp_min_zoom[10];
