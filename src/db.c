@@ -399,7 +399,7 @@ int is_tracked_station(char *call_sign) {
     }
     else {
         memcpy(call_find, tracking_station_call, sizeof(call_find));
-        call_find[sizeof(call_find-1)] = '\0';  // Terminate string
+        call_find[sizeof(call_find)-1] = '\0';  // Terminate string
     }
 
     if (debug_level & 256) {
