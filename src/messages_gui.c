@@ -2520,10 +2520,8 @@ void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
-    xastir_snprintf(auto_reply_message,
-        sizeof(auto_reply_message),
-        "%s",
-        temp);
+    memcpy(auto_reply_message, temp, sizeof(auto_reply_message));
+    auto_reply_message[sizeof(auto_reply_message)-1] = '\0';  // Terminate string
     Auto_msg_destroy_shell(w, clientData, callData);
 }
 

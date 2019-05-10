@@ -3044,7 +3044,8 @@ void draw_shapefile_map (Widget w,
                                 ptr2 = (label_string *)malloc(sizeof(label_string));
                                 CHECKMALLOC(ptr2);
 
-                                xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
+                                memcpy(ptr2->label, temp, sizeof(ptr2->label));
+                                ptr2->label[sizeof(ptr2->label)-1] = '\0';  // Terminate string
                                 ptr2->found = 1;
 
                                 // We use first character of string

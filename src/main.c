@@ -2101,20 +2101,16 @@ void Coordinate_calc_output(char *full_zone, long northing,
             sizeof(temp_string),
             "  %s",
             full_zone);
-        xastir_snprintf(full_zone,
-            4,
-            "%s",
-            temp_string);
+        memcpy(full_zone, temp_string, sizeof(&full_zone));
+        full_zone[sizeof(full_zone)-1] = '\0';  // Terminate string
     }
     else if (strlen(full_zone) == 2) {
         xastir_snprintf(temp_string,
             sizeof(temp_string),
             " %s",
             full_zone);
-        xastir_snprintf(full_zone,
-            4,
-            "%s",
-            temp_string);
+        memcpy(full_zone, temp_string, sizeof(&full_zone));
+        full_zone[sizeof(full_zone)-1] = '\0';  // Terminate string
     }
         
 

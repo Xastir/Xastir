@@ -141,10 +141,8 @@ void view_message_print_record(Message *m_fill) {
             char short_call[MAX_CALLSIGN];
             char *p;
 
-            xastir_snprintf(short_call,
-                sizeof(short_call),
-                "%s",
-                my_callsign);
+            memcpy(short_call, my_callsign, sizeof(short_call));
+            short_call[sizeof(short_call)-1] = '\0';  // Terminate string
             if ( (p = index(short_call,'-')) ) {
                 *p = '\0';  // Terminate it
             }
@@ -254,10 +252,8 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
             char short_call[MAX_CALLSIGN];
             char *p;
 
-            xastir_snprintf(short_call,
-                sizeof(short_call),
-                "%s",
-                my_callsign);
+            memcpy(short_call, my_callsign, sizeof(short_call));
+            short_call[sizeof(short_call)-1] = '\0';  // Terminate string
             if ( (p = index(short_call,'-')) ) {
                 *p = '\0';  // Terminate it
             }

@@ -166,12 +166,8 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
         if ((Display_bulletins_dialog != NULL) && Display_bulletins_text != NULL) {   // Dialog is up
 
             eod = XmTextGetLastPosition(Display_bulletins_text);
-            xastir_snprintf(temp_text,
-                            sizeof(temp_text),
-                            "%s",
-                            temp);
-
-            temp_text[14] = '\0';
+            memcpy(temp_text, temp, 15);
+            temp_text[14] = '\0'; // Terminate string
 
             // Look for this bulletin ID.  "pos" will hold the first char position if found.
             if (XmTextFindString(Display_bulletins_text, 0, temp_text, XmTEXT_FORWARD, &pos)) {

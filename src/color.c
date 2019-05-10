@@ -77,11 +77,12 @@ int load_color_file(void) {
                         }
                     }
                     if (ok) {
-                       
-                        xastir_snprintf(color_choice[colors_loaded].colorname,
-                                        MAX_COLORNAME,
-                                        "%s",
-                                        colorname);
+                      
+                        memcpy(color_choice[colors_loaded].colorname,
+                            colorname,
+                            sizeof(color_choice[colors_loaded].colorname)); 
+                        // Terminate string
+                        color_choice[colors_loaded].colorname[sizeof(color_choice[colors_loaded].colorname)-1] = '\0';
 
                         // Do we really want to assign to unsigned short int's here?
                         color_choice[colors_loaded].color.red=(unsigned short)(r*257);

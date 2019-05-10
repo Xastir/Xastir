@@ -539,7 +539,8 @@ void draw_dos_map(Widget w,
 
                     case 7:
 //fprintf(stderr,"Map Version: %s\n", Buffer);
-                        xastir_snprintf(map_version,sizeof(map_version),"%s",Buffer);
+                        memcpy(map_version, Buffer, sizeof(map_version));
+                        map_version[sizeof(map_version)-1] = '\0';  // Terminate string
 //fprintf(stderr,"MAP VERSION: %s\n", map_version);
                         break;
                 } // end of switch
@@ -1187,7 +1188,8 @@ process:        if (strncasecmp ("Line", map_version, 4) == 0) {
                     if (trailer && strncmp (Buffer, "0", 1) != 0) {
                         *trailer = '\0';
                         trailer++;
-                        xastir_snprintf(label_text,sizeof(label_text),"%s",Buffer);
+                        memcpy(label_text, Buffer, sizeof(label_text));
+                        label_text[sizeof(label_text)-1] = '\0';  // Terminate string
                 
                         // Check for '#' or '$' as the first character of the label.
                         // If found, we have an embedded symbol and colored text to display.

@@ -233,9 +233,11 @@ int search_rac_data(char *callsign, rac_record *data) {
                 amacall_path );
             return (0);
         }
-        xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
+        memcpy(char_offset, &index[6], sizeof(char_offset));
+        char_offset[sizeof(char_offset)-1] = '\0';  // Terminate string
         while (!feof(fndx) && strncmp(callsign, index, 6) > 0) {
-            xastir_snprintf(char_offset, sizeof(char_offset), "%s", &index[6]);
+            memcpy(char_offset, &index[6], sizeof(char_offset));
+            char_offset[sizeof(char_offset)-1] = '\0';  // Terminate string
             if (fgets(index, (int)sizeof(index), fndx) == NULL) {
                 // Error occurred
                 fprintf(stderr,

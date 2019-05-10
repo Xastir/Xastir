@@ -4666,7 +4666,8 @@ char *sec_to_loc(long longitude, long latitude)
  *  Substring function WITH a terminating NULL char, needs a string of at least size+1
  */
 void substr(char *dest, char *src, int size) {
-    xastir_snprintf(dest, size+1, "%s", src);
+    memcpy(dest, src, size+1);
+    dest[size] = '\0';  // Terminate string
 }
 
 

@@ -131,10 +131,8 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 if (!feof(f) && strlen(temp)>8) {
                     temp_ptr=strtok(temp,"|");  /* get the name */
                     if (temp_ptr!=NULL) {
-                        xastir_snprintf(name,
-                            sizeof(name),
-                            "%s",
-                            temp);
+                        memcpy(name, temp, sizeof(name));
+                        name[sizeof(name)-1] = '\0';  // Terminate string
                         temp_ptr=strtok(NULL,"|");  /* get the pos */
                         xastir_snprintf(pos,
                             sizeof(pos),
@@ -185,10 +183,8 @@ void jump_sort(void) {
             if (!feof(f) && strlen(temp)>8) {
                 temp_ptr=strtok(temp,"|");  /* get the name */
                 if (temp_ptr!=NULL) {
-                    xastir_snprintf(name,
-                        sizeof(name),
-                        "%s",
-                        temp);
+                    memcpy(name, temp, sizeof(name));
+                    name[sizeof(name)-1] = '\0';  // Terminate string
                     (void)sort_input_database(location_db_file_path,name,200);
                 }
             }
@@ -249,10 +245,8 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
                     if (!feof(f) && strlen(temp)>8) {
                         temp_ptr=strtok(temp,"|");  /* get the name */
                         if (temp_ptr!=NULL) {
-                            xastir_snprintf(name,
-                                sizeof(name),
-                                "%s",
-                                temp);
+                            memcpy(name, temp, sizeof(name));
+                            name[sizeof(name)-1] = '\0';  // Terminate string
                             temp_ptr=strtok(NULL,"|");  /* get the pos */
                             xastir_snprintf(pos,
                                 sizeof(pos),

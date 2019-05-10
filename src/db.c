@@ -398,10 +398,8 @@ int is_tracked_station(char *call_sign) {
         call_find[ii] = '\0';
     }
     else {
-        xastir_snprintf(call_find,
-                        sizeof(call_find),
-                        "%s",
-                        tracking_station_call);
+        memcpy(call_find, tracking_station_call, sizeof(call_find));
+        call_find[sizeof(call_find-1)] = '\0';  // Terminate string
     }
 
     if (debug_level & 256) {
@@ -14226,14 +14224,12 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
                     temp_data[7], temp_data[8],temp_data[9]);
 
     /* fill the data in */    // ???????????????
-    xastir_snprintf(my_lat,
-                    sizeof(my_lat),
-                    "%s",
-                    temp_lat);
-    xastir_snprintf(my_long,
-                    sizeof(my_long),
-                    "%s",
-                    temp_long);
+    memcpy(my_lat, temp_lat, sizeof(my_lat));
+    my_lat[sizeof(my_lat)-1] = '\0';  // Terminate string
+
+    memcpy(my_long, temp_long, sizeof(my_long));
+    my_long[sizeof(my_long)-1] = '\0';  // Terminate string
+
     p_station->coord_lat = convert_lat_s2l(my_lat);
     p_station->coord_lon = convert_lon_s2l(my_long);
 
@@ -14634,10 +14630,8 @@ void packet_data_add(char *from, char *line, int data_port) {
         char short_call[MAX_CALLSIGN];
         char *p;
 
-        xastir_snprintf(short_call,
-                        sizeof(short_call),
-                        "%s",
-                        my_callsign);
+        memcpy(short_call, my_callsign, sizeof(short_call));
+        short_call[sizeof(short_call)-1] = '\0';  // Terminate string
         if ( (p = index(short_call,'-')) ) {
             *p = '\0';  // Terminate it
         }
@@ -18058,10 +18052,8 @@ int decode_ax25_header(unsigned char *data_string, int *length) {
     // truncate our string.  Make sure the data_string variable is
     // MAX_LINE_SIZE or bigger.
     //
-    xastir_snprintf((char *)data_string,
-                    MAX_LINE_SIZE,
-                    "%s",
-                    result);
+    memcpy(data_string, result, MAX_LINE_SIZE);
+    data_string[MAX_LINE_SIZE-1] = '\0';  // Terminate string
 
     // Write out the new length
     *length = strlen(result); 
@@ -18914,14 +18906,11 @@ void  read_file_line(FILE *f) {
                     // previous string.  Used for debugging
                     // purposes.  If we get a segfault, we can print
                     // out the last two messages received.
-                    xastir_snprintf((char *)incoming_data_copy_previous,
-                                    MAX_LINE_SIZE,
-                                    "%s",
-                                    incoming_data_copy);
-                    xastir_snprintf((char *)incoming_data_copy,
-                                    MAX_LINE_SIZE,
-                                    "%s",
-                                    line);
+                    memcpy(incoming_data_copy_previous, incoming_data_copy, MAX_LINE_SIZE);
+                    incoming_data_copy_previous[MAX_LINE_SIZE-1] = '\0';  // Terminate string
+
+                    memcpy(incoming_data_copy, line, MAX_LINE_SIZE);
+                    incoming_data_copy[MAX_LINE_SIZE-1] = '\0'; // Terminate string
 
                     if (line[0] != '#') {
                         decode_ax25_line(line,'F',-1, 1);   // Decode the packet

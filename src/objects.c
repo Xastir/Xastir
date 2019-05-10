@@ -311,10 +311,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             sizeof(tempstr),
             "%s",
             p_station->call_sign);
-        if (strlen(tempstr) == 1)  // Add two spaces (to make 3 minimum chars)
+
+        if (strlen(tempstr) == 1) { // Add two spaces (to make 3 minimum chars)
             xastir_snprintf(p_station->call_sign, sizeof(p_station->call_sign), "%s  ",tempstr);
-        else if (strlen(tempstr) == 2) // Add one space (to make 3 minimum chars)
+        }
+        else if (strlen(tempstr) == 2) { // Add one space (to make 3 minimum chars)
             xastir_snprintf(p_station->call_sign, sizeof(p_station->call_sign), "%s ",tempstr);
+        }
 
         if (!valid_item(p_station->call_sign)) {
             line[0] = '\0';

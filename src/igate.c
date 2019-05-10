@@ -400,10 +400,8 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
 
             temp->time = (time_t)sec_now();
 
-            xastir_snprintf(temp->data,
-                sizeof(temp->data),
-                "%s",
-                match_line);
+            memcpy(temp->data, match_line, sizeof(temp->data));
+            temp->data[sizeof(temp->data)-1] = '\0';  // Terminate string
 
             temp->next = NULL;  // Will be the end of the linked list
 

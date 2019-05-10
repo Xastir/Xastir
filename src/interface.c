@@ -6259,10 +6259,8 @@ void output_my_aprs_data(void) {
     // "EMERGENCY" at the beginning of the comment field we'll
     // transmit.
     if (emergency_beacon) {
-        xastir_snprintf(my_comment_tx,
-                        sizeof(my_comment_tx),
-                        "EMERGENCY %s",
-                        my_comment);
+        strncpy(my_comment_tx, "EMERGENCY", sizeof(my_comment_tx));
+        my_comment_tx[sizeof(my_comment_tx)-1] = '\0';  // Terminate string
     }
     else {
         xastir_snprintf(my_comment_tx,
