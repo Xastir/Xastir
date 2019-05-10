@@ -4047,7 +4047,7 @@ void display_zoom_status(void) {
     char siz_str[6];
 
     if (scale_y < 9000) {
-        xastir_snprintf(siz_str, sizeof(siz_str), "%ld", scale_y);
+        xastir_snprintf(siz_str, sizeof(siz_str), "%5.0f", (float)scale_y);
     }
     else {
         char temp_scale[20];

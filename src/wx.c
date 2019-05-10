@@ -1018,8 +1018,8 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
 
         xastir_snprintf(weather->wx_temp,
             sizeof(weather->wx_temp),
-            "%03d",
-            temp4-56);
+            "%03.0f",
+            (float)(temp4-56) );
     } else {
         if (!from)
             weather->wx_temp[0] = 0;
@@ -1348,8 +1348,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                 xastir_snprintf(weather->wx_temp,
                     sizeof(weather->wx_temp),
-                    "%03d",
-                    temp4-56);
+                    "%03.0f",
+                    (float)(temp4-56) );
             } else {
                 if (!from)  // From local station
                     weather->wx_temp[0]=0;

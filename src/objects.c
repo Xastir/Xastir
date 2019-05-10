@@ -4407,8 +4407,8 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
        if (Area_bright) {  // Bright color
             xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%2s", Area_color);
         } else {              // Dim color
-            xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02d",
-                    atoi(&Area_color[1]) + 8);
+            xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02.0f",
+                    (float)(atoi(&Area_color[1]) + 8) );
 
             if ( (Area_color[1] == '0') || (Area_color[1] == '1') ) {
                 complete_area_color[0] = '/';
@@ -5202,8 +5202,8 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%2s",
                     Area_color);
         } else {              // Dim color
-            xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02d",
-                    atoi(&Area_color[1]) + 8);
+            xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02.0f",
+                    (float)(atoi(&Area_color[1]) + 8) );
             if ((Area_color[1] == '0') || (Area_color[1] == '1')) {
                 complete_area_color[0] = '/';
             }
