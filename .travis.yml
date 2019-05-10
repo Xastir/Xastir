@@ -39,6 +39,7 @@ matrix:
       env:
 #        - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
 #        - CFLAGS="${CFLAGS} -Wno-format-truncation"
+        - CFLAGS="-Wall -O2"
  
       before_script:
         - export CC="gcc-8"
