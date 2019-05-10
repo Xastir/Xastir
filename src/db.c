@@ -4619,7 +4619,7 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     char temp[300];
     int pos, last_pos;
     char temp_my_distance[20];
-    char temp_my_course[20];
+    char temp_my_course[25];
     char temp1_my_course[20];
     float temp_out_C, e, humidex;
     long l_lat, l_lon;
@@ -18448,6 +18448,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     int third_party;
     char backup[MAX_LINE_SIZE+1];
     char tmp_line[MAX_LINE_SIZE+1];
+    char tmp_line2[630];
     char tmp_path[100+1];
     char *ViaCalls[10];
 
@@ -18831,13 +18832,15 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             // Here's where we inject our own callsign like this:
             // "WE7U-15,I" in order to provide injection ID for our
             // igate.
-            xastir_snprintf(tmp_line,
-                            sizeof(tmp_line),
+            xastir_snprintf(tmp_line2,
+                            sizeof(tmp_line2),
                             "%s>%s,%s,I:%s",
                             call_sign,
                             path,
                             my_callsign,
                             info_copy);
+            memcpy(tmp_line, tmp_line2, sizeof(tmp_line));
+            tmp_line[sizeof(tmp_line)-1] = '\0';  // Terminate line
 
             //fprintf(stderr,"decode_ax25_line: IGATE>NET %s\n",tmp_line);
             //fprintf(stderr,"call: %s\tcall_sign: %s\n", call, call_sign);

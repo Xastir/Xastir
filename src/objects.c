@@ -313,10 +313,16 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             p_station->call_sign);
 
         if (strlen(tempstr) == 1) { // Add two spaces (to make 3 minimum chars)
-            xastir_snprintf(p_station->call_sign, sizeof(p_station->call_sign), "%s  ",tempstr);
+            strcpy(p_station->call_sign, tempstr);
+            p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
+            strcat(p_station->call_sign, "  ");
+            p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
         }
         else if (strlen(tempstr) == 2) { // Add one space (to make 3 minimum chars)
-            xastir_snprintf(p_station->call_sign, sizeof(p_station->call_sign), "%s ",tempstr);
+            strcpy(p_station->call_sign, tempstr);
+            p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
+            strcat(p_station->call_sign, " ");
+            p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
         }
 
         if (!valid_item(p_station->call_sign)) {
@@ -372,35 +378,50 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
         if (p_station->probability_max[0] == '\0') {
             // Only have probability_min
-            xastir_snprintf(comment2,
-                sizeof(comment2),"Pmin%s,%s",
-                p_station->probability_min,
-                comment);
+            strcpy(comment2, "Pmin");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, p_station->probability_min);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, ",");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, comment);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
         }
         else if (p_station->probability_min[0] == '\0') {
             // Only have probability_max
-            xastir_snprintf(comment2,
-                sizeof(comment2),"Pmax%s,%s",
-                p_station->probability_max,
-                comment);
+            strcpy(comment2, "Pmax");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, p_station->probability_max);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, ",");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, comment);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
         }
         else {  // Have both
-            xastir_snprintf(comment2,
-                sizeof(comment2),"Pmin%s,Pmax%s,%s",
-                p_station->probability_min,
-                p_station->probability_max,
-                comment);
+            strcpy(comment2, "Pmin");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, p_station->probability_min);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, ",Pmax");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, p_station->probability_max);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, ",");
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+            strcat(comment2, comment);
+            comment2[sizeof(comment2)-1] = '\0';  // Terminate string
         }
         xastir_snprintf(comment,sizeof(comment), "%s", comment2);
     }
 
 
     // Put RNG or PHG at the beginning of the comment
-    xastir_snprintf(comment2,
-        sizeof(comment2),
-        "%s%s",
-        p_station->power_gain,
-        comment);
+    strcpy(comment2, p_station->power_gain);
+    comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+    strcat(comment2, comment);
+    comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+
     xastir_snprintf(comment,
         sizeof(comment),
         "%s",
@@ -6756,7 +6777,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
     char *variable;
     FILE *fp_file;
     int j = 0;
-    char error_correct_location[256];
+    char error_correct_location[300];
     char predef_obj_path[MAX_VALUE];
 #ifdef OBJECT_DEF_FILE_USER_BASE
     char temp_file_path[MAX_VALUE];
@@ -6783,7 +6804,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
         if (filethere(get_data_base_dir(predefined_object_definition_file))) {
             fp_file = fopen(get_data_base_dir(predefined_object_definition_file),"r");
 #endif  // OBJECT_DEF_FILE_USER_BASE
-    
+
             xastir_snprintf(error_correct_location,
                 sizeof(error_correct_location),
                 "Loading from %s/%s \n",
@@ -7119,6 +7140,7 @@ void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     // a unique name or a killed object name we can use.
     //
     while (!done && iterations_left) {
+        char num_string[10];
  
         // Create object as owned by own station, or take control of
         // object if it has another owner.  Taking control of a
@@ -7226,11 +7248,11 @@ fprintf(stderr, "Object with same name exists, owned by %s\n", p_station->origin
         //
         // Note: Converting to float only to use width specifiers
         // properly and quiet a compiler warning.
-        xastir_snprintf(call,
-            sizeof(call),
-            "%s%2.0f",
-            orig_call,
-            (float)extra_num);
+        xastir_snprintf(num_string, sizeof(num_string), "%2.0f", (float)extra_num);
+        strcpy(call, orig_call);
+        call[sizeof(call)-1] = '\0';  // Terminate string
+        strcat(call, num_string);
+        call[sizeof(call)-1] = '\0';  // Terminate string
 // ****** Bug ********
 // need to check length of call - if it has gone over 9 characters only 
 // the first 9 will be treated as unique, thus FirstAid11 will become FirstAid1 
@@ -10961,7 +10983,7 @@ void reload_object_item(void) {
     char file[MAX_VALUE];
     FILE *f;
     char line[300+1];
-    char line2[300+1];
+    char line2[350];
     int save_state;
 
 

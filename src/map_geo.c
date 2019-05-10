@@ -745,7 +745,8 @@ void draw_geo_image_map (Widget w,
                     char temp[MAX_FILENAME];
 
                     // grab .geo file name
-                    xastir_snprintf(temp,sizeof(temp),"%s",file);
+                    strcpy(temp, file);
+                    temp[sizeof(temp)-1] = '\0';  // Terminate line
 
                     (void)get_map_dir(temp);           // leaves just the path and trailing /
                     if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))

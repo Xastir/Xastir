@@ -1370,10 +1370,14 @@ void draw_complete_lat_lon_grid(Widget w) {
         // find location of upper left corner of map, convert to Lat/Long
         convert_lon_l2s(xx, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy, grid_label2, sizeof(grid_label2), coordinate_format);
-        xastir_snprintf(grid_label,
-            sizeof(grid_label),
-            "%s %s",
-            grid_label1,grid_label2);
+
+        strcpy(grid_label, grid_label1);
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+        strcat(grid_label, " ");
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+        strcat(grid_label, grid_label2);
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+
         // find location of lower right corner of map, convert to Lat/Long
         convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
@@ -4027,12 +4031,16 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
 
 #ifdef HAVE_CONVERT
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s -filter Point %s %s",
-            CONVERT_PATH,
-            xpm_filename,
-            ps_filename );
+        strcpy(command, CONVERT_PATH);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " -filter Point ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, xpm_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command );
@@ -4061,11 +4069,12 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 // Since we could be running SUID root, we don't want to be
 // calling "system" anyway.  Several problems with it.
 
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s %s",
-            printer_program,
-            ps_filename );
+        strcpy(command, printer_program);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -4285,17 +4294,29 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         }
 
 #ifdef HAVE_CONVERT
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s -filter Point %s%s%s%s%s %s %s",
-            CONVERT_PATH,
-            mono,
-            invert,
-            rotate,
-            scale,
-            density,
-            xpm_filename,
-            ps_filename );
+        strcpy(command, CONVERT_PATH);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " -filter Point ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, mono);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, invert);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, rotate);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, scale);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, density);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, xpm_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command );
 
@@ -4320,12 +4341,18 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 // calling "system" anyway.  Several problems with it.
 
         // Bring up the postscript viewer
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s %s %s &",
-            previewer_program,
-            format,
-            ps_filename );
+        strcpy(command, previewer_program);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, format);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " &");
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -5292,12 +5319,16 @@ static void* snapshot_thread(void *arg) {
 #ifdef HAVE_CONVERT
     // Convert it to a png file.  This depends upon having the
     // ImageMagick command "convert" installed.
-    xastir_snprintf(command,
-        sizeof(command),
-        "%s -quality 100 -colors 256 %s %s",
-        CONVERT_PATH,
-        xpm_filename,
-        png_filename );
+    strcpy(command, CONVERT_PATH);
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, " -quality 100 -colors 256 ");
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, xpm_filename);
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, " ");
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, png_filename);
+    command[sizeof(command)-1] = '\0';  // Terminate string
 
     if ( system( command ) != 0 ) {
         // We _may_ have had an error.  Check errno to make

@@ -863,11 +863,10 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
 
     nmea_checksum(out_string);
 
-    xastir_snprintf(out_string2,
-        sizeof(out_string2),
-        "%s%s",
-        out_string,
-        checksum);
+    strncpy(out_string2, out_string, sizeof(out_string2));
+    out_string2[sizeof(out_string2)-1] = '\0';  // Terminate string
+
+    strcat(out_string2, checksum);
 
     output_waypoint_data(out_string2);
 

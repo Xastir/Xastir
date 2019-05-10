@@ -679,11 +679,11 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
  
 //    busy_cursor(appshell);
 
-    xastir_snprintf(log_filename,
-        sizeof(log_filename),
-        "%s/map.log",
-        tmp_base_dir);
-
+    strcpy(log_filename, tmp_base_dir);
+    log_filename[sizeof(log_filename)-1] = '\0';  // Terminate string
+    strcat(log_filename, "/map.log");
+    log_filename[sizeof(log_filename)-1] = '\0';  // Terminate string
+ 
     // Erase any previously existing local file by the same name.
     // This avoids the problem of having an old tracklog here and
     // the code trying to display it when the download fails.

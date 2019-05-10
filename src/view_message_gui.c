@@ -307,15 +307,30 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
                 call_sign,
                 data1,
                 data2);
-        } else
-            xastir_snprintf(temp,
-                my_size,
-                "%s to %s via:%c\t%s%s\n",
-                from_call,
-                call_sign,
-                from,
-                data1,
-                data2);
+        } else {
+            char from_str[10];
+
+            xastir_snprintf(from_str, sizeof(from_str), "%c", from);
+
+            strcpy(temp, from_call);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " to ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, call_sign);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " via:");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, from_str);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "\t");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, data1);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, data2);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "\n");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+        }
 
         if ((All_messages_dialog != NULL)) {
 

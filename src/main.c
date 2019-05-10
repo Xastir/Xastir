@@ -1873,11 +1873,12 @@ void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) 
     while ((dl = readdir(dm))) {
 
         //Construct the entire path/filename
-        xastir_snprintf(fullpath,
-            sizeof(fullpath),
-            "%s/%s",
-            dir,
-            dl->d_name);
+        strcpy(fullpath, dir);
+        fullpath[sizeof(fullpath)-1] = '\0';  // Terminate string
+        strcat(fullpath, "/");
+        fullpath[sizeof(fullpath)-1] = '\0';  // Terminate string
+        strcat(fullpath, dl->d_name);
+        fullpath[sizeof(fullpath)-1] = '\0';  // Terminate string
 
         if (stat(fullpath, &nfile) == 0) {
             if ((nfile.st_mode & S_IFMT) == S_IFREG) {
@@ -3748,8 +3749,10 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
                     value*1.852);
             }
         }
-        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s\xB0",temp1_my_course);
-
+        strcpy(temp_my_course, temp1_my_course);
+        temp_my_course[sizeof(temp_my_course)-1] = '\0';  // Terminate string
+        strcat(temp_my_course, "\xB0");
+        temp_my_course[sizeof(temp_my_course)-1] = '\0';  // Terminate string
 
         strncat(my_text,
             " ",
@@ -4449,10 +4452,13 @@ void Load_station_font(void) {
             rotated_label_fontname[FONT_STATION]);
         fprintf(stderr,"Loading default station font instead.\n");
 
-        xastir_snprintf(tempy,
-            sizeof(tempy),
-            "Couldn't get font %s.  Loading default font instead.",
-            rotated_label_fontname[FONT_STATION]);
+        strcpy(tempy, "Couldn't get font ");
+        tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+        strcat(tempy, rotated_label_fontname[FONT_STATION]);
+        tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+        strcat(tempy, ".  Loading default font instead.");
+        tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+
         popup_message_always(langcode("POPEM00035"), tempy);
 
         station_font = (XFontStruct *)XLoadQueryFont(XtDisplay(da), "fixed");
@@ -5387,10 +5393,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             // as we have a font to work with!
             char tempy[100];
 
-            xastir_snprintf(tempy,
-                sizeof(tempy),
-                "Couldn't get font %s.  Loading default font instead.",
-                rotated_label_fontname[FONT_SYSTEM]);
+            strcpy(tempy, "Couldn't get font ");
+            tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+            strcat(tempy, rotated_label_fontname[FONT_SYSTEM]);
+            tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+            strcat(tempy, ".  Loading default font instead.");
+            tempy[sizeof(tempy)-1] = '\0';  // Terminate string
+
             popup_message_always(langcode("POPEM00035"), tempy);
         }
     }
@@ -14997,10 +15006,10 @@ void process_RINO_waypoints(void) {
                 // Strip off the "APRS" at the beginning of the
                 // name.  Add spaces to flush out the length of an
                 // APRS object name.
-                xastir_snprintf(temp2,
-                    sizeof(temp2),
-                    "%s         ",
-                    &name[4]);
+                strcpy(temp2, &name[4]);
+                temp2[sizeof(temp2)-1] = '\0';  // Terminate string
+                strcat(temp2, "         ");
+                temp2[sizeof(temp2)-1] = '\0';  // Terminate string
 
                 // Copy it back to the "name" variable.
                 xastir_snprintf(name,
@@ -15268,41 +15277,56 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
 
     // If doing waypoints, don't add the color onto the end
     if (strcmp("Waypoints",gps_map_type) == 0) {
-        xastir_snprintf(gps_map_filename,
-            sizeof(gps_map_filename),
-            "%s_%s.shp",
-            short_filename,
-            gps_map_type);
+        strcpy(gps_map_filename, short_filename);
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, "_");
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, gps_map_type);
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, ".shp");
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
 
         // Same without ".shp"
-        xastir_snprintf(gps_map_filename_base,
-            sizeof(gps_map_filename_base),
-            "%s_%s",
-            short_filename,
-            gps_map_type);
+        strcpy(gps_map_filename_base, short_filename);
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, "_");
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, gps_map_type);
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
     }
     else {  // Doing Tracks/Routes
-        xastir_snprintf(gps_map_filename,
-            sizeof(gps_map_filename),
-            "%s_%s_%s.shp",
-            short_filename,
-            gps_map_type,
-            color_text);
+        strcpy(gps_map_filename, short_filename);
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, "_");
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, gps_map_type);
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, "_");
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, color_text);
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename, ".shp");
+        gps_map_filename[sizeof(gps_map_filename)-1] = '\0';  // Terminate string
 
         // Same without ".shp"
-        xastir_snprintf(gps_map_filename_base,
-            sizeof(gps_map_filename_base),
-            "%s_%s_%s",
-            short_filename,
-            gps_map_type,
-            color_text);
+        strcpy(gps_map_filename_base, short_filename);
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, "_");
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, gps_map_type);
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, "_");
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base, color_text);
+        gps_map_filename_base[sizeof(gps_map_filename_base)-1] = '\0';  // Terminate string
 
         // Same without ".shp" *or* color
-        xastir_snprintf(gps_map_filename_base2,
-            sizeof(gps_map_filename_base2),
-            "%s_%s",
-            short_filename,
-            gps_map_type);
+        strcpy(gps_map_filename_base2, short_filename);
+        gps_map_filename_base2[sizeof(gps_map_filename_base2)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base2, "_");
+        gps_map_filename_base2[sizeof(gps_map_filename_base2)-1] = '\0';  // Terminate string
+        strcat(gps_map_filename_base2, gps_map_type);
+        gps_map_filename_base2[sizeof(gps_map_filename_base2)-1] = '\0';  // Terminate string
     }
 
 //fprintf(stderr,"%s\t%s\n",gps_map_filename,gps_map_filename_base);
@@ -15706,14 +15730,24 @@ void check_for_new_gps_map(int curr_sec) {
             // do this three times, once for each piece of the Shapefile
             // map.
 #if defined(HAVE_MV)
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s %s/%s %s/%s",
-                MV_PATH,
-                gps_base_dir,
-                gps_temp_map_filename,
-                gps_base_dir,
-                gps_map_filename);
+            strcpy(temp, MV_PATH);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_map_filename);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
@@ -15724,14 +15758,27 @@ void check_for_new_gps_map(int curr_sec) {
             }
             // Done for the ".shp" file.  Now repeat for the ".shx" and
             // ".dbf" files.
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s %s/%s.shx %s/%s.shx",
-                MV_PATH,
-                gps_base_dir,
-                gps_temp_map_filename_base,
-                gps_base_dir,
-                gps_map_filename_base);
+
+            strcpy(temp, MV_PATH);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename_base);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, ".shx ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_map_filename_base);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, ".shx");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
@@ -15740,14 +15787,27 @@ void check_for_new_gps_map(int curr_sec) {
                 gps_details_selected = 0;
                 return;
             }
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s %s/%s.dbf %s/%s.dbf",
-                MV_PATH,
-                gps_base_dir,
-                gps_temp_map_filename_base,
-                gps_base_dir,
-                gps_map_filename_base);
+
+            strcpy(temp, MV_PATH);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename_base);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, ".dbf ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_map_filename_base);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, ".dbf");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
@@ -15863,9 +15923,12 @@ static void* gps_transfer_thread(void *arg) {
 
     // Set up the postfix string.  The files will be created in the
     // "~/.xastir/gps/" directory.
-    xastir_snprintf(postfix, sizeof(postfix),
-        "Shapefile dim=2 %s/",
-        gps_base_dir);
+    strcpy(postfix, "Shapefile dim=2 ");
+    postfix[sizeof(postfix)-1] = '\0';  // Terminate string
+    strcat(postfix, gps_base_dir);
+    postfix[sizeof(postfix)-1] = '\0';  // Terminate string
+    strcat(postfix, "/");
+    postfix[sizeof(postfix)-1] = '\0';  // Terminate string
 
     input_param = atoi((char *)arg);
 
@@ -15892,14 +15955,16 @@ static void* gps_transfer_thread(void *arg) {
             xastir_snprintf(gps_map_type,
                 sizeof(gps_map_type),
                 "Track");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite TR %s%s",
-                prefix,
-                postfix,
-                gps_temp_map_filename);
 
+            strcpy(temp, prefix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " getwrite TR ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, postfix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+ 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps track\n");
                 gps_operation_pending = 0;  // We're done
@@ -15924,14 +15989,16 @@ static void* gps_transfer_thread(void *arg) {
             xastir_snprintf(gps_map_type,
                 sizeof(gps_map_type),
                 "Routes");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite RT %s%s",
-                prefix,
-                postfix,
-                gps_temp_map_filename);
 
+            strcpy(temp, prefix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " getwrite RT ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, postfix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+ 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps routes\n");
                 gps_operation_pending = 0;  // We're done
@@ -15956,13 +16023,15 @@ static void* gps_transfer_thread(void *arg) {
             xastir_snprintf(gps_map_type,
                 sizeof(gps_map_type),
                 "Waypoints");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite WP %s%s",
-                prefix,
-                postfix,
-                gps_temp_map_filename);
+
+            strcpy(temp, prefix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " getwrite WP ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, postfix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename); 
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps waypoints\n");
@@ -16019,13 +16088,21 @@ static void* gps_transfer_thread(void *arg) {
             xastir_snprintf(gps_map_type,
                 sizeof(gps_map_type),
                 "RINO");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "(%s getwrite WP GPStrans %s/%s 2>&1) >/dev/null",
-                prefix,
-                gps_base_dir,
-                gps_temp_map_filename);
+
+            strcpy(temp, "(");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, prefix);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " getwrite WP GPStrans ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_base_dir);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "/");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, gps_temp_map_filename);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " 2>&1) >/dev/null");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
 
             // Execute the command
             if (system(temp) != 0) {
@@ -17514,6 +17591,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     char string1[200];
     char string2[200];
     extern char gitstring[];
+    char version_str[50];
    
     xastir_snprintf(string2, sizeof(string2),"\nXastir V%s %s\n",xastir_version,gitstring);
     xms = XmStringCreateLocalized(string2);
@@ -17573,7 +17651,18 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     //xa is still defined
 
     version = XRotVersion( string1, 99 );
-    xastir_snprintf(string2, sizeof(string2), "\n%s, Version %0.2f", string1, version);
+
+    xastir_snprintf(version_str, sizeof(version_str), "%0.2f", version);
+    strcpy(string2, "\n");
+    string2[sizeof(string2)-1] = '\0';  // Terminate string
+    strcat(string2, string1);
+    string2[sizeof(string2)-1] = '\0';  // Terminate string
+    strcat(string2, ", Version ");
+    string2[sizeof(string2)-1] = '\0';  // Terminate string
+    strcat(string2, version_str);
+    string2[sizeof(string2)-1] = '\0';  // Terminate string
+ 
+
     xb = XmStringCreateLocalized( string2);    // Add Xvertext version string
     xms = XmStringConcat(xa, xb);
     XmStringFree(xa);
@@ -18064,7 +18153,11 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                             data_on=0;
                     } else {
                         if (data_on) {
-                            xastir_snprintf(temp3, sizeof(temp3), "%s\n", temp2);
+                            strcpy(temp3, temp2);
+                            temp3[sizeof(temp3)-1] = '\0';  // Terminate string
+                            strcat(temp3, "\n");
+                            temp3[sizeof(temp3)-1] = '\0';  // Terminate string
+
                             XmTextInsert(help_text,pos,temp3);
                             pos += strlen(temp3);
                             XmTextShowPosition(help_text,0);

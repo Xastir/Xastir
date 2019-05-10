@@ -1097,7 +1097,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
 /*********************************************************************/
 void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length) {
     double power, height, gain, range;
-    char directivity[6], temp[80], signal[64];
+    char directivity[6], temp[100], signal[64];
     int  gain_db;
     char s;
 
@@ -1271,7 +1271,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             directivity[0] = '\0';  break;
     }
 
-    if (english_units)
+    if (english_units) {
         xastir_snprintf(temp,
             sizeof(temp),
             "%.0fft %s, %ddB%s, %s: %.1fmi, %s",
@@ -1282,7 +1282,8 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             langcode("WPUPSTI075"), // "DF Range"
             range,
             signal);
-    else
+    }
+    else {
         xastir_snprintf(temp,
             sizeof(temp),
             "%.1fm %s, %ddB%s, %s: %.1fkm, %s",
@@ -1293,6 +1294,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             langcode("WPUPSTI075"), // "DF Range"
             range*1.609344,
             signal);
+    }
 
     xastir_snprintf(shg_decoded,
         shg_decoded_length,

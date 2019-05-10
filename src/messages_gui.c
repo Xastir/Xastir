@@ -953,7 +953,7 @@ void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char temp1[MAX_CALLSIGN+1];
-    char temp2[68];
+    char temp2[121];
     char temp_line1[68] = "";
 
 #ifndef NO_DYNAMIC_WIDGETS
@@ -1134,13 +1134,21 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             if (log_message_data) {
                 char temp_msg[MAX_MESSAGE_LENGTH+1];
 
-                xastir_snprintf(temp_msg,
-                    sizeof(temp_msg),
-                    "%s>%s,%s:%s",
-                    mw[ii].to_call_sign,    // To
-                    temp1,                  // From
-                    path,                   // Path
-                    temp2);                 // Message
+                strcpy(temp_msg, mw[ii].to_call_sign);// To
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, ">");
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, temp1);              // From
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, ",");
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, path);               // Path
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, ":");
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+                strcat(temp_msg, temp2);              // Message
+                temp_msg[sizeof(temp_msg)-1] = '\0';  // Terminate string
+
                 log_data( get_user_base_dir(LOGFILE_MESSAGE, temp_file_path, 
                                             sizeof(temp_file_path)), 
                           temp_msg );

@@ -244,10 +244,11 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
     }
 
     // Write out a WKT in a .prj file to go with this shapefile.
-    xastir_snprintf(temp_prj_name,
-                    sizeof(temp_prj_name),
-                    "%s.prj",
-                    temp_shapefile_name);
+    strcpy(temp_prj_name, temp_shapefile_name);
+    temp_prj_name[sizeof(temp_prj_name)-1] = '\0';  // Terminate string
+    strcat(temp_prj_name, ".prj");
+    temp_prj_name[sizeof(temp_prj_name)-1] = '\0';  // Terminate string
+
     xastirWriteWKT(temp_prj_name);
 
     // Create the different fields we'll use to store the
@@ -1704,7 +1705,14 @@ void draw_shapefile_map (Widget w,
         to_lower(xbm_filename);
 
         // Construct the complete path/filename
-        xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s.xbm", SYMBOLS_DIR, xbm_filename);
+        strcpy(xbm_path, SYMBOLS_DIR);
+        xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
+        strcat(xbm_path, "/");
+        xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
+        strcat(xbm_path, xbm_filename);
+        xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
+        strcat(xbm_path, ".xbm");
+        xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
 
         // Try opening the file
         alert_fp = fopen(xbm_path, "rb");
