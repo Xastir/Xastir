@@ -1897,10 +1897,17 @@ void draw_major_utm_mgrs_grid(Widget w) {
                 mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
         } 
         else {
-            xastir_snprintf(grid_label,
-                sizeof(grid_label),
-                "%s %07.0f %07.0f",
-                zone_str,easting,northing);
+            char easting_str[10];
+            char northing_str[10];
+
+            xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+            xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+            strcpy(grid_label, zone_str);
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+            strcat(grid_label, easting_str);
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+            strcat(grid_label, northing_str); 
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
         }
         // find location of lower right corner of map, convert to UTM
         xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
@@ -1928,10 +1935,17 @@ void draw_major_utm_mgrs_grid(Widget w) {
            }
         } 
         else {
-            xastir_snprintf(grid_label1,
-                sizeof(grid_label1),
-                "%s %07.0f %07.0f",
-                zone_str,easting,northing);
+            char easting_str[10];
+            char northing_str[10];
+
+            xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+            xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+            strcpy(grid_label1, zone_str);
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+            strcat(grid_label1, easting_str);
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+            strcat(grid_label1, northing_str); 
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
         }
         // Write metadata on upper border of map.
         //"XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum. ",
@@ -2311,10 +2325,17 @@ void actually_draw_utm_minor_grid(Widget w) {
                         mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
                 } 
                 else {
-                    xastir_snprintf(grid_label,
-                        sizeof(grid_label),
-                        "%s %07.0f %07.0f",
-                        zone_str,easting,northing);
+                    char easting_str[10];
+                    char northing_str[10];
+
+                    xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+                    xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+                    strcpy(grid_label, zone_str);
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+                    strcat(grid_label, easting_str);
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+                    strcat(grid_label, northing_str); 
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
                 }
                 // find location of lower right corner of map, convert to UTM
                 xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
@@ -2342,10 +2363,17 @@ void actually_draw_utm_minor_grid(Widget w) {
                    }
                 } 
                 else {
-                    xastir_snprintf(grid_label1,
-                        sizeof(grid_label1),
-                        "%s %07.0f %07.0f",
-                        zone_str,easting,northing);
+                    char easting_str[10];
+                    char northing_str[10];
+
+                    xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+                    xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+                    strcpy(grid_label1, zone_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+                    strcat(grid_label1, easting_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+                    strcat(grid_label1, northing_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
                 }
                 //"XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ",
                 xastir_snprintf(top_label,
