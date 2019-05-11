@@ -15,7 +15,7 @@ matrix:
         - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
       script:
         - ./bootstrap.sh
-        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - ./configure CFLAGS="-O2 -g" CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
       addons:
@@ -47,7 +47,7 @@ matrix:
         - ${CC} --version
       script:
         - ./bootstrap.sh
-        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - ./configure CFLAGS="-O2 -g" CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
       addons:
