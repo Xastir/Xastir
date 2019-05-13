@@ -840,7 +840,7 @@ int alert_expire(int curr_sec) {
 // 5 = G
 // 6 = C
 //
-int alert_active(alert_entry *alert, alert_match_level match_level) {
+int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) ) {
     alert_entry *a_ptr;
     char l_list[] = {"?RYBTGC"};
     int level = 0;

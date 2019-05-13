@@ -527,7 +527,7 @@ void check_for_new_bulletins(int curr_sec) {
 
 
 
-void Display_bulletins_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Display_bulletins_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -589,7 +589,7 @@ void  Zero_Bulletin_Data_toggle( /*@unused@*/ Widget widget, XtPointer clientDat
 
 
  
-void Bulletins(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Bulletins(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget pane, form, button_range, button_close, dist, dist_units;
     unsigned int n;
     Arg args[50];

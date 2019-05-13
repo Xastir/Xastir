@@ -34,6 +34,20 @@
 #define XTPOINTER_TO_INT(m_p)  ((int)((long)(m_p)))
 
 
+// Defines we can use to mark functions and parameters as "unused" to the compiler
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
+#ifdef __GNUC__
+#  define UNUSED_FUNCTION(x) __attribute__((__unused__)) UNUSED_ ## x
+#else
+#  define UNUSED_FUNCTION(x) UNUSED_ ## x
+#endif
+
+
 #define SERIAL_KISS_RELAY_DIGI
 
 
