@@ -15,7 +15,7 @@ matrix:
         - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/Magick-config"
       script:
         - ./bootstrap.sh
-        - ./configure CFLAGS="-O2 -g" CPPFLAGS="-I/usr/include/geotiff"
+        - ./configure CFLAGS="-O2 -g -Wall -Wformat-truncation -Wstringop-truncation" CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
       addons:
@@ -40,7 +40,7 @@ matrix:
 #        - CFLAGS="${CFLAGS} -Wno-format-truncation -Wno-stringop-truncation"
 #        - CFLAGS="${CFLAGS} -Wno-format-truncation"
 #        - CFLAGS="-Wall -O2"
-        - CFLAGS="${CFLAGS} -Wall -O2 -Wformat-truncation -Wstringop-truncation"
+#        - CFLAGS="${CFLAGS} -Wall -O2 -Wformat-truncation -Wstringop-truncation"
 
  
       before_script:
