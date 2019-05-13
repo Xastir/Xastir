@@ -39,6 +39,8 @@ matrix:
       env:
 #        - CFLAGS="${CFLAGS} -Wno-format-truncation"
 #        - CFLAGS="${CFLAGS} -Wall -Wextra -O2 -Wformat-truncation -Wstringop-truncation"
+# "-Wextra" gets us "-Wunused-parameter" warnings
+        - CFLAGS="${CFLAGS} -Wall -O2 -Wformat-truncation=2 -Wstringop-truncation"
       before_script:
         - export CC="gcc-8"
         - echo ${CC}
