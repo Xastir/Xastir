@@ -5012,7 +5012,7 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
+void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event, Boolean *dispatch) {
 
     // Snag the current pointer position
     input_x = event->x;
@@ -12624,7 +12624,7 @@ if (!skip_decode) {
 
     (void)XtAppAddTimeOut(XtWidgetToApplicationContext(w),
         nexttime,
-        (XtTimerCallbackProc)UpdateTime,
+        (XtPointer)UpdateTime,
         (XtPointer)w);
 }
 
