@@ -1210,7 +1210,7 @@ int moving_object = 0;
 
 
 
-void Smart_Beacon_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Smart_Beacon_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -1321,7 +1321,7 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
 
 
-void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
+void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
         label4, label5, label6,
         button_ok, button_cancel;
@@ -1825,7 +1825,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 // method of getting rid of corrupted maps without having to wipe
 // out the entire cache.
 //
-void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+void Re_Download_Maps_Now(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
 #ifdef USE_MAP_CACHE
     // Disable reads from the map cache
@@ -1851,7 +1851,7 @@ void Re_Download_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
 // Removes all files in the ~/.xastir/map_cache directory.  Does not
 // recurse down into subdirectories, but it shouldn't have to.
 //
-void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) {
+void Flush_Entire_Map_Queue(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     struct dirent *dl = NULL;
     DIR *dm;
     char fullpath[MAX_FILENAME];
@@ -1907,7 +1907,7 @@ void Flush_Entire_Map_Queue(Widget w, XtPointer clientData, XtPointer callData) 
 // If passed a "1" in the callback, we do a full reindexing:  Delete
 // the in-memory index and start indexing from scratch.
 // 
-void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+void Index_Maps_Now(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     int parameter = 0;  // Default:  Smart timestamp-checking indexing
 
 
@@ -1968,7 +1968,7 @@ void check_nws_weather_symbol(void) {
 
 
 
-void Coordinate_calc_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Coordinate_calc_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -1980,7 +1980,7 @@ void Coordinate_calc_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 
 
 // Clears out the dialog's input textFields
-void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer callData) {
+void Coordinate_calc_clear_data(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     XmTextSetString(coordinate_calc_zone, "");
     XmTextSetString(coordinate_calc_latitude_easting, "");
     XmTextSetString(coordinate_calc_longitude_northing, "");
@@ -2172,7 +2172,7 @@ void Coordinate_calc_output(char *full_zone, long northing,
 // inputs are good it calls Coordinate_calc_output() to format and
 // save/output the results.
 //
-void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
+void Coordinate_calc_compute(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char *str_ptr;
     char zone_letter;
     int zone_number = 0;
@@ -3631,7 +3631,7 @@ void redraw_symbols(Widget w) {
 
 
 
-static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *event, /*@unused@*/ Boolean *flag) {
+static void TrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XEvent *event, /*@unused@*/ Boolean * UNUSED(flag) ) {
     char my_text[70];
     char str_lat[20];
     char str_long[20];
@@ -3779,7 +3779,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
 
 
-static void ClearTrackMouse( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XEvent *event, /*@unused@*/ Boolean *flag) {
+static void ClearTrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), /*@unused@*/ XEvent * UNUSED(event), /*@unused@*/ Boolean * UNUSED(flag) ) {
 // N7TAP: In my opinion, it is handy to have the cursor position still displayed
 //        in the xastir window when I switch to another (like to write it down...)
 //    Widget textarea = (Widget) clientData;
@@ -3794,7 +3794,7 @@ static void ClearTrackMouse( /*@unused@*/ Widget w, XtPointer clientData, /*@unu
 /*
  *  Delete tracks of all stations
  */
-void Tracks_All_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Tracks_All_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     DataRow *p_station;
 
     p_station = n_first;
@@ -3836,7 +3836,7 @@ void clear_all_tactical(void) {
  *  Clear all tactical callsigns from the station records.  Comment
  *  out the active records in the log file.
  */
-void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Tactical_Callsign_Clear( /*@unused@*/ Widget UNUSED(w) , /*@unused@*/ XtPointer UNUSED(clientData) , /*@unused@*/ XtPointer UNUSED(callData) ) {
     char file[200];
     char file_temp[200];
     FILE *f;
@@ -3903,7 +3903,7 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
 /*
  *  Clear out tactical callsign log file
  */
-void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Tactical_Callsign_History_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     char file[MAX_VALUE];
     FILE *f;
 
@@ -3938,7 +3938,7 @@ void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPoin
 /*
  *  Display text in the status line, text is removed after timeout
  */
-void statusline(char *status_text,int update) {
+void statusline(char *status_text,int UNUSED(update) ) {
 
     XmTextFieldSetString (text, status_text);
     last_statusline = sec_now();    // Used for auto-ID timeout
@@ -4073,7 +4073,7 @@ void display_zoom_status(void) {
 
 
 
-void Change_debug_level_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Change_debug_level_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4084,7 +4084,7 @@ void Change_debug_level_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 
 
 
-void Change_debug_level_reset(Widget widget, XtPointer clientData, XtPointer callData) {
+void Change_debug_level_reset(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     debug_level = 0;
     XmTextSetString(debug_level_text, "0");
 //    Change_debug_level_destroy_shell(widget,clientData,callData);
@@ -4094,7 +4094,7 @@ void Change_debug_level_reset(Widget widget, XtPointer clientData, XtPointer cal
 
 
 
-void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+void Change_debug_level_change_data(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char *temp;
     char temp_string[10];
 
@@ -4117,7 +4117,7 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
 
 
 
-void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
+void Change_Debug_Level(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_close,
         button_reset;
     Atom delw;
@@ -4268,7 +4268,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 #if !defined(NO_GRAPHICS) && defined(HAVE_MAGICK)
-void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Gamma_adjust_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4279,7 +4279,7 @@ void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
 
 
 
-void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+void Gamma_adjust_change_data(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char *temp;
     char temp_string[10];
 
@@ -4313,7 +4313,7 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
 
 
-void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
+void Gamma_adjust(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_close;
     Atom delw;
     char temp_string[10];
@@ -4481,7 +4481,7 @@ void Load_station_font(void) {
 
 
 // chose map label font
-void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Map_font_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     xfontsel_query = 0;
@@ -4561,7 +4561,7 @@ void Query_xfontsel_pipe (void) {
 
 
  
-void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
+void Map_font_xfontsel(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
 #if defined(HAVE_XFONTSEL)
  
@@ -4590,7 +4590,7 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
 
 
 
-void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+void Map_font_change_data(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char *temp;
     Widget shell = (Widget) clientData;
     int i;
@@ -4630,7 +4630,7 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
 
 
 
-void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
+void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, fontname[FONT_MAX], button_ok,
                 button_cancel,button_xfontsel[FONT_MAX];
     Atom delw;
@@ -4933,7 +4933,7 @@ char *report_gps_status(void) {
 
 
 
-void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
+void view_gps_status(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
     // GPS status data too old?
     if ((gps_status_save_time + 30) >= sec_now()) {
@@ -4953,7 +4953,7 @@ void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
+void Compute_Uptime(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char temp[200];
     unsigned long runtime;
     int days, hours, minutes, seconds;
@@ -5012,7 +5012,7 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event, Boolean *dispatch) {
+void Mouse_button_handler (Widget UNUSED(w), Widget UNUSED(popup), XButtonEvent *event, Boolean * UNUSED(dispatch) ) {
 
     // Snag the current pointer position
     input_x = event->x;
@@ -5068,7 +5068,7 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event, Boolean 
 
 
 
-void menu_link_for_mouse_menu(Widget w, XtPointer clientData, XtPointer callData) {
+void menu_link_for_mouse_menu(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     if (right_menu_popup!=NULL) {
         //XmMenuPosition(right_menu_popup,(XButtonPressedEvent *)event);
         XtManageChild(right_menu_popup);
@@ -5079,7 +5079,7 @@ void menu_link_for_mouse_menu(Widget w, XtPointer clientData, XtPointer callData
 
 
 
-void store_all_kml_callback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void store_all_kml_callback(/*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     export_trail_as_kml(NULL);
     last_kmlsnapshot = sec_now();
 }
@@ -5087,7 +5087,7 @@ void store_all_kml_callback(/*@unused@*/ Widget w, XtPointer clientData, XtPoint
 
 
 
-void KML_Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void KML_Snapshots_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -5106,7 +5106,7 @@ void KML_Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointe
 
 
 
-void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Snapshots_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -5153,7 +5153,7 @@ Widget pan_up_menu, pan_down_menu,
 
 
  
-void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
+void create_appshell( /*@unused@*/ Display *display, char * UNUSED(app_name), /*@unused@*/ int UNUSED(app_argc), char ** UNUSED(app_argv) ) {
     Pixmap icon_pixmap;
     Atom WM_DELETE_WINDOW;
     Widget children[9];         /* Children to manage */
@@ -10061,7 +10061,7 @@ void create_gc(Widget w) {
 // return to X.  If it did any map drawing, we'd make it
 // interruptable.
 //
-void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data) {
+void da_expose(Widget w, /*@unused@*/ XtPointer UNUSED(client_data), XtPointer call_data) {
     Dimension width, height, margin_width, margin_height;
     XmDrawingAreaCallbackStruct *db = (XmDrawingAreaCallbackStruct *)call_data;
     XExposeEvent *event = (XExposeEvent *) db->event;
@@ -10191,7 +10191,7 @@ void da_resize_execute(Widget w) {
 // the interrupt_drawing_now flag periodically while doing the
 // resize drawing.
 //
-void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPointer call_data) {
+void da_resize(Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client_data), /*@unused@*/ XtPointer UNUSED(call_data) ) {
 
     // Set the interrupt_drawing_now flag
     interrupt_drawing_now++;
@@ -11283,7 +11283,7 @@ static int last_alert_on_screen = -1;
 
 // This is the periodic process that updates the maps/symbols/tracks.
 // At the end of the function it schedules itself to be run again.
-void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
+void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId UNUSED(id) ) {
     Widget w = (Widget) clientData;
     time_t nexttime;
 //  int do_time;
@@ -12686,7 +12686,7 @@ void shut_down_server(void) {
 // to call signal() from outside any signal handlers to tell it to
 // ignore further SIGHUP's.
 //
-static void restart(int sig) {
+static void restart(int UNUSED(sig) ) {
 
     char temp_file_name[MAX_VALUE];
 
@@ -12853,7 +12853,7 @@ static int pid_file_check(int hold){
 
 
 /* handle segfault signal */
-void segfault(/*@unused@*/ int sig) {
+void segfault(/*@unused@*/ int UNUSED(sig) ) {
     fprintf(stderr, "Caught Segfault! Xastir will terminate\n");
     fprintf(stderr, "Previous incoming line was: %s\n", incoming_data_copy_previous);
     fprintf(stderr, "    Last incoming line was: %s\n", incoming_data_copy);
@@ -13259,7 +13259,7 @@ void display_zoom_image(int recenter) {
 
 
 
-void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Zoom_in( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13277,7 +13277,7 @@ void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
 
 
-void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Zoom_in_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13295,7 +13295,7 @@ void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 
-void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Zoom_out(  /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13314,7 +13314,7 @@ void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
 
 
-void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Zoom_out_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13333,7 +13333,7 @@ void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, 
 
 
 
-void Custom_Zoom_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Custom_Zoom_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -13350,7 +13350,7 @@ static Widget custom_zoom_zoom_level;
 
 
 
-void Custom_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Custom_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *temp_ptr;
 
     temp_ptr = XmTextFieldGetString(custom_zoom_zoom_level);
@@ -13368,7 +13368,7 @@ void Custom_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
 // Function to bring up a dialog.  User can then select zoom for the
 // display directly.
 //
-void Custom_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Custom_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     static Widget  pane,form, button_ok, button_cancel, zoom_label;
 //    Arg al[50];           /* Arg List */
 //    unsigned int ac = 0;           /* Arg Count */
@@ -13615,7 +13615,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
 
 
-void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_ctr( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13631,7 +13631,7 @@ void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
 
 
-void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_up( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13647,7 +13647,7 @@ void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused
 
 
 
-void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_up_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13663,7 +13663,7 @@ void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
 
 
-void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_down( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13679,7 +13679,7 @@ void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 
 
 
-void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_down_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13695,7 +13695,7 @@ void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
 
 
-void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_left( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13711,7 +13711,7 @@ void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 
 
 
-void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_left_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13727,7 +13727,7 @@ void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
 
 
-void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_right( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13743,7 +13743,7 @@ void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
 
 
 
-void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Pan_right_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13759,7 +13759,7 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 
-void Center_Zoom_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Center_Zoom_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData)) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -13778,7 +13778,7 @@ static Widget center_zoom_latitude,
 
 
 
-void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Center_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     unsigned long x, y;
     char *temp_ptr;
 
@@ -13811,7 +13811,7 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
 
 
 
-void Go_Home( Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Go_Home( Widget w, /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     DataRow *p_station;
 
     if (!map_lock_pan_zoom) {
@@ -13832,7 +13832,7 @@ void Go_Home( Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointe
 // could input lat/long in any of the supported formats.  Right now
 // it is DD.DDDD format only.
 //
-void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Center_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer calldata) {
     static Widget  pane,form, button_ok, button_cancel,
             lat_label, lon_label, zoom_label;
 //    Arg al[50];           /* Arg List */
@@ -14213,7 +14213,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
 
 
-void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void SetMyPosition( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     
     Dimension width, height;
     long my_new_latl, my_new_lonl;
@@ -14251,7 +14251,7 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 
 
 
-void Window_Quit( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client, /*@unused@*/ XtPointer calldata) {
+void Window_Quit( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     quit(0);
 }
 

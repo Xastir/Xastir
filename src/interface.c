@@ -7824,7 +7824,7 @@ void tnc_data_clean(char *buf) {
 // Note that the length of "buf" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-int tnc_get_data_type(char *buf, int port) {
+int tnc_get_data_type(char *buf, int UNUSED(port) ) {
     register int i;
     int type=1;      // Don't know what it is yet.  Assume NMEA for now.
 

@@ -233,7 +233,7 @@ void draw_WP_line(DataRow *p_station,
                   long ambiguity_coord_lon,
                   long ambiguity_coord_lat,
                   Pixmap where,
-                  Widget w) {
+                  Widget UNUSED(w) ) {
     DataRow *transmitting_station = NULL;
     int my_course;
     long x_long, y_lat;
@@ -452,7 +452,7 @@ void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap wh
 //
 void draw_precision_rectangle(long x_long,
                               long y_lat,
-                              double range, // Not implemented yet
+                              double UNUSED(range), // Not implemented yet
                               unsigned int lat_precision,
                               unsigned int lon_precision,
                               int color,
@@ -977,7 +977,7 @@ void set_barb_parameters(void) {
 
 
 
-void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y, char * UNUSED(course), Pixmap where) {
     float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
     int j;
     long start_x, start_y, off_x, off_y;
@@ -1016,7 +1016,7 @@ void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
 
 
-void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y, char * UNUSED(course), Pixmap where) {
     float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
     int j;
     long start_x, start_y, off_x, off_y;
@@ -1055,7 +1055,7 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
 
 
-void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, long y, char * UNUSED(course), Pixmap where) {
     float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
     int j;
     long start_x, start_y, off_x, off_y, off_x2, off_y2;
@@ -1096,7 +1096,7 @@ void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, lo
 
 
 
-void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long y, char * UNUSED(course), Pixmap where) {
     float barb_radians = bearing_radians + ( (90/360.0) * 2.0 * M_PI);
     int j;
     long start_x, start_y, off_x, off_y, off_x2, off_y2;
@@ -1350,7 +1350,7 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 // The angle is what is important here.
 //
 void draw_bearing(long x_long, long y_lat, char *course,
-                  char *bearing, char *NRQ, int color, int draw_beamwidth, 
+                  char *bearing, char *NRQ, int UNUSED(color), int draw_beamwidth, 
                   int draw_bearing,
                   time_t sec_heard, Pixmap where) {
     double range = 0;
@@ -1500,7 +1500,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
 // then add 1/2 the rectangle offsets in order to get the symbol
 // placed in the middle of the rectangle.
 //
-void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *amb_y_lat, time_t sec_heard, Pixmap where) {
+void draw_ambiguity(long x_long, long y_lat, char amb, long *amb_x_long, long *amb_y_lat, time_t sec_heard, Pixmap UNUSED(where) ) {
     unsigned long left, right, top, bottom;
     long offset_lat, offset_long;
     int scale_limit;
@@ -2869,7 +2869,7 @@ static int getLineStyle(char styleChar) {
  * Draw the other points associated with the station.
  * KG4NBB
  */
-void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
+void draw_multipoints(long UNUSED(x_long), long UNUSED(y_lat), int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
     int ghost;
     int skip_duplicates;
 
@@ -3041,7 +3041,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
 
 
 
-void Select_symbol_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Select_symbol_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     int i;
 
@@ -3113,7 +3113,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
 
 
-void Select_symbol( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Select_symbol( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, my_form2, my_form3, button_cancel,
             frame, frame2, b1;
     int i;

@@ -85,7 +85,7 @@ void geocoder_gui_init(void)
 
 /**** GEOCODER FIND PLACE ******/
 
-void Geocoder_place_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Geocoder_place_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -248,7 +248,7 @@ fprintf(stderr,"%s\n%s\n%s\n%s\n%s\n",
 
 
 
-void  Show_dest_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Show_dest_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -264,7 +264,7 @@ void  Show_dest_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 
-void Geocoder_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Geocoder_place(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_ok, button_cancel, sep,
         zip, state, locality, address, map_file, show_dest_toggle;
     Atom delw;

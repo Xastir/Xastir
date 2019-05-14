@@ -102,7 +102,7 @@ void locate_gui_init(void)
 
 /**** LOCATE STATION ******/
 
-void Locate_station_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Locate_station_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -126,7 +126,7 @@ end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station_d
 // Determine whether it is a U.S. or Canadian callsign then search
 // through the appropriate database and present the results.
 
-void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
+void fcc_rac_lookup(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char station_call[200];
     char temp[1000];
     char temp2[300];
@@ -260,7 +260,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
 /*
  *  Locate a station by centering the map at its position
  */
-void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
+void Locate_station_now(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char temp2[200];
     char *temp_ptr;
 
@@ -296,7 +296,7 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
 // Here we pass in a 1 in callData if it's an emergency locate,
 // for when we've received a Mic-E emergency packet.
 //
-void Locate_station(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, XtPointer callData) {
+void Locate_station(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), XtPointer callData) {
     static Widget pane, form, button_locate, button_cancel, call,
         button_lookup, sep;
     Atom delw;
@@ -509,7 +509,7 @@ end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" 
 /*
  *  Locate Place Chooser PopUp window: Cancelled
  */
-void Locate_place_chooser_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData) {
+void Locate_place_chooser_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
 begin_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_chooser_destroy_shell" );
@@ -529,8 +529,8 @@ end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_choo
  *  Locate Place Selection PopUp window: Map selected place
  */
 void Locate_place_chooser_select(Widget widget,
-        XtPointer clientData,
-        XtPointer callData) {
+        XtPointer UNUSED(clientData),
+        XtPointer UNUSED(callData) ) {
 
     int ii, xx;
     char *temp;
@@ -576,9 +576,9 @@ end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_choo
 
 
 
-void Locate_place_chooser(/*@unused@*/ Widget widget,
-        XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Locate_place_chooser(/*@unused@*/ Widget UNUSED(widget),
+        XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     Widget pane, form, button_ok, button_cancel;
     Arg al[50];
@@ -723,7 +723,7 @@ end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_choo
 
 /**** LOCATE PLACE ******/
 
-void Locate_place_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Locate_place_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -866,7 +866,7 @@ clear_dangerous();
 
 
 
-void Locate_place(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Locate_place(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_ok, button_cancel, sep,
         place, state, county, quad, place_type, gnis_file;
     Atom delw;
