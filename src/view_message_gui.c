@@ -361,7 +361,7 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages
 
 
 
-void All_messages_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void All_messages_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -404,7 +404,7 @@ void All_messages_change_range( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
-void  Read_messages_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Read_messages_packet_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -424,7 +424,7 @@ Widget button_range;
 
 
 
-void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Read_messages_mine_only_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -442,7 +442,7 @@ void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clie
 
 
 
-void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void view_all_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget pane, my_form, button_close, dist, dist_units;
     Widget option_box, tnc_data, net_data, tnc_net_data,
         read_mine_only_button;

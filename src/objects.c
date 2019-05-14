@@ -219,7 +219,7 @@ int valid_item(char *name) {
 /*
  *  Clear out object/item history log file
  */
-void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Object_History_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *file;
     FILE *f;
     char temp_file_path[MAX_VALUE];
@@ -245,7 +245,7 @@ void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientD
 /*
  *  Re-read object/item history log file
  */
-void Object_History_Refresh( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Object_History_Refresh( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     // Reload saved objects and items from previous runs.
     reload_object_item();
@@ -2839,8 +2839,8 @@ void free_cs_CAD(void)
 
 // This is the callback for the Draw togglebutton
 //
-void Draw_CAD_Objects_mode( /*@unused@*/ Widget widget,
-        XtPointer clientData,
+void Draw_CAD_Objects_mode( /*@unused@*/ Widget UNUSED(widget),
+        XtPointer UNUSED(clientData),
         XtPointer callData) {
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -3110,9 +3110,9 @@ void Restore_CAD_Objects_from_file(void) {
 
 // popdown and destroy the cad_erase_dialog.
 //
-void Draw_CAD_Objects_erase_dialog_close ( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Draw_CAD_Objects_erase_dialog_close ( /*@unused@*/ Widget UNUSED(w),
+        /*@unused@*/ XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     if (cad_erase_dialog!=NULL) {
         // close cad_erase_dialog
@@ -3217,9 +3217,9 @@ void Draw_CAD_Objects_erase_selected ( /*@unused@*/ Widget w,
 // users to delete all CAD objects or select individual CAD objects
 // to delete.
 //
-void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget UNUSED(w),
+        /*@unused@*/ XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     Widget cad_erase_pane, cad_erase_form, cad_erase_label,
            button_delete_all, button_delete_selected, button_cancel;
@@ -3394,9 +3394,9 @@ void Draw_CAD_Objects_erase_dialog( /*@unused@*/ Widget w,
 
 // popdown and destroy the cad_list_dialog
 //
-void Draw_CAD_Objects_list_dialog_close ( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Draw_CAD_Objects_list_dialog_close ( /*@unused@*/ Widget UNUSED(w),
+        /*@unused@*/ XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     if (cad_list_dialog!=NULL) {
         // close cad_list_dialog
@@ -3414,9 +3414,9 @@ void Draw_CAD_Objects_list_dialog_close ( /*@unused@*/ Widget w,
 // Show details for selected CAD object.  Callback for the show/edit
 // details button on the Draw_CAD_Objects_list dialog.
 //
-void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Show_selected_CAD_object_details ( /*@unused@*/ Widget UNUSED(w),
+        /*@unused@*/ XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     static int sizeof_area_description = 200;
     int itemCount;       // number of items in list of CAD objects.
@@ -3488,9 +3488,9 @@ void Show_selected_CAD_object_details ( /*@unused@*/ Widget w,
 // Callback for edit CAD objects menu option.  Dialog to allow users
 // to select individual CAD objects in order to edit their metadata.
 //
-void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Draw_CAD_Objects_list_dialog( /*@unused@*/ Widget UNUSED(w),
+        /*@unused@*/ XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
 
     Widget cad_list_pane, cad_list_form, cad_list_label,
            button_list_selected, button_close;
@@ -3760,9 +3760,9 @@ void Format_area_for_output(double *area_km2, char *area_description, int sizeof
 // the computed_area field in the Object, and to a dialog that pops
 // up on the screen.
 //
-void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
-        XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget UNUSED(widget),
+        XtPointer UNUSED(clientData),
+        /*@unused@*/ XtPointer UNUSED(callData) ) {
     static int sizeof_area_description = 200;
     VerticeRow *tmp;
     double area;
@@ -5679,7 +5679,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
 /*
  *  Set an Object
  */
-void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char line[43+1+40];                 // ???
     DataRow *p_station = global_parameter1;
 
@@ -5737,7 +5737,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 /*
  *  Set an Item
  */
-void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char line[43+1+40];                 // ???
     DataRow *p_station = global_parameter1;
 
@@ -5875,7 +5875,7 @@ void Item_confirm_data_set(Widget widget, XtPointer clientData, XtPointer callDa
 /*
  *  Delete an Object
  */
-void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char line[43+1+40];                 // ???
     DataRow *p_station = global_parameter1;
 
@@ -5912,7 +5912,7 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 /*
  *  Delete an Item
  */
-void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char line[43+1+40];                 // ???
     int i, done;
     DataRow *p_station = global_parameter1;
@@ -5971,7 +5971,7 @@ void Ob_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientD
 /*
  *  Update symbol picture for changed symbol or table
  */
-void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void updateObjectPictureCallback(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     char table, overlay;
     char symb, group;
     char *temp_ptr;
@@ -6018,7 +6018,7 @@ void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer c
 
 
 // Handler for "Signpost" toggle button
-void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
@@ -6111,7 +6111,7 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
 
 // Handler for "Probability Circles" toggle button
-void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
@@ -6204,7 +6204,7 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 // Handler for "Enable Area Type" toggle button
-void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
@@ -6308,7 +6308,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 
 
 // Handler for "DF Bearing Object" toggle button
-void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
@@ -6410,7 +6410,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 // Handler for "Map View Object" toggle button
-void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
@@ -6516,7 +6516,7 @@ void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 
 /* Area object type radio buttons */
-void Area_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Area_type_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6549,7 +6549,7 @@ void Area_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
 
 
 /* Area object color radio buttons */
-void Area_color_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Area_color_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6571,7 +6571,7 @@ void Area_color_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 /* Area bright color enable button */
-void Area_bright_dim_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Area_bright_dim_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6590,7 +6590,7 @@ void Area_bright_dim_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
 
 /* Area filled enable button */
-void Area_open_filled_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Area_open_filled_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6609,7 +6609,7 @@ void Area_open_filled_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 
 // Handler for "Omni Antenna" toggle button
-void  Omni_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Omni_antenna_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
  
     if(state->set) {
@@ -6632,7 +6632,7 @@ void  Omni_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
 
 
 // Handler for "Beam Antenna" toggle button
-void  Beam_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Beam_antenna_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
  
     if(state->set) {
@@ -6655,7 +6655,7 @@ void  Beam_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
 
 
 /* Object signal radio buttons */
-void Ob_signal_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Ob_signal_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6675,7 +6675,7 @@ void Ob_signal_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
 
 
 /* Object height radio buttons */
-void Ob_height_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Ob_height_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6695,7 +6695,7 @@ void Ob_height_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
 
 
 /* Object gain radio buttons */
-void Ob_gain_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Ob_gain_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6715,7 +6715,7 @@ void Ob_gain_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 
 
 /* Object directivity radio buttons */
-void Ob_directivity_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Ob_directivity_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -6735,7 +6735,7 @@ void Ob_directivity_toggle( /*@unused@*/ Widget widget, XtPointer clientData, Xt
 
 
 /* Object beamwidth radio buttons */
-void Ob_width_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Ob_width_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -7059,7 +7059,7 @@ void Populate_predefined_objects(predefinedObject *predefinedObjects) {
    clientData is pointer to an integer representing the index of a 
    predefined object in the predefinedObjects array
    */
-void Create_SAR_Object(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
+void Create_SAR_Object(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer clientData, XtPointer UNUSED(calldata) ) {
     Dimension width, height;
     char call[MAX_CALLSIGN+1];
     long x_lat,x_lon;

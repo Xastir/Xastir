@@ -1930,7 +1930,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
  * 0N/0E is excluded from trails, could be excluded from map (#define ACCEPT_0N_0E)
  */
 
-int position_defined(long lat, long lon, int strict) {
+int position_defined(long lat, long lon, int UNUSED(strict)) {
 
     if (lat == 0l && lon == 0l)
         return(0);              // undefined location
@@ -2038,12 +2038,12 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
                     allign more cleanly with UTM strings.
    space_string_len length of the space_string char[]
 */
-void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len, 
+void convert_xastir_to_MGRS_str_components(char *utmZone, int UNUSED(utmZone_len), 
        char *EastingL, int EastingL_len, 
        char *NorthingL, int NorthingL_len, 
        unsigned int *int_utmEasting, unsigned int *int_utmNorthing, 
        long x,  long y, 
-       int nice_format, char *space_string, int space_string_len) {
+       int nice_format, char *space_string, int UNUSED(space_string_len) ) {
 
     double utmNorthing;
     double utmEasting;

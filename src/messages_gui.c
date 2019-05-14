@@ -292,7 +292,7 @@ static Widget current_path = NULL;
 
 
 
-void Send_message_change_path_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData) {
+void Send_message_change_path_destroy_shell(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
     if (change_path_dialog) {
         XtPopdown(change_path_dialog);
@@ -310,7 +310,7 @@ void Send_message_change_path_destroy_shell(Widget widget, XtPointer clientData,
 // Fetch the text from the "current_path" widget and place it into
 // the mw[ii].send_message_path widget.
 //
-void Send_message_change_path_apply(Widget widget, XtPointer clientData, XtPointer callData) {
+void Send_message_change_path_apply(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char path[MAX_PATH+1];
     char *temp_ptr;
 
@@ -348,7 +348,7 @@ void Send_message_change_path_apply(Widget widget, XtPointer clientData, XtPoint
 // way to the transmit routines, then change it to an empty path
 // when the transmit actually goes out.
 //
-void Send_message_change_path_direct(Widget widget, XtPointer clientData, XtPointer callData) {
+void Send_message_change_path_direct(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
     if (current_path == NULL || clientData == NULL) {
         Send_message_change_path_destroy_shell(NULL, NULL, NULL);
@@ -370,7 +370,7 @@ void Send_message_change_path_direct(Widget widget, XtPointer clientData, XtPoin
 // "DEFAULT PATH" all the way to the transmit routines, then change
 // it there to be a blank.
 //
-void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPointer callData) {
+void Send_message_change_path_default(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
     if (current_path == NULL || clientData == NULL) {
         Send_message_change_path_destroy_shell(NULL, NULL, NULL);
@@ -411,7 +411,7 @@ void Send_message_change_path_default(Widget widget, XtPointer clientData, XtPoi
 // three bugs on the active bug-list:  #1499820, #1326975, and
 // #1326973.
 //
-void Send_message_change_path( Widget widget, XtPointer clientData, XtPointer callData) {
+void Send_message_change_path( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     int ii;
     //Atom delw;
     Widget pane, form, current_path_label, reverse_path_label,
@@ -839,7 +839,7 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
 
 
 
-void Send_message_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData)) {
     int ii;
 //    char *temp_ptr;
 //    char temp1[MAX_LINE_SIZE+1];
@@ -904,7 +904,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 
 
 
-void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Check_new_call_messages( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     int pos;
     intptr_t i;
 
@@ -943,7 +943,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_m
 
 
 
-void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Clear_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     clear_outgoing_messages();
 }
 
@@ -951,7 +951,7 @@ void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 
-void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_now( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     char temp2[121];
     char temp_line1[68] = "";
@@ -1182,7 +1182,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now
 
 
 
-void Clear_message_from( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Clear_message_from( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
@@ -1219,7 +1219,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_fr
 
 
 
-void Clear_message_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Clear_message_to( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
@@ -1295,7 +1295,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to
 
 
 
-void Kick_timer( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Kick_timer( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *temp_ptr;
     char temp1[MAX_CALLSIGN+1];
 
@@ -1318,7 +1318,7 @@ void Kick_timer( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
 
 
-void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Clear_messages_to( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *temp_ptr;
     char temp1[MAX_CALLSIGN+1];
 
@@ -1342,7 +1342,7 @@ void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
 
 
 
-void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_call( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char call[20];
 
     if(clientData != NULL) {
@@ -1743,7 +1743,7 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
 
 
 
-void HamHUD_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void HamHUD_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii =(intptr_t)clientData;
     int hamhud;
 
@@ -1760,7 +1760,7 @@ void HamHUD_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer cal
 
 
 
-void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void D700_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii = (intptr_t)clientData;
     int d700;
 
@@ -1777,7 +1777,7 @@ void D700_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
 
 
 
-void D7_Msg( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void D7_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii = (intptr_t)clientData;
     int d7;
 
@@ -1945,7 +1945,7 @@ void select_station_type(int ii) {
 //   on first read capability."
 //
 //
-void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Arg args[50];
     char temp[60];
     unsigned int n;
@@ -2454,7 +2454,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 // Bring up a Send Message dialog for each QSO that has pending
 // outbound messages.
 //
-void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Show_pending_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     intptr_t ii;
     int msgs_found = 0;
 
@@ -2488,7 +2488,7 @@ void Show_pending_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
 
 /************************* Auto msg **************************************/
 /*************************************************************************/
-void Auto_msg_option( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Auto_msg_option( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     int item_no = XTPOINTER_TO_INT(clientData);
 
     if (item_no)
@@ -2501,7 +2501,7 @@ void Auto_msg_option( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, 
 
 
 
-void Auto_msg_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) { 
+void Auto_msg_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) { 
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -2537,7 +2537,7 @@ void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Auto_msg_set( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Auto_msg_set( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel, reply;
     Atom delw;
 

@@ -121,7 +121,7 @@ int RTree_hitarray_index=0;
 
 //This trivial routine is used by the RTreeSearch as a callback when it finds
 // a match.
-int RTreeSearchCallback(int id, void* arg) 
+int RTreeSearchCallback(int id, void* UNUSED(arg) ) 
 {
     if (!RTree_hitarray) {
         RTree_hitarray = (int *)malloc(1000*sizeof(int));

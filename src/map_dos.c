@@ -337,7 +337,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
 void draw_dos_map(Widget w,
                   char *dir,
                   char *filenm,
-                  alert_entry *alert,
+                  alert_entry * UNUSED(alert),
                   u_char alert_color,
                   int destination_pixmap,
                   map_draw_flags *mdf) {  

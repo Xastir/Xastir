@@ -104,10 +104,10 @@
 void draw_pop_map (Widget w,
             char *dir,
             char *filenm,
-            alert_entry *alert,
-            u_char alert_color,
+            alert_entry * UNUSED(alert),
+            u_char UNUSED(alert_color),
             int destination_pixmap,
-            map_draw_flags *mdf)
+            map_draw_flags * UNUSED(mdf) )
 {
     char file[MAX_FILENAME];        // Complete path/name of pop file
     char short_filenm[MAX_FILENAME];
@@ -978,7 +978,7 @@ FINISH:
 // Might also need to place a label at that position on the map in
 // case that pop file isn't currently selected.
 //
-int pop_locate_place( Widget w,
+int pop_locate_place( Widget UNUSED(w),
         char *name_in,
         char *state_in,
         char *county_in,

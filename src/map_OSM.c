@@ -1364,7 +1364,7 @@ void draw_OSM_map (Widget w,
         int destination_pixmap,
         char *url,
         char *style,
-        int nocache) {  // For future implementation of a "refresh cached map" option
+        int UNUSED(nocache) ) {     // For future implementation of a "refresh cached map" option
     char file[MAX_FILENAME];        // Complete path/name of image file
     char short_filenm[MAX_FILENAME];
     FILE *f;                        // Filehandle of image file

@@ -169,6 +169,8 @@
 #define SIGRET  void
 #endif  // SIGRET
 
+#include "xastir.h"
+
 // Must be last include file
 #include "leak_detection.h"
 
@@ -860,7 +862,7 @@ void clear_proc_title(void)
 #endif  // __linux__
 }
 
-void init_set_proc_title(int argc, char *argv[], char *envp[]) {
+void init_set_proc_title(int UNUSED(argc), char *argv[], char *envp[]) {
     int i, envpsize;
     char **p;
 
@@ -1369,7 +1371,7 @@ void send_udp_nack(int sock, struct sockaddr *from, int fromlen) {
 // Create a UDP listening port.  This allows scripts and other
 // programs to inject packets into Xastir via UDP protocol.
 //
-void UDP_Server(int argc, char *argv[], char *envp[]) {
+void UDP_Server(int UNUSED(argc), char * UNUSED(argv[]), char * UNUSED(envp[]) ) {
     int sock, n1, n2;
     socklen_t fromlen;
     struct sockaddr_storage from;

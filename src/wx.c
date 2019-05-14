@@ -290,7 +290,7 @@ void compute_rain(float rain_total) {
 /* compute_gust - compute max wind gust during last 5 minutes */
 /*                                                            */
 /**************************************************************/
-float compute_gust(float wx_speed, float last_speed, time_t *last_speed_time) {
+float compute_gust(float wx_speed, float UNUSED(last_speed), time_t *last_speed_time) {
     float computed_gust;
     int current, j;
 

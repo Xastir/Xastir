@@ -109,7 +109,7 @@ void track_gui_init(void)
 /**** Track STATION ******/
 
 
-void track_station_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void track_station_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -197,7 +197,7 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Track_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Track_station( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget pane, my_form, button_ok, button_close, button_clear, call, sep;
     Atom delw;
 
@@ -626,7 +626,7 @@ static void* findu_transfer_thread(void *arg) {
 
 
 
-void Download_trail_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Download_trail_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -765,7 +765,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) {
+void Reset_posit_length_max(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
     XmScaleGetValue(posit_length_value, &posit_length);
     XmScaleGetValue(posit_start_value, &posit_start);
@@ -795,7 +795,7 @@ void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) 
 
 
 
-void Download_findu_trail( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Download_findu_trail( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget pane, my_form, button_ok, button_cancel, call, sep;
     Atom delw;
     XmString x_str;

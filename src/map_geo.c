@@ -312,7 +312,7 @@ int check_trans (XColor c, transparent_color_record *c_trans_color_head) {
 // decides whether we're fetching 50k or 250k maps.
 //
 void draw_toporama_map (Widget w, 
-                        char *dir,
+                        char * UNUSED(dir),
                         char *filenm, 
                         alert_entry *alert,
                         u_char alert_color,

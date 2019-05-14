@@ -365,8 +365,8 @@ int read_fgd_file ( char* tif_filename,
 void draw_geotiff_image_map (Widget w, 
                  char *dir, 
                  char *filenm,
-                 alert_entry *alert,
-                 u_char alert_color,
+                 alert_entry * UNUSED(alert),
+                 u_char UNUSED(alert_color),
                  int destination_pixmap,
                  map_draw_flags *mdf) {
     char file[MAX_FILENAME];    /* Complete path/name of image file */

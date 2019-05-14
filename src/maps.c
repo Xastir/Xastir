@@ -445,7 +445,7 @@ void maps_init(void)
  *  Calculate NS distance scale at a given location
  *  in meters per Xastir unit
  */
-double calc_dscale_y(long x, long y) {
+double calc_dscale_y(long UNUSED(x), long UNUSED(y) ) {
 
     // approximation by looking at +/- 0.5 minutes offset
     //    (void)(calc_distance(y-3000, x, y+3000, x)/6000.0);
@@ -3630,7 +3630,7 @@ current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","
  **********************************************************/
 /* common code used by the two entries --- a result of retrofitting a new
    feature (centered) */
-static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
+static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int UNUSED(label_length), int color, char *label_text, int align, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
 //    XPoint *corner;
 //    int i;
     int x_outline;
@@ -3886,7 +3886,7 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 
 
 
-static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+static void Print_postscript_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -3959,7 +3959,7 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_des
 
 
 
-static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+static void Print_properties_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     if (!shell)
@@ -3983,7 +3983,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 // Print_window:  Prints the drawing area to a Postscript file and
 // then sends it to the printer program (usually "lpr).
 //
-static void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
+static void Print_window( Widget widget, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
 #ifdef NO_XPM
 //    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
@@ -4147,7 +4147,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 // previewer_program has "gv" in it, then use the various options
 // selected by the user.  If not, skip those options.
 //
-static void Print_preview( Widget widget, XtPointer clientData, XtPointer callData ) {
+static void Print_preview( Widget widget, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
 #ifdef NO_XPM
 //    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
@@ -4425,7 +4425,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
  *  Auto_rotate
  *
  */
-static void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Auto_rotate( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4447,7 +4447,7 @@ static void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
  *  Rotate_90
  *
  */
-static void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Rotate_90( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4469,7 +4469,7 @@ static void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
  *  Auto_scale
  *
  */
-static void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Auto_scale( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4489,7 +4489,7 @@ static void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
  *  Monochrome
  *
  */
-void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Monochrome( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4509,7 +4509,7 @@ void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
  *  Invert
  *
  */
-static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Invert( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4533,7 +4533,7 @@ static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 // 1) Select an area on the screen to print
 // 2) -label
 //
-void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
+void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_ok, button_cancel,
             sep, auto_scale,
 //            paper_size, paper_size_data, scale, scale_data, blank_background,
@@ -4984,7 +4984,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 // options.  From here we should be able to set the print device
 // and the print preview program & path.
 //
-void Print_Postscript( Widget w, XtPointer clientData, XtPointer callData ) {
+void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_print, button_cancel,
             sep, button_preview;
     Atom delw;
@@ -5174,7 +5174,7 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" );
 // created.  We now create a .geo file to go with the .png file.
 //
 #ifndef NO_XPM
-static void* snapshot_thread(void *arg) {
+static void* snapshot_thread(void * UNUSED(arg) ) {
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
     char geo_filename[MAX_FILENAME];
@@ -5548,7 +5548,7 @@ enum map_onscreen_enum map_onscreen(long left,
                                     long right, 
                                     long top, 
                                     long bottom,
-                                    int check_percentage) {
+                                    int UNUSED(check_percentage) ) {
 
     enum map_onscreen_enum in_window = MAP_NOT_VIS;
 
@@ -8684,7 +8684,7 @@ static void insert_map_sorted(char *filename){
  * OLD: Recurses through the map directories looking for
  * maps to load.
  **********************************************************/
-void load_auto_maps (Widget w, char *dir) {
+void load_auto_maps (Widget w, char * UNUSED(dir) ) {
     map_index_record *current = map_index_head;
     map_draw_flags mdf;
 
