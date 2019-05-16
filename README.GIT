@@ -48,6 +48,19 @@ USERS:
     Not only that, you have a complete copy of the entire project history
     and access to all prior releases.
 
+    4) Please set your default git commit message template for the project to
+       the one included in the Xastir source tree:
+
+       cd Xastir
+       cp git_commit_message_template ~
+       git config --global commit.template ~/git_commit_message_template
+
+       This will assure that when you make commits, your editor will start
+       with a template that helps guide you through the process of writing
+       commit messages that conform to the guidelines below in the section
+       titled "Important: Git Commit Message Format".  This template is quite
+       generic and conforms to the guidelines of many other open source
+       projects, so it is reasonable to make it a global git option.
 
     Updating Your Copy:
     -------------------
