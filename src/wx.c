@@ -562,8 +562,8 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)data,4);
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
-            "%03d",
-            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+            "%03.0f",
+            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
         if (from) {
             weather->wx_speed_sec_time = sec_now();
         } else {
@@ -594,8 +594,8 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         temp_data1[1] = '0';
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
-            "%03d",
-            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+            "%03.0f",
+            ((strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
     } else {
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
@@ -632,7 +632,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
             "%0.2f",
-            (float)strtol(temp_data1,&temp_conv,16)/100.0);
+            strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
             compute_rain((float)atof(weather->wx_rain_total));
@@ -663,7 +663,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         xastir_snprintf(weather->wx_baro,
             sizeof(weather->wx_baro),
             "%0.1f",
-            (float)strtol(temp_data1,&temp_conv,16)/10.0);
+            strtol(temp_data1,&temp_conv,16)/10.0);
     } else {
         if (!from)
             weather->wx_baro[0]=0;
@@ -675,8 +675,8 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)(data+24),4);
         xastir_snprintf(weather->wx_hum,
             sizeof(weather->wx_hum),
-            "%03d",
-            (int)((float)strtol(temp_data1,&temp_conv,16)/10.0));
+            "%03.0f",
+            (strtol(temp_data1,&temp_conv,16)/10.0));
     } else {
         if (!from)
             weather->wx_hum[0]=0;
@@ -689,7 +689,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
             xastir_snprintf(weather->wx_prec_00,
                 sizeof(weather->wx_prec_00),
                 "%0.2f",
-                (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                strtol(temp_data1,&temp_conv,16)/100.0);
         }
     } else {
         if (!from)
@@ -749,20 +749,20 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         if (from) {
             xastir_snprintf(weather->wx_gust,
                 sizeof(weather->wx_gust),
-                "%03d",
-                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                "%03.0f",
+                0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
             /* this may be the only wind data */
             xastir_snprintf(weather->wx_speed,
                 sizeof(weather->wx_speed),
-                "%03d",
-                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                "%03.0f",
+                0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
         } else {
             /* local station and may be the only wind data */
             if (len < 51) {
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
-                    "%03d",
-                    (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                    "%03.0f",
+                    0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 computed_gust = compute_gust((float)atof(weather->wx_speed),
                                         last_speed,
                                         &last_speed_time);
@@ -790,8 +790,8 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         temp_data1[1] = '0';
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
-            "%03d",
-            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+            "%03.0f",
+            (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
     } else {
         xastir_snprintf(weather->wx_course,
             sizeof(weather->wx_course),
@@ -827,7 +827,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
             xastir_snprintf(weather->wx_prec_00,
                 sizeof(weather->wx_prec_00),
                 "%0.2f",
-                (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                strtol(temp_data1,&temp_conv,16)/100.0);
         }
     } else {
         if (!from)
@@ -840,7 +840,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
             "%0.2f",
-            (float)strtol(temp_data1,&temp_conv,16)/100.0);
+            strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
             compute_rain((float)atof(weather->wx_rain_total));
@@ -871,7 +871,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         xastir_snprintf(weather->wx_baro,
             sizeof(weather->wx_baro),
             "%0.1f",
-            (float)strtol(temp_data1,&temp_conv,16)/10.0);
+            strtol(temp_data1,&temp_conv,16)/10.0);
     } else {
         if (!from)
             weather->wx_baro[0] = 0;
@@ -882,8 +882,8 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)(data+32),4);
         xastir_snprintf(weather->wx_hum,
             sizeof(weather->wx_hum),
-            "%03d",
-            (int)((float)strtol(temp_data1,&temp_conv,16)/10.0));
+            "%03.0f",
+            strtol(temp_data1,&temp_conv,16)/10.0);
     } else {
         if (!from)
             weather->wx_hum[0] = 0;
@@ -894,8 +894,8 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)(data+48),4);
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
-            "%03d",
-            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+            "%03.0f",
+            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
         if (from) {
             weather->wx_speed_sec_time = sec_now();
         } else {
@@ -967,8 +967,8 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     substr(temp_data1,(char *)data,1);
     xastir_snprintf(weather->wx_course,
         sizeof(weather->wx_course),
-        "%03d",
-        (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
+        "%03.0f",
+        (strtol(temp_data1,&temp_conv,16)/16.0)*360.0);
 
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
@@ -987,8 +987,8 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
     } else { // type == APRS_WX6,  '*'  speed in mph
         xastir_snprintf(weather->wx_speed,
             sizeof(weather->wx_speed),
-            "%03d",
-            (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
+            "%03.0f",
+            0.5 + (1.0 * strtol(temp_data1,&temp_conv,16)) );
     }
 
     if (from) {
@@ -1031,7 +1031,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         xastir_snprintf(weather->wx_rain_total,
             sizeof(weather->wx_rain_total),
             "%0.2f",
-            (float)strtol(temp_data1,&temp_conv,16)/100.0);
+            strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
             compute_rain((float)atof(weather->wx_rain_total));
@@ -1290,8 +1290,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             substr(temp_data1,(char *)(data+1),1);
             xastir_snprintf(weather->wx_course,
                 sizeof(weather->wx_course),
-                "%03d",
-                (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
+                "%03.0f",
+                (strtol(temp_data1,&temp_conv,16)/16.0)*360.0);
 
             // Check for course == 0.  Change to 360.
             if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -1317,8 +1317,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             } else { // APRS_WX6 or '*', Data is in MPH
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
-                    "%03d",
-                    (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
+                    "%03.0f",
+                    0.5 + (strtol(temp_data1,&temp_conv,16)*1.0) );
             }
 
             if (from) { // From remote station
@@ -1366,13 +1366,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)*10);
+                                strtol(temp_data1,&temp_conv,16)*10.0);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)/2.54);
+                                strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
@@ -1380,7 +1380,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16));
+                                strtol(temp_data1,&temp_conv,16)*1.0);
                             break;
                     }
                     /* local station */
@@ -1434,8 +1434,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+2),4);
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
-                    "%03d",
-                    (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                    "%03.0f",
+                    0.5 + ((strtol(temp_data1,&temp_conv,16) /10.0)*0.62137));
                 if (from) { // From remote station
                     weather->wx_speed_sec_time = sec_now();
                 } else {
@@ -1467,8 +1467,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 temp_data1[1] = '0';
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
-                    "%03d",
-                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    "%03.0f",
+                    (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                 // Check for course = 0.  Change to 360.
                 if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -1514,13 +1514,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)*10);
+                                strtol(temp_data1,&temp_conv,16)*10.0);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)/2.54);
+                                strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
@@ -1528,7 +1528,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16));
+                                strtol(temp_data1,&temp_conv,16)*1.0);
                             break;
                     }
                     /* local station */
@@ -1561,7 +1561,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 xastir_snprintf(weather->wx_baro,
                     sizeof(weather->wx_baro),
                     "%0.1f",
-                    (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                    strtol(temp_data1,&temp_conv,16)/10.0);
             }
 
             /* outdoor humidity */
@@ -1569,8 +1569,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+26),4);
                 xastir_snprintf(weather->wx_hum,
                     sizeof(weather->wx_hum),
-                    "%03d",
-                    (int)((float)strtol(temp_data1,&temp_conv,16)/10.0));
+                    "%03.0f",
+                    strtol(temp_data1,&temp_conv,16)/10.0);
             } else {
                 if (!from)  // From local station
                     weather->wx_hum[0]=0;
@@ -1587,7 +1587,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         xastir_snprintf(weather->wx_prec_00,
                             sizeof(weather->wx_prec_00),
                             "%0.2f",
-                            (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            strtol(temp_data1,&temp_conv,16)/100.0);
                     }
                 } else {
                     if (!from)  // From local station
@@ -1623,20 +1623,20 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 if (from) { // From remote station
                     xastir_snprintf(weather->wx_gust,
                         sizeof(weather->wx_gust),
-                        "%03d",
-                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        "%03.0f",
+                        0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     /* this may be the only wind data */
                     xastir_snprintf(weather->wx_speed,
                         sizeof(weather->wx_speed),
-                        "%03d",
-                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        "%03.0f",
+                        0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 } else {
                     /* local station and may be the only wind data */
                     if (len<56) {
                         xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
-                            "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                            "%03.0f",
+                            0.5 + ( strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                         computed_gust = compute_gust((float)atof(weather->wx_speed),
                                             last_speed,
                                             &last_speed_time);
@@ -1664,8 +1664,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 temp_data1[1] = '0';
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
-                    "%03d",
-                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    "%03.0f",
+                    (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                 // Check for course = 0.  Change to 360.
                 if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -1708,7 +1708,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     xastir_snprintf(weather->wx_prec_00,
                         sizeof(weather->wx_prec_00),
                         "%0.2f",
-                        (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                        strtol(temp_data1,&temp_conv,16)/100.0);
                 }
             } else {
                 if (!from)  // From local station
@@ -1724,13 +1724,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)*10);
+                                strtol(temp_data1,&temp_conv,16)*10.0);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)/2.54);
+                                strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
@@ -1738,7 +1738,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16));
+                                strtol(temp_data1,&temp_conv,16)*1.0);
                             break;
                     }
                     /* local station */
@@ -1771,7 +1771,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 xastir_snprintf(weather->wx_baro,
                     sizeof(weather->wx_baro),
                     "%0.1f",
-                    (float)strtol(temp_data1, &temp_conv, 16)/10.0);
+                    strtol(temp_data1, &temp_conv, 16)/10.0);
             } else {
                 if (!from)  // From local station
                     weather->wx_baro[0]=0;
@@ -1782,8 +1782,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+37),4);
                 xastir_snprintf(weather->wx_hum,
                     sizeof(weather->wx_hum),
-                    "%03d",
-                    (int)((float)strtol(temp_data1,&temp_conv,16)/10.0));
+                    "%03.0f",
+                    strtol(temp_data1,&temp_conv,16)/10.0);
             } else {
                 if (!from)  // From local station
                     weather->wx_hum[0]=0;
@@ -1794,8 +1794,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+53),4);
                 xastir_snprintf(weather->wx_speed,
                     sizeof(weather->wx_speed),
-                    "%03d",
-                    (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                    "%03.0f",
+                    0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 if (from) { // From remote station
                     weather->wx_speed_sec_time = sec_now();
                 } else {
@@ -1847,8 +1847,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+12),4);
                     xastir_snprintf(weather->wx_gust,
                         sizeof(weather->wx_gust),
-                        "%03d",
-                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        "%03.0f",
+                        0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else
                     weather->wx_gust[0]=0;
@@ -1862,9 +1862,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+452),4);
                     xastir_snprintf(weather->wx_speed,
                         sizeof(weather->wx_speed),
-                        "%03d",
-                        (int)(0.5
-                            + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        "%03.0f",
+                        0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     done_with_wx_speed++;
                 }
 
@@ -1881,21 +1880,21 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
                 if (data[4] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+4, 4);
-                    temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    temp1 = 0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137;
                 }
                 else {
                     temp1=0;
                 }
                 if (data[136] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+136, 4);
-                    temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    temp2 = 0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137;
                 }
                 else {
                     temp2=0;
                 }
                 if (data[284] !='-') { // '-' signifies invalid data
                     substr(temp_data1, (char *)data+284, 4);
-                    temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    temp3 = 0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137;
                 }
                 else {
                     temp3=0;
@@ -1915,8 +1914,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
-                            "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                            "%03.0f",
+                            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     }
 
                     /* wind direction */
@@ -1931,8 +1930,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
-                            "%03d",
-                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                            "%03.0f",
+                            (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                         // Check for course = 0.  Change to 360.
                         if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -1956,8 +1955,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         substr(temp_data1,(char *)(data+136),4);
                         xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
-                            "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                            "%03.0f",
+                            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     }
 
                     /* wind direction */
@@ -1972,8 +1971,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
-                            "%03d",
-                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                            "%03.0f",
+                            (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                         // Check for course = 0.  Change to 360.
                         if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -1997,8 +1996,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         substr(temp_data1,(char *)(data+284),4);
                         xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
-                            "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                            "%03.0f",
+                            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     }
 
                     /* wind direction */
@@ -2013,8 +2012,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
-                            "%03d",
-                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                            "%03.0f",
+                            (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                         // Check for course = 0.  Change to 360.
                         if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -2038,8 +2037,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
-                            "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                            "%03.0f",
+                            0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     }
 
                     /* wind direction */
@@ -2054,8 +2053,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         temp_data1[1] = '0';
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
-                            "%03d",
-                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                            "%03.0f",
+                            (strtol(temp_data1,&temp_conv,16)/256.0)*360.0);
 
                         // Check for course = 0.  Change to 360.
                         if (strncmp(weather->wx_course,"000",3) == 0) {
@@ -2135,13 +2134,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)*10);
+                                strtol(temp_data1,&temp_conv,16)*10.0);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16)/2.54);
+                                strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
@@ -2149,7 +2148,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total,
                                 sizeof(weather->wx_rain_total),
                                 "%0.2f",
-                                (float)strtol(temp_data1,&temp_conv,16));
+                                strtol(temp_data1,&temp_conv,16)*1.0);
                             break;
                     }
                     /* Since local station only */
@@ -2182,7 +2181,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     xastir_snprintf(weather->wx_baro,
                         sizeof(weather->wx_baro),
                         "%0.1f",
-                        (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                        strtol(temp_data1,&temp_conv,16)/10.0);
                 } else
                     weather->wx_baro[0]=0;
 
@@ -2191,8 +2190,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+52),4);
                     xastir_snprintf(weather->wx_hum,
                         sizeof(weather->wx_hum),
-                        "%03d",
-                        (int)((float)strtol(temp_data1,&temp_conv,16)/10.0));
+                        "%03.0f",
+                        strtol(temp_data1,&temp_conv,16)/10.0);
                 } else
                     weather->wx_hum[0]=0;
 
@@ -2219,8 +2218,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     substr(temp_data1,(char *)(data+248),4);
                     xastir_snprintf(wx_high_wind,
                         sizeof(wx_high_wind),
-                        "%03d",
-                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        "%03.0f",
+                        0.5 + (strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                     wx_high_wind_on = 1;
                 }
 
@@ -2465,7 +2464,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             "%0d%02d%0.1f",
                             (data[5]&0x0f),
                             rswnc(data[4]),
-                            ((float)rswnc(data[3])/10.0));
+                            rswnc(data[3])/10.0);
 
                         /* dew point in C */
                         temp_temp = (int)((rswnc(data[18])*1.8)+32);
@@ -3595,7 +3594,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "r   ");
                 }
-                if ((int)(atof(weather->wx_rain)) < 0) {
+                if (atoi(weather->wx_rain) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_rain out-of-bounds: %s\n", weather->wx_rain);
 
@@ -3624,7 +3623,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "P   ");
                 }
-                if ((int)(atof(weather->wx_prec_00)) < 0) {
+                if (atoi(weather->wx_prec_00) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_00 out-of-bounds: %s\n", weather->wx_prec_00);
 
@@ -3653,7 +3652,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "p   ");
                 }
-                if ((int)(atof(weather->wx_prec_24)) < 0) {
+                if (atoi(weather->wx_prec_24) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_24 out-of-bounds: %s\n", weather->wx_prec_24);
 

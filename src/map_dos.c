@@ -517,7 +517,7 @@ void draw_dos_map(Widget w,
 
                     case 2:
 //fprintf(stderr,"points_per_degree: %s\n", Buffer);
-                        points_per_degree = (int) atof (Buffer);
+                        points_per_degree = atoi (Buffer);
                         break;
 
                     case 3:

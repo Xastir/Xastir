@@ -1360,7 +1360,7 @@ void draw_complete_lat_lon_grid(Widget w) {
     // scale_x * (screen_width/10) = one tenth of the screen width in xastir coordinates
     // scale_x number of xastir coordinates per pixel
     screen_width_degrees = (float)(screen_width_xastir / (float)360000);
-    log_screen_width_degrees = (int)log10(screen_width_degrees);
+    log_screen_width_degrees = log10(screen_width_degrees);
  
 
     if (draw_labeled_grid_border==TRUE) { 
@@ -1419,7 +1419,7 @@ void draw_complete_lat_lon_grid(Widget w) {
             // For decimal minutes or minutes and seconds.
             // Find screen width and log screen width in minutes.
             screen_width_degrees = screen_width_degrees * 60.0;
-            log_screen_width_degrees = (int)log10(screen_width_degrees);
+            log_screen_width_degrees = log10(screen_width_degrees);
             // round to minutes or tenths of minutes.
             stepsx = ((float)(int)
                       ((float)(screen_width_degrees) / pow(10,log_screen_width_degrees) * 10.0)

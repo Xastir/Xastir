@@ -2640,9 +2640,9 @@ void Coordinate_calc_compute(Widget UNUSED(widget), XtPointer UNUSED(clientData)
             fprintf(stderr,"Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing);
         // Round the UTM values as we convert them to longs
         xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_northing);
-        northing = (long)(atof(temp_string));
+        northing = atof(temp_string);
         xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_easting);
-        easting  = (long)(atof(temp_string));
+        easting  = atof(temp_string);
         Coordinate_calc_output(full_zone,
             (long)northing,
             (long)easting,
@@ -10673,8 +10673,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
                         // Compute the new scale, or as close to it as we can get
                         //new_scale_y = scale_y / 2;    // Zoom in by a factor of 2
-                        new_scale_y = (long)( (((float)abs(menu_y - input_y) / (float)height ) * (float)scale_y ) + 0.5);
-                        new_scale_x = (long)( (((float)abs(menu_x - input_x) / (float)width  ) * (float)scale_x ) + 0.5);
+                        new_scale_y = (long)( (((1.0 * abs(menu_y - input_y)) / (float)height ) * (float)scale_y ) + 0.5);
+                        new_scale_x = (long)( (((1.0 * abs(menu_x - input_x)) / (float)width  ) * (float)scale_x ) + 0.5);
 
                         if (new_scale_y < 1)
                             new_scale_y = 1;            // Don't go further in than zoom 1
@@ -10692,7 +10692,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         // this, computed from the new midpoint.
                         //
                         //fprintf(stderr,"scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
-                        ratio = ((float)get_x_scale(new_mid_x,new_mid_y,scale_y) / (float)scale_y);
+                        ratio = ( (1.0 * get_x_scale(new_mid_x,new_mid_y,scale_y)) / (float)scale_y);
 
                         //fprintf(stderr,"Ratio: %f\n", ratio);
                         //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);

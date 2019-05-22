@@ -101,7 +101,7 @@ void view_message_print_record(Message *m_fill) {
 
 
     // Make sure it's within our distance range we have set
-    distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
+    distance = distance_from_my_station(m_fill->from_call_sign,temp_my_course);
 
     if (Read_messages_mine_only
             || (!Read_messages_mine_only
@@ -216,7 +216,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
     if (Read_messages_mine_only
             || (!Read_messages_mine_only
                 && ((vm_range == 0)
-                    || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) ) ) {
+                    || (distance_from_my_station(call_sign,temp_my_course) <= vm_range)) ) ) {
 
         // Check that it's coming from the correct type of interface
         // Compare Read_messages_packet_data_type against the port

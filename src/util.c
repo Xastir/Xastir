@@ -1347,7 +1347,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
 //fprintf(stderr,"N != 0\n");
 
-        range = (int)( pow(2.0,R - '0') );
+        range = pow(2.0,R - '0');
 
         switch (Q) {
             case('1'):

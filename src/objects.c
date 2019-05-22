@@ -4444,7 +4444,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         xastir_snprintf(line, line_length, "%s", temp_ptr);
         XtFree(temp_ptr);
 
-        lat_offset = (int)sqrt(atof(line));
+        lat_offset = sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
         //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
@@ -4453,7 +4453,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         xastir_snprintf(line, line_length, "%s", temp_ptr);
         XtFree(temp_ptr);
 
-        lon_offset = (int)sqrt(atof(line));
+        lon_offset = sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
         //fprintf(stderr,"Line: %s\tlon_offset: %d\n", line, lon_offset);
@@ -5238,7 +5238,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         xastir_snprintf(line, line_length, "%s", temp_ptr);
         XtFree(temp_ptr);
 
-        lat_offset = (int)sqrt(atof(line));
+        lat_offset = sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
         //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
@@ -5246,7 +5246,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         xastir_snprintf(line, line_length, "%s", temp_ptr);
         XtFree(temp_ptr);
 
-        lon_offset = (int)sqrt(atof(line));
+        lon_offset = sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
         //fprintf(stderr,"Line: %s\tlon_offset: %d\n", line, lon_offset);

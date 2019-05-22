@@ -7242,7 +7242,7 @@ int extract_storm(DataRow *p_station, char *data, int UNUSED(compr) ) {
             xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
                             "%0.1f",
-                            (float)(atoi(weather->wx_speed)) * 1.1508);
+                            atof(weather->wx_speed) * 1.1508);
 
         //fprintf(stderr,"%s\n",data);
 
@@ -7252,7 +7252,7 @@ int extract_storm(DataRow *p_station, char *data, int UNUSED(compr) ) {
             xastir_snprintf(weather->wx_gust,
                             sizeof(weather->wx_gust),
                             "%0.1f",
-                            (float)(atoi(weather->wx_gust)) * 1.1508);
+                            atof(weather->wx_gust) * 1.1508);
 
         //fprintf(stderr,"%s\n",data);
 
@@ -7262,7 +7262,7 @@ int extract_storm(DataRow *p_station, char *data, int UNUSED(compr) ) {
             xastir_snprintf(weather->wx_baro,
                             sizeof(weather->wx_baro),
                             "%0.1f",
-                            (float)(atoi(weather->wx_baro)));
+                            atof(weather->wx_baro));
 
         //fprintf(stderr,"%s\n",data);
 
@@ -14290,7 +14290,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     my_last_course=atoi(course);
 
     /* get my last speed in knots */
-    my_last_speed=(int)(atof(speed));
+    my_last_speed = atoi(speed);
     xastir_snprintf(p_station->sats_visible,
                     sizeof(p_station->sats_visible),
                     "%s",
