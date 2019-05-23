@@ -1385,19 +1385,23 @@ void bearing_decode(const char *langstr, const char *bearing_str,
         if (english_units) {
             xastir_snprintf(temp,
                 sizeof(temp),
-                "%i°, %s: %i°, %s: %i mi",
+                "%i%c, %s: %i%c, %s: %i mi",
                 bearing,
+                0xb0,                   // Degree symbol
                 langcode("WPUPSTI088"), // DF Beamwidth
                 width,
+                0xb0,                   // Degree symbol
                 langcode("WPUPSTI089"), // DF Length
                 range);
         } else {
             xastir_snprintf(temp,
                 sizeof(temp),
-                "%i°, %s: %i°, %s: %0.2f km",
+                "%i%c, %s: %i%c, %s: %0.2f km",
                 bearing,
+                0xb0,                   // Degree symbol
                 langcode("WPUPSTI088"), // DF Beamwidth
                 width,
+                0xb0,                   // Degree symbol
                 langcode("WPUPSTI089"), // DF Length
                 range*1.609344);
         }
@@ -2460,8 +2464,9 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
         case(CONVERT_DMS_NORMAL_FORMATED):
             xastir_snprintf(str,
                 str_len,
-                "%02d°%02d\'%04.1f%c",
+                "%02d%c%02d\'%04.1f%c",
                 ideg,
+                0xb0,       // Degree symbol
                 imin,
 //                sec+0.01, // Correct possible unbiased rounding
                 sec,
@@ -2471,8 +2476,9 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
         case(CONVERT_HP_NORMAL_FORMATED):
             xastir_snprintf(str,
                 str_len,
-                "%02d°%06.3f%c",
+                "%02d%c%06.3f%c",
                 ideg,
+                0xb0,         // Degree symbol
 //                min+0.0001, // Correct possible unbiased roundin
                 min,
                 ns);
@@ -2611,8 +2617,9 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
         case(CONVERT_DMS_NORMAL_FORMATED):
             xastir_snprintf(str,
                 str_len,
-                "%03d°%02d\'%04.1f%c",
+                "%03d%c%02d\'%04.1f%c",
                 ideg,
+                0xb0,       // Degree symbol
                 imin,
 //                sec+0.01, // Correct possible unbiased rounding
                 sec,
@@ -2622,8 +2629,9 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
         case(CONVERT_HP_NORMAL_FORMATED):
             xastir_snprintf(str,
                 str_len,
-                "%03d°%06.3f%c",
+                "%03d%c%06.3f%c",
                 ideg,
+                0xb0,         // Degree symbol
 //                min+0.0001, // Correct possible unbiased rounding
                 min,
                 ew);
