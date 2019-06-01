@@ -187,7 +187,7 @@ const Datum gDatum[] = {
     { "Indian (Pakistan)",                                                E_EVR_PAK,    283,    682,    231 }, // 83
     { "Indian 1954 (Thailand)",                                        E_EVR_IND_30,    217,    823,    299 }, // 84
     { "Indian 1960 (Vietnam (Con Son Island))",                        E_EVR_IND_30,    182,    915,    344 }, // 85
-    { "Indian 1960 (Vietnam (Near 16°N))",                             E_EVR_IND_30,    198,    881,    317 }, // 86
+    { "Indian 1960 (Vietnam (Near 16N))",                              E_EVR_IND_30,    198,    881,    317 }, // 86
     { "Indian 1975 (Thailand)",                                        E_EVR_IND_30,    210,    814,    289 }, // 87
     { "Indonesian 1974 (Indonesia)",                                       E_IND_74,    -24,    -15,      5 }, // 88
     { "Ireland 1965 (Ireland)",                                          E_MOD_AIRY,    506,   -122,    611 }, // 89
@@ -217,8 +217,8 @@ const Datum gDatum[] = {
     { "Nahrwan (United Arab Emirates)",                                 E_CLARKE_80,   -249,   -156,    381 }, // 113
     { "Naparima BWI (Trinidad & Tobago)",                                  E_INT_24,    -10,    375,    165 }, // 114
     { "North American 1927 (Alaska (Excluding Aleutian Ids))",          E_CLARKE_66,     -5,    135,    172 }, // 115
-    { "North American 1927 (Alaska (Aleutian Ids East of 180°W))",      E_CLARKE_66,     -2,    152,    149 }, // 116
-    { "North American 1927 (Alaska (Aleutian Ids West of 180°W))",      E_CLARKE_66,      2,    204,    105 }, // 117
+    { "North American 1927 (Alaska (Aleutian Ids East of 180W))",       E_CLARKE_66,     -2,    152,    149 }, // 116
+    { "North American 1927 (Alaska (Aleutian Ids West of 180W))",       E_CLARKE_66,      2,    204,    105 }, // 117
     { "North American 1927 (Bahamas (Except San Salvador Id))",         E_CLARKE_66,     -4,    154,    178 }, // 118
     { "North American 1927 (Bahamas (San Salvador Island))",            E_CLARKE_66,      1,    140,    165 }, // 119
     { "North American 1927 (Canada (Alberta; British Columbia))",       E_CLARKE_66,     -7,    162,    188 }, // 120
@@ -262,15 +262,15 @@ const Datum gDatum[] = {
     { "Pointe Noire 1948 (Congo)",                                      E_CLARKE_80,   -148,     51,   -291 }, // 158
     { "Porto Santo 1936 (Porto Santo; Madeira Islands)",                   E_INT_24,   -499,   -249,    314 }, // 159
     { "Provisional South American 1956 (Bolivia)",                         E_INT_24,   -270,    188,   -388 }, // 160
-    { "Provisional South American 1956 (Chile (Northern; Near 19°S))",         E_INT_24,   -270,    183,   -390 }, // 161
-    { "Provisional South American 1956 (Chile (Southern; Near 43°S))",         E_INT_24,   -305,    243,   -442 }, // 162
+    { "Provisional South American 1956 (Chile (Northern; Near 19S))",          E_INT_24,   -270,    183,   -390 }, // 161
+    { "Provisional South American 1956 (Chile (Southern; Near 43S))",          E_INT_24,   -305,    243,   -442 }, // 162
     { "Provisional South American 1956 (Colombia)",                        E_INT_24,   -282,    169,   -371 }, // 163
     { "Provisional South American 1956 (Ecuador)",                         E_INT_24,   -278,    171,   -367 }, // 164
     { "Provisional South American 1956 (Guyana)",                          E_INT_24,   -298,    159,   -369 }, // 165
     { "Provisional South American 1956 (MEAN FOR Bolivia; Chile; Colombia; Ecuador; Guyana; Peru; Venezuela)",         E_INT_24,   -288,    175,   -376 }, // 166
     { "Provisional South American 1956 (Peru)",                            E_INT_24,   -279,    175,   -379 }, // 167
     { "Provisional South American 1956 (Venezuela)",                       E_INT_24,   -295,    173,   -371 }, // 168
-    { "Provisional South Chilean 1963 (Chile (Near 53°S) (Hito XVIII))",         E_INT_24,     16,    196,     93 }, // 169
+    { "Provisional South Chilean 1963 (Chile (Near 53S) (Hito XVIII))",          E_INT_24,     16,    196,     93 }, // 169
     { "Puerto Rico (Puerto Rico; Virgin Islands)",                      E_CLARKE_66,     11,     72,   -101 }, // 170
     { "Pulkovo 1942 (Russia)",                                           E_KRASS_40,     28,   -130,    -95 }, // 171
     { "Qatar National (Qatar)",                                            E_INT_24,   -128,   -283,     22 }, // 172

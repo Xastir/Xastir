@@ -9387,7 +9387,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption0,XmNvalueChangedCallback,Ob_directivity_toggle,"0");
 
         // 45 NE
-        doption1 = XtVaCreateManagedWidget("45°",
+        doption1 = XtVaCreateManagedWidget("45\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9397,7 +9397,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption1,XmNvalueChangedCallback,Ob_directivity_toggle,"1");
 
         // 90 E
-        doption2 = XtVaCreateManagedWidget("90°",
+        doption2 = XtVaCreateManagedWidget("90\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9407,7 +9407,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption2,XmNvalueChangedCallback,Ob_directivity_toggle,"2");
 
         // 135 SE
-        doption3 = XtVaCreateManagedWidget("135°",
+        doption3 = XtVaCreateManagedWidget("135\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9417,7 +9417,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption3,XmNvalueChangedCallback,Ob_directivity_toggle,"3");
 
         // 180 S
-        doption4 = XtVaCreateManagedWidget("180°",
+        doption4 = XtVaCreateManagedWidget("180\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9427,7 +9427,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption4,XmNvalueChangedCallback,Ob_directivity_toggle,"4");
 
         // 225 SW
-        doption5 = XtVaCreateManagedWidget("225°",
+        doption5 = XtVaCreateManagedWidget("225\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9437,7 +9437,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption5,XmNvalueChangedCallback,Ob_directivity_toggle,"5");
 
         // 270 W
-        doption6 = XtVaCreateManagedWidget("270°",
+        doption6 = XtVaCreateManagedWidget("270\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9447,7 +9447,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption6,XmNvalueChangedCallback,Ob_directivity_toggle,"6");
 
         // 315 NW
-        doption7 = XtVaCreateManagedWidget("315°",
+        doption7 = XtVaCreateManagedWidget("315\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9457,7 +9457,7 @@ else if (DF_object_enabled) {
         XtAddCallback(doption7,XmNvalueChangedCallback,Ob_directivity_toggle,"7");
 
         // 360 N
-        doption8 = XtVaCreateManagedWidget("360°",
+        doption8 = XtVaCreateManagedWidget("360\xB0",
                 xmToggleButtonGadgetClass,
                 directivity_box,
                 MY_FOREGROUND_COLOR,
@@ -9536,7 +9536,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption0,XmNvalueChangedCallback,Ob_width_toggle,"0");
 
         // < 240 Degrees
-        woption1 = XtVaCreateManagedWidget("<240°",
+        woption1 = XtVaCreateManagedWidget("<240\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9546,7 +9546,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption1,XmNvalueChangedCallback,Ob_width_toggle,"1");
 
         // < 120 Degrees
-        woption2 = XtVaCreateManagedWidget("<120°",
+        woption2 = XtVaCreateManagedWidget("<120\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9556,7 +9556,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption2,XmNvalueChangedCallback,Ob_width_toggle,"2");
 
         // < 64 Degrees
-        woption3 = XtVaCreateManagedWidget("<64°",
+        woption3 = XtVaCreateManagedWidget("<64\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9566,7 +9566,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption3,XmNvalueChangedCallback,Ob_width_toggle,"3");
 
         // < 32 Degrees
-        woption4 = XtVaCreateManagedWidget("<32°",
+        woption4 = XtVaCreateManagedWidget("<32\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9576,7 +9576,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption4,XmNvalueChangedCallback,Ob_width_toggle,"4");
 
         // < 16 Degrees
-        woption5 = XtVaCreateManagedWidget("<16°",
+        woption5 = XtVaCreateManagedWidget("<16\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9586,7 +9586,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption5,XmNvalueChangedCallback,Ob_width_toggle,"5");
 
         // < 8 Degrees
-        woption6 = XtVaCreateManagedWidget("<8°",
+        woption6 = XtVaCreateManagedWidget("<8\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9596,7 +9596,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption6,XmNvalueChangedCallback,Ob_width_toggle,"6");
 
         // < 4 Degrees
-        woption7 = XtVaCreateManagedWidget("<4°",
+        woption7 = XtVaCreateManagedWidget("<4\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9606,7 +9606,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption7,XmNvalueChangedCallback,Ob_width_toggle,"7");
 
         // < 2 Degrees
-        woption8 = XtVaCreateManagedWidget("<2°",
+        woption8 = XtVaCreateManagedWidget("<2\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
@@ -9616,7 +9616,7 @@ else if (DF_object_enabled) {
         XtAddCallback(woption8,XmNvalueChangedCallback,Ob_width_toggle,"8");
 
         // < 1 Degrees
-        woption9 = XtVaCreateManagedWidget("<1°",
+        woption9 = XtVaCreateManagedWidget("<1\xB0",
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
