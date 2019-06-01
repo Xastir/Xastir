@@ -25,7 +25,6 @@
 #include "config.h"
 #endif  // HAVE_CONFIG_H
 
-#ifdef USE_RTREE
 #ifdef HAVE_LIBSHP
 
 #include <stdlib.h>
@@ -380,7 +379,6 @@ void purge_shp_hash(time_t secs_now) {
 }
 
 #endif  // HAVE_LIBSHP
-#endif // USE_RTREE
 
 
 // To get rid of "-pedantic" compiler warning:

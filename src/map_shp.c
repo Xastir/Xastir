@@ -105,7 +105,6 @@
 
 extern int npoints;        /* tsk tsk tsk -- globals */
 
-#ifdef USE_RTREE
 #include <rtree/index.h>    
 #include "shp_hash.h"
 
@@ -140,7 +139,6 @@ int RTreeSearchCallback(int id, void* UNUSED(arg) )
     RTree_hitarray[RTree_hitarray_index++]=id-1;
     return 1;  // signal to keep searching for more matches
 }
-#endif // USE_RTREE
 
 
 
@@ -733,10 +731,6 @@ void draw_shapefile_map (Widget w,
     char            search_param2[10];
 #endif /* !WITH_DBFAWK */
     int             found_shape = -1;
-#ifndef USE_RTREE
-    int             start_record;
-    int             end_record;
-#endif // !USE_RTREE
     int             ok_to_draw = 0;
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
@@ -772,12 +766,10 @@ void draw_shapefile_map (Widget w,
 
     label_string *ptr2 = NULL;
 
-#ifdef USE_RTREE
     struct Rect viewportRect;
     double rXmin, rYmin, rXmax,rYmax;
     shpinfo *si;
     int nhits;
-#endif // USE_RTREE
 
     // pull this out of the map_draw_flags
     draw_filled = mdf->draw_filled;
@@ -1502,7 +1494,6 @@ void draw_shapefile_map (Widget w,
         statusline(status_text,0);       // Loading ...
     }
 
-#ifdef USE_RTREE
     // We put this section AFTER the code that determines whether we're merely
     // indexing, so we don't bother to generate rtrees unless we're really
     // drawing the file.
@@ -1537,7 +1528,6 @@ void draw_shapefile_map (Widget w,
     viewportRect.boundary[1] = (RectReal) rYmin;
     viewportRect.boundary[2] = (RectReal) rXmax;
     viewportRect.boundary[3] = (RectReal) rYmax;
-#endif // USE_RTREE
 
     switch ( nShapeType ) {
         case SHPT_POINT:
@@ -1805,7 +1795,6 @@ void draw_shapefile_map (Widget w,
         return;
     }
 
-#ifdef USE_RTREE
     // Now instead of looping over all the shapes, search for the ones that
     // are in our viewport and only loop over those
     //fprintf(stderr,"Deciding how to process this file...\n");
@@ -1847,33 +1836,10 @@ void draw_shapefile_map (Widget w,
         }
     }
     //fprintf(stderr," Done with decision, nhits is %d\n",nhits);
-#else   // USE_RTREE
-    if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
-        if (found_shape != -1) {    // Found the record
-            start_record = found_shape;
-            end_record = found_shape + 1;
-        }
-        else {  // Didn't find the record
-            start_record = 0;
-            end_record = 0;
-        }
-    }
-    else {  // Draw an entire Shapefile map
-        start_record = 0;
-        end_record = nEntities;
-    }
-#endif  // USE_RTREE
 
-#ifdef USE_RTREE
     // only iterate over the hits found by RTreeSearch, not all of them
     for (RTree_hitarray_index=0; RTree_hitarray_index<nhits; 
          RTree_hitarray_index++) {
-#else   // USE_RTREE
-
-    // Here's where we actually iterate through the entire file, drawing
-    // each structure as we find it.
-    for (structure = start_record; structure < end_record; structure++) {
-#endif  // USE_RTREE
         int skip_it = 0;
         int skip_label = 0;
 
@@ -1886,11 +1852,7 @@ void draw_shapefile_map (Widget w,
         // 0.5% CPU at 64 (according to gprof).  That appears to be
         // the break-even point where CPU is minimal.
         //
-#ifdef USE_RTREE
         if ( (RTree_hitarray_index % 64) == 0 ) {
-#else
-        if ( (structure % 64) == 0 ) {
-#endif
         
             HandlePendingEvents(app_context);
             if (interrupt_drawing_now) {
@@ -1918,7 +1880,6 @@ void draw_shapefile_map (Widget w,
         }
 
 
-#ifdef USE_RTREE
         if (si) {
             structure=RTree_hitarray[RTree_hitarray_index];
         } else if ((weather_alert_flag && found_shape!=-1)) {
@@ -1926,7 +1887,6 @@ void draw_shapefile_map (Widget w,
         } else {
             structure = RTree_hitarray_index;
         }
-#endif  // USE_RTREE
 
         // Have had segfaults before at the SHPReadObject() call
         // when the Shapefile was corrupted.

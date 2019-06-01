@@ -4,7 +4,7 @@
 
 bin_PROGRAMS = xastir xastir_udp_client testdbfawk
 
-SUBDIRS = @SUBRTREE@
+SUBDIRS = rtree
 DIST_SUBDIRS = rtree
 
 EXTRA_DIST=icon.xbm
@@ -91,7 +91,7 @@ compiledate.c: $(XASTIR_SRC)
 remove_compiledate:
 	rm -f compiledate.c compiledate.o
 
-xastir_LDADD=@LIBRTREE@
+xastir_LDADD=-Lrtree -lrtree
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
