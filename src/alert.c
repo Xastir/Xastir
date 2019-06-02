@@ -840,7 +840,7 @@ int alert_expire(int curr_sec) {
 // 5 = G
 // 6 = C
 //
-int alert_active(alert_entry *alert, alert_match_level match_level) {
+int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) ) {
     alert_entry *a_ptr;
     char l_list[] = {"?RYBTGC"};
     int level = 0;
@@ -1066,6 +1066,7 @@ void alert_build_list(Message *fill) {
     int compressed_wx_packet = 0;
     char uncompressed_wx[10000];
     struct hashtable_itr *iterator;
+    int tmp_size;
 
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
@@ -1124,35 +1125,31 @@ void alert_build_list(Message *fill) {
 
                 switch (fill->seq[4]) {
                 case 'B':
-                    xastir_snprintf(list_ptr->desc0,
-                                    sizeof(list_ptr->desc0),
-                                    "%s",
-                                    fill->message_line);
+                    tmp_size = sizeof(list_ptr->desc0);
+                    memcpy(list_ptr->desc0, fill->message_line, tmp_size);
+                    list_ptr->desc0[tmp_size-1] = '\0'; // Terminate string
                     if (debug_level & 2)
                         fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                     break;
                 case 'C':
-                    xastir_snprintf(list_ptr->desc1,
-                                    sizeof(list_ptr->desc1),
-                                    "%s",
-                                    fill->message_line);
+                    tmp_size = sizeof(list_ptr->desc1);
+                    memcpy(list_ptr->desc1, fill->message_line, tmp_size);
+                    list_ptr->desc1[tmp_size-1] = '\0'; // Terminate string
                     if (debug_level & 2)
                         fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                     break;
                 case 'D':
-                    xastir_snprintf(list_ptr->desc2,
-                                    sizeof(list_ptr->desc2),
-                                    "%s",
-                                    fill->message_line);
+                    tmp_size = sizeof(list_ptr->desc2);
+                    memcpy(list_ptr->desc2, fill->message_line, tmp_size);
+                    list_ptr->desc2[tmp_size-1] = '\0'; // Terminate string
                     if (debug_level & 2)
                         fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                     break;
                 case 'E':
                 default:
-                    xastir_snprintf(list_ptr->desc3,
-                                    sizeof(list_ptr->desc3),
-                                    "%s",
-                                    fill->message_line);
+                    tmp_size = sizeof(list_ptr->desc3);
+                    memcpy(list_ptr->desc3, fill->message_line, tmp_size);
+                    list_ptr->desc3[tmp_size-1] = '\0'; // Terminate string
                     if (debug_level & 2)
                         fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                     break;
@@ -1980,7 +1977,8 @@ void alert_build_list(Message *fill) {
 
         // Copy the sequence (which contains issue_date_time and
         // message sequence) into the record.
-        xastir_snprintf(entry.seq,sizeof(entry.seq),"%s",fill->seq);
+        memcpy(entry.seq, fill->seq, sizeof(entry.seq));
+        entry.seq[sizeof(entry.seq)-1] = '\0';  // Terminate string
 
         if (debug_level & 2)
             fprintf(stderr,"5\n");
@@ -2007,17 +2005,23 @@ void alert_build_list(Message *fill) {
                 if (is_num_chr(c)) {    // Found numeric char
                     temp[0] = '0';
                     temp[1] = c;
-                    temp[2] = '\0';
+                    temp[2] = '\0'; // Terminate the string
                 }
 
                 else if (c >= 'A' && c <= 'Z') {    // Found upper-case letter
                     // Need to take ord(c) - 55 to get the number
-                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 55);
+                    char temp_string[5];
+                    xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 55);
+                    memcpy(temp, &temp_string[2], 2);
+                    temp[2] = '\0'; // Terminate the string
                 }
 
                 else if (c >= 'a' && c <= 'z') {    // Found lower-case letter
                     // Need to take ord(c) - 61 to get the number
-                    xastir_snprintf(temp,sizeof(temp),"%02d",(int)c - 61);
+                    char temp_string[5];
+                    xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 61);
+                    memcpy(temp, &temp_string[2], 2);
+                    temp[2] = '\0'; // Terminate the string 
                 }
 
                 strncat(date_time,temp,sizeof(date_time)-strlen(date_time)-1);  // Concatenate the strings
@@ -2141,10 +2145,8 @@ void alert_build_list(Message *fill) {
                             sizeof(entry.to),
                             "%s",
                             fill->call_sign);
-            xastir_snprintf(entry.seq,
-                            sizeof(entry.seq),
-                            "%s",
-                            fill->seq);
+            memcpy(entry.seq, fill->seq, sizeof(entry.seq));
+            entry.seq[sizeof(entry.seq)-1] = '\0';  // Terminate string
 
             // NWS_ADVIS or NWS_CANCL normally appear in the "to"
             // field.  ADVIS can appear in the alert_tag field on a

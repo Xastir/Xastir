@@ -303,13 +303,15 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
             return(0);
         }
 
-        xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
+        memcpy(char_offset, &index[6], sizeof(char_offset));
+        char_offset[sizeof(char_offset)-1] = '\0';  // Terminate string
 
         // Search through the indexes looking for a callsign which is
         // close to the callsign of interest.  If callsign is later in
         // the alphabet than the current index, snag the next index.
         while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
-            xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
+            memcpy(char_offset, &index[6], sizeof(char_offset));
+            char_offset[sizeof(char_offset)-1] = '\0';  // Terminate string
             if (fgets(index,(int)sizeof(index),fndx) == NULL) {
                 // Error occurred
                 fprintf(stderr,"Search:Could not read FCC database index(2): %s\n", appl_file_path );

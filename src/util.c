@@ -1097,7 +1097,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
 /*********************************************************************/
 void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length) {
     double power, height, gain, range;
-    char directivity[6], temp[80], signal[64];
+    char directivity[6], temp[100], signal[64];
     int  gain_db;
     char s;
 
@@ -1271,7 +1271,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             directivity[0] = '\0';  break;
     }
 
-    if (english_units)
+    if (english_units) {
         xastir_snprintf(temp,
             sizeof(temp),
             "%.0fft %s, %ddB%s, %s: %.1fmi, %s",
@@ -1282,7 +1282,8 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             langcode("WPUPSTI075"), // "DF Range"
             range,
             signal);
-    else
+    }
+    else {
         xastir_snprintf(temp,
             sizeof(temp),
             "%.1fm %s, %ddB%s, %s: %.1fkm, %s",
@@ -1293,6 +1294,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             langcode("WPUPSTI075"), // "DF Range"
             range*1.609344,
             signal);
+    }
 
     xastir_snprintf(shg_decoded,
         shg_decoded_length,
@@ -1345,7 +1347,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
 //fprintf(stderr,"N != 0\n");
 
-        range = (int)( pow(2.0,R - '0') );
+        range = pow(2.0,R - '0');
 
         switch (Q) {
             case('1'):
@@ -1932,7 +1934,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
  * 0N/0E is excluded from trails, could be excluded from map (#define ACCEPT_0N_0E)
  */
 
-int position_defined(long lat, long lon, int strict) {
+int position_defined(long lat, long lon, int UNUSED(strict)) {
 
     if (lat == 0l && lon == 0l)
         return(0);              // undefined location
@@ -2040,12 +2042,12 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
                     allign more cleanly with UTM strings.
    space_string_len length of the space_string char[]
 */
-void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len, 
+void convert_xastir_to_MGRS_str_components(char *utmZone, int UNUSED(utmZone_len), 
        char *EastingL, int EastingL_len, 
        char *NorthingL, int NorthingL_len, 
        unsigned int *int_utmEasting, unsigned int *int_utmNorthing, 
        long x,  long y, 
-       int nice_format, char *space_string, int space_string_len) {
+       int nice_format, char *space_string, int UNUSED(space_string_len) ) {
 
     double utmNorthing;
     double utmEasting;
@@ -4674,7 +4676,8 @@ char *sec_to_loc(long longitude, long latitude)
  *  Substring function WITH a terminating NULL char, needs a string of at least size+1
  */
 void substr(char *dest, char *src, int size) {
-    xastir_snprintf(dest, size+1, "%s", src);
+    memcpy(dest, src, size+1);
+    dest[size] = '\0';  // Terminate string
 }
 
 

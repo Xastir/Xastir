@@ -312,7 +312,7 @@ int check_trans (XColor c, transparent_color_record *c_trans_color_head) {
 // decides whether we're fetching 50k or 250k maps.
 //
 void draw_toporama_map (Widget w, 
-                        char *dir,
+                        char * UNUSED(dir),
                         char *filenm, 
                         alert_entry *alert,
                         u_char alert_color,
@@ -745,7 +745,8 @@ void draw_geo_image_map (Widget w,
                     char temp[MAX_FILENAME];
 
                     // grab .geo file name
-                    xastir_snprintf(temp,sizeof(temp),"%s",file);
+                    strcpy(temp, file);
+                    temp[sizeof(temp)-1] = '\0';  // Terminate line
 
                     (void)get_map_dir(temp);           // leaves just the path and trailing /
                     if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))

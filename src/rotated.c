@@ -46,6 +46,8 @@
 #include "rotated.h"
 #include "snprintf.h"
 
+#include "xastir.h"
+
 // Must be last include file
 #include "leak_detection.h"
 
@@ -1482,7 +1484,7 @@ static XImage *XRotMagnifyImage( Display *dpy, XImage *ximage) {
 // This function allocates some memory, frees all but xp_out which
 // is returned.
 //
-XPoint *XRotTextExtents( Display *dpy, XFontStruct *font, float angle, int x, int y, char *text, int align) {
+XPoint *XRotTextExtents( Display * UNUSED(dpy), XFontStruct *font, float angle, int x, int y, char *text, int align) {
     int i;
     char *str1, *str2, *str3;
     char *str2_a="\0", *str2_b="\n\0";

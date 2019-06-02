@@ -96,7 +96,7 @@ int device_data_type;
 
 
 
-void speed_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void speed_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -110,7 +110,7 @@ void speed_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
 
 
 
-void style_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void style_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -125,7 +125,7 @@ void style_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
 
 
 
-void data_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void data_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -140,7 +140,7 @@ void data_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
 
 
 
-void rain_gauge_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void rain_gauge_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -155,7 +155,7 @@ void rain_gauge_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 
-void igate_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void igate_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -265,7 +265,7 @@ Widget TNC_relay_digipeat;
 
 
  
-void Config_TNC_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_TNC_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -606,7 +606,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 
 
 
-void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int port) {
+void Config_TNC( /*@unused@*/ Widget UNUSED(w), int device_type, int config_type, int port) {
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
                 setup1, setup3, setup4,
@@ -2003,7 +2003,7 @@ Widget GPS_set_time;
 
 
 
-void Config_GPS_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_GPS_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -2100,7 +2100,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
 
 
 
-void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_GPS( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2,
                 device, comment, speed_box,
@@ -2588,7 +2588,7 @@ Widget WX_tenths, WX_hundredths, WX_millimeters;
 
 
 
-void Config_WX_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_WX_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -2685,7 +2685,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 
 
 
-void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_WX( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 frame, frame2, frame3, frame4, WX_none,
                 device, comment, speed_box,
@@ -3286,7 +3286,7 @@ Widget NWX_host_reconnect_data;
 
 
 
-void Config_NWX_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_NWX_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -3392,7 +3392,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
 
 
 
-void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_NWX( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, frame3, frame4, WX_none,
                 button_ok, button_cancel,
                 hostn, portn, comment,
@@ -3822,7 +3822,7 @@ Widget NGPS_set_time;
 
 
 
-void Config_NGPS_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_NGPS_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -3928,7 +3928,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
 
 
 
-void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_NGPS( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 hostn, portn, comment,
                 sep;
@@ -4232,7 +4232,7 @@ Widget AX25_relay_digipeat;
 
 
 
-void Config_AX25_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Config_AX25_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4400,7 +4400,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
 
 
 
-void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_AX25( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel, frame,
                 devn, comment,
                 proto, proto1, proto2, proto3,
@@ -4920,7 +4920,7 @@ int    Inet_port;
 
 
 
-void Inet_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Inet_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -5045,7 +5045,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
 
 
-void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_Inet( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 ihost, iport, password,
                 filter, comment, sep;
@@ -5426,7 +5426,7 @@ int    Database_port;
 
 
 
-void Database_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Database_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -5550,7 +5550,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
 
 
-void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_Database( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 ihost, iport, password,
                 filter, sep, comment;
@@ -7023,7 +7023,7 @@ int    AGWPE_port;
 
 
 
-void AGWPE_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void AGWPE_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -7212,7 +7212,7 @@ end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
 
 
-void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
+void Config_AGWPE( /*@unused@*/ Widget UNUSED(w), int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 ihost, iport, password, sep,
                 igate_box, igate_o_0, igate_o_1, igate_o_2,
@@ -7909,7 +7909,7 @@ int are_shells_up(void) {
 
 
 
-void Choose_interface_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Choose_interface_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     if (are_shells_up()==0) {
         XtPopdown(shell);
@@ -8184,7 +8184,7 @@ void update_interface_list(void) {
 
 
 
-void interface_setup(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void interface_setup(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *what = (char *)clientData;
     int x,i,do_w;
     char *temp;
@@ -8363,7 +8363,7 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 //      1 = Delete
 //      2 = Properties
 //
-void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget pane, form, label, button_add, button_cancel;
     char *what = (char *)clientData;
     int i,x,n,do_w;
@@ -8738,7 +8738,7 @@ extern void shutdown_all_active_or_defined_port(int port);
 
 
 
-void start_stop_interface( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void start_stop_interface( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *which = (char *)clientData;
     int do_w;
     char temp2[50];
@@ -8808,7 +8808,7 @@ void start_stop_interface( /*@unused@*/ Widget widget, XtPointer clientData,  /*
 
 
 
-void start_stop_all_interfaces( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void start_stop_all_interfaces( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     char *which = (char *)clientData;   // Whether to start or stop the interfaces
     int do_w;
 
@@ -8840,7 +8840,7 @@ void start_stop_all_interfaces( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
-void Control_interface_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void Control_interface_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,  /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -8857,7 +8857,7 @@ end_critical_section(&control_interface_dialog_lock, "interface_gui.c:Control_in
 
 
 
-void control_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientData,  /*@unused@*/ XtPointer callData) {
+void control_interface( /*@unused@*/ Widget UNUSED(w),  /*@unused@*/ XtPointer UNUSED(clientData),  /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
     static Widget button_add, button_delete, button_properties;
     Atom delw;

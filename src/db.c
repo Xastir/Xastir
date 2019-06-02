@@ -398,10 +398,8 @@ int is_tracked_station(char *call_sign) {
         call_find[ii] = '\0';
     }
     else {
-        xastir_snprintf(call_find,
-                        sizeof(call_find),
-                        "%s",
-                        tracking_station_call);
+        memcpy(call_find, tracking_station_call, sizeof(call_find));
+        call_find[sizeof(call_find)-1] = '\0';  // Terminate string
     }
 
     if (debug_level & 256) {
@@ -4000,7 +3998,7 @@ void display_file(Widget w) {
 /*
  *  Delete Station Info PopUp
  */
-void Station_data_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_data_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -4020,7 +4018,7 @@ void Station_data_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData
 /*
  *  Store track data for current station
  */
-void Station_data_store_track(Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_data_store_track(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     DataRow *p_station = clientData;
 
     //busy_cursor(XtParent(w));
@@ -4048,7 +4046,7 @@ void Station_data_store_track(Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 /*
  *  Delete tracklog for current station
  */
-void Station_data_destroy_track( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_data_destroy_track( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     DataRow *p_station = clientData;
 
     if (delete_trail(p_station))
@@ -4063,7 +4061,7 @@ void Station_data_destroy_track( /*@unused@*/ Widget widget, XtPointer clientDat
 // call wx_alert_double_click_action, which expects the parameter in
 // calldata instead of in clientData.
 //
-void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     //fprintf(stderr, "Station_data_wx_alert start\n");
     wx_alert_finger_output( w, clientData);
     //fprintf(stderr, "Station_data_wx_alert end\n");
@@ -4073,7 +4071,7 @@ void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointe
 
 
 
-void Station_data_add_fcc(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_data_add_fcc(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char temp[500];
     FccAppl my_data;
     char *station = (char *) clientData;
@@ -4101,7 +4099,7 @@ void Station_data_add_fcc(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
 
 
 
-void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_data_add_rac(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char temp[512];
     char club[512];
     rac_record my_data;
@@ -4165,7 +4163,7 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
 
 
 
-void Station_query_trace(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_query_trace(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4183,7 +4181,7 @@ void Station_query_trace(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@
 
 
 
-void Station_query_messages(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_query_messages(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4201,7 +4199,7 @@ void Station_query_messages(/*@unused@*/ Widget w, XtPointer clientData, /*@unus
 
 
 
-void Station_query_direct(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_query_direct(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4219,7 +4217,7 @@ void Station_query_direct(/*@unused@*/ Widget w, XtPointer clientData, /*@unused
 
 
 
-void Station_query_version(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Station_query_version(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4237,7 +4235,7 @@ void Station_query_version(/*@unused@*/ Widget w, XtPointer clientData, /*@unuse
 
 
 
-void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void General_query(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
     char *location = (char *) clientData;
     char temp[50];
 
@@ -4249,7 +4247,7 @@ void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
 
 
 
-void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void IGate_query(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     output_my_data("?IGATE?",-1,0,0,0,NULL); // Not igating
 }
 
@@ -4257,7 +4255,7 @@ void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 
 
-void WX_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void WX_query(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
     output_my_data("?WX?",-1,0,0,0,NULL);    // Not igating
 }
 
@@ -4271,7 +4269,7 @@ Widget tactical_text = (Widget)NULL;
 DataRow *tactical_pointer = NULL;
 
 
-void Change_tactical_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Change_tactical_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4332,7 +4330,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
 
 
-void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
+void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, my_form, button_ok, button_close, label;
     Atom delw;
     Arg al[50];                     // Arg List
@@ -4494,7 +4492,7 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
 /*
  *  Assign a tactical call to a station
  */
-void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer calldata) {
+void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
 
     //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
@@ -4509,7 +4507,7 @@ void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer calldata) {
 /*
  *  Change the trail color for a station
  */
-void Change_trail_color( Widget w, XtPointer clientData, XtPointer calldata) {
+void Change_trail_color( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
     int temp;
 
@@ -4532,7 +4530,7 @@ void Change_trail_color( Widget w, XtPointer clientData, XtPointer calldata) {
 
 
 
-static void PosTestExpose(Widget parent, XtPointer clientData, XEvent *event, Boolean * continueToDispatch) {
+static void PosTestExpose(Widget parent, XtPointer UNUSED(clientData), XEvent * UNUSED(event), Boolean * UNUSED(continueToDispatch) ) {
     Position x, y;
 
     XtVaGetValues(parent, XmNx, &x, XmNy, &y, NULL);
@@ -4601,7 +4599,7 @@ void compute_decorations( void ) {
 
 
 // Enable/disable auto-update of Station_data dialog
-void station_data_auto_update_toggle ( /*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
+void station_data_auto_update_toggle ( /*@unused@*/ Widget UNUSED(widget), /*@unused@*/ XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
@@ -4621,7 +4619,7 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     char temp[300];
     int pos, last_pos;
     char temp_my_distance[20];
-    char temp_my_course[20];
+    char temp_my_course[25];
     char temp1_my_course[20];
     float temp_out_C, e, humidex;
     long l_lat, l_lon;
@@ -5545,7 +5543,7 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
  * Called by Station_data function below from the Track Station
  * button in Station Info.
  */
-void Track_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
+void Track_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
  
     if (p_station->call_sign[0] != '\0') {
@@ -5566,7 +5564,7 @@ void Track_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPoin
  * Called by Station_data function below from the Clear DF Bearing
  * button in Station Info.
  */
-void Clear_DF_from_Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
+void Clear_DF_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
  
     if (strlen(p_station->bearing) == 3) {
@@ -6304,7 +6302,7 @@ void update_station_info(Widget w) {
 /*
  *  Station Info Selection PopUp window: Canceled
  */
-void Station_info_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_info_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     // We used to close the detailed Station Info dialog here too, which
@@ -6345,7 +6343,7 @@ XtPointer station_info_select_global = NULL;
 /*
  *  Station Info Selection PopUp window: Quit with selected station
  */
-void Station_info_select_destroy_shell(Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_info_select_destroy_shell(Widget widget, /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     int i,x;
     char *temp;
     char temp2[50];
@@ -6419,7 +6417,7 @@ void Station_info_select_destroy_shell(Widget widget, /*@unused@*/ XtPointer cli
  *             "3"  = Assign Tactical Call
  *             "4"  = Send Message To
  */
-void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
+void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station;
     DataRow *p_found;
     int num_found = 0;
@@ -6895,14 +6893,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            xastir_snprintf(speed,
-                            sizeof(speed),
-                            "%s",
-                            p_station->speed);
-            xastir_snprintf(course,
-                            sizeof(course),
-                            "%s",
-                            p_station->course);
+            memcpy(speed, p_station->speed, sizeof(speed));
+            speed[sizeof(speed)-1] = '\0';  // Terminate string
+            memcpy(course, p_station->course, sizeof(course));
+            course[sizeof(course)-1] = '\0';  // Terminate string
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed wx\n");
@@ -6918,14 +6912,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            xastir_snprintf(speed,
-                            sizeof(speed),
-                            "%s",
-                            p_station->speed);
-            xastir_snprintf(course,
-                            sizeof(course),
-                            "%s",
-                            p_station->course);
+            memcpy(speed, p_station->speed, sizeof(speed));
+            speed[sizeof(speed)-1] = '\0';  // Terminate string
+            memcpy(course, p_station->course, sizeof(course));
+            course[sizeof(course)-1] = '\0';  // Terminate string
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed WX in non-fixed locations! %s:%s\n",
@@ -7144,7 +7134,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 // The symbol will be either "\@" for current position, or "/@" for
 // predicted position.
 //
-int extract_storm(DataRow *p_station, char *data, int compr) {
+int extract_storm(DataRow *p_station, char *data, int UNUSED(compr) ) {
     char time_data[MAX_TIME];
     int  ok = 1;
     WeatherRow *weather;
@@ -7252,7 +7242,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
             xastir_snprintf(weather->wx_speed,
                             sizeof(weather->wx_speed),
                             "%0.1f",
-                            (float)(atoi(weather->wx_speed)) * 1.1508);
+                            atof(weather->wx_speed) * 1.1508);
 
         //fprintf(stderr,"%s\n",data);
 
@@ -7262,7 +7252,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
             xastir_snprintf(weather->wx_gust,
                             sizeof(weather->wx_gust),
                             "%0.1f",
-                            (float)(atoi(weather->wx_gust)) * 1.1508);
+                            atof(weather->wx_gust) * 1.1508);
 
         //fprintf(stderr,"%s\n",data);
 
@@ -7272,7 +7262,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
             xastir_snprintf(weather->wx_baro,
                             sizeof(weather->wx_baro),
                             "%0.1f",
-                            (float)(atoi(weather->wx_baro)));
+                            atof(weather->wx_baro));
 
         //fprintf(stderr,"%s\n",data);
 
@@ -7322,7 +7312,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
 static void extract_multipoints(DataRow *p_station,
                                 char *data,
-                                int type,
+                                int UNUSED(type),
                                 int remove_string) {
     // If they're in there, the multipoints start with the
     // sequence <space><rbrace><lower><digit> and end with a <lbrace>.
@@ -7650,7 +7640,7 @@ int delete_multipoints(DataRow *fill) { // delete multipoint storage, if allocat
 /*
  *  See if current color is defined as active trail color
  */
-int trail_color_active(int color_index) {
+int trail_color_active(int UNUSED(color_index)) {
 
     // this should be made configurable...
     // to select trail colors to use
@@ -10357,7 +10347,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
  * Returns 0 if the packet is NOT a properly compressed position
  * packet, returns 1 if ok.
  */
-int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type) {
+int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int UNUSED(type) ) {
     int ok;
     int x1, x2, x3, x4, y1, y2, y3, y4;
     int c = 0;
@@ -11124,7 +11114,7 @@ void extract_area(DataRow *p_station, char *data) {
  * If a time string is found in "data", it is deleted from the
  * beginning of the string.
  */
-int extract_time(DataRow *p_station, char *data, int type) {
+int extract_time(DataRow * UNUSED(p_station), char *data, int type) {
     int len, i;
     int ok = 0;
 
@@ -11183,7 +11173,7 @@ int extract_time(DataRow *p_station, char *data, int type) {
 //  T../C..  Area Object Descriptor
 
 /* Extract one of several possible APRS Data Extensions */
-void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int type) {
+void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int UNUSED(type) ) {
     char temp1[7+1];
     char temp2[3+1];
     char temp3[10+1];
@@ -11364,7 +11354,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
 
 
 /* extract all available information from info field */
-void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
+void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int UNUSED(type) ) {
     char temp_data[6+1];
     //    char time_data[MAX_TIME];
 
@@ -14173,7 +14163,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
 // Speed is in knots
-void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char speedu, char *alt, char *sats) {
+void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char UNUSED(speedu), char *alt, char *sats) {
     long pos_long_temp, pos_lat_temp;
     char temp_data[40];   // short term string storage
     char temp_lat[12];
@@ -14234,14 +14224,12 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
                     temp_data[7], temp_data[8],temp_data[9]);
 
     /* fill the data in */    // ???????????????
-    xastir_snprintf(my_lat,
-                    sizeof(my_lat),
-                    "%s",
-                    temp_lat);
-    xastir_snprintf(my_long,
-                    sizeof(my_long),
-                    "%s",
-                    temp_long);
+    memcpy(my_lat, temp_lat, sizeof(my_lat));
+    my_lat[sizeof(my_lat)-1] = '\0';  // Terminate string
+
+    memcpy(my_long, temp_long, sizeof(my_long));
+    my_long[sizeof(my_long)-1] = '\0';  // Terminate string
+
     p_station->coord_lat = convert_lat_s2l(my_lat);
     p_station->coord_lon = convert_lon_s2l(my_long);
 
@@ -14302,7 +14290,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     my_last_course=atoi(course);
 
     /* get my last speed in knots */
-    my_last_speed=(int)(atof(speed));
+    my_last_speed = atoi(speed);
     xastir_snprintf(p_station->sats_visible,
                     sizeof(p_station->sats_visible),
                     "%s",
@@ -14642,10 +14630,8 @@ void packet_data_add(char *from, char *line, int data_port) {
         char short_call[MAX_CALLSIGN];
         char *p;
 
-        xastir_snprintf(short_call,
-                        sizeof(short_call),
-                        "%s",
-                        my_callsign);
+        memcpy(short_call, my_callsign, sizeof(short_call));
+        short_call[sizeof(short_call)-1] = '\0';  // Terminate string
         if ( (p = index(short_call,'-')) ) {
             *p = '\0';  // Terminate it
         }
@@ -15422,7 +15408,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
 // NOTE:  We may end up sending these to RF when the query came in
 // over the internet.  We should check that.
 //
-int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *message,char from,int port, /*@unused@*/ int third_party) {
+int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char * UNUSED(path), char *message,char from,int port, /*@unused@*/ int UNUSED(third_party) ) {
     char temp[100];
     int ok = 0;
     float randomize;
@@ -15559,7 +15545,7 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
 /*
  *  Status Reports                              [APRS Reference, chapter 16]
  */
-int process_status( /*@unused@*/ char *call_sign, /*@unused@*/ char *path, /*@unused@*/ char *message, /*@unused@*/ char from, /*@unused@*/ int port, /*@unused@*/ int third_party) {
+int process_status( /*@unused@*/ char * UNUSED(call_sign), /*@unused@*/ char * UNUSED(path), /*@unused@*/ char * UNUSED(message), /*@unused@*/ char UNUSED(from), /*@unused@*/ int UNUSED(port), /*@unused@*/ int UNUSED(third_party) ) {
 
     //    popup_message(langcode("POPEM00018"),message);  // What is it ???
     return(1);
@@ -15859,7 +15845,7 @@ int fill_in_tactical_callsign(char *call, char *tactical_call) {
 //
 //  '=' or ';' characters can not be in the TAC callsign.
 // 
-int tactical_data_add(char *call, char *message, char from) {
+int tactical_data_add(char *call, char *message, char UNUSED(from) ) {
     char *temp_ptr;
 
 
@@ -18066,10 +18052,8 @@ int decode_ax25_header(unsigned char *data_string, int *length) {
     // truncate our string.  Make sure the data_string variable is
     // MAX_LINE_SIZE or bigger.
     //
-    xastir_snprintf((char *)data_string,
-                    MAX_LINE_SIZE,
-                    "%s",
-                    result);
+    memcpy(data_string, result, MAX_LINE_SIZE);
+    data_string[MAX_LINE_SIZE-1] = '\0';  // Terminate string
 
     // Write out the new length
     *length = strlen(result); 
@@ -18464,6 +18448,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     int third_party;
     char backup[MAX_LINE_SIZE+1];
     char tmp_line[MAX_LINE_SIZE+1];
+    char tmp_line2[630];
     char tmp_path[100+1];
     char *ViaCalls[10];
 
@@ -18847,13 +18832,15 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             // Here's where we inject our own callsign like this:
             // "WE7U-15,I" in order to provide injection ID for our
             // igate.
-            xastir_snprintf(tmp_line,
-                            sizeof(tmp_line),
+            xastir_snprintf(tmp_line2,
+                            sizeof(tmp_line2),
                             "%s>%s,%s,I:%s",
                             call_sign,
                             path,
                             my_callsign,
                             info_copy);
+            memcpy(tmp_line, tmp_line2, sizeof(tmp_line));
+            tmp_line[sizeof(tmp_line)-1] = '\0';  // Terminate line
 
             //fprintf(stderr,"decode_ax25_line: IGATE>NET %s\n",tmp_line);
             //fprintf(stderr,"call: %s\tcall_sign: %s\n", call, call_sign);
@@ -18922,14 +18909,11 @@ void  read_file_line(FILE *f) {
                     // previous string.  Used for debugging
                     // purposes.  If we get a segfault, we can print
                     // out the last two messages received.
-                    xastir_snprintf((char *)incoming_data_copy_previous,
-                                    MAX_LINE_SIZE,
-                                    "%s",
-                                    incoming_data_copy);
-                    xastir_snprintf((char *)incoming_data_copy,
-                                    MAX_LINE_SIZE,
-                                    "%s",
-                                    line);
+                    memcpy(incoming_data_copy_previous, incoming_data_copy, MAX_LINE_SIZE);
+                    incoming_data_copy_previous[MAX_LINE_SIZE-1] = '\0';  // Terminate string
+
+                    memcpy(incoming_data_copy, line, MAX_LINE_SIZE);
+                    incoming_data_copy[MAX_LINE_SIZE-1] = '\0'; // Terminate string
 
                     if (line[0] != '#') {
                         decode_ax25_line(line,'F',-1, 1);   // Decode the packet
@@ -18955,7 +18939,7 @@ void  read_file_line(FILE *f) {
 /*
  *  Center map to new position
  */
-void set_map_position(Widget w, long lat, long lon) {
+void set_map_position(Widget UNUSED(w), long lat, long lon) {
     // see also map_pos() in location.c
 
     // Set interrupt_drawing_now because conditions have changed
@@ -19132,7 +19116,7 @@ void search_tracked_station(DataRow **p_tracked) {
  *  Change map position if neccessary while tracking a station
  *      we call it with defined station call and position
  */
-void track_station(Widget w, char *call_tracked, DataRow *p_station) {
+void track_station(Widget w, char * UNUSED(call_tracked), DataRow *p_station) {
     long x_ofs, y_ofs;
     long new_lat, new_lon;
 
@@ -19420,7 +19404,7 @@ void calc_aloha(int secs_now)    {
 
 
 // popup window on menu request
-void Show_Aloha_Stats(Widget w, XtPointer clientData, XtPointer callData)  {
+void Show_Aloha_Stats(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )  {
 
     char temp[2000];
     char format[1000];

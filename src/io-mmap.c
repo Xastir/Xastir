@@ -19,6 +19,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <string.h>
+#include "xastir.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -115,7 +116,7 @@ void io_close(struct io_file *f) {
 
 /* Attempts to make the mapping cover [pos,pos+len), or at least [pos].
    Returns nonzero iff failed. */
-static int remap(struct io_file *f,int pos,int len) {
+static int remap(struct io_file *f,int pos,int UNUSED(len) ) {
     if (pos < (int)f->map_offset || pos >= (int)(f->map_offset + f->map_size) ) {
         const int flags = MAP_SHARED;
 

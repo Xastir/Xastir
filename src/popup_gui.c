@@ -85,9 +85,9 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_messag
 
 
 
-static void popup_message_destroy_shell(/*@unused@*/ Widget w,
+static void popup_message_destroy_shell(/*@unused@*/ Widget UNUSED(w),
                                 XtPointer clientData,
-                                /*@unused@*/ XtPointer callData) {
+                                /*@unused@*/ XtPointer UNUSED(callData) ) {
     int i;
 
     i=atoi((char *)clientData);
@@ -214,7 +214,7 @@ XmNminHeight, 80,
                                       XmNfontList, fontlist1,
                                       NULL);
 
-            xastir_snprintf(pw[i].name,10,"%d",i);
+            xastir_snprintf(pw[i].name,10,"%9d",i%1000);
 
             msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
             XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
@@ -296,7 +296,7 @@ static XFontStruct *id_font=NULL;
 // Routine which pops up a large message for a few seconds in the
 // middle of the screen, then removes it.
 //
-void popup_ID_message(char *banner, char *message) {
+void popup_ID_message(char * UNUSED(banner), char *message) {
     float my_rotation = 0.0;
     int x = (int)(screen_width/10);
     int y = (int)(screen_height/2);

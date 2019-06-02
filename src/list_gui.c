@@ -376,7 +376,7 @@ int stations_types(int type) {
 
 
 
-void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void station_list_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     int type;
     int i;
 
@@ -405,7 +405,7 @@ void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
  * Callback for station icon in list.
  * Calls a function to center the map on the selected station from the list.
  */
-void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     if (clientData != NULL && strlen(clientData) > 0) { 
        locate_station(w, clientData, 1,1,1); 
     } 
@@ -417,7 +417,7 @@ void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@
  * *** This callback is not linked to a control on list yet. ***
  * Invokes the station information dialog for the selected station from the list.
  */
-void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     if (clientData != NULL && strlen(clientData) > 0) { 
        Station_data(w, clientData, NULL); 
     } 
@@ -430,7 +430,7 @@ void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
  */
 void Station_List_fill(int type, int new_offset) {
     int row;
-    char temp[8];
+    char temp[11];
     char *temp_ptr;
     Dimension w,h;            // size of scrollbar in pixel
     Dimension ww,wh;          // size of entire widget in pixel
@@ -875,14 +875,14 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                                     weather->wx_baro);
                             }
                             else {  // Inches Mercury
-                                float temp;
+                                float tempf;
                                 char temp2[15];
 
-                                temp = atof(weather->wx_baro)*0.02953;
+                                tempf = atof(weather->wx_baro)*0.02953;
                                 xastir_snprintf(temp2,
                                     sizeof(temp2),
                                     "%0.2f",
-                                    temp);
+                                    tempf);
                                 XmTextFieldSetString(SL_wx_baro[type][row],
                                     temp2);
                             }
@@ -1057,7 +1057,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
 
 
-void dragCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void dragCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1073,7 +1073,7 @@ void dragCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
 
 
 
-void decrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void decrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1085,7 +1085,7 @@ void decrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
-void incrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void incrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1097,7 +1097,7 @@ void incrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
-void pageDecrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void pageDecrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1109,7 +1109,7 @@ void pageDecrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointe
 
 
 
-void pageIncrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void pageIncrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1121,7 +1121,7 @@ void pageIncrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointe
 
 
 
-void mouseScrollHandler(Widget w, XtPointer clientData, XButtonEvent* event, Boolean* continueToDispatch) {
+void mouseScrollHandler(Widget UNUSED(w), XtPointer clientData, XButtonEvent* event, Boolean * UNUSED(continueToDispatch)) {
     int i = atoi((char*)clientData);
     int lines = 2;
     // no modifier moves 2 lines
@@ -1152,7 +1152,7 @@ void mouseScrollHandler(Widget w, XtPointer clientData, XButtonEvent* event, Boo
 
 
 
-void valueChangedCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void valueChangedCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1167,7 +1167,7 @@ void valueChangedCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer
 /*
  *  Setup the various list layouts
  */
-void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Station_List(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     int i;
     Widget pane, form, win_list, form2, button_close;
     Widget numl,call,sep,sep2;

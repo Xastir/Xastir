@@ -378,8 +378,9 @@ void draw_WMS_map (Widget w,
 //    strncat(WMStmp, "&BGCOLOR=0xffffff", sizeof(WMStmp) - 1 - strlen(WMStmp));
 //    strncat(WMStmp, "&BGCOLOR=0x000000", sizeof(WMStmp) - 1 - strlen(WMStmp));
 //    strncat(WMStmp, "&CRS=CRS:84", sizeof(WMStmp) - 1 - strlen(WMStmp));
-
-    xastir_snprintf(fileimg, sizeof(fileimg), "%s", WMStmp);
+  
+    memcpy(fileimg, WMStmp, sizeof(fileimg));
+    fileimg[sizeof(fileimg)-1] = '\0';  // Terminate string
 
     if (debug_level & 512) {
           fprintf(stderr,"left side is %f\n", left);

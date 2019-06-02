@@ -445,7 +445,7 @@ void maps_init(void)
  *  Calculate NS distance scale at a given location
  *  in meters per Xastir unit
  */
-double calc_dscale_y(long x, long y) {
+double calc_dscale_y(long UNUSED(x), long UNUSED(y) ) {
 
     // approximation by looking at +/- 0.5 minutes offset
     //    (void)(calc_distance(y-3000, x, y+3000, x)/6000.0);
@@ -1360,7 +1360,7 @@ void draw_complete_lat_lon_grid(Widget w) {
     // scale_x * (screen_width/10) = one tenth of the screen width in xastir coordinates
     // scale_x number of xastir coordinates per pixel
     screen_width_degrees = (float)(screen_width_xastir / (float)360000);
-    log_screen_width_degrees = (int)log10(screen_width_degrees);
+    log_screen_width_degrees = log10(screen_width_degrees);
  
 
     if (draw_labeled_grid_border==TRUE) { 
@@ -1370,10 +1370,14 @@ void draw_complete_lat_lon_grid(Widget w) {
         // find location of upper left corner of map, convert to Lat/Long
         convert_lon_l2s(xx, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy, grid_label2, sizeof(grid_label2), coordinate_format);
-        xastir_snprintf(grid_label,
-            sizeof(grid_label),
-            "%s %s",
-            grid_label1,grid_label2);
+
+        strcpy(grid_label, grid_label1);
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+        strcat(grid_label, " ");
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+        strcat(grid_label, grid_label2);
+        grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+
         // find location of lower right corner of map, convert to Lat/Long
         convert_lon_l2s(xx2, grid_label1, sizeof(grid_label1), coordinate_format);
         convert_lat_l2s(yy2, grid_label2, sizeof(grid_label2), coordinate_format);
@@ -1415,7 +1419,7 @@ void draw_complete_lat_lon_grid(Widget w) {
             // For decimal minutes or minutes and seconds.
             // Find screen width and log screen width in minutes.
             screen_width_degrees = screen_width_degrees * 60.0;
-            log_screen_width_degrees = (int)log10(screen_width_degrees);
+            log_screen_width_degrees = log10(screen_width_degrees);
             // round to minutes or tenths of minutes.
             stepsx = ((float)(int)
                       ((float)(screen_width_degrees) / pow(10,log_screen_width_degrees) * 10.0)
@@ -1893,10 +1897,17 @@ void draw_major_utm_mgrs_grid(Widget w) {
                 mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
         } 
         else {
-            xastir_snprintf(grid_label,
-                sizeof(grid_label),
-                "%s %07.0f %07.0f",
-                zone_str,easting,northing);
+            char easting_str[10];
+            char northing_str[10];
+
+            xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+            xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+            strcpy(grid_label, zone_str);
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+            strcat(grid_label, easting_str);
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+            strcat(grid_label, northing_str); 
+            grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
         }
         // find location of lower right corner of map, convert to UTM
         xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
@@ -1924,10 +1935,17 @@ void draw_major_utm_mgrs_grid(Widget w) {
            }
         } 
         else {
-            xastir_snprintf(grid_label1,
-                sizeof(grid_label1),
-                "%s %07.0f %07.0f",
-                zone_str,easting,northing);
+            char easting_str[10];
+            char northing_str[10];
+
+            xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+            xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+            strcpy(grid_label1, zone_str);
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+            strcat(grid_label1, easting_str);
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+            strcat(grid_label1, northing_str); 
+            grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
         }
         // Write metadata on upper border of map.
         //"XASTIR Map of %s (upper left) to %s (lower right).  UTM zones, %s datum. ",
@@ -2307,10 +2325,17 @@ void actually_draw_utm_minor_grid(Widget w) {
                         mgrs_zone,mgrs_ul_digraph,(float)int_utmEasting,(float)int_utmNorthing);
                 } 
                 else {
-                    xastir_snprintf(grid_label,
-                        sizeof(grid_label),
-                        "%s %07.0f %07.0f",
-                        zone_str,easting,northing);
+                    char easting_str[10];
+                    char northing_str[10];
+
+                    xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+                    xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+                    strcpy(grid_label, zone_str);
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+                    strcat(grid_label, easting_str);
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
+                    strcat(grid_label, northing_str); 
+                    grid_label[sizeof(grid_label)-1] = '\0';  // Terminate string
                 }
                 // find location of lower right corner of map, convert to UTM
                 xx2 = NW_corner_longitude  + ((screen_width - border_width) * scale_x);
@@ -2338,10 +2363,17 @@ void actually_draw_utm_minor_grid(Widget w) {
                    }
                 } 
                 else {
-                    xastir_snprintf(grid_label1,
-                        sizeof(grid_label1),
-                        "%s %07.0f %07.0f",
-                        zone_str,easting,northing);
+                    char easting_str[10];
+                    char northing_str[10];
+
+                    xastir_snprintf(easting_str, sizeof(easting_str), " %07.0f", easting);
+                    xastir_snprintf(northing_str, sizeof(northing_str), " %07.0f", northing);
+                    strcpy(grid_label1, zone_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+                    strcat(grid_label1, easting_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
+                    strcat(grid_label1, northing_str);
+                    grid_label1[sizeof(grid_label1)-1] = '\0';  // Terminate string
                 }
                 //"XASTIR Map of %s (upper left) to %s (lower right).  UTM %d m grid, %s datum. ",
                 xastir_snprintf(top_label,
@@ -3598,7 +3630,7 @@ current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","
  **********************************************************/
 /* common code used by the two entries --- a result of retrofitting a new
    feature (centered) */
-static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
+static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int UNUSED(label_length), int color, char *label_text, int align, int fontsize, Pixmap target_pixmap, int draw_outline, int outline_bg_color) {
 //    XPoint *corner;
 //    int i;
     int x_outline;
@@ -3854,7 +3886,7 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 
 
 
-static void Print_postscript_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+static void Print_postscript_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -3927,7 +3959,7 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_des
 
 
 
-static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+static void Print_properties_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     if (!shell)
@@ -3951,7 +3983,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 // Print_window:  Prints the drawing area to a Postscript file and
 // then sends it to the printer program (usually "lpr).
 //
-static void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
+static void Print_window( Widget widget, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
 #ifdef NO_XPM
 //    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
@@ -4027,12 +4059,16 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 
 
 #ifdef HAVE_CONVERT
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s -filter Point %s %s",
-            CONVERT_PATH,
-            xpm_filename,
-            ps_filename );
+        strcpy(command, CONVERT_PATH);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " -filter Point ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, xpm_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command );
@@ -4061,11 +4097,12 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 // Since we could be running SUID root, we don't want to be
 // calling "system" anyway.  Several problems with it.
 
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s %s",
-            printer_program,
-            ps_filename );
+        strcpy(command, printer_program);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -4110,7 +4147,7 @@ static void Print_window( Widget widget, XtPointer clientData, XtPointer callDat
 // previewer_program has "gv" in it, then use the various options
 // selected by the user.  If not, skip those options.
 //
-static void Print_preview( Widget widget, XtPointer clientData, XtPointer callData ) {
+static void Print_preview( Widget widget, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
 #ifdef NO_XPM
 //    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
@@ -4285,17 +4322,29 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
         }
 
 #ifdef HAVE_CONVERT
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s -filter Point %s%s%s%s%s %s %s",
-            CONVERT_PATH,
-            mono,
-            invert,
-            rotate,
-            scale,
-            density,
-            xpm_filename,
-            ps_filename );
+        strcpy(command, CONVERT_PATH);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " -filter Point ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, mono);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, invert);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, rotate);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, scale);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, density);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, xpm_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command );
 
@@ -4320,12 +4369,18 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
 // calling "system" anyway.  Several problems with it.
 
         // Bring up the postscript viewer
-        xastir_snprintf(command,
-            sizeof(command),
-            "%s %s %s &",
-            previewer_program,
-            format,
-            ps_filename );
+        strcpy(command, previewer_program);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, format);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " ");
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, ps_filename);
+        command[sizeof(command)-1] = '\0';  // Terminate string
+        strcat(command, " &");
+        command[sizeof(command)-1] = '\0';  // Terminate string
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -4370,7 +4425,7 @@ static void Print_preview( Widget widget, XtPointer clientData, XtPointer callDa
  *  Auto_rotate
  *
  */
-static void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Auto_rotate( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4392,7 +4447,7 @@ static void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
  *  Rotate_90
  *
  */
-static void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Rotate_90( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4414,7 +4469,7 @@ static void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
  *  Auto_scale
  *
  */
-static void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Auto_scale( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4434,7 +4489,7 @@ static void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
  *  Monochrome
  *
  */
-void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Monochrome( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4454,7 +4509,7 @@ void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
  *  Invert
  *
  */
-static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+static void  Invert( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4478,7 +4533,7 @@ static void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
 // 1) Select an area on the screen to print
 // 2) -label
 //
-void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
+void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_ok, button_cancel,
             sep, auto_scale,
 //            paper_size, paper_size_data, scale, scale_data, blank_background,
@@ -4929,7 +4984,7 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 // options.  From here we should be able to set the print device
 // and the print preview program & path.
 //
-void Print_Postscript( Widget w, XtPointer clientData, XtPointer callData ) {
+void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_print, button_cancel,
             sep, button_preview;
     Atom delw;
@@ -5119,7 +5174,7 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_Postscript" );
 // created.  We now create a .geo file to go with the .png file.
 //
 #ifndef NO_XPM
-static void* snapshot_thread(void *arg) {
+static void* snapshot_thread(void * UNUSED(arg) ) {
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
     char geo_filename[MAX_FILENAME];
@@ -5292,12 +5347,16 @@ static void* snapshot_thread(void *arg) {
 #ifdef HAVE_CONVERT
     // Convert it to a png file.  This depends upon having the
     // ImageMagick command "convert" installed.
-    xastir_snprintf(command,
-        sizeof(command),
-        "%s -quality 100 -colors 256 %s %s",
-        CONVERT_PATH,
-        xpm_filename,
-        png_filename );
+    strcpy(command, CONVERT_PATH);
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, " -quality 100 -colors 256 ");
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, xpm_filename);
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, " ");
+    command[sizeof(command)-1] = '\0';  // Terminate string
+    strcat(command, png_filename);
+    command[sizeof(command)-1] = '\0';  // Terminate string
 
     if ( system( command ) != 0 ) {
         // We _may_ have had an error.  Check errno to make
@@ -5489,7 +5548,7 @@ enum map_onscreen_enum map_onscreen(long left,
                                     long right, 
                                     long top, 
                                     long bottom,
-                                    int check_percentage) {
+                                    int UNUSED(check_percentage) ) {
 
     enum map_onscreen_enum in_window = MAP_NOT_VIS;
 
@@ -6167,10 +6226,11 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                                 || dl->d_name[strlen(dl->d_name)-1] == 'P') ) {
                                             // We have an exact match.
                                             // Save the filename in the alert
-                                            xastir_snprintf(alert->filename,
-                                                sizeof(alert->filename),
-                                                "%s",
-                                                dl->d_name);
+                                            memcpy(alert->filename,
+                                                dl->d_name,
+                                                sizeof(alert->filename));
+                                            // Terminate string
+                                            alert->filename[sizeof(alert->filename)-1] = '\0';
                                             done++;
                                             //fprintf(stderr,"%s\n",dl->d_name);
                                         }
@@ -8624,7 +8684,7 @@ static void insert_map_sorted(char *filename){
  * OLD: Recurses through the map directories looking for
  * maps to load.
  **********************************************************/
-void load_auto_maps (Widget w, char *dir) {
+void load_auto_maps (Widget w, char * UNUSED(dir) ) {
     map_index_record *current = map_index_head;
     map_draw_flags mdf;
 

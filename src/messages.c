@@ -741,10 +741,9 @@ void output_message(char *from, char *to, char *message, char *path) {
                     sizeof(message_pool[i].from_call_sign),
                     "%s",
                     from);
-                xastir_snprintf(message_pool[i].message_line,
-                    sizeof(message_pool[i].message_line),
-                    "%s",
-                    message_out);
+                memcpy(message_pool[i].message_line, message_out, sizeof(message_pool[i].message_line));
+                // Terminate line
+                message_pool[i].message_line[sizeof(message_pool[i].message_line)-1] = '\0';
 
                 if (path != NULL)
                     xastir_snprintf(message_pool[i].path,
@@ -1105,10 +1104,8 @@ void check_delayed_transmit_queue(int curr_sec) {
 //    "Changing queued ack's to new path: %s\n",
 //    new_path);
 
-                xastir_snprintf(ptr->path,
-                    sizeof(ptr->path),
-                    "%s",
-                    new_path);
+                memcpy(ptr->path, new_path, sizeof(ptr->path));
+                ptr->path[sizeof(ptr->path)-1] = '\0';  // Terminate string
             }
 
 

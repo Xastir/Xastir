@@ -48,6 +48,7 @@
 
 #include <poll.h>
 
+#include "xastir.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -55,7 +56,7 @@
 // Atttempt to send to one of the addresses, waiting for 10 seconds
 // for (hopefully) a response. Returns 1 on success or 0 if we didn't
 // get a response. (Any response is considered a success)
-int try_exchange(struct addrinfo *addr, char *buffer, int buflen)
+int try_exchange(struct addrinfo *addr, char *buffer, int UNUSED(buflen) )
 {
     int sockfd, n;
     socklen_t length;

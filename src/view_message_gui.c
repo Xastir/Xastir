@@ -101,7 +101,7 @@ void view_message_print_record(Message *m_fill) {
 
 
     // Make sure it's within our distance range we have set
-    distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
+    distance = distance_from_my_station(m_fill->from_call_sign,temp_my_course);
 
     if (Read_messages_mine_only
             || (!Read_messages_mine_only
@@ -141,10 +141,8 @@ void view_message_print_record(Message *m_fill) {
             char short_call[MAX_CALLSIGN];
             char *p;
 
-            xastir_snprintf(short_call,
-                sizeof(short_call),
-                "%s",
-                my_callsign);
+            memcpy(short_call, my_callsign, sizeof(short_call));
+            short_call[sizeof(short_call)-1] = '\0';  // Terminate string
             if ( (p = index(short_call,'-')) ) {
                 *p = '\0';  // Terminate it
             }
@@ -218,7 +216,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
     if (Read_messages_mine_only
             || (!Read_messages_mine_only
                 && ((vm_range == 0)
-                    || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) ) ) {
+                    || (distance_from_my_station(call_sign,temp_my_course) <= vm_range)) ) ) {
 
         // Check that it's coming from the correct type of interface
         // Compare Read_messages_packet_data_type against the port
@@ -254,10 +252,8 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
             char short_call[MAX_CALLSIGN];
             char *p;
 
-            xastir_snprintf(short_call,
-                sizeof(short_call),
-                "%s",
-                my_callsign);
+            memcpy(short_call, my_callsign, sizeof(short_call));
+            short_call[sizeof(short_call)-1] = '\0';  // Terminate string
             if ( (p = index(short_call,'-')) ) {
                 *p = '\0';  // Terminate it
             }
@@ -311,15 +307,30 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
                 call_sign,
                 data1,
                 data2);
-        } else
-            xastir_snprintf(temp,
-                my_size,
-                "%s to %s via:%c\t%s%s\n",
-                from_call,
-                call_sign,
-                from,
-                data1,
-                data2);
+        } else {
+            char from_str[10];
+
+            xastir_snprintf(from_str, sizeof(from_str), "%c", from);
+
+            strcpy(temp, from_call);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " to ");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, call_sign);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, " via:");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, from_str);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "\t");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, data1);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, data2);
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+            strcat(temp, "\n");
+            temp[sizeof(temp)-1] = '\0';  // Terminate string
+        }
 
         if ((All_messages_dialog != NULL)) {
 
@@ -350,7 +361,7 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages
 
 
 
-void All_messages_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void All_messages_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -393,7 +404,7 @@ void All_messages_change_range( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
-void  Read_messages_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Read_messages_packet_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -413,7 +424,7 @@ Widget button_range;
 
 
 
-void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Read_messages_mine_only_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -431,7 +442,7 @@ void  Read_messages_mine_only_toggle( /*@unused@*/ Widget widget, XtPointer clie
 
 
 
-void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void view_all_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget pane, my_form, button_close, dist, dist_units;
     Widget option_box, tnc_data, net_data, tnc_net_data,
         read_mine_only_button;

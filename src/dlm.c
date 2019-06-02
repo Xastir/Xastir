@@ -409,8 +409,10 @@ static size_t DLM_curl_fwrite_callback(void *buffer, size_t size, size_t nmemb, 
  * DLM_curl_progress_callback() - callback for curl_multi
  **********************************************************/
 static int DLM_curl_progress_callback(void *p,
-                                      double dltotal, double dlnow,
-                                      double ultotal, double ulnow) {
+                                      double UNUSED(dltotal),
+                                      double UNUSED(dlnow),
+                                      double UNUSED(ultotal),
+                                      double UNUSED(ulnow) ) {
     struct DLM_queue_entry *tile = (struct DLM_queue_entry *)p;
     if (!tile) return 0;
 
@@ -498,7 +500,7 @@ static CURL *DLM_curl_init(char *errBuf) {
 /**********************************************************
  * DLM_transfer_thread() - retrieve item queued for download
  **********************************************************/
-static void *DLM_transfer_thread(void *arg) {
+static void *DLM_transfer_thread(void * UNUSED(arg) ) {
     struct DLM_queue_entry *tile;
 #ifdef DLM_QUEUE_THREADED
     int idleCnt;

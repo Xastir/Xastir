@@ -64,7 +64,7 @@ void location_gui_init(void)
 /************************************************/
 /* button fuction for last location             */
 /************************************************/
-void Last_location(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Last_location(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     map_pos_last_position();
 }
 
@@ -75,7 +75,7 @@ void Last_location(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 /************************************************/
 /* manage jump locations                        */
 /************************************************/
-void location_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void location_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -95,7 +95,7 @@ end_critical_section(&location_dialog_lock, "location_gui.c:location_destroy_she
 /************************************************/
 /* jump to chosen location/zoom                 */
 /************************************************/
-void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void location_view(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     int i,x;
     char *location;
     XmString *list;
@@ -131,10 +131,8 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 if (!feof(f) && strlen(temp)>8) {
                     temp_ptr=strtok(temp,"|");  /* get the name */
                     if (temp_ptr!=NULL) {
-                        xastir_snprintf(name,
-                            sizeof(name),
-                            "%s",
-                            temp);
+                        memcpy(name, temp, sizeof(name));
+                        name[sizeof(name)-1] = '\0';  // Terminate string
                         temp_ptr=strtok(NULL,"|");  /* get the pos */
                         xastir_snprintf(pos,
                             sizeof(pos),
@@ -185,10 +183,8 @@ void jump_sort(void) {
             if (!feof(f) && strlen(temp)>8) {
                 temp_ptr=strtok(temp,"|");  /* get the name */
                 if (temp_ptr!=NULL) {
-                    xastir_snprintf(name,
-                        sizeof(name),
-                        "%s",
-                        temp);
+                    memcpy(name, temp, sizeof(name));
+                    name[sizeof(name)-1] = '\0';  // Terminate string
                     (void)sort_input_database(location_db_file_path,name,200);
                 }
             }
@@ -206,7 +202,7 @@ void jump_sort(void) {
 /************************************************/
 /* delete location/zoom                         */
 /************************************************/
-void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void location_delete(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     int i,x;
     char *location;
     XmString *list;
@@ -249,10 +245,8 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
                     if (!feof(f) && strlen(temp)>8) {
                         temp_ptr=strtok(temp,"|");  /* get the name */
                         if (temp_ptr!=NULL) {
-                            xastir_snprintf(name,
-                                sizeof(name),
-                                "%s",
-                                temp);
+                            memcpy(name, temp, sizeof(name));
+                            name[sizeof(name)-1] = '\0';  // Terminate string
                             temp_ptr=strtok(NULL,"|");  /* get the pos */
                             xastir_snprintf(pos,
                                 sizeof(pos),
@@ -303,7 +297,7 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 /************************************************/
 /* add location/zoom                            */
 /************************************************/
-void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void location_add(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
     char name[100];
     char s_long[20];
     char s_lat[20];
@@ -383,7 +377,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
 /************************************************/
 /* manage jump locations                        */
 /************************************************/
-void Jump_location(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Jump_location(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
     static Widget  pane,form, button_ok, button_add, button_delete, button_cancel, locdata, location_name;
     int n;
     Arg al[50];           /* Arg List */

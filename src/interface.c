@@ -6259,10 +6259,8 @@ void output_my_aprs_data(void) {
     // "EMERGENCY" at the beginning of the comment field we'll
     // transmit.
     if (emergency_beacon) {
-        xastir_snprintf(my_comment_tx,
-                        sizeof(my_comment_tx),
-                        "EMERGENCY %s",
-                        my_comment);
+        strncpy(my_comment_tx, "EMERGENCY", sizeof(my_comment_tx));
+        my_comment_tx[sizeof(my_comment_tx)-1] = '\0';  // Terminate string
     }
     else {
         xastir_snprintf(my_comment_tx,
@@ -6576,11 +6574,11 @@ void output_my_aprs_data(void) {
             // Add '\r' onto end.
             strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-            xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%s%s",
-                            output_net,
-                            data_txt_save);
+            strcpy(data_txt, output_net);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+            strcat(data_txt, data_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
 
             break;
 
@@ -6625,11 +6623,11 @@ void output_my_aprs_data(void) {
             // Add '\r' onto end.
             strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-            xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%s%s",
-                            output_net,
-                            data_txt_save);
+            strcpy(data_txt, output_net);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+            strcat(data_txt, data_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
 
             break;
 
@@ -6674,11 +6672,11 @@ void output_my_aprs_data(void) {
             // Add '\r' onto end.
             strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-            xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%s%s",
-                            output_net,
-                            data_txt_save);
+            strcpy(data_txt, output_net);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+            strcat(data_txt, data_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
 
             break;
 
@@ -6719,11 +6717,11 @@ void output_my_aprs_data(void) {
                 // Add '\r' onto end.
                 strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-                xastir_snprintf(data_txt,
-                                sizeof(data_txt),
-                                "%s%s",
-                                output_net,
-                                data_txt_save);
+                strcpy(data_txt, output_net);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+                strcat(data_txt, data_txt_save);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
             }
             else {
                 /* default to APRS FIXED if no wx data. No timestamp */
@@ -6762,11 +6760,11 @@ void output_my_aprs_data(void) {
                 // Add '\r' onto end.
                 strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-                xastir_snprintf(data_txt,
-                                sizeof(data_txt),
-                                "%s%s",
-                                output_net,
-                                data_txt_save);
+                strcpy(data_txt, output_net);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+                strcat(data_txt, data_txt_save);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
             }
 
             break;
@@ -6803,11 +6801,11 @@ void output_my_aprs_data(void) {
                 // Add '\r' onto end.
                 strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-                xastir_snprintf(data_txt,
-                                sizeof(data_txt),
-                                "%s%s",
-                                output_net,
-                                data_txt_save);
+                strcpy(data_txt, output_net);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+                strcat(data_txt, data_txt_save);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
             }
             else {
                 /* default to APRS FIXED if no wx data */
@@ -6846,11 +6844,11 @@ void output_my_aprs_data(void) {
                 // Add '\r' onto end.
                 strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-                xastir_snprintf(data_txt,
-                                sizeof(data_txt),
-                                "%s%s",
-                                output_net,
-                                data_txt_save);
+                strcpy(data_txt, output_net);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+                strcat(data_txt, data_txt_save);
+                data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
             }
             break;
 
@@ -6894,11 +6892,11 @@ void output_my_aprs_data(void) {
             // Add '\r' onto end.
             strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
 
-            xastir_snprintf(data_txt,
-                            sizeof(data_txt),
-                            "%s%s",
-                            output_net,
-                            data_txt_save);
+            strcpy(data_txt, output_net);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
+            strcat(data_txt, data_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
 
             break;
         }
@@ -6977,13 +6975,21 @@ void output_my_aprs_data(void) {
                 // For packets that we're igating we end up with a CR or
                 // LF on the end of them.  Remove that so the display
                 // looks nice.
-                xastir_snprintf(temp,
-                                sizeof(temp),
-                                "%s>%s,%s:%s",
-                                my_callsign,
-                                VERSIONFRM,
-                                unproto_path,
-                                data_txt);
+                strcpy(temp, my_callsign);
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, ">");
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, VERSIONFRM);
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, ",");
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, unproto_path);
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, ":");
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+                strcat(temp, data_txt);
+                temp[sizeof(temp)-1] = '\0';  // Terminate string
+
                 makePrintable(temp);
                 packet_data_add("TX ", temp, port);
             }
@@ -7030,8 +7036,18 @@ void output_my_aprs_data(void) {
     // This will log a posit in the general format for a network interface
     // whether or not any network interfaces are currently up.
     if (log_net_data) {
-        xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-                        VERSIONFRM, data_txt_save);
+
+        strcpy(data_txt, my_callsign);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, ">");
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, VERSIONFRM);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, ",TCPIP*:");
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, data_txt_save);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
         log_data( get_user_base_dir(LOGFILE_NET, logfile_tmp_path, 
                                     sizeof(logfile_tmp_path)), 
                   (char *)data_txt );
@@ -7041,9 +7057,17 @@ void output_my_aprs_data(void) {
     if (enable_server_port && !transmit_disable && !posit_tx_disable) {
         // Send data to the x_spider server
 
-        xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-                        VERSIONFRM, data_txt_save);
- 
+        strcpy(data_txt, my_callsign);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, ">");
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, VERSIONFRM);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, ",TCPIP*:");
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        strcat(data_txt, data_txt_save);
+        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
         if (writen(pipe_xastir_to_tcp_server,
                    data_txt,
                    strlen(data_txt)) != (int)strlen(data_txt)) {
@@ -7067,7 +7091,12 @@ void output_my_aprs_data(void) {
     // have anything output to the log file here.
     if (log_tnc_data) {
         if (header_txt_save[0] != '\0') {
-            xastir_snprintf(data_txt, sizeof(data_txt), "%s%s", header_txt_save, data_txt_save);
+
+            strcpy(data_txt, header_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+            strcat(data_txt, data_txt_save);
+            data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+
             log_data( get_user_base_dir(LOGFILE_TNC, logfile_tmp_path, 
                                         sizeof(logfile_tmp_path)), 
                       (char *)data_txt );
@@ -7795,7 +7824,7 @@ void tnc_data_clean(char *buf) {
 // Note that the length of "buf" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-int tnc_get_data_type(char *buf, int port) {
+int tnc_get_data_type(char *buf, int UNUSED(port) ) {
     register int i;
     int type=1;      // Don't know what it is yet.  Assume NMEA for now.
 
