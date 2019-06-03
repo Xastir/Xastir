@@ -30,51 +30,70 @@
 
 
 
-static short doHash(char *theCall) {
-    char rootCall[10]; // need to copy call to remove ssid from parse
-    char *p1 = rootCall;
-    short hash;
-    short i,len;
-    char *ptr = rootCall;
 
-    while ((*theCall != '-') && (*theCall != '\0')) *p1++ = toupper((int)(*theCall++));
-        *p1 = '\0';
 
-    hash = kKey; // Initialize with the key value
-    i = 0;
-    len = (short)strlen(rootCall);
+static short doHash(char *theCall)
+{
+  char rootCall[11];    // need to copy call to remove ssid from parse
+  char *p1 = rootCall;
+  short hash;
+  short i, len = 0;
+  char *ptr = rootCall;
 
-    while (i<len) {// Loop through the string two bytes at a time
-        hash ^= (unsigned char)(*ptr++)<<8; // xor high byte with accumulated hash
-        hash ^= (*ptr++); // xor low byte with accumulated hash
-        i += 2;
+  while ( (*theCall != '-') && (*theCall != '\0') )
+  {
+    *p1++ = toupper( (int)(*theCall++) );
+    len++;
+  }
+  *p1 = '\0';
+
+  hash = kKey;    // Initialize with the key value
+  i = 0;
+
+  while (i < len)   // Loop through the string two bytes at a time
+  {
+    hash ^= (unsigned char)(*ptr++) << 8;   // xor high byte with accumulated hash
+    hash ^= (*ptr++);   // xor low byte with accumulated hash
+    i += 2;
+  }
+
+  return (short)(hash & 0x7fff);  // mask off the high bit so number is always positive
+}
+
+
+
+
+
+short checkHash(char *theCall, short theHash)
+{
+  return (short)(doHash(theCall) == theHash);
+}
+
+
+
+
+
+int main(int argc, char *argv[])
+{
+  char temp[11];
+
+  if (argc>1)
+  {
+    memmove(temp, argv[1], 11); // Process up to 10 characters
+    temp[10] = '\0';    // Forced string terminator
+
+    if (temp[0] != '\0')
+    {
+      printf("Passcode for %s is %d\n", temp, doHash(temp));
     }
-    return (short)(hash & 0x7fff); // mask off the high bit so number is always positive
+
+  }
+  else
+  {
+      printf("Usage:callpass <callsign>\n");
+  }
+
+  return(0);
 }
 
-
-
-short checkHash(char *theCall, short theHash) {
-    return (short)(doHash(theCall) == theHash);
-}
-
-
-
-int main(int argc, char *argv[]) {
-    char temp[100];
-
-    if (argc>1) {
-
-        strncpy(temp,argv[1],100);
-
-        temp[99] = '\0';    // Forced termination
-
-        if (strlen(temp)>0)
-            printf("Passcode for %s is %d\n",temp,doHash(temp));
-
-    } else
-        printf("Usage:callpass <callsign>\n");
-
-    return(0);
-}
 
