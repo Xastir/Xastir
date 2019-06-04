@@ -538,25 +538,6 @@ if test "${use_dbfawk}" = "yes"; then
 fi
 
 
-use_rtree=yes
-LIBRTREE=""
-SUBRTREE=""
-AC_ARG_WITH(rtree,[  --without-rtree           Disable spatial indexing of shapefiles.],[use_rtree=$withval])
-if test "${use_rtree}" = "yes" ; then
-  if test "${use_shapelib}" = "yes"; then
-    AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
-     LIBRTREE="-Lrtree -lrtree"
-     SUBRTREE="rtree"
-  else
-    echo "*** Warning: rtree requires shapelib."
-    use_rtree=no
-  fi
-fi
-AC_SUBST(SUBRTREE)
-AC_SUBST(LIBRTREE)
-
-
-
 
 AC_ARG_ENABLE(davis, [  --enable-davis          Turn on Davis support],
   [case "${enableval}" in
@@ -809,11 +790,6 @@ if test "${use_profiling}" = "yes"; then
 else
   ILIBS="$ILIBS          "
 fi
-if test "${use_rtree}" = "yes"; then
-  ILIBS="$ILIBS rtree"
-else
-  ILIBS="$ILIBS      "
-fi
 if test "${use_lsb}" = "yes"; then
   ILIBS="$ILIBS LSB"
 else
@@ -944,7 +920,6 @@ else
 fi
 echo "  pcre (Shapefile customization) ............ : $use_pcre"
 echo "  dbfawk (Shapefile customization) .......... : $use_dbfawk"
-echo "  rtree indexing (Shapefile speedups) ....... : $use_rtree"
 echo "  Berkeley DB map caching-Raster map speedups : $use_map_cache"
 echo "  internet map retrieval .................... : $use_retrieval"
 echo

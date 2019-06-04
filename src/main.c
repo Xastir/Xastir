@@ -11429,11 +11429,9 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) ) {
             check_station_remove(current_time);         // remove old stations
             check_message_remove(current_time);         // remove old messages
 
-#ifdef USE_RTREE
   #ifdef HAVE_LIBSHP
             purge_shp_hash(current_time);               // purge stale rtrees
   #endif // HAVE_LIBSHP
-#endif // USE_RTREE
 
 
             // We need to always calculate the Aloha circle so that

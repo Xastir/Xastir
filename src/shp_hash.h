@@ -5,7 +5,6 @@
 #ifndef __XASTIR_SHP_HASH_H
 #define __XASTIR_SHP_HASH_H
 
-#ifdef USE_RTREE
 
 #ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
@@ -34,5 +33,4 @@ void destroy_shpinfo(shpinfo *si);
 void purge_shp_hash(time_t secs_now);
 shpinfo *get_shp_from_hash(char *filename);
 
-#endif // USE_RTREE
 #endif // __XASTIR_SHP_HASH_H
