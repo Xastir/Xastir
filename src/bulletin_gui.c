@@ -527,7 +527,7 @@ void check_for_new_bulletins(int curr_sec) {
 
 
 
-void Display_bulletins_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Display_bulletins_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -552,7 +552,7 @@ void Display_bulletins_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPoint
 
 
 
-void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Display_bulletins_change_range(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp_ptr;
 
 
@@ -572,7 +572,7 @@ void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtP
 
 
 
-void  Zero_Bulletin_Data_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void  Zero_Bulletin_Data_toggle( Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -589,7 +589,7 @@ void  Zero_Bulletin_Data_toggle( /*@unused@*/ Widget widget, XtPointer clientDat
 
 
  
-void Bulletins(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Bulletins(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     Widget pane, form, button_range, button_close, dist, dist_units;
     unsigned int n;
     Arg args[50];

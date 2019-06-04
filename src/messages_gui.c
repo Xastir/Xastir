@@ -839,7 +839,7 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
 
 
 
-void Send_message_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData)) {
+void Send_message_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData)) {
     int ii;
 //    char *temp_ptr;
 //    char temp1[MAX_LINE_SIZE+1];
@@ -904,7 +904,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 
 
 
-void Check_new_call_messages( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Check_new_call_messages( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     int pos;
     intptr_t i;
 
@@ -943,7 +943,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_m
 
 
 
-void Clear_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Clear_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     clear_outgoing_messages();
 }
 
@@ -951,7 +951,7 @@ void Clear_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSE
 
 
 
-void Send_message_now( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Send_message_now( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     char temp2[121];
     char temp_line1[68] = "";
@@ -1182,7 +1182,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now
 
 
 
-void Clear_message_from( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Clear_message_from( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
@@ -1219,7 +1219,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_fr
 
 
 
-void Clear_message_to( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Clear_message_to( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
@@ -1255,7 +1255,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to
 
 
 
-void Clear_message_to_from( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Clear_message_to_from( Widget w, XtPointer clientData, XtPointer callData) {
     int i, pos;
 
     Clear_message_to(w, clientData, callData);
@@ -1295,7 +1295,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to
 
 
 
-void Kick_timer( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Kick_timer( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char *temp_ptr;
     char temp1[MAX_CALLSIGN+1];
 
@@ -1318,7 +1318,7 @@ void Kick_timer( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@
 
 
 
-void Clear_messages_to( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Clear_messages_to( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char *temp_ptr;
     char temp1[MAX_CALLSIGN+1];
 
@@ -1342,7 +1342,7 @@ void Clear_messages_to( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@
 
 
 
-void Send_message_call( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Send_message_call( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char call[20];
 
     if(clientData != NULL) {
@@ -1363,16 +1363,16 @@ void Send_message_call( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@
 // last two parameters of an XtAddCallback() or XtRemoveCallback()
 // must be unique.
 //
-void Send_message_now_1( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_now_1( Widget w, XtPointer clientData, XtPointer callData) {
     Send_message_now( w, clientData, callData);
 }
-void Send_message_now_2( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_now_2( Widget w, XtPointer clientData, XtPointer callData) {
     Send_message_now( w, clientData, callData);
 }
-void Send_message_now_3( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_now_3( Widget w, XtPointer clientData, XtPointer callData) {
     Send_message_now( w, clientData, callData);
 }
-void Send_message_now_4( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Send_message_now_4( Widget w, XtPointer clientData, XtPointer callData) {
     Send_message_now( w, clientData, callData);
 }
 
@@ -1743,7 +1743,7 @@ void rebuild_send_message_input_boxes(int ii, int hamhud, int d700, int d7) {
 
 
 
-void HamHUD_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
+void HamHUD_Msg( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii =(intptr_t)clientData;
     int hamhud;
 
@@ -1760,7 +1760,7 @@ void HamHUD_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPoi
 
 
 
-void D700_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
+void D700_Msg( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii = (intptr_t)clientData;
     int d700;
 
@@ -1777,7 +1777,7 @@ void D700_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPoint
 
 
 
-void D7_Msg( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
+void D7_Msg( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     intptr_t ii = (intptr_t)clientData;
     int d7;
 
@@ -1945,7 +1945,7 @@ void select_station_type(int ii) {
 //   on first read capability."
 //
 //
-void Send_message( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Send_message( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Arg args[50];
     char temp[60];
     unsigned int n;
@@ -2454,7 +2454,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 // Bring up a Send Message dialog for each QSO that has pending
 // outbound messages.
 //
-void Show_pending_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Show_pending_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     intptr_t ii;
     int msgs_found = 0;
 
@@ -2488,7 +2488,7 @@ void Show_pending_messages( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointe
 
 /************************* Auto msg **************************************/
 /*************************************************************************/
-void Auto_msg_option( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Auto_msg_option( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     int item_no = XTPOINTER_TO_INT(clientData);
 
     if (item_no)
@@ -2501,7 +2501,7 @@ void Auto_msg_option( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer clie
 
 
 
-void Auto_msg_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) { 
+void Auto_msg_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) { 
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -2537,7 +2537,7 @@ void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Auto_msg_set( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Auto_msg_set( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel, reply;
     Atom delw;
 

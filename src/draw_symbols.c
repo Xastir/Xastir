@@ -3041,7 +3041,7 @@ void draw_multipoints(long UNUSED(x_long), long UNUSED(y_lat), int numpoints, lo
 
 
 
-void Select_symbol_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Select_symbol_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     int i;
 
@@ -3113,7 +3113,7 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 
 
 
-void Select_symbol( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, my_form2, my_form3, button_cancel,
             frame, frame2, b1;
     int i;

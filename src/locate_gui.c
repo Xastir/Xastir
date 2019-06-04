@@ -102,7 +102,7 @@ void locate_gui_init(void)
 
 /**** LOCATE STATION ******/
 
-void Locate_station_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Locate_station_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -296,7 +296,7 @@ void Locate_station_now(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
 // Here we pass in a 1 in callData if it's an emergency locate,
 // for when we've received a Mic-E emergency packet.
 //
-void Locate_station(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), XtPointer callData) {
+void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
     static Widget pane, form, button_locate, button_cancel, call,
         button_lookup, sep;
     Atom delw;
@@ -576,9 +576,9 @@ end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_choo
 
 
 
-void Locate_place_chooser(/*@unused@*/ Widget UNUSED(widget),
+void Locate_place_chooser(Widget UNUSED(widget),
         XtPointer UNUSED(clientData),
-        /*@unused@*/ XtPointer UNUSED(callData) ) {
+        XtPointer UNUSED(callData) ) {
 
     Widget pane, form, button_ok, button_cancel;
     Arg al[50];
@@ -723,7 +723,7 @@ end_critical_section(&locate_place_chooser_lock, "locate_gui.c:Locate_place_choo
 
 /**** LOCATE PLACE ******/
 
-void Locate_place_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Locate_place_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -866,7 +866,7 @@ clear_dangerous();
 
 
 
-void Locate_place(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, form, button_ok, button_cancel, sep,
         place, state, county, quad, place_type, gnis_file;
     Atom delw;

@@ -418,7 +418,7 @@ Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int long_lat_grid;              // Switch for Map Lat and Long grid display
 
-void Map_border_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData);
+void Map_border_toggle( Widget w, XtPointer clientData, XtPointer callData);
 int draw_labeled_grid_border = FALSE;   // Toggle labeled border around map.
 
 
@@ -1210,7 +1210,7 @@ int moving_object = 0;
 
 
 
-void Smart_Beacon_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Smart_Beacon_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -1968,7 +1968,7 @@ void check_nws_weather_symbol(void) {
 
 
 
-void Coordinate_calc_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Coordinate_calc_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -3631,7 +3631,7 @@ void redraw_symbols(Widget w) {
 
 
 
-static void TrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XEvent *event, /*@unused@*/ Boolean * UNUSED(flag) ) {
+static void TrackMouse( Widget UNUSED(w), XtPointer clientData, XEvent *event, Boolean * UNUSED(flag) ) {
     char my_text[70];
     char str_lat[20];
     char str_long[20];
@@ -3779,7 +3779,7 @@ static void TrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XEv
 
 
 
-static void ClearTrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), /*@unused@*/ XEvent * UNUSED(event), /*@unused@*/ Boolean * UNUSED(flag) ) {
+static void ClearTrackMouse( Widget UNUSED(w), XtPointer UNUSED(clientData), XEvent * UNUSED(event), Boolean * UNUSED(flag) ) {
 // N7TAP: In my opinion, it is handy to have the cursor position still displayed
 //        in the xastir window when I switch to another (like to write it down...)
 //    Widget textarea = (Widget) clientData;
@@ -3794,7 +3794,7 @@ static void ClearTrackMouse( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(cli
 /*
  *  Delete tracks of all stations
  */
-void Tracks_All_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Tracks_All_Clear( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     DataRow *p_station;
 
     p_station = n_first;
@@ -3836,7 +3836,7 @@ void clear_all_tactical(void) {
  *  Clear all tactical callsigns from the station records.  Comment
  *  out the active records in the log file.
  */
-void Tactical_Callsign_Clear( /*@unused@*/ Widget UNUSED(w) , /*@unused@*/ XtPointer UNUSED(clientData) , /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Tactical_Callsign_Clear( Widget UNUSED(w) , XtPointer UNUSED(clientData) , XtPointer UNUSED(callData) ) {
     char file[200];
     char file_temp[200];
     FILE *f;
@@ -3903,7 +3903,7 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget UNUSED(w) , /*@unused@*/ XtPoi
 /*
  *  Clear out tactical callsign log file
  */
-void Tactical_Callsign_History_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Tactical_Callsign_History_Clear( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char file[MAX_VALUE];
     FILE *f;
 
@@ -4073,7 +4073,7 @@ void display_zoom_status(void) {
 
 
 
-void Change_debug_level_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Change_debug_level_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4268,7 +4268,7 @@ void Change_Debug_Level(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
 
 
 #if !defined(NO_GRAPHICS) && defined(HAVE_MAGICK)
-void Gamma_adjust_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Gamma_adjust_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4481,7 +4481,7 @@ void Load_station_font(void) {
 
 
 // chose map label font
-void Map_font_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Map_font_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     xfontsel_query = 0;
@@ -5079,7 +5079,7 @@ void menu_link_for_mouse_menu(Widget UNUSED(w), XtPointer UNUSED(clientData), Xt
 
 
 
-void store_all_kml_callback(/*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
+void store_all_kml_callback(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     export_trail_as_kml(NULL);
     last_kmlsnapshot = sec_now();
 }
@@ -5087,7 +5087,7 @@ void store_all_kml_callback(/*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clie
 
 
 
-void KML_Snapshots_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void KML_Snapshots_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -5106,7 +5106,7 @@ void KML_Snapshots_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void Snapshots_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Snapshots_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -5153,7 +5153,7 @@ Widget pan_up_menu, pan_down_menu,
 
 
  
-void create_appshell( /*@unused@*/ Display *display, char * UNUSED(app_name), /*@unused@*/ int UNUSED(app_argc), char ** UNUSED(app_argv) ) {
+void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_argc), char ** UNUSED(app_argv) ) {
     Pixmap icon_pixmap;
     Atom WM_DELETE_WINDOW;
     Widget children[9];         /* Children to manage */
@@ -10061,7 +10061,7 @@ void create_gc(Widget w) {
 // return to X.  If it did any map drawing, we'd make it
 // interruptable.
 //
-void da_expose(Widget w, /*@unused@*/ XtPointer UNUSED(client_data), XtPointer call_data) {
+void da_expose(Widget w, XtPointer UNUSED(client_data), XtPointer call_data) {
     Dimension width, height, margin_width, margin_height;
     XmDrawingAreaCallbackStruct *db = (XmDrawingAreaCallbackStruct *)call_data;
     XExposeEvent *event = (XExposeEvent *) db->event;
@@ -10191,7 +10191,7 @@ void da_resize_execute(Widget w) {
 // the interrupt_drawing_now flag periodically while doing the
 // resize drawing.
 //
-void da_resize(Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client_data), /*@unused@*/ XtPointer UNUSED(call_data) ) {
+void da_resize(Widget UNUSED(w), XtPointer UNUSED(client_data), XtPointer UNUSED(call_data) ) {
 
     // Set the interrupt_drawing_now flag
     interrupt_drawing_now++;
@@ -11283,7 +11283,7 @@ static int last_alert_on_screen = -1;
 
 // This is the periodic process that updates the maps/symbols/tracks.
 // At the end of the function it schedules itself to be run again.
-void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId UNUSED(id) ) {
+void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) ) {
     Widget w = (Widget) clientData;
     time_t nexttime;
 //  int do_time;
@@ -12853,7 +12853,7 @@ static int pid_file_check(int hold){
 
 
 /* handle segfault signal */
-void segfault(/*@unused@*/ int UNUSED(sig) ) {
+void segfault(int UNUSED(sig) ) {
     fprintf(stderr, "Caught Segfault! Xastir will terminate\n");
     fprintf(stderr, "Previous incoming line was: %s\n", incoming_data_copy_previous);
     fprintf(stderr, "    Last incoming line was: %s\n", incoming_data_copy);
@@ -13259,7 +13259,7 @@ void display_zoom_image(int recenter) {
 
 
 
-void Zoom_in( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Zoom_in( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13277,7 +13277,7 @@ void Zoom_in( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clien
 
 
 
-void Zoom_in_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Zoom_in_no_pan( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13295,7 +13295,7 @@ void Zoom_in_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSE
 
 
 
-void Zoom_out(  /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Zoom_out(  Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13314,7 +13314,7 @@ void Zoom_out(  /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cli
 
 
 
-void Zoom_out_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Zoom_out_no_pan( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13333,7 +13333,7 @@ void Zoom_out_no_pan( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUS
 
 
 
-void Custom_Zoom_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Custom_Zoom_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -13350,7 +13350,7 @@ static Widget custom_zoom_zoom_level;
 
 
 
-void Custom_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Custom_Zoom_do_it( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char *temp_ptr;
 
     temp_ptr = XmTextFieldGetString(custom_zoom_zoom_level);
@@ -13368,7 +13368,7 @@ void Custom_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(cli
 // Function to bring up a dialog.  User can then select zoom for the
 // display directly.
 //
-void Custom_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Custom_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     static Widget  pane,form, button_ok, button_cancel, zoom_label;
 //    Arg al[50];           /* Arg List */
 //    unsigned int ac = 0;           /* Arg Count */
@@ -13517,7 +13517,7 @@ void Custom_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 
 
 
-void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+void Zoom_level( Widget w, XtPointer clientData, XtPointer calldata) {
     Dimension width, height;
     int level;
 
@@ -13615,7 +13615,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
 
 
-void Pan_ctr( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_ctr( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13631,7 +13631,7 @@ void Pan_ctr( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clien
 
 
 
-void Pan_up( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_up( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13647,7 +13647,7 @@ void Pan_up( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client
 
 
 
-void Pan_up_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_up_less( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13663,7 +13663,7 @@ void Pan_up_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 
 
 
-void Pan_down( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_down( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13679,7 +13679,7 @@ void Pan_down( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clie
 
 
 
-void Pan_down_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_down_less( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13695,7 +13695,7 @@ void Pan_down_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED
 
 
 
-void Pan_left( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_left( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13711,7 +13711,7 @@ void Pan_left( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clie
 
 
 
-void Pan_left_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_left_less( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13727,7 +13727,7 @@ void Pan_left_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED
 
 
 
-void Pan_right( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_right( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up) {
@@ -13743,7 +13743,7 @@ void Pan_right( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cli
 
 
 
-void Pan_right_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Pan_right_less( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     Dimension width, height;
 
     if(display_up && !map_lock_pan_zoom) {
@@ -13759,7 +13759,7 @@ void Pan_right_less( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSE
 
 
 
-void Center_Zoom_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData)) {
+void Center_Zoom_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData)) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -13778,7 +13778,7 @@ static Widget center_zoom_latitude,
 
 
 
-void Center_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Center_Zoom_do_it( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     unsigned long x, y;
     char *temp_ptr;
 
@@ -13811,7 +13811,7 @@ void Center_Zoom_do_it( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(cli
 
 
 
-void Go_Home( Widget w, /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Go_Home( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     DataRow *p_station;
 
     if (!map_lock_pan_zoom) {
@@ -13832,7 +13832,7 @@ void Go_Home( Widget w, /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ 
 // could input lat/long in any of the supported formats.  Right now
 // it is DD.DDDD format only.
 //
-void Center_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer calldata) {
+void Center_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer calldata) {
     static Widget  pane,form, button_ok, button_cancel,
             lat_label, lon_label, zoom_label;
 //    Arg al[50];           /* Arg List */
@@ -14213,7 +14213,7 @@ void Center_Zoom( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 
 
 
-void SetMyPosition( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void SetMyPosition( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     
     Dimension width, height;
     long my_new_latl, my_new_lonl;
@@ -14251,7 +14251,7 @@ void SetMyPosition( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED
 
 
 
-void Window_Quit( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Window_Quit( Widget UNUSED(w), XtPointer UNUSED(client), XtPointer UNUSED(calldata) ) {
     quit(0);
 }
 
@@ -14259,7 +14259,7 @@ void Window_Quit( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 
 
 
-void Menu_Quit( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Menu_Quit( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     quit(0);
 }
 
@@ -14267,7 +14267,7 @@ void Menu_Quit( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cli
 
 
 
-void save_state( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(client), /*@unused@*/ XtPointer calldata) {
+void save_state( Widget UNUSED(w), XtPointer UNUSED(client), XtPointer calldata) {
     if (((XtCheckpointToken)calldata)->shutdown) {
     save_data();
 
@@ -14284,7 +14284,7 @@ void save_state( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cl
 
 
 // Turn on or off map border, callback from map_border_button.
-void Map_border_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
+void Map_border_toggle( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     
     if(state->set)
@@ -14297,7 +14297,7 @@ void Map_border_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientDa
 
 
 
-void Grid_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Grid_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14333,7 +14333,7 @@ void Grid_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer
 
 // Callback from menu buttons that allow user to turn on or off the 
 // global display of CAD objects and their metadata on the map.
-void  CAD_draw_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  CAD_draw_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14364,7 +14364,7 @@ void  CAD_draw_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,
 
 
 
-void  Map_lock_pan_zoom_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_lock_pan_zoom_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14392,7 +14392,7 @@ void  Map_lock_pan_zoom_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cl
 
 
 
-void  Map_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_disable_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14414,7 +14414,7 @@ void  Map_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDa
 
 
 
-void  Map_auto_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_auto_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14450,7 +14450,7 @@ void  Map_auto_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,
 
 
 
-void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_auto_skip_raster_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14477,7 +14477,7 @@ void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer
 
 
 
-void  Map_levels_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_levels_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14507,7 +14507,7 @@ void  Map_levels_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDat
 
 
 
-void  Map_labels_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_labels_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14532,7 +14532,7 @@ void  Map_labels_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDat
 
 
 
-void  Map_fill_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_fill_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14562,7 +14562,7 @@ void  Map_fill_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,
 
 
 
-void Map_background( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Map_background( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     int bgcolor;
     int i;
 
@@ -14632,7 +14632,7 @@ void Raster_intensity(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(c
 
 
 
-void Map_station_label( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Map_station_label( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     int style;
 
     style=atoi((char *)clientData);
@@ -14658,7 +14658,7 @@ void Map_station_label( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@
 
 
 
-void Map_icon_outline( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Map_icon_outline( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     int style;
 
     style=atoi((char *)clientData);
@@ -14697,7 +14697,7 @@ void Map_icon_outline( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@u
 
 
 
-void  Map_wx_alerts_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Map_wx_alerts_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -14725,7 +14725,7 @@ void  Map_wx_alerts_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer client
 
 
 
-void  Index_maps_on_startup_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer callData) {
+void  Index_maps_on_startup_toggle( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
@@ -14738,7 +14738,7 @@ void  Index_maps_on_startup_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointe
 
 
 
-void TNC_Transmit_now( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void TNC_Transmit_now( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     transmit_now = 1;              /* toggle transmission of station now*/
 }
 
@@ -15184,7 +15184,7 @@ void process_RINO_waypoints(void) {
 
 
  
-void GPS_operations_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void GPS_operations_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -15362,7 +15362,7 @@ void GPS_operations_cancel(Widget widget, XtPointer clientData, XtPointer callDa
 
 
 
-void  GPS_operations_color_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  GPS_operations_color_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16168,7 +16168,7 @@ static void* gps_transfer_thread(void *arg) {
 // transfer operation, to make sure we're not called again until the
 // first operation is over.
 //
-void GPS_operations( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void GPS_operations( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     pthread_t gps_operations_thread;
     int parameter;
 
@@ -16251,7 +16251,7 @@ void Set_Log_Indicator(void) {
 
 
 
-void  TNC_Logging_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  TNC_Logging_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16266,7 +16266,7 @@ void  TNC_Logging_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDa
 
 
 
-void Net_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Net_Logging_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16281,7 +16281,7 @@ void Net_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, Xt
 
 
 
-void IGate_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void IGate_Logging_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16296,7 +16296,7 @@ void IGate_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void Message_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Message_Logging_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16311,7 +16311,7 @@ void Message_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void WX_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void WX_Logging_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16326,7 +16326,7 @@ void WX_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtP
 
 
 
-void WX_Alert_Logging_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void WX_Alert_Logging_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16489,7 +16489,7 @@ void set_sensitive_display(int sensitive)
 
 
 
-void Select_none_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_none_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16520,7 +16520,7 @@ void Select_none_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, Xt
 
 
 
-void Select_mine_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_mine_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16546,7 +16546,7 @@ void Select_mine_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, Xt
 
 
 
-void Select_tnc_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_tnc_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16579,7 +16579,7 @@ void Select_tnc_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtP
 
 
 
-void Select_direct_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_direct_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16605,7 +16605,7 @@ void Select_direct_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void Select_via_digi_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_via_digi_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16631,7 +16631,7 @@ void Select_via_digi_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Select_net_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_net_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16656,7 +16656,7 @@ void Select_net_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtP
 
 
 
-void Select_tactical_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_tactical_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16681,7 +16681,7 @@ void Select_tactical_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Select_old_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_old_data_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16697,7 +16697,7 @@ void Select_old_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Select_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_stations_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16725,7 +16725,7 @@ void Select_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Select_fixed_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_fixed_stations_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16741,7 +16741,7 @@ void Select_fixed_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clie
 
 
 
-void Select_moving_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_moving_stations_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16757,7 +16757,7 @@ void Select_moving_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cli
 
 
 
-void Select_weather_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_weather_stations_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16777,7 +16777,7 @@ void Select_weather_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cl
 
 
 
-void Select_CWOP_wx_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_CWOP_wx_stations_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16793,7 +16793,7 @@ void Select_CWOP_wx_stations_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cl
 
 
 
-void Select_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16821,7 +16821,7 @@ void Select_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData,
 
 
 
-void Select_weather_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_weather_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16837,7 +16837,7 @@ void Select_weather_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cli
 
 
 
-void Select_gauge_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_gauge_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16850,7 +16850,7 @@ void Select_gauge_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clien
 }
 
 
-void Select_aircraft_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_aircraft_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16862,7 +16862,7 @@ void Select_aircraft_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cl
     redraw_on_new_data = 2;     // Immediate screen update
 }
 
-void Select_vessel_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_vessel_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16874,7 +16874,7 @@ void Select_vessel_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clie
     redraw_on_new_data = 2;     // Immediate screen update
 }
 
-void Select_other_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Select_other_objects_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16892,7 +16892,7 @@ void Select_other_objects_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clien
 
 // Display Menu button callbacks
 
-void Display_callsign_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_callsign_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16912,7 +16912,7 @@ void Display_callsign_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDat
 
 
 
-void Display_label_all_trackpoints_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_label_all_trackpoints_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16928,7 +16928,7 @@ void Display_label_all_trackpoints_toggle( /*@unused@*/ Widget UNUSED(w), XtPoin
 
 
 
-void Display_symbol_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_symbol_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16948,7 +16948,7 @@ void Display_symbol_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData,
 
 
 
-void Display_symbol_rotate_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_symbol_rotate_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16964,7 +16964,7 @@ void Display_symbol_rotate_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clie
 
 
 
-void Display_trail_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_trail_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16980,7 +16980,7 @@ void Display_trail_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void Display_course_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_course_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -16996,7 +16996,7 @@ void Display_course_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData,
 
 
 
-void Display_speed_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_speed_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17016,7 +17016,7 @@ void Display_speed_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void Display_speed_short_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_speed_short_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17032,7 +17032,7 @@ void Display_speed_short_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer client
 
 
 
-void Display_altitude_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_altitude_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17048,7 +17048,7 @@ void Display_altitude_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDat
 
 
 
-void Display_weather_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_weather_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17072,7 +17072,7 @@ void Display_weather_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Display_weather_text_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_weather_text_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17092,7 +17092,7 @@ void Display_weather_text_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clien
 
 
 
-void Display_temperature_only_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_temperature_only_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17108,7 +17108,7 @@ void Display_temperature_only_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer c
 
 
 
-void Display_wind_barb_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_wind_barb_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17124,7 +17124,7 @@ void Display_wind_barb_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDa
 
 
 
-void Display_aloha_circle_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_aloha_circle_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17140,7 +17140,7 @@ void Display_aloha_circle_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clien
 
 
 
-void Display_ambiguity_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_ambiguity_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17156,7 +17156,7 @@ void Display_ambiguity_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDa
 
 
 
-void Display_phg_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_phg_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17178,7 +17178,7 @@ void Display_phg_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, Xt
 
 
 
-void Display_default_phg_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_default_phg_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17194,7 +17194,7 @@ void Display_default_phg_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer client
 
 
 
-void Display_phg_of_moving_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_phg_of_moving_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17210,7 +17210,7 @@ void Display_phg_of_moving_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clie
 
 
 
-void Display_df_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_df_data_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17227,7 +17227,7 @@ void Display_df_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
     redraw_on_new_data = 2;     // Immediate screen update
 }
 
-void Display_df_beamwidth_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_df_beamwidth_data_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17239,7 +17239,7 @@ void Display_df_beamwidth_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer 
     redraw_on_new_data = 2;     // Immediate screen update
 }
 
-void Display_df_bearing_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_df_bearing_data_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17255,7 +17255,7 @@ void Display_df_bearing_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer cl
 
 
 
-void Display_dr_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_dr_data_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17279,7 +17279,7 @@ void Display_dr_data_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData
 
 
 
-void Display_dr_arc_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_dr_arc_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17295,7 +17295,7 @@ void Display_dr_arc_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData,
 
 
 
-void Display_dr_course_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_dr_course_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17311,7 +17311,7 @@ void Display_dr_course_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDa
 
 
 
-void Display_dr_symbol_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_dr_symbol_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17327,7 +17327,7 @@ void Display_dr_symbol_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDa
 
 
 
-void Display_dist_bearing_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_dist_bearing_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17343,7 +17343,7 @@ void Display_dist_bearing_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clien
 
 
 
-void Display_last_heard_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Display_last_heard_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17362,7 +17362,7 @@ void Display_last_heard_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientD
 /*
  *  Toggle unit system (button callbacks)
  */
-void  Units_choice_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Units_choice_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17383,7 +17383,7 @@ void  Units_choice_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientD
 /*
  *  Toggle dist/bearing status (button callbacks)
  */
-void  Dbstatus_choice_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Dbstatus_choice_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17452,7 +17452,7 @@ void update_units(void) {
 
 
 
-void  Auto_msg_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Auto_msg_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17466,7 +17466,7 @@ void  Auto_msg_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData,
 
 
 
-void  Satellite_msg_ack_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Satellite_msg_ack_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17480,7 +17480,7 @@ void  Satellite_msg_ack_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cl
 
 
 
-void  Transmit_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Transmit_disable_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17502,7 +17502,7 @@ void  Transmit_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cli
 
 
 
-void  Posit_tx_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Posit_tx_disable_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17516,7 +17516,7 @@ void  Posit_tx_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cli
 
 
 
-void  Object_tx_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Object_tx_disable_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17530,7 +17530,7 @@ void  Object_tx_disable_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cl
 
 
 
-void  Emergency_beacon_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Emergency_beacon_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17554,7 +17554,7 @@ void  Emergency_beacon_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer cli
 
 
 
-void  Server_port_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Server_port_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17581,7 +17581,7 @@ void  Server_port_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDa
 
 
 
-void Help_About( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Help_About( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     Widget d;
     Widget child;
     XmString xms, xa, xb;
@@ -17709,7 +17709,7 @@ Widget GetTopShell(Widget w) {
 /*********************** Display incoming data*******************************/
 /****************************************************************************/
 
-void Display_data_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Display_data_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -17720,7 +17720,7 @@ void Display_data_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer c
 
 
 
-void  Display_packet_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Display_packet_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -17739,7 +17739,7 @@ void  Display_packet_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clien
 // Turn on or off "Station Capabilities", callback for capabilities
 // button.
 //
-void Capabilities_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
+void Capabilities_toggle( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
@@ -17754,7 +17754,7 @@ void Capabilities_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(client
 
 // Turn on or off "Mine Only"
 //
-void Display_packet_mine_only_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
+void Display_packet_mine_only_toggle( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
@@ -17767,7 +17767,7 @@ void Display_packet_mine_only_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer U
 
 
 
-void Display_data( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     Widget pane, my_form, button_close, option_box, tnc_data,
         net_data, tnc_net_data, capabilities_button,
         mine_only_button;
@@ -18019,7 +18019,7 @@ void Display_data( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(
 /****************************** Help menu ***********************************/
 /****************************************************************************/
 
-void help_view_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void help_view_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -18030,7 +18030,7 @@ void help_view_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clie
 
 
 
-void help_index_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void help_index_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     if (help_view_dialog)
@@ -18047,7 +18047,7 @@ void help_index_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer cli
 
 
 
-void help_view( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     Widget pane, my_form, button_close,help_text;
     int i;
     Position x, y;
@@ -18212,7 +18212,7 @@ void help_view( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cli
 
 
 
-void Help_Index( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel;
     int n;
     char temp[600];
@@ -18360,7 +18360,7 @@ void Help_Index( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cl
 /************************** Clear stations *******************************/
 /*************************************************************************/
 
-void Stations_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Stations_Clear( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 
     delete_all_stations();
 
@@ -18383,7 +18383,7 @@ void Stations_Clear( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSE
 /*************************************************************************/
 
 // Destroys the Map Properties dialog
-void map_properties_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void map_properties_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -19465,7 +19465,7 @@ void map_properties_min_zoom_change(Widget UNUSED(widget), XtPointer UNUSED(clie
 // in-memory list and fetch it from file again.  OK would write the
 // in-memory list to disk.
 //
-void map_properties( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void map_properties( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
 //    int i;
 //    int x;
 //    char *temp;
@@ -19905,7 +19905,7 @@ void map_properties( /*@unused@*/ Widget UNUSED(widget), XtPointer UNUSED(client
 /*************************************************************************/
 
 // Destroys the Map Chooser dialog
-void map_chooser_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void map_chooser_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -20653,7 +20653,7 @@ void map_chooser_fill_in (void) {
 
 ///////////////////////////////////////  Configure DRG Dialog //////////////////////////////////////////////
 #if defined(HAVE_LIBGEOTIFF)
-void Configure_DRG_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_DRG_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     if (configure_DRG_dialog) {
@@ -20810,7 +20810,7 @@ void Configure_DRG_none(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtP
 
 
 
-void Config_DRG( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget DRG_pane, DRG_form, button_ok, button_cancel,
         DRG_label1, sep1, sep2, button_all, button_none;
 
@@ -21329,7 +21329,7 @@ void Config_DRG( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cl
 
 
 
-void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Expand_Dirs_toggle( Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -21350,7 +21350,7 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
 
 
 
-void Map_chooser( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_clear, button_V,
             button_C, button_F, button_O,
             rowcol, expand_dirs_button, button_properties,
@@ -21661,7 +21661,7 @@ void Map_chooser( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 
 /****** Read in file **********/
 
-void read_file_selection_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void read_file_selection_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtDestroyWidget(shell);
     read_selection_dialog = (Widget)NULL;
@@ -21703,7 +21703,7 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
 
 
 
-void Read_File_Selection( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Read_File_Selection( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     Arg al[50];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
     Widget fs;
@@ -21875,7 +21875,7 @@ void Test(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callD
 
 /****** Save Config data **********/
 
-void Save_Config( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Save_Config( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     save_data();
 }
 
@@ -21886,7 +21886,7 @@ void Save_Config( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(c
 ///////////////////////////////////   Configure Defaults Dialog   //////////////////////////////////
 
 
-void Configure_defaults_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_defaults_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -22035,7 +22035,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
 
 /* Station_transmit type radio buttons */
-void station_type_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void station_type_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -22051,7 +22051,7 @@ void station_type_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDa
 
 
 /* Igate type radio buttons */
-void igate_type_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void igate_type_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -22078,7 +22078,7 @@ void lpomff_menuCallback(Widget widget, XtPointer ptr, XtPointer callData) {
 
 
 
-void Configure_defaults( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel,
                 frame4, frame5,
                 type_box,
@@ -22790,7 +22790,7 @@ void Configure_defaults( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer U
 ///////////////////////////////////   Configure Timing Dialog   //////////////////////////////////
 
 
-void Configure_timing_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_timing_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -22861,7 +22861,7 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 
 
 
-void Configure_timing( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel;
     Atom delw;
     XmString x_str;
@@ -23373,7 +23373,7 @@ XtSetSensitive(RINO_download_timeout, FALSE);
 
 ///////////////////////////////////   Configure Coordinates Dialog   //////////////////////////////////
 
-void coordinates_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void coordinates_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -23392,7 +23392,7 @@ void coordinates_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDat
 
 
 
-void Configure_coordinates_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_coordinates_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -23403,7 +23403,7 @@ void Configure_coordinates_destroy_shell( /*@unused@*/ Widget UNUSED(widget), Xt
 
 
 
-void Configure_coordinates( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel, frame,
                 coord_box, coord_0, coord_1, coord_2,
                 coord_3, coord_4, coord_5;
@@ -23637,7 +23637,7 @@ void Configure_coordinates( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointe
 
 /////////////////////////////////   Configure Audio Alarms Dialog   ////////////////////////////////
 
-void Configure_audio_alarm_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_audio_alarm_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -23774,7 +23774,7 @@ void Configure_audio_alarm_change_data(Widget widget, XtPointer clientData, XtPo
 
 
 
-void Configure_audio_alarms( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel,
                 audio_play, file1, file2,
                 min1, max1,
@@ -24409,7 +24409,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPoint
 /////////////////////////////////////   Configure Speech Dialog   //////////////////////////////////
 
 
-void Configure_speech_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_speech_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -24476,7 +24476,7 @@ void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer
 //that basicly pops up a box that says where to get Festival, have
 //it be ungrayed if Festival isn't installed.
 
-void Configure_speech( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, button_ok, button_cancel, file1,
         sep, button_test;
     Atom delw;
@@ -24794,7 +24794,7 @@ void Configure_speech( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNU
  *  Track_Me
  *
  */
-void Track_Me( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void Track_Me( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -24825,7 +24825,7 @@ static Cursor cs_move_measure = (Cursor)NULL;
  *  Move_Object
  *
  */
-void  Move_Object( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Move_Object( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -24859,7 +24859,7 @@ void  Move_Object( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtP
  *  Measure_Distance
  *
  */
-void  Measure_Distance( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Measure_Distance( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -24894,7 +24894,7 @@ void  Measure_Distance( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData
 /*
  *  Destroy Configure Station Dialog Popup Window
  */
-void Configure_station_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Configure_station_destroy_shell( Widget widget, XtPointer clientData, XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     (void)XFreePixmap(XtDisplay(appshell),CS_icon0);  // ???? DK7IN: avoid possible memory leak ?
@@ -24917,7 +24917,7 @@ void Configure_station_destroy_shell( /*@unused@*/ Widget widget, XtPointer clie
 
 
 
-void  Configure_station_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Configure_station_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25109,7 +25109,7 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
 /*
  *  Update symbol picture for changed symbol or table
  */
-void updateSymbolPictureCallback( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void updateSymbolPictureCallback( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     char table, overlay;
     char symb, group;
     char *temp_ptr;
@@ -25144,7 +25144,7 @@ void updateSymbolPictureCallback( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ Xt
 
 
 /* Power radio buttons */
-void Power_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void Power_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25168,7 +25168,7 @@ void Power_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtP
 
 
 /* Height radio buttons */
-void Height_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void Height_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25188,7 +25188,7 @@ void Height_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, Xt
 
 
 /* Gain radio buttons */
-void Gain_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void Gain_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25208,7 +25208,7 @@ void Gain_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPo
 
 
 /* Directivity radio buttons */
-void Directivity_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void Directivity_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25226,7 +25226,7 @@ void Directivity_toggle( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDat
 
 
 
-void Posit_compressed_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void Posit_compressed_toggle( Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -25260,7 +25260,7 @@ void Posit_compressed_toggle( /*@unused@*/ Widget UNUSED(w), XtPointer clientDat
 /*
  *  Select a symbol graphically
  */
-void Configure_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Configure_change_symbol(Widget widget, XtPointer clientData, XtPointer callData) {
 
     //fprintf(stderr,"Trying to change a symbol\n");
     symbol_change_requested_from = 1;   // Tell Select_symbol who to return the data to
@@ -25275,7 +25275,7 @@ void Configure_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer 
 /*
  *  Setup Configure Station dialog
  */
-void Configure_station( /*@unused@*/ Widget UNUSED(ww), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, cs_form, cs_form1, button_ok, button_cancel, call, frame, frame2,
                 framephg, formphg,
                 power_box,poption0,poption1,poption2,poption3,poption4,poption5,poption6,poption7,poption8,poption9,poption10,

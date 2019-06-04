@@ -80,7 +80,7 @@
 /* (see  setjmp below).                                                  */
 /*************************************************************************/
 
-static void host_time_out( /*@unused@*/ int UNUSED(sig) ) {
+static void host_time_out( int UNUSED(sig) ) {
 #ifndef __LCLINT__
     siglongjmp(ret_place,0);
 #endif // __LCLINT__

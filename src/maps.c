@@ -3886,7 +3886,7 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
 
 
 
-static void Print_postscript_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+static void Print_postscript_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     char *temp_ptr;
 
@@ -3959,7 +3959,7 @@ end_critical_section(&print_postscript_dialog_lock, "maps.c:Print_postscript_des
 
 
 
-static void Print_properties_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+static void Print_properties_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     if (!shell)
@@ -4425,7 +4425,7 @@ static void Print_preview( Widget widget, XtPointer UNUSED(clientData), XtPointe
  *  Auto_rotate
  *
  */
-static void  Auto_rotate( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+static void  Auto_rotate( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4447,7 +4447,7 @@ static void  Auto_rotate( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDa
  *  Rotate_90
  *
  */
-static void  Rotate_90( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+static void  Rotate_90( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4469,7 +4469,7 @@ static void  Rotate_90( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData
  *  Auto_scale
  *
  */
-static void  Auto_scale( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+static void  Auto_scale( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4489,7 +4489,7 @@ static void  Auto_scale( /*@unused@*/ Widget UNUSED(widget), XtPointer clientDat
  *  Monochrome
  *
  */
-void  Monochrome( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+void  Monochrome( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
@@ -4509,7 +4509,7 @@ void  Monochrome( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPo
  *  Invert
  *
  */
-static void  Invert( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
+static void  Invert( Widget UNUSED(widget), XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
