@@ -3998,7 +3998,7 @@ void display_file(Widget w) {
 /*
  *  Delete Station Info PopUp
  */
-void Station_data_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_data_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -4018,7 +4018,7 @@ void Station_data_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer cl
 /*
  *  Store track data for current station
  */
-void Station_data_store_track(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_data_store_track(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     DataRow *p_station = clientData;
 
     //busy_cursor(XtParent(w));
@@ -4046,7 +4046,7 @@ void Station_data_store_track(Widget UNUSED(w), XtPointer clientData, /*@unused@
 /*
  *  Delete tracklog for current station
  */
-void Station_data_destroy_track( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_data_destroy_track( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     DataRow *p_station = clientData;
 
     if (delete_trail(p_station))
@@ -4061,7 +4061,7 @@ void Station_data_destroy_track( /*@unused@*/ Widget UNUSED(widget), XtPointer c
 // call wx_alert_double_click_action, which expects the parameter in
 // calldata instead of in clientData.
 //
-void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_data_wx_alert(Widget w, XtPointer clientData, XtPointer UNUSED(calldata) ) {
     //fprintf(stderr, "Station_data_wx_alert start\n");
     wx_alert_finger_output( w, clientData);
     //fprintf(stderr, "Station_data_wx_alert end\n");
@@ -4071,7 +4071,7 @@ void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointe
 
 
 
-void Station_data_add_fcc(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_data_add_fcc(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char temp[500];
     FccAppl my_data;
     char *station = (char *) clientData;
@@ -4099,7 +4099,7 @@ void Station_data_add_fcc(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ X
 
 
 
-void Station_data_add_rac(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_data_add_rac(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char temp[512];
     char club[512];
     rac_record my_data;
@@ -4163,7 +4163,7 @@ void Station_data_add_rac(Widget UNUSED(w), XtPointer clientData, /*@unused@*/ X
 
 
 
-void Station_query_trace(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_query_trace(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4181,7 +4181,7 @@ void Station_query_trace(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*
 
 
 
-void Station_query_messages(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_query_messages(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4199,7 +4199,7 @@ void Station_query_messages(/*@unused@*/ Widget UNUSED(w), XtPointer clientData,
 
 
 
-void Station_query_direct(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_query_direct(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4217,7 +4217,7 @@ void Station_query_direct(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /
 
 
 
-void Station_query_version(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void Station_query_version(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char *station = (char *) clientData;
     char temp[50];
     char call[25];
@@ -4235,7 +4235,7 @@ void Station_query_version(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void General_query(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void General_query(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     char *location = (char *) clientData;
     char temp[50];
 
@@ -4247,7 +4247,7 @@ void General_query(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unuse
 
 
 
-void IGate_query(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void IGate_query(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     output_my_data("?IGATE?",-1,0,0,0,NULL); // Not igating
 }
 
@@ -4255,7 +4255,7 @@ void IGate_query(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(cl
 
 
 
-void WX_query(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(calldata) ) {
+void WX_query(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) ) {
     output_my_data("?WX?",-1,0,0,0,NULL);    // Not igating
 }
 
@@ -4269,7 +4269,7 @@ Widget tactical_text = (Widget)NULL;
 DataRow *tactical_pointer = NULL;
 
 
-void Change_tactical_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Change_tactical_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
@@ -4599,7 +4599,7 @@ void compute_decorations( void ) {
 
 
 // Enable/disable auto-update of Station_data dialog
-void station_data_auto_update_toggle ( /*@unused@*/ Widget UNUSED(widget), /*@unused@*/ XtPointer UNUSED(clientData), XtPointer callData) {
+void station_data_auto_update_toggle ( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
@@ -4613,7 +4613,7 @@ void station_data_auto_update_toggle ( /*@unused@*/ Widget UNUSED(widget), /*@un
 
 
 // Fill in the station data window with real data
-void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata ) {
+void station_data_fill_in ( Widget w, XtPointer clientData, XtPointer calldata ) {
     DataRow *p_station;
     char *station = (char *) clientData;
     char temp[300];
@@ -5543,7 +5543,7 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
  * Called by Station_data function below from the Track Station
  * button in Station Info.
  */
-void Track_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
+void Track_from_Station_data(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
  
     if (p_station->call_sign[0] != '\0') {
@@ -5564,7 +5564,7 @@ void Track_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientData
  * Called by Station_data function below from the Clear DF Bearing
  * button in Station Info.
  */
-void Clear_DF_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
+void Clear_DF_from_Station_data(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station = clientData;
  
     if (strlen(p_station->bearing) == 3) {
@@ -5593,7 +5593,7 @@ void Clear_DF_from_Station_data(/*@unused@*/ Widget UNUSED(w), XtPointer clientD
  *               "4"  = Send Message To
  *
  */
-void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
+void Station_data(Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
     char *station = (char *) clientData;
     static char local_station[25];
@@ -6302,7 +6302,7 @@ void update_station_info(Widget w) {
 /*
  *  Station Info Selection PopUp window: Canceled
  */
-void Station_info_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_info_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
 
     // We used to close the detailed Station Info dialog here too, which
@@ -6343,7 +6343,7 @@ XtPointer station_info_select_global = NULL;
 /*
  *  Station Info Selection PopUp window: Quit with selected station
  */
-void Station_info_select_destroy_shell(Widget widget, /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_info_select_destroy_shell(Widget widget, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     int i,x;
     char *temp;
     char temp2[50];
@@ -6417,7 +6417,7 @@ void Station_info_select_destroy_shell(Widget widget, /*@unused@*/ XtPointer UNU
  *             "3"  = Assign Tactical Call
  *             "4"  = Send Message To
  */
-void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer UNUSED(calldata) ) {
+void Station_info(Widget w, XtPointer clientData, XtPointer UNUSED(calldata) ) {
     DataRow *p_station;
     DataRow *p_found;
     int num_found = 0;
@@ -10347,7 +10347,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
  * Returns 0 if the packet is NOT a properly compressed position
  * packet, returns 1 if ok.
  */
-int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int UNUSED(type) ) {
+int extract_comp_position(DataRow *p_station, char **info, int UNUSED(type) ) {
     int ok;
     int x1, x2, x3, x4, y1, y2, y3, y4;
     int c = 0;
@@ -11173,7 +11173,7 @@ int extract_time(DataRow * UNUSED(p_station), char *data, int type) {
 //  T../C..  Area Object Descriptor
 
 /* Extract one of several possible APRS Data Extensions */
-void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int UNUSED(type) ) {
+void process_data_extension(DataRow *p_station, char *data, int UNUSED(type) ) {
     char temp1[7+1];
     char temp2[3+1];
     char temp3[10+1];
@@ -11354,7 +11354,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int UNU
 
 
 /* extract all available information from info field */
-void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int UNUSED(type) ) {
+void process_info_field(DataRow *p_station, char *info, int UNUSED(type) ) {
     char temp_data[6+1];
     //    char time_data[MAX_TIME];
 
@@ -14163,7 +14163,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
 // Speed is in knots
-void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char UNUSED(speedu), char *alt, char *sats) {
+void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char UNUSED(speedu), char *alt, char *sats) {
     long pos_long_temp, pos_lat_temp;
     char temp_data[40];   // short term string storage
     char temp_lat[12];
@@ -15408,7 +15408,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
 // NOTE:  We may end up sending these to RF when the query came in
 // over the internet.  We should check that.
 //
-int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char * UNUSED(path), char *message,char from,int port, /*@unused@*/ int UNUSED(third_party) ) {
+int process_query( char *call_sign, char * UNUSED(path), char *message,char from,int port, int UNUSED(third_party) ) {
     char temp[100];
     int ok = 0;
     float randomize;
@@ -15545,7 +15545,7 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char * UNUSED(path
 /*
  *  Status Reports                              [APRS Reference, chapter 16]
  */
-int process_status( /*@unused@*/ char * UNUSED(call_sign), /*@unused@*/ char * UNUSED(path), /*@unused@*/ char * UNUSED(message), /*@unused@*/ char UNUSED(from), /*@unused@*/ int UNUSED(port), /*@unused@*/ int UNUSED(third_party) ) {
+int process_status( char * UNUSED(call_sign), char * UNUSED(path), char * UNUSED(message), char UNUSED(from), int UNUSED(port), int UNUSED(third_party) ) {
 
     //    popup_message(langcode("POPEM00018"),message);  // What is it ???
     return(1);

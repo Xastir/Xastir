@@ -64,7 +64,7 @@ void location_gui_init(void)
 /************************************************/
 /* button fuction for last location             */
 /************************************************/
-void Last_location(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Last_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     map_pos_last_position();
 }
 
@@ -75,7 +75,7 @@ void Last_location(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(
 /************************************************/
 /* manage jump locations                        */
 /************************************************/
-void location_destroy_shell(/*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void location_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
 
@@ -95,7 +95,7 @@ end_critical_section(&location_dialog_lock, "location_gui.c:location_destroy_she
 /************************************************/
 /* jump to chosen location/zoom                 */
 /************************************************/
-void location_view(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void location_view(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     int i,x;
     char *location;
     XmString *list;
@@ -202,7 +202,7 @@ void jump_sort(void) {
 /************************************************/
 /* delete location/zoom                         */
 /************************************************/
-void location_delete(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void location_delete(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     int i,x;
     char *location;
     XmString *list;
@@ -297,7 +297,7 @@ void location_delete(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSE
 /************************************************/
 /* add location/zoom                            */
 /************************************************/
-void location_add(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void location_add(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     char name[100];
     char s_long[20];
     char s_lat[20];
@@ -377,7 +377,7 @@ void location_add(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused
 /************************************************/
 /* manage jump locations                        */
 /************************************************/
-void Jump_location(/*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Jump_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane,form, button_ok, button_add, button_delete, button_cancel, locdata, location_name;
     int n;
     Arg al[50];           /* Arg List */

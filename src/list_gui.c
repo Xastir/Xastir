@@ -376,7 +376,7 @@ int stations_types(int type) {
 
 
 
-void station_list_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void station_list_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
     int type;
     int i;
 
@@ -405,7 +405,7 @@ void station_list_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer c
  * Callback for station icon in list.
  * Calls a function to center the map on the selected station from the list.
  */
-void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Call_locate_station(Widget w, XtPointer clientData, XtPointer UNUSED(callData) ) {
     if (clientData != NULL && strlen(clientData) > 0) { 
        locate_station(w, clientData, 1,1,1); 
     } 
@@ -417,7 +417,7 @@ void Call_locate_station(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@
  * *** This callback is not linked to a control on list yet. ***
  * Invokes the station information dialog for the selected station from the list.
  */
-void Call_Station_data(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Call_Station_data(Widget w, XtPointer clientData, XtPointer UNUSED(callData) ) {
     if (clientData != NULL && strlen(clientData) > 0) { 
        Station_data(w, clientData, NULL); 
     } 
@@ -1057,7 +1057,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
 
 
-void dragCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void dragCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1073,7 +1073,7 @@ void dragCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer
 
 
 
-void decrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void decrementCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1085,7 +1085,7 @@ void decrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPo
 
 
 
-void incrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void incrementCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1097,7 +1097,7 @@ void incrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPo
 
 
 
-void pageDecrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void pageDecrementCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1109,7 +1109,7 @@ void pageDecrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, 
 
 
 
-void pageIncrementCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void pageIncrementCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1152,7 +1152,7 @@ void mouseScrollHandler(Widget UNUSED(w), XtPointer clientData, XButtonEvent* ev
 
 
 
-void valueChangedCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
+void valueChangedCallback(Widget UNUSED(w), XtPointer clientData, XtPointer callData) {
     int i;
 
     XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *)callData;
@@ -1167,7 +1167,7 @@ void valueChangedCallback(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, X
 /*
  *  Setup the various list layouts
  */
-void Station_List(/*@unused@*/ Widget UNUSED(w), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Station_List(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callData) ) {
     int i;
     Widget pane, form, win_list, form2, button_close;
     Widget numl,call,sep,sep2;

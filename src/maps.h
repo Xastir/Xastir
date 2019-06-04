@@ -169,7 +169,7 @@ extern void draw_label_text (Widget w, int x, int y, int label_length, int color
 extern void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize);
 extern int get_rotated_label_text_length_pixels(Widget w, char *label_text, int fontsize);
 extern void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize);
-extern void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData);
+extern void  Monochrome( Widget widget, XtPointer clientData, XtPointer callData);
 extern void Snapshot(void);
 extern void clean_string(char *input);
 extern int print_rotated;

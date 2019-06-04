@@ -85,9 +85,9 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_messag
 
 
 
-static void popup_message_destroy_shell(/*@unused@*/ Widget UNUSED(w),
+static void popup_message_destroy_shell(Widget UNUSED(w),
                                 XtPointer clientData,
-                                /*@unused@*/ XtPointer UNUSED(callData) ) {
+                                XtPointer UNUSED(callData) ) {
     int i;
 
     i=atoi((char *)clientData);

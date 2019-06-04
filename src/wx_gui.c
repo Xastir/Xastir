@@ -92,7 +92,7 @@ void wx_gui_init(void)
 
 
 
-void wx_detailed_alert_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void wx_detailed_alert_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -420,7 +420,7 @@ void wx_alert_double_click_action( Widget widget, XtPointer UNUSED(clientData), 
 
 
 
-void wx_alert_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void wx_alert_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -591,7 +591,7 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
 
 
-void Display_Wx_Alert( /*@unused@*/ Widget UNUSED(wdgt), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void Display_Wx_Alert( Widget UNUSED(wdgt), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget pane, my_form, mess, button_cancel;
     Atom delw;
     Arg al[50];                    /* Arg List */
@@ -763,7 +763,7 @@ Widget WX_high_wind_label;
 
 
 
-void WX_station_destroy_shell( /*@unused@*/ Widget UNUSED(widget), XtPointer clientData, /*@unused@*/ XtPointer UNUSED(callData) ) {
+void WX_station_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData) ) {
 
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -792,7 +792,7 @@ void WX_station_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 // This is the "Own Weather Station" Dialog
 //
-void WX_station( /*@unused@*/ Widget UNUSED(w), /*@unused@*/ XtPointer UNUSED(clientData), /*@unused@*/ XtPointer UNUSED(callData) ) {
+void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) ) {
     static Widget  pane, my_form, form1, button_close, frame, 
             WX_type, temp, wind_cse, wind_spd, wind_gst, 
             my_rain, to_rain, rain_h, my_rain_24, baro,
