@@ -157,14 +157,6 @@
 #include <locale.h>
 #endif  // HAVE_LOCALE_H
 
-#ifdef  HAVE_LIBINTL_H
-#include <libintl.h>
-#define _(x)        gettext(x)
-#else   // HAVE_LIBINTL_H
-#define _(x)        (x)
-#endif  // HAVE_LIBINTL_H
-
-
 #ifndef SIGRET
 #define SIGRET  void
 #endif  // SIGRET
