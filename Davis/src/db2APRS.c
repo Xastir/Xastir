@@ -885,8 +885,8 @@ int Get_Latest_WX( double *winddir,
   mysql_free_result(result);
 
   /*        get rain figures	*/
-  /*
-  /*        hourly first		*/
+  /*                          */
+  /*        hourly first		  */
   last_hour_timestamp = atol(last_timestamp) - 3600;
   sprintf(query_buffer,"SELECT round(sum(value),2) FROM sdata WHERE timekey > %ld and fieldid = %d", last_hour_timestamp,RAIN);
 
@@ -1156,7 +1156,7 @@ void pipe_handler(int sig)		/*  */
             SIGTERM signal handler
 
 *******************************************************************/
-void term_handler(int sig)
+void term_handler( int UNUSED(sig) )
 {
   if (debug_level & 1)
   {
@@ -1184,7 +1184,6 @@ int main(int argc, char **argv)
 {
   const char *flags = "Hhvnmrc:u:p:d:s:i:";
   char WX_APRS[120];
-  char logstr[80];
   int data_len = 0 ;
   double winddir;
   double windspeed;
@@ -1199,7 +1198,7 @@ int main(int argc, char **argv)
   int Metric_Dat, dsts = 0;
   int  pid, s, fd[CONNECTIONS];
   socklen_t clen = sizeof(struct sockaddr_in);
-  int *max = 0,  c;
+  int *max = 0;
   int not_a_daemon = 0, repetitive = 0, tcp_wx_port = PORT;
   int  i, index = 0;
   struct sockaddr_in server, client;
@@ -1210,7 +1209,6 @@ int main(int argc, char **argv)
   int dly_cnt = 1;
   FILE *pidfile;
   const char *pidfilename = "/var/run/db2APRS.pid";
-  char cmd[120];
 
   struct option longopt[] =
   {
