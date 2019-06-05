@@ -636,9 +636,8 @@ int Get_Latest_WX( double *winddir,
 
 {
 
-  char latest_timestamp[20];
   char query_buffer[160];
-  int nrows, row_cnt, item_count;
+  int nrows, item_count;
   int nfields;
 
 		
@@ -881,7 +880,7 @@ void pipe_handler(int sig)		/*  */
             SIGTERM signal handler
 
 *******************************************************************/
-void term_handler(int sig)		/*  */
+void term_handler( int UNUSED(sig) )		/*  */
 {
   if (debug_level & 1)
   {
@@ -924,7 +923,7 @@ int main(int argc, char **argv)
   int  pid, s;
   socklen_t clen = sizeof(struct sockaddr_in);
   int fd[CONNECTIONS];
-  int *max = 0,  c, dly_cnt = 1;
+  int *max = 0,  dly_cnt = 1;
   int not_a_daemon = 0, repetitive = 0, tcp_wx_port = PORT;
   int  i, index = 0;
   struct sockaddr_in server, client;
