@@ -19,7 +19,6 @@ SUBDIRS = src
 #noinst_PROGRAMS = $(MyWX)
 
 
-# Remove this file here (it is created via configure), not from within intl.
 # DISTCLEANFILES =
 
 EXTRA_DIST = aclocal.m4 AUTHORS bootstrap.sh ChangeLog config.h.in \

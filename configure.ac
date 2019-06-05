@@ -288,7 +288,7 @@ AC_FUNC_ALLOCA
 AC_HEADER_DIRENT 
 AC_HEADER_STDC 
 AC_HEADER_SYS_WAIT 
-AC_CHECK_HEADERS([argz.h arpa/inet.h fcntl.h libintl.h limits.h locale.h malloc.h math.h netdb.h]) 
+AC_CHECK_HEADERS([argz.h arpa/inet.h fcntl.h limits.h locale.h malloc.h math.h netdb.h]) 
 AC_CHECK_HEADERS([netinet/in.h nl_types.h stdarg.h stddef.h stdlib.h string.h strings.h])
 AC_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h signal.h])
 AC_CHECK_HEADERS([termios.h unistd.h]) 
@@ -353,10 +353,6 @@ AC_CHECK_FUNCS([strndup])
 #this is also a recent extension that should not be counted on
 AC_CHECK_FUNCS([roundf])
  
-# Check for intl library (Needed for Cygwin) 
-# 
-AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
-
 # Check for libproj (need to do this before test for shapelib, because
 # the shapelib test asks about "use_proj"
 use_proj=yes

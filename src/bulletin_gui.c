@@ -62,13 +62,6 @@
 #include <X11/Xatom.h>
 #include <X11/Shell.h>
 
-#ifdef    HAVE_LIBINTL_H
-#include <libintl.h>
-#define    _(x)    gettext(x)
-#else   // HAVE_LIBINTL_H
-#define    _(x)    (x)
-#endif  // HAVE_LIBINTL_H
-
 #include "xastir.h"
 #include "main.h"
 #include "bulletin_gui.h"

@@ -108,13 +108,6 @@ char *xastir_version=VERSION;
 #undef XASTIR_PACKAGE_VERSION
 #endif // HAVE_MAGICK
 
-#ifdef  HAVE_LIBINTL_H
-#include <libintl.h>
-#define _(x)        gettext(x)
-#else   // HAVE_LIBINTL_H
-#define _(x)        (x)
-#endif  // HAVE_LIBINTL_H
-
 //#ifdef HAVE_NETAX25_AXLIB_H
 //#include <netax25/axlib.h>
 //#endif    // HAVE_NETAX25_AXLIB_H
@@ -5279,7 +5272,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
 */
 
 
-    t = _("X Amateur Station Tracking and Information Reporting");
+    t = "X Amateur Station Tracking and Information Reporting";
     title = (char *)malloc(t_size = (strlen(t) + 42 + strlen(xastir_package)));
     if (!title) {
         fprintf(stderr,"Couldn't allocate memory for title\n");
