@@ -502,7 +502,8 @@ alert_entry *get_wx_alert_from_hash(char *unique_string)
   }
 
   if (!wx_alert_hash)
-  {  // no table to search
+  {
+    // no table to search
     //fprintf(stderr,"Creating hash table\n");
     init_wx_alert_hash(1); // so create one
     return NULL;
@@ -546,7 +547,8 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record)
   }
 
   if (!wx_alert_hash)
-  {  // no table to add to
+  {
+    // no table to add to
     //fprintf(stderr,"init_wx_alert_hash\n");
     init_wx_alert_hash(1); // so create one
   }
@@ -554,7 +556,8 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record)
   // Remove any matching entry to avoid duplicates
   temp = hashtable_remove(wx_alert_hash, unique_string);
   if (temp)
-  { // If value found, free the storage space for it as
+  {
+    // If value found, free the storage space for it as
     // the hashtable_remove function doesn't.  It does
     // however remove the key (callsign) ok.
     free(temp);
@@ -936,7 +939,8 @@ int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) )
 
     }
     else if (a_ptr->expiration < (now - 3600))
-    {    // More than an hour past the expiration,
+    {
+      // More than an hour past the expiration,
       a_ptr->title[0] = '\0';                     // so delete it from list by clearing
       // out the title.
       //WE7U
@@ -946,7 +950,8 @@ int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) )
       alert_redraw_on_update = redraw_on_new_data = 2;
     }
     else if (a_ptr->flags[on_screen] == '?')
-    {  // Expired between 1sec and 1hr and found '?'
+    {
+      // Expired between 1sec and 1hr and found '?'
       a_ptr->flags[on_screen] = '-';
 
       // Schedule a screen update 'cuz we have an expired alert
@@ -1535,7 +1540,8 @@ void alert_build_list(Message *fill)
           // latter, we either have another zone number or
           // another prefix coming up.
           if (ptr[0] == '>' || ptr[0] == '<')
-          { // Numeric zone sequence
+          {
+            // Numeric zone sequence
             int start_number;
             int end_number;
             int kk;
@@ -1706,7 +1712,8 @@ void alert_build_list(Message *fill)
               uncompressed_wx[9999] = '\0';
             }
             else
-            {  // New prefix (not a number)
+            {
+              // New prefix (not a number)
               // Start at the top of the outer loop again
             }
           }
@@ -1924,7 +1931,8 @@ void alert_build_list(Message *fill)
           // latter, we either have another zone number or
           // another prefix coming up.
           if (ptr[0] == '>' || ptr[0] == '<')
-          { // Numeric zone sequence
+          {
+            // Numeric zone sequence
             int start_number;
             int end_number;
             int kk;
@@ -2095,7 +2103,8 @@ void alert_build_list(Message *fill)
               uncompressed_wx[9999] = '\0';
             }
             else
-            {  // New prefix (not a number)
+            {
+              // New prefix (not a number)
               // Start at the top of the outer loop again
             }
           }
@@ -2197,7 +2206,8 @@ void alert_build_list(Message *fill)
     // The 3 characters are Day/Hour/Minute of the issue date time in
     // zulu time.
     if (strlen(fill->seq) == 5)
-    {   // Looks ok so far
+    {
+      // Looks ok so far
       // Could add another check to make sure that the first two
       // chars are a digit or a capital letter.
       char c;
@@ -2211,14 +2221,16 @@ void alert_build_list(Message *fill)
         c = fill->seq[ii];   // Snag one character
 
         if (is_num_chr(c))
-        {    // Found numeric char
+        {
+          // Found numeric char
           temp[0] = '0';
           temp[1] = c;
           temp[2] = '\0'; // Terminate the string
         }
 
         else if (c >= 'A' && c <= 'Z')
-        {    // Found upper-case letter
+        {
+          // Found upper-case letter
           // Need to take ord(c) - 55 to get the number
           char temp_string[5];
           xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 55);
@@ -2227,7 +2239,8 @@ void alert_build_list(Message *fill)
         }
 
         else if (c >= 'a' && c <= 'z')
-        {    // Found lower-case letter
+        {
+          // Found lower-case letter
           // Need to take ord(c) - 61 to get the number
           char temp_string[5];
           xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 61);
@@ -2272,7 +2285,8 @@ void alert_build_list(Message *fill)
     // alerts, creating an alert out of each.
     //
     if (compressed_wx_packet)
-    { // Handle compressed packet.
+    {
+      // Handle compressed packet.
       // Skip the first character of our uncompressed_wx
       // string, as it's a leading comma.  Snag out each
       // string in turn and use that as the title for a
@@ -2286,7 +2300,8 @@ void alert_build_list(Message *fill)
                    ',');
     }
     else
-    {  // Handle non-compressed packet
+    {
+      // Handle non-compressed packet
       // We have up to five alerts to process.
 
       // Set up an array of char pointers so that we can use
@@ -2454,7 +2469,8 @@ void alert_build_list(Message *fill)
         // fields across.
         if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
              || (entry.alert_level == 'C') )
-        { // Or new one _is_ a CANCEL
+        {
+          // Or new one _is_ a CANCEL
           list_ptr->expiration = entry.expiration;
           xastir_snprintf(list_ptr->activity,
                           sizeof(list_ptr->activity),
@@ -2489,7 +2505,8 @@ void alert_build_list(Message *fill)
         }
       }
       else
-      {    // No similar alert, add a new one to the list
+      {
+        // No similar alert, add a new one to the list
         entry.index = -1;    // Haven't found it in a file yet
 
         (void)alert_add_entry(&entry);
