@@ -8,7 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 D=      `date +%G%m%d.%H%M%S`
 
-SUBDIRS = src m4 config help scripts symbols callpass
+SUBDIRS = src config help scripts symbols callpass
 
 # DISTCLEANFILES =
 
