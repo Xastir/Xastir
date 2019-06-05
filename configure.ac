@@ -857,7 +857,6 @@ AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
     help/Makefile \
-    m4/Makefile \
     scripts/Makefile \
     src/Makefile \
     src/rtree/Makefile \
