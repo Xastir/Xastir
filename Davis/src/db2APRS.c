@@ -992,6 +992,8 @@ int Get_Latest_WX( double *winddir,
   {
     fprintf(stderr,"info: timestamp for prior midnight - %ld\n",last_day_timestamp);
   }
+
+  // NOTE: Gcc warns that "found_sensor" could be uninitialized here.
   sprintf(query_buffer,"SELECT offset FROM station WHERE id = (SELECT stationid from sensor WHERE id = %d)", found_sensor);
   if (mysql_query(&mysql, query_buffer))
   {
@@ -1196,7 +1198,7 @@ int main(int argc, char **argv)
   double airpressure;
   unsigned int valid_data_flgs;
   int Metric_Dat, dsts = 0;
-  int  pid, s, fd[CONNECTIONS];
+  int  pid, ss, fd[CONNECTIONS];
   socklen_t clen = sizeof(struct sockaddr_in);
   int *max = 0;
   int not_a_daemon = 0, repetitive = 0, tcp_wx_port = PORT;
@@ -1333,7 +1335,8 @@ int main(int argc, char **argv)
     setsid();
     for (i = 0; i < NOFILE; i++)
     {
-      if ( i != s) close(i);
+      // NOTE: Gcc warns that "ss" could be uninitialized here.
+      if ( i != ss) close(i);
     }
   }
 
@@ -1355,7 +1358,7 @@ int main(int argc, char **argv)
   server.sin_addr = bind_address;
   server.sin_port = htons(tcp_wx_port);
 
-  if ((s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+  if ((ss = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
   {
     if (debug_level & 1)
     {
@@ -1368,14 +1371,14 @@ int main(int argc, char **argv)
    * conncections during the quit. To avoid addresss/port in use
    * error.  */
   i = 1;
-  if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)) == -1)
+  if (setsockopt(ss, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)) == -1)
   {
   if (debug_level & 1)
     {
     fprintf(stderr, "err: %s - setsockopt", progname);
     }
   }
-  if (bind(s, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) == -1)
+  if (bind(ss, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) == -1)
   {
     if (debug_level & 1)
     {
@@ -1383,7 +1386,7 @@ int main(int argc, char **argv)
     }
     exit(11);
   }
-  if (listen(s, CONNECTIONS) == -1)
+  if (listen(ss, CONNECTIONS) == -1)
   {
     if (debug_level & 1)
     {
@@ -1455,15 +1458,15 @@ int main(int argc, char **argv)
       }
     }
     FD_ZERO(&rfds);
-    FD_SET(s, &rfds);
-    if (select(s + 1, &rfds, NULL, NULL, &tv) > 0)
+    FD_SET(ss, &rfds);
+    if (select(ss + 1, &rfds, NULL, NULL, &tv) > 0)
     {
       for (current = fd; (*current > 0) && (current < fd + CONNECTIONS - 1); current++);
       if (current > max)
       {
         max = current;
       }
-      if ((*current = accept(s, (struct sockaddr *)&client, &clen)) != -1)
+      if ((*current = accept(ss, (struct sockaddr *)&client, &clen)) != -1)
       {
         write(*current, WX_APRS, data_len);
       }
