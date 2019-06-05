@@ -597,7 +597,9 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record)
   }
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"add_wx_alert_to_hash finish\n");
+  }
 }
 
 
@@ -693,7 +695,9 @@ int alert_expire(int curr_sec)
   last_alert_expire = curr_sec;
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"Checking for expired alerts...\n");
+  }
 
   iterator = create_wx_alert_iterator();
   while (iterator)
@@ -706,7 +710,10 @@ int alert_expire(int curr_sec)
     {
 #ifndef USING_LIBGC
       //fprintf(stderr,"free iterator 1\n");
-      if (iterator) free(iterator);
+      if (iterator)
+      {
+        free(iterator);
+      }
 #endif  // USING_LIBGC
       return(expire_count);
     }
@@ -743,7 +750,10 @@ int alert_expire(int curr_sec)
   }
 #ifndef USING_LIBGC
   //fprintf(stderr,"free iterator 2\n");
-  if (iterator) free(iterator);
+  if (iterator)
+  {
+    free(iterator);
+  }
 #endif  // USING_LIBGC
 
   // Cause a screen redraw if we expired some alerts
@@ -775,12 +785,16 @@ int alert_expire(int curr_sec)
   set_dangerous("alert.c:alert_add_entry()");
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"alert_add_entry\n");
+  }
 
   if (strlen(entry->title) == 0)
   {
     if (debug_level & 2)
+    {
       fprintf(stderr,"alert_add_entry: Empty title!\n");
+    }
 
     clear_dangerous();
 
@@ -793,7 +807,9 @@ int alert_expire(int curr_sec)
        || (strcmp(entry->to, "NWS_SOLAR") == 0) )
   {
     if (debug_level & 2)
+    {
       fprintf(stderr,"NWS-SOLAR, skipping\n");
+    }
 
     clear_dangerous();
 
@@ -802,7 +818,9 @@ int alert_expire(int curr_sec)
   if (strcasecmp(entry->title, "-NoActivationExpected") == 0)
   {
     if (debug_level & 2)
+    {
       fprintf(stderr,"NoActivationExpected, skipping\n");
+    }
 
     clear_dangerous();
 
@@ -893,12 +911,16 @@ int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) )
   if (strlen(alert->title) == 0)
   {
     if (debug_level & 2)
+    {
       fprintf(stderr,"alert_active:NULL\n");
+    }
     return(0);
   }
  
   if (debug_level & 2)
+  {
     fprintf(stderr,"alert_active:%s\n",alert->title);
+  }
 
   (void)time(&now);
 
@@ -907,7 +929,11 @@ int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) )
   {
     if (a_ptr->expiration >= now)
     {
-      for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
+      for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++)
+      {
+        //do nothing
+      }
+
     }
     else if (a_ptr->expiration < (now - 3600))
     {    // More than an hour past the expiration,
@@ -951,9 +977,13 @@ int alert_display_request(void)
 
   //WE7U
   if (wx_alert_hash)
+  {
     alert_count = hashtable_count(wx_alert_hash);
+  }
   else
+  {
     return((int)FALSE);
+  }
 
   // If we found any, return TRUE.
   if (alert_count != last_alert_count)
@@ -971,9 +1001,13 @@ int alert_list_count(void)
 {
   int count = 0;
   if (wx_alert_hash)
+  {
     return(hashtable_count(wx_alert_hash));
+  }
   else
+  {
     return count;
+  }
 }
 
 
@@ -993,7 +1027,9 @@ int alert_on_screen(void)
 
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"alert_on_screen\n");
+  }
 
   //WE7U
 
@@ -1010,7 +1046,10 @@ int alert_on_screen(void)
   }
 #ifndef USING_LIBGC
   //fprintf(stderr,"free iterator 3\n");
-  if (iterator) free(iterator);
+  if (iterator)
+  {
+    free(iterator);
+  }
 #endif  // USING_LIBGC
 
   return (alert_count);
@@ -1143,7 +1182,9 @@ void alert_build_list(Message *fill)
     // Special handling for SKY messages only.
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"Sky Message: %s\n",fill->message_line);
+    }
 
     // Find a matching alert_record, check whether or not it is
     // expired.  If not, add this additional text into the
@@ -1180,7 +1221,9 @@ void alert_build_list(Message *fill)
       {
 
         if (debug_level & 2)
+        {
           fprintf(stderr,"%s:Found a matching alert to a SKY message:\t",list_ptr->seq);
+        }
 
         switch (fill->seq[4])
         {
@@ -1189,21 +1232,27 @@ void alert_build_list(Message *fill)
           memcpy(list_ptr->desc0, fill->message_line, tmp_size);
           list_ptr->desc0[tmp_size-1] = '\0'; // Terminate string
           if (debug_level & 2)
+          {
             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
+          }
           break;
         case 'C':
           tmp_size = sizeof(list_ptr->desc1);
           memcpy(list_ptr->desc1, fill->message_line, tmp_size);
           list_ptr->desc1[tmp_size-1] = '\0'; // Terminate string
           if (debug_level & 2)
+          {
             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
+          }
           break;
         case 'D':
           tmp_size = sizeof(list_ptr->desc2);
           memcpy(list_ptr->desc2, fill->message_line, tmp_size);
           list_ptr->desc2[tmp_size-1] = '\0'; // Terminate string
           if (debug_level & 2)
+          {
             fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
+          }
           break;
         case 'E':
         default:
@@ -1211,22 +1260,31 @@ void alert_build_list(Message *fill)
           memcpy(list_ptr->desc3, fill->message_line, tmp_size);
           list_ptr->desc3[tmp_size-1] = '\0'; // Terminate string
           if (debug_level & 2)
+          {
             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
+          }
           break;
         }
       }
     }
     if (debug_level & 2)
+    {
       fprintf(stderr,"alert_build_list return 1\n");
+    }
 #ifndef USING_LIBGC
     //fprintf(stderr,"free iterator a4\n");
-    if (iterator) free(iterator);
+    if (iterator)
+    {
+      free(iterator);
+    }
 #endif  // USING_LIBGC
     return;
   }
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"1\n");
+  }
 
   if (fill->active == RECORD_ACTIVE)
   {
@@ -1237,7 +1295,9 @@ void alert_build_list(Message *fill)
 
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"2\n");
+    }
 
     memset(&entry, 0, sizeof(entry));
     // flags[0] specifies whether it's onscreen or not
@@ -1248,7 +1308,9 @@ void alert_build_list(Message *fill)
     entry.flags[source] = fill->heard_via_tnc;
     p_station = NULL;
     if (search_station_name(&p_station,fill->from_call_sign,1))
+    {
       entry.flags[source] = p_station->data_via;
+    }
 
     // Zero the title strings.  We can have up to five alerts in
     // a non-compressed weather alert.
@@ -1272,9 +1334,10 @@ void alert_build_list(Message *fill)
                  &title[4][0]);       // ...
 
     if (ret < 3)
-      fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret, 
+    {
+      fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok) %s->%s: %s\n", ret,
               fill->from_call_sign, fill->call_sign, fill->message_line);
-
+    }
     // Force a termination for each
     entry.activity[20]  = '\0';
     entry.alert_tag[20] = '\0';
@@ -1385,7 +1448,7 @@ void alert_build_list(Message *fill)
           temp_suffix[1] = '\0';
           ptr += 1;
         }
-        else if (temp_suffix[1] != '\0' && 
+        else if (temp_suffix[1] != '\0' &&
                  (temp_suffix[2] == '-' || temp_suffix[2] == '>'))
         {
           temp_suffix[2] = '\0';
@@ -1423,7 +1486,9 @@ void alert_build_list(Message *fill)
 
         // We have our first zone (of this loop) extracted!
         if (debug_level & 2)
+        {
           fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+        }
 
         // Add it to our zone string.  In this case we know
         // that the lengths of the strings we're working
@@ -1434,7 +1499,7 @@ void alert_build_list(Message *fill)
                 sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
         strncat(uncompressed_wx,
                 prefix,
-                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
         strncat(uncompressed_wx,
                 suffix,
                 sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -1442,7 +1507,9 @@ void alert_build_list(Message *fill)
         uncompressed_wx[9999] = '\0';
 
         if (debug_level & 2)
+        {
           fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+        }
 
         // Here we keep looping until we hit another alpha
         // portion.  We need to look at the field separator
@@ -1459,7 +1526,9 @@ void alert_build_list(Message *fill)
           // Xastir main thread can't hang in this loop
           // forever if the input string is malformed.
           if (iterations > 30)
+          {
             break;
+          }
 
           // Look for '>' or '-' character.  If former, we
           // have a numeric sequence to ennumerate.  If the
@@ -1509,7 +1578,9 @@ void alert_build_list(Message *fill)
             // ending should now contain something like
             // "046" or "35" or "2"
             if (debug_level & 2)
+            {
               fprintf(stderr,"Ending:%s\n",ending);
+            }
 
             start_number = (int)atoi(suffix);
             end_number = (int)atoi(ending);
@@ -1518,7 +1589,9 @@ void alert_build_list(Message *fill)
               xastir_snprintf(suffix,4,"%03d",kk);
 
               if (debug_level & 2)
+              {
                 fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
+              }
 
               // And another zone... Ennumerate
               // through the sequence, adding each
@@ -1610,7 +1683,9 @@ void alert_build_list(Message *fill)
               }
 
               if (debug_level & 2)
+              {
                 fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+              }
 
               // And another zone...
               // Add it to our zone string.  In this
@@ -1646,8 +1721,9 @@ void alert_build_list(Message *fill)
       }
 
       if (debug_level & 2)
-        fprintf(stderr,"Uncompressed: %s\n",
-                uncompressed_wx);
+      {
+        fprintf(stderr,"Uncompressed: %s\n", uncompressed_wx);
+      }
     }
     /////////////////////////////////////////////////////////////////////
     // End of compressed weather alert special code
@@ -1656,7 +1732,7 @@ void alert_build_list(Message *fill)
     // Australian Buerau of Meeorology alerts (BOM)
     // Geoff VK2XJG
 
-    // Check for "BOM_" in the call_sign field.  
+    // Check for "BOM_" in the call_sign field.
     // WXSVR-AU delivers messages in this format, keeping the protocol as close to
     // the NWS WXSVR as possible.
     // Underline signifies compressed alert format.  Dash signifies
@@ -1738,7 +1814,7 @@ void alert_build_list(Message *fill)
           prefix[3] = ptr[0];
           prefix[5] = '\0';   // Terminate the string
           ptr += 3;
-        } 
+        }
         // All other cases are 3 letter states (NSW/VIC/TAS/QLD)
         else
         {
@@ -1763,7 +1839,7 @@ void alert_build_list(Message *fill)
           temp_suffix[1] = '\0';
           ptr += 1;
         }
-        else if (temp_suffix[1] != '\0' && 
+        else if (temp_suffix[1] != '\0' &&
                  (temp_suffix[2] == '-' || temp_suffix[2] == '>'))
         {
           temp_suffix[2] = '\0';
@@ -1801,7 +1877,9 @@ void alert_build_list(Message *fill)
 
         // We have our first zone (of this loop) extracted!
         if (debug_level & 2)
+        {
           fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+        }
 
         // Add it to our zone string.  In this case we know
         // that the lengths of the strings we're working
@@ -1812,7 +1890,7 @@ void alert_build_list(Message *fill)
                 sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
         strncat(uncompressed_wx,
                 prefix,
-                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
         strncat(uncompressed_wx,
                 suffix,
                 sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -1837,7 +1915,9 @@ void alert_build_list(Message *fill)
           // Xastir main thread can't hang in this loop
           // forever if the input string is malformed.
           if (iterations > 30)
+          {
             break;
+          }
 
           // Look for '>' or '-' character.  If former, we
           // have a numeric sequence to ennumerate.  If the
@@ -1887,7 +1967,9 @@ void alert_build_list(Message *fill)
             // ending should now contain something like
             // "046" or "35" or "2"
             if (debug_level & 2)
+            {
               fprintf(stderr,"Ending:%s\n",ending);
+            }
 
             start_number = (int)atoi(suffix);
             end_number = (int)atoi(ending);
@@ -1896,7 +1978,9 @@ void alert_build_list(Message *fill)
               xastir_snprintf(suffix,4,"%03d",kk);
 
               if (debug_level & 2)
+              {
                 fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
+              }
 
               // And another zone... Ennumerate
               // through the sequence, adding each
@@ -1988,7 +2072,9 @@ void alert_build_list(Message *fill)
               }
 
               if (debug_level & 2)
+              {
                 fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+              }
 
               // And another zone...
               // Add it to our zone string.  In this
@@ -2001,7 +2087,7 @@ void alert_build_list(Message *fill)
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       prefix,
-                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       suffix,
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -2024,8 +2110,9 @@ void alert_build_list(Message *fill)
       }
 
       if (debug_level & 2)
-        fprintf(stderr,"Uncompressed: %s\n",
-                uncompressed_wx);
+      {
+        fprintf(stderr,"Uncompressed: %s\n", uncompressed_wx);
+      }
     }
     /////////////////////////////////////////////////////////////////////
     // End of compressed weather (BOM) alert special code
@@ -2034,7 +2121,9 @@ void alert_build_list(Message *fill)
 
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"3\n");
+    }
 
     // Terminate the strings
     entry.activity[20] = entry.alert_tag[20] = '\0';
@@ -2086,7 +2175,9 @@ void alert_build_list(Message *fill)
     }
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"4\n");
+    }
 
     // Copy the sequence (which contains issue_date_time and
     // message sequence) into the record.
@@ -2094,7 +2185,9 @@ void alert_build_list(Message *fill)
     entry.seq[sizeof(entry.seq)-1] = '\0';  // Terminate string
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"5\n");
+    }
 
     // Now compute issue_date_time from the first three characters of
     // the sequence number:
@@ -2163,7 +2256,9 @@ void alert_build_list(Message *fill)
     }
 
     if (debug_level & 2)
+    {
       fprintf(stderr,"6\n");
+    }
 
 
     ///////////////////////////////////////////////////////////////////////
@@ -2233,7 +2328,9 @@ void alert_build_list(Message *fill)
       // we're to disregard anything after a space in the
       // information field.
       if (ignore_title)   // Blank out title if flag is set
+      {
         entry.title[0] = '\0';
+      }
 
       // If we found a space in a title, this signifies that
       // we hit the end of the current list of zones.
@@ -2260,7 +2357,9 @@ void alert_build_list(Message *fill)
       // Skip loop iterations if we don't have a title for an
       // entry
       if (entry.title[0] == '\0')
+      {
         continue;
+      }
 
       xastir_snprintf(entry.from,
                       sizeof(entry.from),
@@ -2278,25 +2377,33 @@ void alert_build_list(Message *fill)
       // CANCL message though, and we want CANCL to have
       // priority.
       if (strstr(entry.alert_tag, "CANCL") || strstr(entry.to, "CANCL"))
+      {
         entry.alert_level = 'C';
-
+      }
       else if (!strncmp(entry.alert_tag, "TEST", 4) || strstr(entry.to, "TEST"))
+      {
         entry.alert_level = 'T';
-
+      }
       else if (strstr(entry.alert_tag, "WARN") || strstr(entry.to, "WARN"))
+      {
         entry.alert_level = 'R';
-
+      }
       else if (strstr(entry.alert_tag, "CIVIL") || strstr(entry.to, "CIVIL"))
+      {
         entry.alert_level = 'R';
-
+      }
       else if (strstr(entry.alert_tag, "WATCH") || strstr(entry.to, "WATCH"))
+      {
         entry.alert_level = 'Y';
-
+      }
       else if (strstr(entry.alert_tag, "ADVIS") || strstr(entry.to, "ADVIS"))
+      {
         entry.alert_level = 'B';
-
+      }
       else
+      {
         entry.alert_level = 'G';
+      }
 
 
       // Kludge for fire zones
@@ -2305,7 +2412,9 @@ void alert_build_list(Message *fill)
       {
         // Replace "Z" in the zone field with "F"
         if (entry.title[3] == 'Z')
+        {
           entry.title[3] = 'F';
+        }
       }
       // Look for a similar alert
 
@@ -2327,7 +2436,7 @@ void alert_build_list(Message *fill)
       // Fill in the unique_string variable.  We need this for
       // our hash code.
       alert_fill_unique_string(&entry);
- 
+
       if ((list_ptr = get_wx_alert_from_hash(entry.unique_string)))
       {
         //fprintf(stderr,"alert_build_list: found match: %s\n",entry.unique_string);
@@ -2399,7 +2508,9 @@ void alert_build_list(Message *fill)
   }
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"alert_build_list return 2\n");
+  }
 }
 
 
