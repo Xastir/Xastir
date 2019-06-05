@@ -10,8 +10,7 @@ D=      `date +%G%m%d.%H%M%S`
 
 SUBDIRS = src m4 config help scripts symbols callpass
 
-# Remove this file here (it is created via configure), not from within intl.
-# DISTCLEANFILES = intl/libintl.h
+# DISTCLEANFILES =
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
         missing placeholder FAQ LICENSE README README.GIT \

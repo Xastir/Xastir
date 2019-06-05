@@ -121,7 +121,6 @@ compile and run Xastir, along with their dependencies, will be installed.
 [ ] libdb-devel
 [ ] libgeotiff 
 [ ] libgeotiff-devel
-[ ] libintl-devel
 [ ] libjasper-devel
 [ ] libjbig-devel
 [ ] liblcms2-devel
