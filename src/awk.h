@@ -29,9 +29,15 @@
 #include <pcre/pcre.h>
 #endif
 
-enum awk_symtype {STRING,INT,FLOAT}; /* the only data types */
+enum awk_symtype
+  {
+   STRING,
+   INT,
+   FLOAT
+  }; /* the only data types */
 
-typedef struct awk_symbol_ {	/* symbol table entry */
+typedef struct awk_symbol_
+{	/* symbol table entry */
   struct awk_symbol_ *next_sym; /* linked list */
   const char *name;           /* name of the symbol */
   int namelen;                /* length of the name */
@@ -42,14 +48,18 @@ typedef struct awk_symbol_ {	/* symbol table entry */
 } awk_symbol;
 
 #define AWK_SYMTAB_HASH_SIZE 0xff
-typedef struct awk_symtab_ {	/* symbol table anchor */
+typedef struct awk_symtab_
+{
+  /* symbol table anchor */
   awk_symbol *hash[AWK_SYMTAB_HASH_SIZE];
 } awk_symtab;
 
 #define AWK_SYM_HASH(n,l) ((*n)&AWK_SYMTAB_HASH_SIZE)
 //#define AWK_SYM_HASH(n,l) ((n[0]+((l>1)?n[1]:0))&AWK_SYMTAB_HASH_SIZE)
 
-typedef struct awk_action_ {	/* a program statement */
+typedef struct awk_action_
+{
+  /* a program statement */
   struct awk_action_ *next_act;
   enum {NOOP=0, NEXT, SKIP, ASSIGN} opcode;
   awk_symbol *dest;		/* destination of assignment */
@@ -57,7 +67,8 @@ typedef struct awk_action_ {	/* a program statement */
   int exprlen;                /* length of expression */
 } awk_action;
 
-typedef struct awk_rule_ {
+typedef struct awk_rule_
+{
   struct awk_rule_ *next_rule;    /* linked list */
   enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
   const char *pattern;        /* pcre pattern string */
@@ -70,7 +81,9 @@ typedef struct awk_rule_ {
 #define AR_MALLOC 0x01		/* pattern, act were malloc'd by me */
 } awk_rule;
 
-typedef struct awk_program_ {	/* anchor for the list of rules */
+typedef struct awk_program_
+{
+  /* anchor for the list of rules */
   awk_symtab *symtbl;	       /* the symbol table for this program */
   awk_rule *head;		/* head of list */
   awk_rule *last;		/* last element */
