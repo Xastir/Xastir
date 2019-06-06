@@ -45,17 +45,24 @@
 #define ALERT_COUNT_INCREMENT 200
 
 
-typedef enum {
-              ALERT_TITLE,
-              ALERT_TAG,
-              ALERT_TO,
-              ALERT_FROM
+typedef enum
+{
+  ALERT_TITLE,
+  ALERT_TAG,
+  ALERT_TO,
+  ALERT_FROM
 } alert_match_level;
 
 #define ALERT_ALL ALERT_FROM
-enum flag_list {on_screen, source, max_flag=16};
+enum flag_list
+{
+  on_screen,
+  source,
+  max_flag=16
+};
 
-typedef struct {
+typedef struct
+{
   char unique_string[50];
   double top_boundary, left_boundary, bottom_boundary, right_boundary;
   time_t expiration;  // In local time (secs since epoch)
