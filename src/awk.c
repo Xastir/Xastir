@@ -144,7 +144,6 @@ void awk_free_symtab(awk_symtab *s)
     for (x = s->hash[i]; x ; x = p)
     {
       p = x->next_sym;
-
       free(x);
     }
   }
@@ -225,7 +224,6 @@ awk_symbol *awk_find_sym(awk_symtab *this,
       // Check first char next (fast operation)
       if (s->name[0] == c)
       {
-
         // Ok so far, test the entire string (slow
         // operation, case sensitive)
         if (len == 1)
@@ -255,7 +253,9 @@ int awk_set_sym(awk_symbol *s,
   int minlen = min(s->size-1,l);
 
   if (!s)
+  {
     return -1;
+  }
   switch(s->type)
   {
   case STRING:
@@ -302,7 +302,9 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
   int cbl;
 
   if (!s)
+  {
     return -1;
+  }
   *store = '\0';
   *len = 0;
   switch(s->type)
@@ -320,10 +322,14 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
         *len = minlen;
       }
       else
+      {
         *len = 0;
+      }
     }
     else
+    {
       *len = 0;
+    }
     break;
   case INT:
     if (s->len > 0)
@@ -340,10 +346,14 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
         *len = minlen;
       }
       else
+      {
         *len = 0;
+      }
     }
     else
+    {
       *len = 0;
+    }
     break;
   case FLOAT:
     if (s->len > 0)
@@ -360,10 +370,14 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
         *len = minlen;
       }
       else
+      {
         *len = 0;
+      }
     }
     else
+    {
       *len = 0;
+    }
     break;
   }
   return 0;
@@ -413,7 +427,10 @@ int awk_compile_stmt(awk_symtab *this,
       len--;
     }
     --op;
-    while (isspace((int)*op) && op>s) op--;
+    while (isspace((int)*op) && op>s)
+    {
+      op--;
+    }
     p->opcode = ASSIGN;
     p->dest = awk_find_sym(this,s,(op-s+1));
     if (!p->dest)
@@ -470,7 +487,9 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act)
   {
     ns = strchr(cs,';');
     if (!ns)                        /* end of string */
+    {
       ns = &cs[strlen(cs)];
+    }
     if (awk_compile_stmt(this,p,cs,(ns-cs)) >= 0)
     {
       p->next_act = calloc(1,sizeof(awk_action));
@@ -545,7 +564,9 @@ void awk_eval_expr(awk_symtab *this,
         ++expr;
         --exprlen;
         if (expr[exprlen-1] == c) /* look for matching close delim */
+        {
           --exprlen;
+        }
         break;
       case '$':        /* $... look for variable substitution */
         if (--exprlen < 0)
@@ -621,8 +642,9 @@ void awk_eval_expr(awk_symtab *this,
 
           // We only want to free it if we malloc'ed it.
           if (free_it)
+          {
             free(sp);
-
+          }
         }
         else
         {
@@ -739,7 +761,9 @@ awk_rule *awk_new_rule(void)
   awk_rule *n = calloc(1,sizeof(awk_rule));
 
   if (!n)
+  {
     fprintf(stderr,"Couldn't allocate memory in awk_new_rule()\n");
+  }
 
   return n;
 }
@@ -767,7 +791,9 @@ void awk_free_rule(awk_rule *r)
         pcre_free(r->pe);
     }
     if (r->code)
+    {
       awk_free_action(r->code);
+    }
     free(r);
   }
 }
@@ -784,7 +810,9 @@ awk_program *awk_new_program(void)
   awk_program *n = calloc(1,sizeof(awk_program));
 
   if (!n)
+  {
     fprintf(stderr,"Couldn't allocate memory in awk_new_program()\n");
+  }
 
   return n;
 }
@@ -819,7 +847,9 @@ void awk_free_program(awk_program *rs)
 void awk_add_rule(awk_program *this, awk_rule *r)
 {
   if (!this)
+  {
     return;
+  }
   if (!this->last)
   {
     this->head = this->last = r;
@@ -848,7 +878,9 @@ awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
   awk_rule *r; 
 
   if (!n)
+  {
     return NULL;
+  }
 
   for (r = rules; r < &rules[nrules]; r++)
   {
@@ -870,7 +902,9 @@ static void garbage(const char *file,
   fputs(buf,stderr);
   fputc('\n',stderr);
   while (cp-- > buf)
+  {
     fputc(' ',stderr);
+  }
   fputs("^\n\n",stderr);
 }
 
@@ -905,12 +939,16 @@ awk_program *awk_load_program_file(const char *file)
   if (!f)
   {
     if (n)
+    {
       awk_free_program(n);
+    }
     return NULL;
   }
 
   if (!n)
+  {
     return NULL;
+  }
 
   while (fgets(in,sizeof(in),f))
   {
@@ -919,8 +957,13 @@ awk_program *awk_load_program_file(const char *file)
 
     ++line;
     if (in[l-1] == '\n')
+    {
       in[--l] = '\0';
-    while (isspace((int)*cp)) ++cp;
+    }
+    while (isspace((int)*cp))
+    {
+      ++cp;
+    }
     switch(*cp)
     {
     case '\0':              /* empty line */
@@ -932,14 +975,19 @@ awk_program *awk_load_program_file(const char *file)
       r->ruletype = REGEXP;
       p = ++cp;;              /* now points at pattern */
     more:
-      while (*cp && *cp != '/') ++cp; /* find end of pattern */
+      while (*cp && *cp != '/')
+      {
+        ++cp; /* find end of pattern */
+      }
       if (cp > in && cp[-1] == '\\')
       { /* '/' quoted */
         ++cp;
         goto more;      /* so keep going */
       }
       if (*cp != '\0')    /* zap end of pattern */
+      {
         *cp++ = '\0';
+      }
       r->pattern = strdup(p);
 
       break;
@@ -985,12 +1033,18 @@ awk_program *awk_load_program_file(const char *file)
       garbage(file,line,in,cp);
       continue;
     }
-    while (isspace((int)*cp)) ++cp; /* skip whitespace */
+    while (isspace((int)*cp))
+    {
+      ++cp; /* skip whitespace */
+    }
     if (*cp == '{')
     {
       p = ++cp;
     loop: 
-      while (*cp && *cp != '}' && *cp != '#') ++cp;
+      while (*cp && *cp != '}' && *cp != '#')
+      {
+        ++cp;
+      }
       if (*cp == '\0' || *cp == '#')
       { /* continues on next line */
         *cp++=' ';       /* replace \n w/white space */
@@ -1008,15 +1062,22 @@ awk_program *awk_load_program_file(const char *file)
         goto loop;      /* keep looking for that close bracket */
       }
       if (*cp != '\0')    /* zap end of act */
+      {
         *cp++ = '\0';
+      }
 
       r->act = strdup(p);
 
       r->flags |= AR_MALLOC;
       /* make sure there's no extraneous junk on the line */
-      while (*cp && isspace((int)*cp)) ++cp;
+      while (*cp && isspace((int)*cp))
+      {
+        ++cp;
+      }
       if (*cp == '#' || *cp == '\0')
+      {
         awk_add_rule(n,r);
+      }
       else
       {
         garbage(file,line,in,cp);
@@ -1055,15 +1116,18 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
     if (r->ruletype == REGEXP)
     {
       if (r->tables)
+      {
         pcre_free((void *)r->tables);
+      }
       r->tables = pcre_maketables(); /* NLS locale parse tables */
       if (!r->re)
+      {
         r->re = pcre_compile(r->pattern, /* the pattern */
                              0, /* default options */
                              &error, /* for error message */
                              &erroffset, /* for error offset */
                              r->tables); /* NLS locale character tables */
-
+      }
       if (!r->re)
       {
         int i;
@@ -1071,12 +1135,16 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
         fprintf(stderr,"parse error: %s\n",r->pattern);
         fprintf(stderr,"             ");
         for (i = 0; i < erroffset; i++)
+        {
           fputc(' ',stderr);
+        }
         fprintf(stderr,"^\n");
         return -1;
       }
       if (!r->pe)
+      {
         r->pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
+      }
     }
     else if (r->ruletype == BEGIN)
     {
@@ -1095,7 +1163,9 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
       rs->end = r;
     }
     if (!r->code)
+    {
       r->code = awk_compile_action(rs->symtbl,r->act); /* compile the action */
+    }
   }
   return 0;
 }
@@ -1114,24 +1184,34 @@ void awk_uncompile_program(awk_program *p)
   awk_rule *r;
 
   if (!p)
+  {
     return;
+  }
 
   for (r = p->head; r; r = r->next_rule)
   {
     if (r->ruletype == REGEXP)
     {
       if (r->tables)
+      {
         pcre_free((void *)r->tables);
+      }
       r->tables = NULL;
       if (r->re)
+      {
         pcre_free(r->re);
+      }
       r->re = NULL;
       if (r->pe)
+      {
         pcre_free(r->pe);
+      }
       r->pe = NULL;
     }
     if (r->code)
+    {
       awk_free_action(r->code); /* free the action */
+    }
     r->code = NULL;
   }
 }
@@ -1151,8 +1231,10 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 #define OVECLEN (sizeof(ovector)/sizeof(ovector[0]))
 
   if (!this || !buf || len <= 0)
+  {
     return 0;
-    
+  }
+
   for (r = this->head; r && !done ; r = r->next_rule)
   {
     if (r->ruletype == REGEXP)
@@ -1164,7 +1246,7 @@ int awk_exec_program(awk_program *this, char *buf, int len)
       {
         char symname[2];
         awk_symbol *s;
-                
+
         symname[0] = i + '0';
         symname[1] = '\0';
         s = awk_find_sym(this->symtbl,symname,1);
@@ -1201,9 +1283,13 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 int awk_exec_begin_record(awk_program *this)
 {
   if (this && this->begin_rec)
+  {
     return awk_exec_action(this->symtbl,this->begin_rec->code);
+  }
   else
+  {
     return 0;
+  }
 }
 
 
@@ -1216,9 +1302,13 @@ int awk_exec_begin_record(awk_program *this)
 int awk_exec_begin(awk_program *this)
 {
   if (this && this->begin)
+  {
     return awk_exec_action(this->symtbl,this->begin->code);
+  }
   else
+  {
     return 0;
+  }
 }
 
 
@@ -1231,9 +1321,13 @@ int awk_exec_begin(awk_program *this)
 int awk_exec_end_record(awk_program *this)
 {
   if (this && this->end_rec)
+  {
     return awk_exec_action(this->symtbl,this->end_rec->code);
+  }
   else
+  {
     return 0;
+  }
 }
 
 
@@ -1246,9 +1340,13 @@ int awk_exec_end_record(awk_program *this)
 int awk_exec_end(awk_program *this)
 {
   if (this && this->end)
+  {
     return awk_exec_action(this->symtbl,this->end->code);
+  }
   else
+  {
     return 0;
+  }
 }
 
 
