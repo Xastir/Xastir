@@ -46,38 +46,38 @@
 
 
 typedef enum {
-    ALERT_TITLE,
-    ALERT_TAG,
-    ALERT_TO,
-    ALERT_FROM
+              ALERT_TITLE,
+              ALERT_TAG,
+              ALERT_TO,
+              ALERT_FROM
 } alert_match_level;
 
 #define ALERT_ALL ALERT_FROM
 enum flag_list {on_screen, source, max_flag=16};
 
 typedef struct {
-    char unique_string[50];
-    double top_boundary, left_boundary, bottom_boundary, right_boundary;
-    time_t expiration;  // In local time (secs since epoch)
-    char activity[21];
-    char alert_tag[21];
-    char title[33];
-    char alert_level;
-    char from[10];
-    char to[10];
-    /* referenced flags
-       0 - on screen
-       1 - source
-    */
-    char flags[max_flag];
-    char filename[64];
-    int  index;         // Index into shapefile
-    char seq[10];
-    char issue_date_time[10];
-    char desc0[68];     // Space for additional text.
-    char desc1[68];     // Spec allows 67 chars per
-    char desc2[68];     // message.
-    char desc3[68];     //
+  char unique_string[50];
+  double top_boundary, left_boundary, bottom_boundary, right_boundary;
+  time_t expiration;  // In local time (secs since epoch)
+  char activity[21];
+  char alert_tag[21];
+  char title[33];
+  char alert_level;
+  char from[10];
+  char to[10];
+  /* referenced flags
+     0 - on screen
+     1 - source
+  */
+  char flags[max_flag];
+  char filename[64];
+  int  index;         // Index into shapefile
+  char seq[10];
+  char issue_date_time[10];
+  char desc0[68];     // Space for additional text.
+  char desc1[68];     // Spec allows 67 chars per
+  char desc2[68];     // message.
+  char desc3[68];     //
 } alert_entry;
 
 
