@@ -412,14 +412,16 @@ int awk_compile_stmt(awk_symtab *this,
   const char *s = stmt, *op, *ep;
   
   while (isspace((int)*s))
-  {               /* clean up leading white space */
+  {
+    /* clean up leading white space */
     ++s;
     --len;
   }
   ep = &s[len];
 
   if ((op = strchr(s,'=')) != NULL)
-  {   /* it's either an assignment */
+  {
+    /* it's either an assignment */
     const char *val = op+1;
     while (isspace((int)*val))
     {
@@ -444,7 +446,10 @@ int awk_compile_stmt(awk_symtab *this,
   {                    /* or the "next" keyword */
     const char *r;
 
-    for (r=&s[len-1]; isspace((int)*r); r--,len--) ; /* trim trailing white space */
+    for (r=&s[len-1]; isspace((int)*r); r--,len--)
+    {
+      /* trim trailing white space */
+    }
     if (len == 4 && strncmp(s,"next",4) == 0)
     {
       p->opcode = NEXT;
@@ -594,7 +599,8 @@ void awk_eval_expr(awk_symtab *this,
         /* now search for the var name using closing delim */
         symname = expr;
         if (delim == '\0')
-        {    /* no close delim */
+        {
+          /* no close delim */
           while (!isspace((int)*expr) && !ispunct((int)*expr) && exprlen > 0)
           {
             ++expr;
@@ -624,11 +630,13 @@ void awk_eval_expr(awk_symtab *this,
           int free_it = 0;
 
           if ((int)sizeof(tbuf) >= src->size)
-          { /* tbuf big enuf */
+          {
+            /* tbuf big enuf */
             sp = tbuf;
           }
           else
-          {    /* tbuf too small */
+          {
+            /* tbuf too small */
             free_it++;
             sp = malloc(src->size);
             if (!sp)
@@ -1046,7 +1054,8 @@ awk_program *awk_load_program_file(const char *file)
         ++cp;
       }
       if (*cp == '\0' || *cp == '#')
-      { /* continues on next line */
+      {
+        /* continues on next line */
         *cp++=' ';       /* replace \n w/white space */
         if (cp >= &in[sizeof(in)-1])
         {
