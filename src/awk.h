@@ -29,84 +29,97 @@
 #include <pcre/pcre.h>
 #endif
 
-enum awk_symtype {STRING,INT,FLOAT}; /* the only data types */
+enum awk_symtype
+  {
+   STRING,
+   INT,
+   FLOAT
+  }; /* the only data types */
 
-typedef struct awk_symbol_ {	/* symbol table entry */
-    struct awk_symbol_ *next_sym; /* linked list */
-    const char *name;           /* name of the symbol */
-    int namelen;                /* length of the name */
-    enum awk_symtype type;	/* data type of symbol value */
-    void *val;                  /* storage for the value */
-    int size;                   /* size of *val */
-    int len;                    /* current length of *val */
+typedef struct awk_symbol_
+{	/* symbol table entry */
+  struct awk_symbol_ *next_sym; /* linked list */
+  const char *name;           /* name of the symbol */
+  int namelen;                /* length of the name */
+  enum awk_symtype type;	/* data type of symbol value */
+  void *val;                  /* storage for the value */
+  int size;                   /* size of *val */
+  int len;                    /* current length of *val */
 } awk_symbol;
 
 #define AWK_SYMTAB_HASH_SIZE 0xff
-typedef struct awk_symtab_ {	/* symbol table anchor */
-    awk_symbol *hash[AWK_SYMTAB_HASH_SIZE];
+typedef struct awk_symtab_
+{
+  /* symbol table anchor */
+  awk_symbol *hash[AWK_SYMTAB_HASH_SIZE];
 } awk_symtab;
 
 #define AWK_SYM_HASH(n,l) ((*n)&AWK_SYMTAB_HASH_SIZE)
 //#define AWK_SYM_HASH(n,l) ((n[0]+((l>1)?n[1]:0))&AWK_SYMTAB_HASH_SIZE)
 
-typedef struct awk_action_ {	/* a program statement */
-    struct awk_action_ *next_act;
-    enum {NOOP=0, NEXT, SKIP, ASSIGN} opcode;
-    awk_symbol *dest;		/* destination of assignment */
-    const char *expr;           /* value setting expression */
-    int exprlen;                /* length of expression */
+typedef struct awk_action_
+{
+  /* a program statement */
+  struct awk_action_ *next_act;
+  enum {NOOP=0, NEXT, SKIP, ASSIGN} opcode;
+  awk_symbol *dest;		/* destination of assignment */
+  const char *expr;           /* value setting expression */
+  int exprlen;                /* length of expression */
 } awk_action;
 
-typedef struct awk_rule_ {
-    struct awk_rule_ *next_rule;    /* linked list */
-    enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
-    const char *pattern;        /* pcre pattern string */
-    const u_char *tables;       /* pcre NLS tables */
-    pcre *re;                   /* pcre compiled pattern */
-    pcre_extra *pe;             /* pcre optimized pattern */
-    const char *act;            /* the program string */
-    awk_action *code;		/* compiled program */
-    int flags;			/* some flags */
+typedef struct awk_rule_
+{
+  struct awk_rule_ *next_rule;    /* linked list */
+  enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
+  const char *pattern;        /* pcre pattern string */
+  const u_char *tables;       /* pcre NLS tables */
+  pcre *re;                   /* pcre compiled pattern */
+  pcre_extra *pe;             /* pcre optimized pattern */
+  const char *act;            /* the program string */
+  awk_action *code;		/* compiled program */
+  int flags;			/* some flags */
 #define AR_MALLOC 0x01		/* pattern, act were malloc'd by me */
 } awk_rule;
 
-typedef struct awk_program_ {	/* anchor for the list of rules */
-    awk_symtab *symtbl;	       /* the symbol table for this program */
-    awk_rule *head;		/* head of list */
-    awk_rule *last;		/* last element */
-    awk_rule *begin;		/* optional BEGIN rule */
-    awk_rule *begin_rec;        /* optional BEGIN_RECORD rule */
-    awk_rule *end_rec;		/* optional END_RECORD rule */
-    awk_rule *end;		/* optional END rule */
+typedef struct awk_program_
+{
+  /* anchor for the list of rules */
+  awk_symtab *symtbl;	       /* the symbol table for this program */
+  awk_rule *head;		/* head of list */
+  awk_rule *last;		/* last element */
+  awk_rule *begin;		/* optional BEGIN rule */
+  awk_rule *begin_rec;        /* optional BEGIN_RECORD rule */
+  awk_rule *end_rec;		/* optional END_RECORD rule */
+  awk_rule *end;		/* optional END rule */
 } awk_program;
 
 extern awk_symtab *awk_new_symtab(void);
 extern void awk_free_symtab(awk_symtab *s);
 extern int awk_declare_sym(awk_symtab *this,
-                       const char *name, 
-                       enum awk_symtype type,
-                       const void *val,
-                       const int size);
+                           const char *name, 
+                           enum awk_symtype type,
+                           const void *val,
+                           const int size);
 extern awk_symbol *awk_find_sym(awk_symtab *this,
-                        const char *name,
-                        const int len);
+                                const char *name,
+                                const int len);
 extern int awk_set_sym(awk_symbol *s,
-                   const char *val, 
-                   const int len);
+                       const char *val, 
+                       const int len);
 extern int awk_get_sym(awk_symbol *s, 
-                   char *store,
-                   int size,   
-                   int *len);   
+                       char *store,
+                       int size,   
+                       int *len);   
 extern int awk_compile_stmt(awk_symtab *this,
-                    awk_action *p,
-                    const char *stmt,
-                    int len);
+                            awk_action *p,
+                            const char *stmt,
+                            int len);
 extern awk_action *awk_compile_action(awk_symtab *this, const char *act);
 extern void awk_free_action(awk_action *a);
 extern void awk_eval_expr(awk_symtab *this,
-		      awk_symbol *dest, 
-		      const char *expr,
-		      int exprlen);
+                          awk_symbol *dest, 
+                          const char *expr,
+                          int exprlen);
 extern int awk_exec_action(awk_symtab *this, const awk_action *code);
 extern awk_rule *awk_new_rule(void);
 extern void awk_free_rule(awk_rule *r);
