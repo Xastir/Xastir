@@ -18,6 +18,16 @@ matrix:
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
+        - cd Davis
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+        - cd ../LaCrosse
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
       addons:
         apt:
           packages:
@@ -45,6 +55,16 @@ matrix:
       script:
         - ./bootstrap.sh
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+        - cd Davis
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+        - cd ../LaCrosse
+        - ./bootstrap.sh
+        - ./configure
         - make
         - sudo make install
       addons:
@@ -81,6 +101,16 @@ matrix:
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
+#        - cd Davis
+#        - ./bootstrap.sh
+#        - ./configure CPPFLAGS="-I/usr/local/Cellar/mysql/8.0.11/include:/usr/local/opt/mysql-client/include" LDFLAGS="-L/usr/local/opt/mysql-client/lib"
+#        - make
+#        - sudo make install
+#        - cd ../LaCrosse
+#        - ./bootstrap.sh
+#        - ./configure CPPFLAGS="-I/usr/local/opt/mysql-client/include" LDFLAGS="-L/usr/local/opt/mysql-client/lib"
+#        - make
+#        - sudo make install
       addons:
         homebrew:
           packages:
@@ -92,6 +122,9 @@ matrix:
             - proj
             - shapelib
             - wget
+#            - mysql-client
+#            - mariadb-connector-c
+#            - mysql
 
 
 
@@ -202,7 +235,16 @@ matrix:
 ##        - make clean
 ##        - make
 ##        - sudo make install
- 
+        - cd Davis
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+        - cd ../LaCrosse
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
       addons:
         apt:
           packages:
