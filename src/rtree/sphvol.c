@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -43,7 +43,7 @@
  * From formule in "Regular Polytopes" by H.S.M Coxeter, the volume
  * of a hypersphere of dimension d is:
  *        Pi^(d/2) / gamma(d/2 + 1)
- * 
+ *
  * This implementation works by first computing the log of the above
  * function and then returning the exp of that value in order to avoid
  * instabilities due to the huge values that the real gamma function
@@ -57,7 +57,7 @@
 #include <math.h>
 
 #ifndef M_PI
-# define M_PI 3.1415926535
+  #define M_PI 3.1415926535
 #endif
 
 static void print_volume(int dimension, double volume)
@@ -79,11 +79,15 @@ extern int main(int argc, char *argv[])
   int dim, max_dims=9;
 
   if(2 == argc)
+  {
     max_dims = atoi(argv[1]);
+  }
 
   printf("static const double sphere_volumes[] = {\n");
   for(dim=0; dim<max_dims+1; dim++)
+  {
     print_volume(dim, sphere_volume(dim));
+  }
   printf("};\n");
   return 0;
 }

@@ -32,25 +32,26 @@
 
 #define RAC_DATA_LEN 472
 
-typedef struct {
-    char callsign[7];
-    char first_name[36];
-    char last_name[36];
-    char address[71];
-    char city[36];
-    char province[3];
-    char postal_code[11];
-    char qual_a[2];
-    char qual_b[2];
-    char qual_c[2];
-    char qual_d[2];
-    char club_name[142];
-    char club_address[71];
-    char club_city[36];
-    char club_province[3];
-    char club_postal_code[10];
-    char crlf[2];
-    char filler[8]; // To prevent overruns
+typedef struct
+{
+  char callsign[7];
+  char first_name[36];
+  char last_name[36];
+  char address[71];
+  char city[36];
+  char province[3];
+  char postal_code[11];
+  char qual_a[2];
+  char qual_b[2];
+  char qual_c[2];
+  char qual_d[2];
+  char club_name[142];
+  char club_address[71];
+  char club_city[36];
+  char club_province[3];
+  char club_postal_code[10];
+  char crlf[2];
+  char filler[8]; // To prevent overruns
 } rac_record;
 
 extern int search_rac_data(char *callsign, rac_record *data);

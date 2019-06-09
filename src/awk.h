@@ -23,21 +23,22 @@
 #ifndef AWK_H
 #define AWK_H
 #ifdef HAVE_PCRE_H
-#include <pcre.h>
+  #include <pcre.h>
 #endif
 #ifdef HAVE_PCRE_PCRE_H
-#include <pcre/pcre.h>
+  #include <pcre/pcre.h>
 #endif
 
 enum awk_symtype
-  {
-   STRING,
-   INT,
-   FLOAT
-  }; /* the only data types */
+{
+  STRING,
+  INT,
+  FLOAT
+}; /* the only data types */
 
 typedef struct awk_symbol_
-{   /* symbol table entry */
+{
+  /* symbol table entry */
   struct awk_symbol_ *next_sym; /* linked list */
   const char *name;           /* name of the symbol */
   int namelen;                /* length of the name */
@@ -96,7 +97,7 @@ typedef struct awk_program_
 extern awk_symtab *awk_new_symtab(void);
 extern void awk_free_symtab(awk_symtab *s);
 extern int awk_declare_sym(awk_symtab *this,
-                           const char *name, 
+                           const char *name,
                            enum awk_symtype type,
                            const void *val,
                            const int size);
@@ -104,12 +105,12 @@ extern awk_symbol *awk_find_sym(awk_symtab *this,
                                 const char *name,
                                 const int len);
 extern int awk_set_sym(awk_symbol *s,
-                       const char *val, 
+                       const char *val,
                        const int len);
-extern int awk_get_sym(awk_symbol *s, 
+extern int awk_get_sym(awk_symbol *s,
                        char *store,
-                       int size,   
-                       int *len);   
+                       int size,
+                       int *len);
 extern int awk_compile_stmt(awk_symtab *this,
                             awk_action *p,
                             const char *stmt,
@@ -117,7 +118,7 @@ extern int awk_compile_stmt(awk_symtab *this,
 extern awk_action *awk_compile_action(awk_symtab *this, const char *act);
 extern void awk_free_action(awk_action *a);
 extern void awk_eval_expr(awk_symtab *this,
-                          awk_symbol *dest, 
+                          awk_symbol *dest,
                           const char *expr,
                           int exprlen);
 extern int awk_exec_action(awk_symtab *this, const awk_action *code);

@@ -13,7 +13,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _XVERTEXT_INCLUDED_ 
+#ifndef _XVERTEXT_INCLUDED_
 #define _XVERTEXT_INCLUDED_
 
 
@@ -41,7 +41,7 @@
 
 /* ---------------------------------------------------------------------- */
 
-/* this shoulf be C++ compliant, thanks to 
+/* this shoulf be C++ compliant, thanks to
      vlp@latina.inesc.pt (Vasco Lopes Paulo) */
 
 #if defined(__cplusplus) || defined(c_plusplus)
@@ -68,15 +68,15 @@ extern float   XRotVersion(char *, int);
 extern void    XRotSetMagnification(float);
 extern void    XRotSetBoundingBoxPad(int);
 extern int     XRotDrawString(Display *, XFontStruct*, float,
-                            Drawable, GC, int, int, char*);
+                              Drawable, GC, int, int, char*);
 extern int     XRotDrawImageString(Display*, XFontStruct*, float,
-                            Drawable, GC, int, int, char*);
+                                   Drawable, GC, int, int, char*);
 extern int     XRotDrawAlignedString(Display*, XFontStruct*, float,
-                              Drawable, GC, int, int, char*, int);
+                                     Drawable, GC, int, int, char*, int);
 extern int     XRotDrawAlignedImageString(Display*, XFontStruct*, float,
-                                   Drawable, GC, int, int, char*, int);
+    Drawable, GC, int, int, char*, int);
 extern XPoint *XRotTextExtents(Display*, XFontStruct*, float,
-                        int, int, char*, int);
+                               int, int, char*, int);
 
 #endif /* __cplusplus */
 

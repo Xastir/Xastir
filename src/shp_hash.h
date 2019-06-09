@@ -7,22 +7,23 @@
 
 
 #ifdef HAVE_SHAPEFIL_H
-#include <shapefil.h>
+  #include <shapefil.h>
 #else
-#ifdef HAVE_LIBSHP_SHAPEFIL_H
-#include <libshp/shapefil.h>
-#else
-#error HAVE_LIBSHP defined but no corresponding include defined
-#endif  // HAVE_LIBSHP_SHAPEFIL_H
+  #ifdef HAVE_LIBSHP_SHAPEFIL_H
+    #include <libshp/shapefil.h>
+  #else
+    #error HAVE_LIBSHP defined but no corresponding include defined
+  #endif  // HAVE_LIBSHP_SHAPEFIL_H
 #endif  // HAVE_SHAPEFIL_H
 
-typedef struct _shpinfo{
-    char *filename;
-    struct Node* root;
-    time_t creation;
-    time_t last_access;
-    int num_accesses;
-}shpinfo;
+typedef struct _shpinfo
+{
+  char *filename;
+  struct Node* root;
+  time_t creation;
+  time_t last_access;
+  int num_accesses;
+} shpinfo;
 
 void init_shp_hash(int clobber);
 void add_shp_to_hash(char *filename,SHPHandle sHP);

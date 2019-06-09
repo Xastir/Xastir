@@ -36,18 +36,18 @@ void DLM_queue_abort_files(void);
 void DLM_do_transfers(void);
 
 void DLM_queue_tile(
-    char            *serverURL,
-    unsigned long   x,
-    unsigned long   y,
-    int             osm_zl,
-    char            *baseDir,
-    char            *ext
+  char            *serverURL,
+  unsigned long   x,
+  unsigned long   y,
+  int             osm_zl,
+  char            *baseDir,
+  char            *ext
 );
 
 void DLM_queue_file(
-    char      *url,
-    char      *filename,
-    time_t    expiry
+  char      *url,
+  char      *filename,
+  time_t    expiry
 );
 
 #endif //DLM_H

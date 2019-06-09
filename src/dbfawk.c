@@ -48,7 +48,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #if defined(WITH_DBFAWK) && defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
@@ -75,22 +75,27 @@
  * dbfawk_sig:  Generate a signature for a DBF file.
  *  Fills in sig and returns number of fields.
  */
-int dbfawk_sig(DBFHandle dbf, char *sig, int size) {
+int dbfawk_sig(DBFHandle dbf, char *sig, int size)
+{
   int nf = 0;
 
-  if (sig && size > 0 && dbf) {
+  if (sig && size > 0 && dbf)
+  {
     int i;
     char *sp;
     int width,prec;
-    
+
     nf = DBFGetFieldCount(dbf);
-    for (i = 0, sp=sig; sp < &sig[size-XBASE_FLDHDR_SZ] && i < nf ; i++) {
+    for (i = 0, sp=sig; sp < &sig[size-XBASE_FLDHDR_SZ] && i < nf ; i++)
+    {
       DBFGetFieldInfo(dbf,i,sp,&width,&prec);
       sp += strlen(sp);
       *sp++ = ':';              /* field name separator */
     }
     if (i)
-      *--sp = '\0';             /* clobber the trailing sep */
+    {
+      *--sp = '\0';  /* clobber the trailing sep */
+    }
   }
   return nf;
 }
@@ -100,14 +105,16 @@ int dbfawk_sig(DBFHandle dbf, char *sig, int size) {
 
 
 /* Free a field list */
-void dbfawk_free_info ( dbfawk_field_info *list) {
-    dbfawk_field_info *x, *p;
+void dbfawk_free_info ( dbfawk_field_info *list)
+{
+  dbfawk_field_info *x, *p;
 
-    for ( p = list; p != NULL; ) {
-        x = p;
-        p = p->next;
-        free(x);
-    }
+  for ( p = list; p != NULL; )
+  {
+    x = p;
+    p = p->next;
+    free(x);
+  }
 }
 
 
@@ -118,32 +125,43 @@ void dbfawk_free_info ( dbfawk_field_info *list) {
  * dbfawk_field_list: Generate a list of info about fields to read for
  *  a given DBFHandle and colon-separated list of fieldnames.
  */
-dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
+dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
+{
   dbfawk_field_info *fi = NULL, *head = NULL, *prev;
   int nf;
   char *sp;
 
   /* now build up the list of fields to read */
-  for (nf = 0, sp = dbffields, prev = NULL; *sp; nf++) {
+  for (nf = 0, sp = dbffields, prev = NULL; *sp; nf++)
+  {
     char *d,*p = sp;
     char junk[XBASE_FLDHDR_SZ];
     int w,prec;
 
     fi = calloc(1,sizeof(dbfawk_field_info));
-    if (!fi) {
-        fprintf(stderr,"dbfawk_field_list: first calloc failed\n");
-        return NULL;
+    if (!fi)
+    {
+      fprintf(stderr,"dbfawk_field_list: first calloc failed\n");
+      return NULL;
     }
 
-    if (prev) {
-        prev->next = fi;
-    } else {                    /* no prev, must be first one */
-        head = fi;
+    if (prev)
+    {
+      prev->next = fi;
+    }
+    else                        /* no prev, must be first one */
+    {
+      head = fi;
     }
     d = fi->name;
-    while (*p && *p != ':') *d++ = *p++;
+    while (*p && *p != ':')
+    {
+      *d++ = *p++;
+    }
     if (*p == ':')
+    {
       *p++ = '\0';
+    }
     *d='\0';
     fi->num = DBFGetFieldIndex(dbf, fi->name);
     fi->type = DBFGetFieldInfo(dbf, fi->num, junk, &w, &prec);
@@ -170,158 +188,191 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
 // Malloc's dbfawk_sig_info and returns a filled-in list
 
 dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
-                                  const char *ftype) /* filetype */ { 
-    DIR *d;
-    struct dirent *e;
-    struct stat nfile;
-    char fullpath[MAX_FILENAME];
-    int ftlen;
-    dbfawk_sig_info *i = NULL, *head = NULL;
-    awk_symtab *symtbl;
-    char dbfinfo[1024];         /* local copy of signature */
+                                  const char *ftype) /* filetype */
+{
+  DIR *d;
+  struct dirent *e;
+  struct stat nfile;
+  char fullpath[MAX_FILENAME];
+  int ftlen;
+  dbfawk_sig_info *i = NULL, *head = NULL;
+  awk_symtab *symtbl;
+  char dbfinfo[1024];         /* local copy of signature */
 
-    if (!dir || !ftype) {
-        return NULL;
-    }
-    ftlen = strlen(ftype);
-    d = opendir(dir);
-    if (!d) {
-        return NULL;
-    }
+  if (!dir || !ftype)
+  {
+    return NULL;
+  }
+  ftlen = strlen(ftype);
+  d = opendir(dir);
+  if (!d)
+  {
+    return NULL;
+  }
 
-    symtbl = awk_new_symtab();
-    if (!symtbl) {
-        return NULL;
-    }
+  symtbl = awk_new_symtab();
+  if (!symtbl)
+  {
+    return NULL;
+  }
 
-    awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
+  awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
 
-    while ((e = readdir(d)) != NULL) {
-        int len = strlen(e->d_name);
-        char *path = calloc(1,len+strlen(dir)+2);
+  while ((e = readdir(d)) != NULL)
+  {
+    int len = strlen(e->d_name);
+    char *path = calloc(1,len+strlen(dir)+2);
 
-        // Check for hidden files or directories
-        if (e->d_name[0] == '.') {
-            // Hidden, skip it
-            free(path);
-            continue;
-        }
-
-        // Check for regular files
-
-        xastir_snprintf(fullpath,
-            sizeof(fullpath),
-            "%s/%s",
-            dir,
-            e->d_name);
-
-        if (stat(fullpath, &nfile) != 0) {
-            // Couldn't stat file
-            free(path);
-            continue;
-        }
-
-        if ((nfile.st_mode & S_IFMT) != S_IFREG) {
-            // Not a regular file
-            free(path);
-            continue;
-        }
- 
-        if (!path) {
-            if (symtbl)
-                awk_free_symtab(symtbl);
-            fprintf(stderr,"failed to malloc in dbfawk.c!\n");
-            closedir(d);
-            return NULL;
-        }
- 
-        *dbfinfo = '\0';
-        if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0)) {
-            if (!head) {
-                i = head = calloc(1,sizeof(dbfawk_sig_info));
-
-                if (!i) {
-                    fprintf(stderr,"failed to malloc in dbfawk.c!\n");
-                    free(path);
-                    if (symtbl)
-                      awk_free_symtab(symtbl);
-                    closedir(d);
-                    return NULL;
-                }
-            } else {
-                i->next = calloc(1,sizeof(dbfawk_sig_info));
-
-                if (!i->next) {
-                    fprintf(stderr,"failed to malloc in dbfawk.c!\n");
-                    free(path);
-                    if (symtbl)
-                      awk_free_symtab(symtbl);
-                    closedir(d);
-                    return head; // Return what we were able to gather.
-                }
-
-                i = i->next;
-            }
-
-            xastir_snprintf(path,
-                len+strlen(dir)+2,
-                "%s/%s",
-                dir,
-                e->d_name);
-
-            i->prog = awk_load_program_file(path);
-
-            if (awk_compile_program(symtbl,i->prog) < 0) {
-                fprintf(stderr,"%s: failed to parse\n",e->d_name);
-            } else {
-                /* dbfinfo must be defined in BEGIN rule */
-                awk_exec_begin(i->prog); 
-
-                i->sig = strdup(dbfinfo);
-
-                awk_uncompile_program(i->prog);
-            }
-        }
-        free(path);
+    // Check for hidden files or directories
+    if (e->d_name[0] == '.')
+    {
+      // Hidden, skip it
+      free(path);
+      continue;
     }
 
-    closedir(d);
+    // Check for regular files
 
-    if (symtbl)
+    xastir_snprintf(fullpath,
+                    sizeof(fullpath),
+                    "%s/%s",
+                    dir,
+                    e->d_name);
+
+    if (stat(fullpath, &nfile) != 0)
+    {
+      // Couldn't stat file
+      free(path);
+      continue;
+    }
+
+    if ((nfile.st_mode & S_IFMT) != S_IFREG)
+    {
+      // Not a regular file
+      free(path);
+      continue;
+    }
+
+    if (!path)
+    {
+      if (symtbl)
+      {
         awk_free_symtab(symtbl);
+      }
+      fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+      closedir(d);
+      return NULL;
+    }
 
-    return head;
-}
+    *dbfinfo = '\0';
+    if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0))
+    {
+      if (!head)
+      {
+        i = head = calloc(1,sizeof(dbfawk_sig_info));
 
-
-
-
-
-void dbfawk_free_sig(dbfawk_sig_info *ptr) {
-
-    if (ptr) {
-        if (ptr->prog)
-            awk_free_program(ptr->prog);
-
-        if (ptr->sig) {
-            free(ptr->sig);
+        if (!i)
+        {
+          fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+          free(path);
+          if (symtbl)
+          {
+            awk_free_symtab(symtbl);
+          }
+          closedir(d);
+          return NULL;
         }
-        free(ptr);
+      }
+      else
+      {
+        i->next = calloc(1,sizeof(dbfawk_sig_info));
+
+        if (!i->next)
+        {
+          fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+          free(path);
+          if (symtbl)
+          {
+            awk_free_symtab(symtbl);
+          }
+          closedir(d);
+          return head; // Return what we were able to gather.
+        }
+
+        i = i->next;
+      }
+
+      xastir_snprintf(path,
+                      len+strlen(dir)+2,
+                      "%s/%s",
+                      dir,
+                      e->d_name);
+
+      i->prog = awk_load_program_file(path);
+
+      if (awk_compile_program(symtbl,i->prog) < 0)
+      {
+        fprintf(stderr,"%s: failed to parse\n",e->d_name);
+      }
+      else
+      {
+        /* dbfinfo must be defined in BEGIN rule */
+        awk_exec_begin(i->prog);
+
+        i->sig = strdup(dbfinfo);
+
+        awk_uncompile_program(i->prog);
+      }
     }
+    free(path);
+  }
+
+  closedir(d);
+
+  if (symtbl)
+  {
+    awk_free_symtab(symtbl);
+  }
+
+  return head;
 }
 
 
 
 
 
-void dbfawk_free_sigs(dbfawk_sig_info *list) {
-    dbfawk_sig_info *x, *p;
+void dbfawk_free_sig(dbfawk_sig_info *ptr)
+{
 
-    for (p = list; p; ) {
-        x = p;
-        p = p->next;
-        dbfawk_free_sig(x);
+  if (ptr)
+  {
+    if (ptr->prog)
+    {
+      awk_free_program(ptr->prog);
     }
+
+    if (ptr->sig)
+    {
+      free(ptr->sig);
+    }
+    free(ptr);
+  }
+}
+
+
+
+
+
+void dbfawk_free_sigs(dbfawk_sig_info *list)
+{
+  dbfawk_sig_info *x, *p;
+
+  for (p = list; p; )
+  {
+    x = p;
+    p = p->next;
+    dbfawk_free_sig(x);
+  }
 }
 
 
@@ -336,60 +387,70 @@ void dbfawk_free_sigs(dbfawk_sig_info *list) {
 
 dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
                                  const char *sig,
-                                 const char *file) {
-    dbfawk_sig_info *result = NULL;
+                                 const char *file)
+{
+  dbfawk_sig_info *result = NULL;
 
-    if (file) {
-        int perfilesize=strlen(file)+8; 
-        char *dot, *perfile = calloc(1,perfilesize);
-        dbfawk_sig_info *info;
+  if (file)
+  {
+    int perfilesize=strlen(file)+8;
+    char *dot, *perfile = calloc(1,perfilesize);
+    dbfawk_sig_info *info;
 
-        if (!perfile) {
-            fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
-            return NULL;
-        }
-
-        xastir_snprintf(perfile,
-            perfilesize-1,
-            "%s",
-            file);
-
-        dot = strrchr(perfile,'.');
-
-        if (dot)
-            *dot = '\0';
-
-        strncat(perfile, ".dbfawk", perfilesize-1);
-
-        info = calloc(1,sizeof(*info));
- 
-        if (!info) {
-            fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
-            free(perfile);
-            return NULL;
-        }
-        info->prog = awk_load_program_file(perfile);
-        /* N.B. info->sig is left NULL since it won't be searched, and 
-           to flag that it's safe to free this memory when we're done with
-           it */
-        info->sig = NULL;
-        free(perfile);
-        if (info->prog) {
- 
-            return info;
-        }
-        else {
-            dbfawk_free_sigs(info);
-        }
-        /* fall through and do normal signature search */
+    if (!perfile)
+    {
+      fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
+      return NULL;
     }
 
-    for (result = Dbf_sigs; result; result = result->next) {
-        if (strcmp(result->sig,sig) == 0) {
-            return result;
-        }
+    xastir_snprintf(perfile,
+                    perfilesize-1,
+                    "%s",
+                    file);
+
+    dot = strrchr(perfile,'.');
+
+    if (dot)
+    {
+      *dot = '\0';
     }
-    return NULL;
+
+    strncat(perfile, ".dbfawk", perfilesize-1);
+
+    info = calloc(1,sizeof(*info));
+
+    if (!info)
+    {
+      fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
+      free(perfile);
+      return NULL;
+    }
+    info->prog = awk_load_program_file(perfile);
+    /* N.B. info->sig is left NULL since it won't be searched, and
+       to flag that it's safe to free this memory when we're done with
+       it */
+    info->sig = NULL;
+    free(perfile);
+    if (info->prog)
+    {
+
+      return info;
+    }
+    else
+    {
+      dbfawk_free_sigs(info);
+    }
+    /* fall through and do normal signature search */
+  }
+
+  for (result = Dbf_sigs; result; result = result->next)
+  {
+    if (strcmp(result->sig,sig) == 0)
+    {
+      return result;
+    }
+  }
+  return NULL;
 }
 
 
@@ -403,33 +464,38 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
 void dbfawk_parse_record(awk_program *rs,
                          DBFHandle dbf,
                          dbfawk_field_info *fi,
-                         int i) {
-    dbfawk_field_info *finfo;
+                         int i)
+{
+  dbfawk_field_info *finfo;
 
-    awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
+  awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
 
-    for (finfo = fi; finfo ; finfo = finfo->next) {
-        char qbuf[1024];
+  for (finfo = fi; finfo ; finfo = finfo->next)
+  {
+    char qbuf[1024];
 
-        switch (finfo->type) {
-        case FTString:
-            sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
-            break;
-        case FTInteger:
-            sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
-            break;
-        case FTDouble:
-            sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
-            break;
-        case FTInvalid:
-        default:
-            sprintf(qbuf,"%s=??",finfo->name);
-            break;
-        }
-        if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
-            break;
+    switch (finfo->type)
+    {
+      case FTString:
+        sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
+        break;
+      case FTInteger:
+        sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
+        break;
+      case FTDouble:
+        sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
+        break;
+      case FTInvalid:
+      default:
+        sprintf(qbuf,"%s=??",finfo->name);
+        break;
     }
-    awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
+    if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
+    {
+      break;
+    }
+  }
+  awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
 
 
@@ -442,7 +508,8 @@ void dbfawk_parse_record(awk_program *rs,
 /*                            str_to_upper()                            */
 /************************************************************************/
 
-static void str_to_upper (char *string) {
+static void str_to_upper (char *string)
+{
   int len;
   short i = -1;
 
@@ -450,7 +517,9 @@ static void str_to_upper (char *string) {
 
   while (++i < len)
     if (isalpha(string[i]) && islower(string[i]))
+    {
       string[i] = toupper ((int)string[i]);
+    }
 }
 
 
@@ -465,28 +534,32 @@ static void str_to_upper (char *string) {
 /*      Contributed by Jim Matthews.                                    */
 /************************************************************************/
 
-int DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
+int DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName)
+{
   char          name[12], name1[12], name2[12];
   int           i;
 
   xastir_snprintf(name1,
-    sizeof(name1),
-    "%s",
-    pszFieldName);
-        
+                  sizeof(name1),
+                  "%s",
+                  pszFieldName);
+
   str_to_upper(name1);
 
-  for( i = 0; i < DBFGetFieldCount(psDBF); i++ ) {
-      DBFGetFieldInfo( psDBF, i, name, NULL, NULL );
-      xastir_snprintf(name2,
-        sizeof(name2),
-        "%s",
-        name);
-      str_to_upper(name2);
+  for( i = 0; i < DBFGetFieldCount(psDBF); i++ )
+  {
+    DBFGetFieldInfo( psDBF, i, name, NULL, NULL );
+    xastir_snprintf(name2,
+                    sizeof(name2),
+                    "%s",
+                    name);
+    str_to_upper(name2);
 
-      if(!strncmp(name1,name2,10))
-          return(i);
+    if(!strncmp(name1,name2,10))
+    {
+      return(i);
     }
+  }
   return(-1);
 }
 

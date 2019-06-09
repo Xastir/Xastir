@@ -14,10 +14,10 @@
  * accessor functions. */
 struct hashtable_itr
 {
-    struct hashtable *h;
-    struct entry *e;
-    struct entry *parent;
-    unsigned int index;
+  struct hashtable *h;
+  struct entry *e;
+  struct entry *parent;
+  unsigned int index;
 };
 
 
@@ -31,7 +31,7 @@ hashtable_iterator(struct hashtable *h);
 #if 0
 // BZZZZT!  it is very, very wrong to be inlining this this way.
 // If one calls hashtable_iterator on a hash table from which everything
-// has been deleted, the iterator has a null for i->e.  
+// has been deleted, the iterator has a null for i->e.
 // It is not good to require the caller to check the internals of the iterator
 // structure just to be sure there are no null pointers inside.
 // For whatever reason, these are defined again in the hashtable_iterator.c
@@ -44,7 +44,7 @@ hashtable_iterator(struct hashtable *h);
 extern inline void *
 hashtable_iterator_key(struct hashtable_itr *i)
 {
-    return i->e->k;
+  return i->e->k;
 }
 
 /*****************************************************************************/
@@ -53,16 +53,16 @@ hashtable_iterator_key(struct hashtable_itr *i)
 extern inline void *
 hashtable_iterator_value(struct hashtable_itr *i)
 {
-    return i->e->v;
+  return i->e->v;
 }
 #else
 // SO instead of inlining, just declare.  No need to be "extern"
 // The ones in the .c file check their arguments and return nulls if they
-// can't comply with the request.  Much nicer for the calling routine to 
+// can't comply with the request.  Much nicer for the calling routine to
 // check a return value than to monkey with the internals of the struct.
 void * hashtable_iterator_key(struct hashtable_itr *i);
 void * hashtable_iterator_value(struct hashtable_itr *i);
-#endif 
+#endif
 
 /*****************************************************************************/
 /* advance - advance the iterator to the next element

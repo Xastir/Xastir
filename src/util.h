@@ -32,30 +32,44 @@
 // Max number of WIDE digipeaters allowed
 #define MAX_WIDES 3
 
-static __inline__ short l16(long val) {
-    // This limits large integer values to the 16 bit range for X
-    // drawing
-    if (val < -32768) val = -32768;
-    if (val >  32767) val =  32767;
-    return (short)val;
+static __inline__ short l16(long val)
+{
+  // This limits large integer values to the 16 bit range for X
+  // drawing
+  if (val < -32768)
+  {
+    val = -32768;
+  }
+  if (val >  32767)
+  {
+    val =  32767;
+  }
+  return (short)val;
 }
 
-static __inline__ unsigned short lu16(long val) {
-    // This limits large unsigned integer values to the 16 bit range
-    // for X drawing
-    if (val < 0) val = 0;
-    if (val > 65535) val = 65535;
-    return (unsigned short)val;
+static __inline__ unsigned short lu16(long val)
+{
+  // This limits large unsigned integer values to the 16 bit range
+  // for X drawing
+  if (val < 0)
+  {
+    val = 0;
+  }
+  if (val > 65535)
+  {
+    val = 65535;
+  }
+  return (unsigned short)val;
 }
 
 extern int convert_from_xastir_coordinates ( float *f_longitude,
-                                      float *f_latitude,
-                                      long x,
-                                      long y );
+    float *f_latitude,
+    long x,
+    long y );
 extern int convert_to_xastir_coordinates (unsigned long* x,
-                      unsigned long* y,
-                      float f_longitude,
-                      float f_latitude);
+    unsigned long* y,
+    float f_longitude,
+    float f_latitude);
 extern char *get_tactical_from_hash(char *callsign);
 extern void destroy_tactical_hash(void);
 extern void xastir_debug(int my_debug_level, char *debug_string);
@@ -84,17 +98,17 @@ extern void bearing_decode(const char *langstr, const char *bearing_str, const c
 extern char *get_line(FILE *f, char *linedata, int maxline);
 extern time_t time_from_aprsstring(char *timestamp);
 extern char *compress_posit(const char *lat, const char group, const char *lon, const char symbol,
-                const unsigned int course, const unsigned int speed, const char *phg);
+                            const unsigned int course, const unsigned int speed, const char *phg);
 
 extern int  position_defined(long lat, long lon, int strict);
 extern void convert_screen_to_xastir_coordinates(int x, int y, long *lat, long *lon);
 extern void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y);
-extern void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len, 
-                                           char *EastingL, int EastingL_len, 
-                                           char *NorthingL, int NorthingL_len, 
-                                           unsigned int *int_utmEasting, unsigned int *int_utmNorthing, 
-                                           long x,  long y, 
-                                           int nice_format, char *space_string, int space_string_len);
+extern void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
+    char *EastingL, int EastingL_len,
+    char *NorthingL, int NorthingL_len,
+    unsigned int *int_utmEasting, unsigned int *int_utmNorthing,
+    long x,  long y,
+    int nice_format, char *space_string, int space_string_len);
 extern void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice_format);
 extern void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zone_len, long x, long y);
 extern void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y);
@@ -144,8 +158,8 @@ extern void spell_it_out(char *text, int max_length);
 
 typedef struct
 {
-    pthread_mutex_t lock;
-    pthread_t threadID;
+  pthread_mutex_t lock;
+  pthread_t threadID;
 } xastir_mutex;
 
 extern void init_critical_section(xastir_mutex *lock);
@@ -154,7 +168,7 @@ extern int end_critical_section(xastir_mutex *lock, char *text);
 
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
-void time_mark(int start);
+  void time_mark(int start);
 #endif  // TIMING_DEBUG
 
 // dl9sau

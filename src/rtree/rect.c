@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -55,7 +55,9 @@ void Xastir_RTreeInitRect(struct Rect *R)
   register struct Rect *r = R;
   register int i;
   for (i=0; i<NUMSIDES; i++)
+  {
     r->boundary[i] = (RectReal)0;
+  }
 }
 
 
@@ -71,7 +73,9 @@ struct Rect Xastir_RTreeNullRect(void)
   r.boundary[0] = (RectReal)1;
   r.boundary[NUMDIMS] = (RectReal)-1;
   for (i=1; i<NUMDIMS; i++)
+  {
     r.boundary[i] = r.boundary[i+NUMDIMS] = (RectReal)0;
+  }
   return r;
 }
 
@@ -125,9 +129,9 @@ void Xastir_RTreeSearchRect(struct Rect *Search, struct Rect *Data)
         data->boundary[j] < BIG_NUM)
     {
       size = (drand48() * (data->boundary[j] -
-            data->boundary[i] + 1)) / 2;
+                           data->boundary[i] + 1)) / 2;
       center = data->boundary[i] + drand48() *
-            (data->boundary[j] - data->boundary[i] + 1);
+               (data->boundary[j] - data->boundary[i] + 1);
       search->boundary[i] = center - size/2;
       search->boundary[j] = center + size/2;
     }
@@ -152,7 +156,8 @@ void Xastir_RTreePrintRect(struct Rect *R, int depth)
 
   Xastir_RTreeTabIn(depth);
   printf("rect:\n");
-  for (i = 0; i < NUMDIMS; i++) {
+  for (i = 0; i < NUMDIMS; i++)
+  {
     Xastir_RTreeTabIn(depth+1);
     printf("%f\t%f\n", r->boundary[i], r->boundary[i + NUMDIMS]);
   }
@@ -169,10 +174,14 @@ RectReal Xastir_RTreeRectVolume(struct Rect *R)
 
   assert(r);
   if (Undefined(r))
+  {
     return (RectReal)0;
+  }
 
   for(i=0; i<NUMDIMS; i++)
+  {
     volume *= r->boundary[i+NUMDIMS] - r->boundary[i];
+  }
   assert(volume >= 0.0);
   return volume;
 }
@@ -204,7 +213,8 @@ static const double Xastir_UnitSphereVolume = sphere_volume(NUMDIMS);
 #else
 
 /* Precomputed volumes of the unit spheres for the first few dimensions */
-const double Xastir_UnitSphereVolumes[] = {
+const double Xastir_UnitSphereVolumes[] =
+{
   0.000000,  /* dimension   0 */
   2.000000,  /* dimension   1 */
   3.141593,  /* dimension   2 */
@@ -228,7 +238,7 @@ const double Xastir_UnitSphereVolumes[] = {
   0.025807,  /* dimension  20 */
 };
 #if NUMDIMS > 20
-# error "not enough precomputed sphere volumes"
+  # error "not enough precomputed sphere volumes"
 #endif
 #define Xastir_UnitSphereVolume Xastir_UnitSphereVolumes[NUMDIMS]
 
@@ -252,11 +262,16 @@ RectReal Xastir_RTreeRectSphericalVolume(struct Rect *R)
 
   assert(r);
   if (Undefined(r))
+  {
     return (RectReal)0;
-  for (i=0; i<NUMDIMS; i++) {
+  }
+  for (i=0; i<NUMDIMS; i++)
+  {
     c_size = r->boundary[i+NUMDIMS] - r->boundary[i];
     if (c_size > maxsize)
+    {
       maxsize = c_size;
+    }
   }
   return (RectReal)(pow(maxsize/2, NUMDIMS) * Xastir_UnitSphereVolume);
 }
@@ -273,8 +288,11 @@ RectReal Xastir_RTreeRectSphericalVolume(struct Rect *R)
 
   assert(r);
   if (Undefined(r))
+  {
     return (RectReal)0;
-  for (i=0; i<NUMDIMS; i++) {
+  }
+  for (i=0; i<NUMDIMS; i++)
+  {
     double half_extent =
       (r->boundary[i+NUMDIMS] - r->boundary[i]) / 2;
     sum_of_squares += half_extent * half_extent;
@@ -295,13 +313,17 @@ RectReal Xastir_RTreeRectSurfaceArea(struct Rect *R)
 
   assert(r);
   if (Undefined(r))
+  {
     return (RectReal)0;
+  }
 
-  for (i=0; i<NUMDIMS; i++) {
+  for (i=0; i<NUMDIMS; i++)
+  {
     RectReal face_area = (RectReal)1;
     for (j=0; j<NUMDIMS; j++)
       /* exclude i extent from product in this dimension */
-      if(i != j) {
+      if(i != j)
+      {
         RectReal j_extent =
           r->boundary[j+NUMDIMS] - r->boundary[j];
         face_area *= j_extent;
@@ -324,10 +346,14 @@ struct Rect Xastir_RTreeCombineRect(struct Rect *R, struct Rect *Rr)
   assert(r && rr);
 
   if (Undefined(r))
+  {
     return *rr;
+  }
 
   if (Undefined(rr))
+  {
     return *r;
+  }
 
   for (i = 0; i < NUMDIMS; i++)
   {
@@ -373,20 +399,24 @@ int Xastir_RTreeContained(struct Rect *R, struct Rect *S)
   // undefined rect is contained in any other
   //
   if (Undefined(r))
+  {
     return TRUE;
+  }
 
   // no rect (except an undefined one) is contained in an undef rect
   //
   if (Undefined(s))
+  {
     return FALSE;
+  }
 
   result = TRUE;
   for (i = 0; i < NUMDIMS; i++)
   {
     j = i + NUMDIMS;  /* index for high sides */
     result = result
-      && r->boundary[i] >= s->boundary[i]
-      && r->boundary[j] <= s->boundary[j];
+             && r->boundary[i] >= s->boundary[i]
+             && r->boundary[j] <= s->boundary[j];
   }
   return result;
 }

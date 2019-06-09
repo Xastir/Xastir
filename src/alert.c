@@ -74,26 +74,26 @@
 //
 // Stuff from Dale, paraphrased by Curt:
 //
-// WATCH - weather of some type is possible or probable for a geographic 
-// area- at present I cannot do watches because they can cover huge areas 
-// with hundreds of counties across many states.  I have a prototye of a 
+// WATCH - weather of some type is possible or probable for a geographic
+// area- at present I cannot do watches because they can cover huge areas
+// with hundreds of counties across many states.  I have a prototye of a
 // polygon generator - but that is a whole other can of worms
-// 
-// WARN - warning - Severe or dangerous weather is occuring or is about to 
+//
+// WARN - warning - Severe or dangerous weather is occuring or is about to
 // occur in a geographical area.  This we do a pretty good job on output.
-// 
+//
 // ADVIS - advisory - this can be trivial all the way to a tornado report.
-// If a tornado warning is issued and another tornado sighting happens in 
-// the same county/zone during the valid time of the first- the info is 
-// transmitted as an advisory.  Most of the time is is updates for other 
+// If a tornado warning is issued and another tornado sighting happens in
+// the same county/zone during the valid time of the first- the info is
+// transmitted as an advisory.  Most of the time is is updates for other
 // messages.
-// 
+//
 // CANCL - cancelation- discussed in earlier e-mail
-// 
-// I would add CIVIL for terrorist  earthquake  catostrophic type stuff - 
-// the D7 and D&)) have special alarms built in so that a message to 
+//
+// I would add CIVIL for terrorist  earthquake  catostrophic type stuff -
+// the D7 and D&)) have special alarms built in so that a message to
 // NWS-CIVIL would alert folks no matter what there filters are set for.
-// 
+//
 //
 // The clue to which shapefile to use is in the 4th char in the
 // title (which is the first following an '_')
@@ -143,7 +143,7 @@
 //
 // More from Dale:
 // It occurs to me you might need some insight into what shapefile to look
-// through for a zone/county. The current shape files are c_22mr02, 
+// through for a zone/county. The current shape files are c_22mr02,
 // z_16mr02, and mz21fe02.
 //
 // ICTSVS>APRS::NWS-ADVIS:120145z,SEVERE_WEATHER,KS_Z091, {C14AA
@@ -154,14 +154,14 @@
 //
 // problem comes with marine warnings-
 //
-// AM,AN,GM,PZ,PK,PM,LS,LM,LH,LO,LE,SL will look like states, but will all 
+// AM,AN,GM,PZ,PK,PM,LS,LM,LH,LO,LE,SL will look like states, but will all
 // come from the mz file.
 //
 // so AM_Z686 looks like a state zone, but is a marine zone.
-// Aprs Plus requires the exact file name to be specified - winaprs just 
-// looks for a file in the nwsshape folder starting c_ z_ and mz.  Someone 
-// in the middle of Kansas might not need the marine at all- but here I am 
-// closer to marine zones than land. The fact there is an index file for 
+// Aprs Plus requires the exact file name to be specified - winaprs just
+// looks for a file in the nwsshape folder starting c_ z_ and mz.  Someone
+// in the middle of Kansas might not need the marine at all- but here I am
+// closer to marine zones than land. The fact there is an index file for
 // the shapes should help the speed in a lookup.
 //
 // More from Dale:
@@ -177,13 +177,13 @@
 // or zone right around you - the cwa or cwa's of interest could be derived
 // from that if it already exists.  A long way to say don't worry about CWA
 // maps as far as watches/warnings.
-// 
+//
 // I think the easy coding for determining which shapefile to use would
 // look like;
-// 
+//
 // char sevenCharStr[8];  // seven character string in warning or derived
 // //                        from compressed string i. e. AL_Z001
-// 
+//
 // if the 4th char == 'C' then use "c_shapefile"
 // if the 4th char == 'Z';
 //       if the first two char == 'AN' ||
@@ -192,7 +192,7 @@
 //       If the first two char == 'PZ' ||
 //       if the first two char == 'LH' ||
 //       if the first two char == 'LO' ||
-//       if the first two char == 'LS' ||          
+//       if the first two char == 'LS' ||
 //       if the first two char == 'SL' ||
 //       if the first two char == 'LM' ||
 //            then use the "mzshapefile"
@@ -284,7 +284,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include <stdlib.h>
@@ -294,7 +294,7 @@
 #include <ctype.h>
 
 #ifdef  HAVE_LOCALE_H
-#include <locale.h>
+  #include <locale.h>
 #endif  // HAVE_LOCALE_H
 
 #include <Xm/XmAll.h>
@@ -528,14 +528,18 @@ void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record)
 
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"add_wx_alert_to_hash start\n");
+  }
 
   if (unique_string == NULL
       || unique_string[0] == '\0'
       || alert_record == NULL)
   {
     if (debug_level & 2)
+    {
       fprintf(stderr,"add_wx_alert_to_hash finish\n");
+    }
     return;
   }
 
@@ -912,7 +916,7 @@ int alert_active(alert_entry *alert, alert_match_level UNUSED (match_level) )
     }
     return(0);
   }
- 
+
   if (debug_level & 2)
   {
     fprintf(stderr,"alert_active:%s\n",alert->title);
@@ -971,7 +975,9 @@ int alert_display_request(void)
 
 
   if (debug_level & 2)
+  {
     fprintf(stderr,"alert_display_request\n");
+  }
 
   //WE7U
   if (wx_alert_hash)
@@ -1137,7 +1143,7 @@ int alert_on_screen(void)
 //
 // NECMWW>APRS::BOM_WARN :141300z,WIND,TAS_MW002>003-005>007-009 {D55AG
 // YKPMWW>APRS::BOM_ADVIS:131330z,WIND,SA_MW005 {D5aAA
-// 
+//
 // For the BOM alerts note that the STATE portion of the zone can be two or three characters - valid state
 // prefixes are "NSW,VIC,QLD,TAS,NT,WA,SA". The two characters following the underscore denote the shapefile to use
 // These will be one of "CW,MW,PW,FW or ME".
@@ -1202,7 +1208,7 @@ void alert_build_list(Message *fill)
     //
     // Need to make this SKY data expire from the message list
     // somehow?
-    // 
+    //
     // Remember to blank out these fields when we expire an
     // alert.  Check that all other fields are cleared in this
     // case as well.
@@ -1225,43 +1231,43 @@ void alert_build_list(Message *fill)
 
         switch (fill->seq[4])
         {
-        case 'B':
-          tmp_size = sizeof(list_ptr->desc0);
-          memcpy(list_ptr->desc0, fill->message_line, tmp_size);
-          list_ptr->desc0[tmp_size-1] = '\0'; // Terminate string
-          if (debug_level & 2)
-          {
-            fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
-          }
-          break;
-        case 'C':
-          tmp_size = sizeof(list_ptr->desc1);
-          memcpy(list_ptr->desc1, fill->message_line, tmp_size);
-          list_ptr->desc1[tmp_size-1] = '\0'; // Terminate string
-          if (debug_level & 2)
-          {
-            fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
-          }
-          break;
-        case 'D':
-          tmp_size = sizeof(list_ptr->desc2);
-          memcpy(list_ptr->desc2, fill->message_line, tmp_size);
-          list_ptr->desc2[tmp_size-1] = '\0'; // Terminate string
-          if (debug_level & 2)
-          {
-            fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
-          }
-          break;
-        case 'E':
-        default:
-          tmp_size = sizeof(list_ptr->desc3);
-          memcpy(list_ptr->desc3, fill->message_line, tmp_size);
-          list_ptr->desc3[tmp_size-1] = '\0'; // Terminate string
-          if (debug_level & 2)
-          {
-            fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
-          }
-          break;
+          case 'B':
+            tmp_size = sizeof(list_ptr->desc0);
+            memcpy(list_ptr->desc0, fill->message_line, tmp_size);
+            list_ptr->desc0[tmp_size-1] = '\0'; // Terminate string
+            if (debug_level & 2)
+            {
+              fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
+            }
+            break;
+          case 'C':
+            tmp_size = sizeof(list_ptr->desc1);
+            memcpy(list_ptr->desc1, fill->message_line, tmp_size);
+            list_ptr->desc1[tmp_size-1] = '\0'; // Terminate string
+            if (debug_level & 2)
+            {
+              fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
+            }
+            break;
+          case 'D':
+            tmp_size = sizeof(list_ptr->desc2);
+            memcpy(list_ptr->desc2, fill->message_line, tmp_size);
+            list_ptr->desc2[tmp_size-1] = '\0'; // Terminate string
+            if (debug_level & 2)
+            {
+              fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
+            }
+            break;
+          case 'E':
+          default:
+            tmp_size = sizeof(list_ptr->desc3);
+            memcpy(list_ptr->desc3, fill->message_line, tmp_size);
+            list_ptr->desc3[tmp_size-1] = '\0'; // Terminate string
+            if (debug_level & 2)
+            {
+              fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
+            }
+            break;
         }
       }
     }
@@ -1465,19 +1471,19 @@ void alert_build_list(Message *fill)
                         "000");
         switch (strlen(temp_suffix))
         {
-        case 1: // Copy one char across
-          suffix[2] = temp_suffix[0];
-          break;
-        case 2: // Copy two chars across
-          suffix[1] = temp_suffix[0];
-          suffix[2] = temp_suffix[1];
-          break;
-        case 3: // Copy all three chars across
-          xastir_snprintf(suffix,
-                          sizeof(suffix),
-                          "%s",
-                          temp_suffix);
-          break;
+          case 1: // Copy one char across
+            suffix[2] = temp_suffix[0];
+            break;
+          case 2: // Copy two chars across
+            suffix[1] = temp_suffix[0];
+            suffix[2] = temp_suffix[1];
+            break;
+          case 3: // Copy all three chars across
+            xastir_snprintf(suffix,
+                            sizeof(suffix),
+                            "%s",
+                            temp_suffix);
+            break;
         }
         // Make sure suffix is terminated properly
         suffix[3] = '\0';
@@ -1604,7 +1610,7 @@ void alert_build_list(Message *fill)
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       prefix,
-                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       suffix,
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -1666,19 +1672,19 @@ void alert_build_list(Message *fill)
                               "000");
               switch (strlen(temp_suffix))
               {
-              case 1: // Copy one char across
-                suffix[2] = temp_suffix[0];
-                break;
-              case 2: // Copy two chars across
-                suffix[1] = temp_suffix[0];
-                suffix[2] = temp_suffix[1];
-                break;
-              case 3: // Copy all three chars across
-                xastir_snprintf(suffix,
-                                sizeof(suffix),
-                                "%s",
-                                temp_suffix);
-                break;
+                case 1: // Copy one char across
+                  suffix[2] = temp_suffix[0];
+                  break;
+                case 2: // Copy two chars across
+                  suffix[1] = temp_suffix[0];
+                  suffix[2] = temp_suffix[1];
+                  break;
+                case 3: // Copy all three chars across
+                  xastir_snprintf(suffix,
+                                  sizeof(suffix),
+                                  "%s",
+                                  temp_suffix);
+                  break;
               }
 
               if (debug_level & 2)
@@ -1697,7 +1703,7 @@ void alert_build_list(Message *fill)
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       prefix,
-                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       suffix,
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -1858,19 +1864,19 @@ void alert_build_list(Message *fill)
                         "000");
         switch (strlen(temp_suffix))
         {
-        case 1: // Copy one char across
-          suffix[2] = temp_suffix[0];
-          break;
-        case 2: // Copy two chars across
-          suffix[1] = temp_suffix[0];
-          suffix[2] = temp_suffix[1];
-          break;
-        case 3: // Copy all three chars across
-          xastir_snprintf(suffix,
-                          sizeof(suffix),
-                          "%s",
-                          temp_suffix);
-          break;
+          case 1: // Copy one char across
+            suffix[2] = temp_suffix[0];
+            break;
+          case 2: // Copy two chars across
+            suffix[1] = temp_suffix[0];
+            suffix[2] = temp_suffix[1];
+            break;
+          case 3: // Copy all three chars across
+            xastir_snprintf(suffix,
+                            sizeof(suffix),
+                            "%s",
+                            temp_suffix);
+            break;
         }
         // Make sure suffix is terminated properly
         suffix[3] = '\0';
@@ -1898,7 +1904,9 @@ void alert_build_list(Message *fill)
         uncompressed_wx[9999] = '\0';
 
         if (debug_level & 2)
+        {
           fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+        }
 
         // Here we keep looping until we hit another alpha
         // portion.  We need to look at the field separator
@@ -1995,7 +2003,7 @@ void alert_build_list(Message *fill)
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       prefix,
-                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx)); 
+                      sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
               strncat(uncompressed_wx,
                       suffix,
                       sizeof(uncompressed_wx) - 1 - strlen(uncompressed_wx));
@@ -2057,19 +2065,19 @@ void alert_build_list(Message *fill)
                               "000");
               switch (strlen(temp_suffix))
               {
-              case 1: // Copy one char across
-                suffix[2] = temp_suffix[0];
-                break;
-              case 2: // Copy two chars across
-                suffix[1] = temp_suffix[0];
-                suffix[2] = temp_suffix[1];
-                break;
-              case 3: // Copy all three chars across
-                xastir_snprintf(suffix,
-                                sizeof(suffix),
-                                "%s",
-                                temp_suffix);
-                break;
+                case 1: // Copy one char across
+                  suffix[2] = temp_suffix[0];
+                  break;
+                case 2: // Copy two chars across
+                  suffix[1] = temp_suffix[0];
+                  suffix[2] = temp_suffix[1];
+                  break;
+                case 3: // Copy all three chars across
+                  xastir_snprintf(suffix,
+                                  sizeof(suffix),
+                                  "%s",
+                                  temp_suffix);
+                  break;
               }
 
               if (debug_level & 2)
@@ -2153,18 +2161,18 @@ void alert_build_list(Message *fill)
                         "%s",
                         &title[jj-1][0]);
       }
- 
+
       xastir_snprintf(&title[0][0],
                       TITLE_SIZE,
                       "%s",
                       entry.alert_tag);
- 
+
       xastir_snprintf(entry.alert_tag,
                       sizeof(entry.alert_tag),
                       "%s",
                       entry.activity);
       entry.alert_tag[20] = '\0';
- 
+
       // Shouldn't we clear out entry.activity in this
       // case???  We've determined it's not a date/time value.
       xastir_snprintf(entry.activity,sizeof(entry.activity),"------z");
@@ -2238,7 +2246,7 @@ void alert_build_list(Message *fill)
           char temp_string[5];
           xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 61);
           memcpy(temp, &temp_string[2], 2);
-          temp[2] = '\0'; // Terminate the string 
+          temp[2] = '\0'; // Terminate the string
         }
 
         strncat(date_time,temp,sizeof(date_time)-strlen(date_time)-1);  // Concatenate the strings
@@ -2246,14 +2254,17 @@ void alert_build_list(Message *fill)
       strncat(date_time,"z",sizeof(date_time)-strlen(date_time)-1);   // Add a 'z' on the end.
 
       if (debug_level & 2)
+      {
         fprintf(stderr,"Seq: %s,\tIssue_time: %s\n",fill->seq,date_time);
+      }
 
       xastir_snprintf(entry.issue_date_time,
                       sizeof(entry.issue_date_time),
                       "%s",
                       date_time);
       //entry.issue_date_time = time_from_aprsstring(date_time);
-    } else
+    }
+    else
     {
       xastir_snprintf(entry.issue_date_time,
                       sizeof(entry.issue_date_time),
@@ -2272,7 +2283,7 @@ void alert_build_list(Message *fill)
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
- 
+
     // Iterate through up to five uncompressed alerts, or
     // through the string of now-uncompressed "compressed"
     // alerts, creating an alert out of each.
@@ -2513,7 +2524,7 @@ void alert_build_list(Message *fill)
     }   // End of for loop
 
 
-        // Signify that we're done processing the NWS message
+    // Signify that we're done processing the NWS message
     fill->active = RECORD_CLOSED;
   }
 

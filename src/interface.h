@@ -64,142 +64,148 @@
 #define MAX_IFACE_DEVICE_TYPES 15
 
 /* Define Device Types */
-enum Device_Types {
-    DEVICE_NONE,
-    DEVICE_SERIAL_TNC,
-    DEVICE_SERIAL_TNC_HSP_GPS,
-    DEVICE_SERIAL_GPS,
-    DEVICE_SERIAL_WX,
-    DEVICE_NET_STREAM,
-    DEVICE_AX25_TNC,
-    DEVICE_NET_GPSD,
-    DEVICE_NET_WX,
-    DEVICE_SERIAL_TNC_AUX_GPS,  // KB6MER -> KAM XL or other TNC w/GPS on AUX port
-    DEVICE_SERIAL_KISS_TNC,     // KISS TNC on serial port (not ax.25 kernel device)
-    DEVICE_NET_DATABASE,
-    DEVICE_NET_AGWPE,
-    DEVICE_SERIAL_MKISS_TNC,    // Multi-port KISS TNC, like the Kantronics KAM
-    DEVICE_SQL_DATABASE         // SQL server (MySQL/Postgis) database
+enum Device_Types
+{
+  DEVICE_NONE,
+  DEVICE_SERIAL_TNC,
+  DEVICE_SERIAL_TNC_HSP_GPS,
+  DEVICE_SERIAL_GPS,
+  DEVICE_SERIAL_WX,
+  DEVICE_NET_STREAM,
+  DEVICE_AX25_TNC,
+  DEVICE_NET_GPSD,
+  DEVICE_NET_WX,
+  DEVICE_SERIAL_TNC_AUX_GPS,  // KB6MER -> KAM XL or other TNC w/GPS on AUX port
+  DEVICE_SERIAL_KISS_TNC,     // KISS TNC on serial port (not ax.25 kernel device)
+  DEVICE_NET_DATABASE,
+  DEVICE_NET_AGWPE,
+  DEVICE_SERIAL_MKISS_TNC,    // Multi-port KISS TNC, like the Kantronics KAM
+  DEVICE_SQL_DATABASE         // SQL server (MySQL/Postgis) database
 };
 
-enum Device_Active {
-    DEVICE_NOT_IN_USE,
-    DEVICE_IN_USE
+enum Device_Active
+{
+  DEVICE_NOT_IN_USE,
+  DEVICE_IN_USE
 };
 
-enum Device_Status {
-    DEVICE_DOWN,
-    DEVICE_UP,
-    DEVICE_ERROR
+enum Device_Status
+{
+  DEVICE_DOWN,
+  DEVICE_UP,
+  DEVICE_ERROR
 };
 
 
-typedef struct {
-    int    device_type;                           /* device type                             */
-    int    active;                                /* channel in use                          */
-    int    status;                                /* current status (up or down)             */
-    char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
-    char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
-    struct addrinfo *addr_list;                   /* possible network addresses              */
-    unsigned long int address;                    /* XXX Delete this                         */
-    int    thread_status;                         /* thread status for connect thread        */
-    int    connect_status;                        /* connect status for connect thread       */
-    int    decode_errors;                         /* decode error count, used for data type  */
-    int    data_type;                             /* 0=normal 1=wx_binary                    */
-    int    socket_port;                           /* socket port# for network                */
-    char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password                           */
-    int    channel;                               /* for serial and net ports                */
-    int    channel2;                              /* for AX25 ports                          */
-    char   ui_call[30];                           /* current call for this port              */
-    struct termios t,t_old;                       /* terminal struct for serial port         */
-    int    dtr;                                   /* dtr signal for HSP cable (status)       */
-    int    sp;                                    /* serial port speed                       */
-    int    style;                                 /* serial port style                       */
-    int    scan;                                  /* data read available                     */
-    int    errors;                                /* errors for this port                    */
-    int    reconnect;                             /* reconnect on net failure                */
-    int    reconnects;                            /* total number of reconnects by this port */
-    unsigned long   bytes_input;                  /* total bytes read by this port           */
-    unsigned long   bytes_output;                 /* total bytes written by this port        */
-    unsigned long   bytes_input_last;             /* total bytes read last check             */
-    unsigned long   bytes_output_last;            /* total bytes read last check             */
-    int    port_activity;                         /* 0 if no activity between checks         */
-    pthread_t read_thread;                        /* read thread                             */
-    int    read_in_pos;                           /* current read buffer input pos           */
-    int    read_out_pos;                          /* current read buffer output pos          */
-    char   device_read_buffer[MAX_DEVICE_BUFFER]; /* read buffer for this port               */
-    xastir_mutex read_lock;                       /* Lock for reading the port data          */
-    pthread_t write_thread;                       /* write thread                            */
-    int    write_in_pos;                          /* current write buffer input pos          */
-    int    write_out_pos;                         /* current write buffer output pos         */
-    xastir_mutex write_lock;                      /* Lock for writing the port data          */
-    char   device_write_buffer[MAX_DEVICE_BUFFER];/* write buffer for this port              */
+typedef struct
+{
+  int    device_type;                           /* device type                             */
+  int    active;                                /* channel in use                          */
+  int    status;                                /* current status (up or down)             */
+  char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
+  char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
+  struct addrinfo *addr_list;                   /* possible network addresses              */
+  unsigned long int address;                    /* XXX Delete this                         */
+  int    thread_status;                         /* thread status for connect thread        */
+  int    connect_status;                        /* connect status for connect thread       */
+  int    decode_errors;                         /* decode error count, used for data type  */
+  int    data_type;                             /* 0=normal 1=wx_binary                    */
+  int    socket_port;                           /* socket port# for network                */
+  char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password                           */
+  int    channel;                               /* for serial and net ports                */
+  int    channel2;                              /* for AX25 ports                          */
+  char   ui_call[30];                           /* current call for this port              */
+  struct termios t,t_old;                       /* terminal struct for serial port         */
+  int    dtr;                                   /* dtr signal for HSP cable (status)       */
+  int    sp;                                    /* serial port speed                       */
+  int    style;                                 /* serial port style                       */
+  int    scan;                                  /* data read available                     */
+  int    errors;                                /* errors for this port                    */
+  int    reconnect;                             /* reconnect on net failure                */
+  int    reconnects;                            /* total number of reconnects by this port */
+  unsigned long   bytes_input;                  /* total bytes read by this port           */
+  unsigned long   bytes_output;                 /* total bytes written by this port        */
+  unsigned long   bytes_input_last;             /* total bytes read last check             */
+  unsigned long   bytes_output_last;            /* total bytes read last check             */
+  int    port_activity;                         /* 0 if no activity between checks         */
+  pthread_t read_thread;                        /* read thread                             */
+  int    read_in_pos;                           /* current read buffer input pos           */
+  int    read_out_pos;                          /* current read buffer output pos          */
+  char   device_read_buffer[MAX_DEVICE_BUFFER]; /* read buffer for this port               */
+  xastir_mutex read_lock;                       /* Lock for reading the port data          */
+  pthread_t write_thread;                       /* write thread                            */
+  int    write_in_pos;                          /* current write buffer input pos          */
+  int    write_out_pos;                         /* current write buffer output pos         */
+  xastir_mutex write_lock;                      /* Lock for writing the port data          */
+  char   device_write_buffer[MAX_DEVICE_BUFFER];/* write buffer for this port              */
 } iface;
 
-typedef struct {
-    char device_name[100];
+typedef struct
+{
+  char device_name[100];
 } iodevices;
 
 
-typedef struct {
-    int    device_type;                           /* device type                             */
-    char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
-    char   radio_port[3];                         /* port for multi-port TNC's               */
-    char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
-    char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password also WX device data type  */
-    char   device_host_filter_string[201];        /* host filter string                      */
-    char   device_converse_string[10+1];          /* string used to enter converse mode      */
-    char   comment[50];                           /* Local comment or name for port          */
-    char   unproto1[50];                          /* unproto path 1 for this port            */
-    char   unproto2[50];                          /* unproto path 2 for this port            */
-    char   unproto3[50];                          /* unproto path 3 for this port            */
-    char   unproto_igate[50];                     /* unproto igate path for this port        */
-    int    unprotonum;                            /* unproto path selection                  */
-    char   tnc_up_file[100];                      /* file for setting up TNC on this port    */
-    char   tnc_down_file[100];                    /* file for shutting down TNC on this port */
-    int    sp;                                    /* serial port speed/Net port              */
-    int    style;                                 /* serial port style                       */
-    int    igate_options;                         /* Igate options (0=none,1=input,2=in/out) */
-    int    transmit_data;                         /* Data transmit out of this port          */
-    int    reconnect;                             /* reconnect on net failure                */
-    int    connect_on_startup;                    /* connect to this device on startup       */
-    int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
-    int    tnc_extra_delay;                       /* Introduces fixed delay when talking to TNC in command-mode */
-    int    set_time;                              /* Set System Time from GPS on this port   */
-    char   txdelay[4];                            /* KISS parameter */
-    char   persistence[4];                        /* KISS parameter */
-    char   slottime[4];                           /* KISS parameter */
-    char   txtail[4];                             /* KISS parameter */
-    int    fullduplex;                            /* KISS parameter */
-    int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
-    int    init_kiss;                             /* Initialize KISS-Mode on startup */
+typedef struct
+{
+  int    device_type;                           /* device type                             */
+  char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
+  char   radio_port[3];                         /* port for multi-port TNC's               */
+  char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
+  char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password also WX device data type  */
+  char   device_host_filter_string[201];        /* host filter string                      */
+  char   device_converse_string[10+1];          /* string used to enter converse mode      */
+  char   comment[50];                           /* Local comment or name for port          */
+  char   unproto1[50];                          /* unproto path 1 for this port            */
+  char   unproto2[50];                          /* unproto path 2 for this port            */
+  char   unproto3[50];                          /* unproto path 3 for this port            */
+  char   unproto_igate[50];                     /* unproto igate path for this port        */
+  int    unprotonum;                            /* unproto path selection                  */
+  char   tnc_up_file[100];                      /* file for setting up TNC on this port    */
+  char   tnc_down_file[100];                    /* file for shutting down TNC on this port */
+  int    sp;                                    /* serial port speed/Net port              */
+  int    style;                                 /* serial port style                       */
+  int    igate_options;                         /* Igate options (0=none,1=input,2=in/out) */
+  int    transmit_data;                         /* Data transmit out of this port          */
+  int    reconnect;                             /* reconnect on net failure                */
+  int    connect_on_startup;                    /* connect to this device on startup       */
+  int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
+  int    tnc_extra_delay;                       /* Introduces fixed delay when talking to TNC in command-mode */
+  int    set_time;                              /* Set System Time from GPS on this port   */
+  char   txdelay[4];                            /* KISS parameter */
+  char   persistence[4];                        /* KISS parameter */
+  char   slottime[4];                           /* KISS parameter */
+  char   txtail[4];                             /* KISS parameter */
+  int    fullduplex;                            /* KISS parameter */
+  int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
+  int    init_kiss;                             /* Initialize KISS-Mode on startup */
 #ifdef HAVE_DB
-    // to support connections to sql server databases for db_gis.c 
-    char   database_username[20];                 /* Username to use to connect to database  */
-    int    database_type;                         /* Type of dbms (posgresql, mysql, etc)    */
-    char   database_schema[20];                   /* Name of database or schema to use       */
-    char   database_errormessage[255];            /* Most recent error message from 
-                                                     attempting to make a 
+  // to support connections to sql server databases for db_gis.c
+  char   database_username[20];                 /* Username to use to connect to database  */
+  int    database_type;                         /* Type of dbms (posgresql, mysql, etc)    */
+  char   database_schema[20];                   /* Name of database or schema to use       */
+  char   database_errormessage[255];            /* Most recent error message from
+                                                     attempting to make a
                                                      connection with using this descriptor.  */
-    int    database_schema_type;                  /* table structures to use in the database
-                                                     A database schema could contain both 
-                                                     APRSWorld and XASTIR table structures, 
+  int    database_schema_type;                  /* table structures to use in the database
+                                                     A database schema could contain both
+                                                     APRSWorld and XASTIR table structures,
                                                      but a separate database descriptor
                                                      needs to be defined for each.  */
-    char   database_unix_socket[255];             /* MySQL - unix socket parameter (path and 
+  char   database_unix_socket[255];             /* MySQL - unix socket parameter (path and
                                                      filename) */
-    // Need a pointer here, and one in connection pointing back here.  How to do????
-    //Connection *database_connection;              
-                                                  /* Pointer to database connection that
-                                                     contains database handle (with type 
-                                                     of handle being dependent on type of 
-                                                     database.  */
-    int    query_on_startup;                      /* Load stations from this database on 
+  // Need a pointer here, and one in connection pointing back here.  How to do????
+  //Connection *database_connection;
+  /* Pointer to database connection that
+     contains database handle (with type
+     of handle being dependent on type of
+     database.  */
+  int    query_on_startup;                      /* Load stations from this database on
                                                      startup. */
-    // Use of other ioparam variables for sql server database connections:  
-    // device_host_name = hostname for database server 
-    // sp = port on which to connect to database server 
-    // device_host_pswd =  password to use to connect to database -- security issue needs to be addressed
+  // Use of other ioparam variables for sql server database connections:
+  // device_host_name = hostname for database server
+  // sp = port on which to connect to database server
+  // device_host_pswd =  password to use to connect to database -- security issue needs to be addressed
 #endif  // HAVE_DB
 } ioparam;
 
@@ -215,12 +221,12 @@ extern int get_device_status(int port);
 extern int del_device(int port);
 extern int get_open_device(void);
 extern int add_device(int port_avail,int dev_type,
-               char *dev_nm,
-               char *passwd,
-               int dev_sck_p, int dev_sp,
-               int dev_sty,
-               int reconnect,
-               char *filter_string);
+                      char *dev_nm,
+                      char *passwd,
+                      int dev_sck_p, int dev_sp,
+                      int dev_sty,
+                      int reconnect,
+                      char *filter_string);
 
 extern xastir_mutex data_lock;          // Protects incoming_data_queue
 extern xastir_mutex output_data_lock;   // Protects interface.c:channel_data() function only
@@ -229,7 +235,7 @@ extern xastir_mutex connect_lock;       // Protects port_data[].thread_status an
 extern ioparam devices[];
 
 #if !HAVE_SOCKLEN_T
-typedef unsigned int socklen_t;
+  typedef unsigned int socklen_t;
 #endif
 
 /* from interface_gui.c */

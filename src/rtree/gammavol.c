@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -34,10 +34,10 @@
 #include <math.h>
 
 #ifndef M_PI
-# define M_PI 3.1415926535
+  #define M_PI 3.1415926535
 #endif
 #ifndef ABS
-# define ABS(a) ((a) > 0 ? (a) : -(a))
+  #define ABS(a) ((a) > 0 ? (a) : -(a))
 #endif
 
 #define EP .0000000001
@@ -58,10 +58,14 @@ int main(void)
   double dim=0, delta=1;
   while(ABS(delta) > EP)
     if(sphere_volume(dim + delta) > sphere_volume(dim))
+    {
       dim += delta;
+    }
     else
+    {
       delta /= -2;
+    }
   printf("max volume = %.10f at dimension %.10f\n",
-    sphere_volume(dim), dim);
+         sphere_volume(dim), dim);
   return 0;
 }

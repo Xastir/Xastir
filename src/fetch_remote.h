@@ -26,9 +26,9 @@
 #define __XASTIR_FETCH_REMOTE_H
 
 #ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-CURL *xastir_curl_init(char *errBuf);
-int fetch_remote_tile(CURL *session, char *tileURL, char *tileFileName);
+  #include <curl/curl.h>
+  CURL *xastir_curl_init(char *errBuf);
+  int fetch_remote_tile(CURL *session, char *tileURL, char *tileFileName);
 #endif  // HAVE_LIBCURL
 
 int fetch_remote_file(char *fileimg, char *local_filename);

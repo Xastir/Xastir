@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -42,10 +42,10 @@
 //
 struct Node * Xastir_RTreeNewIndex(void)
 {
-    struct Node *x;
-    x = Xastir_RTreeNewNode();
-    x->level = 0; /* leaf */
-    return x;
+  struct Node *x;
+  x = Xastir_RTreeNewNode();
+  x->level = 0; /* leaf */
+  return x;
 }
 
 
@@ -56,37 +56,39 @@ struct Node * Xastir_RTreeNewIndex(void)
 //
 int Xastir_RTreeSearch(struct Node *N, struct Rect *R, SearchHitCallback shcb, void* cbarg)
 {
-    struct Node *n = N;
-    struct Rect *r = R; // NOTE: Suspected bug was R sent in as Node* and cast to Rect* here. Fix not yet tested.
-    int hitCount = 0;
-    int i;
+  struct Node *n = N;
+  struct Rect *r = R; // NOTE: Suspected bug was R sent in as Node* and cast to Rect* here. Fix not yet tested.
+  int hitCount = 0;
+  int i;
 
-    assert(n);
-    assert(n->level >= 0);
-    assert(r);
+  assert(n);
+  assert(n->level >= 0);
+  assert(r);
 
-    if (n->level > 0) /* this is an internal node in the tree */
-    {
-        for (i=0; i<Xastir_NODECARD; i++)
-            if (n->branch[i].child &&
-                Xastir_RTreeOverlap(r,&n->branch[i].rect))
-            {
-                hitCount += Xastir_RTreeSearch(n->branch[i].child, R, shcb, cbarg);
-            }
-    }
-    else /* this is a leaf node */
-    {
-        for (i=0; i<Xastir_LEAFCARD; i++)
-            if (n->branch[i].child &&
-                Xastir_RTreeOverlap(r,&n->branch[i].rect))
-            {
-                hitCount++;
-                if(shcb) // call the user-provided callback
-                    if( ! shcb(n->branch[i].child, cbarg))
-                        return hitCount; // callback wants to terminate search early
-            }
-    }
-    return hitCount;
+  if (n->level > 0) /* this is an internal node in the tree */
+  {
+    for (i=0; i<Xastir_NODECARD; i++)
+      if (n->branch[i].child &&
+          Xastir_RTreeOverlap(r,&n->branch[i].rect))
+      {
+        hitCount += Xastir_RTreeSearch(n->branch[i].child, R, shcb, cbarg);
+      }
+  }
+  else /* this is a leaf node */
+  {
+    for (i=0; i<Xastir_LEAFCARD; i++)
+      if (n->branch[i].child &&
+          Xastir_RTreeOverlap(r,&n->branch[i].rect))
+      {
+        hitCount++;
+        if(shcb) // call the user-provided callback
+          if( ! shcb(n->branch[i].child, cbarg))
+          {
+            return hitCount;  // callback wants to terminate search early
+          }
+      }
+  }
+  return hitCount;
 }
 
 
@@ -102,57 +104,57 @@ int Xastir_RTreeSearch(struct Node *N, struct Rect *R, SearchHitCallback shcb, v
 static int Xastir_RTreeInsertRect2(struct Rect *r,
                                    void *tid, struct Node *n, struct Node **new_node, int level)
 {
-    /*
-      register struct Rect *r = R;
-      register int tid = Tid;
-      register struct Node *n = N, **new_node = New_node;
-      register int level = Level;
-    */
+  /*
+    register struct Rect *r = R;
+    register int tid = Tid;
+    register struct Node *n = N, **new_node = New_node;
+    register int level = Level;
+  */
 
-    int i;
-    struct Branch b;
-    struct Node *n2;
+  int i;
+  struct Branch b;
+  struct Node *n2;
 
-    assert(r && n && new_node);
-    assert(level >= 0 && level <= n->level);
+  assert(r && n && new_node);
+  assert(level >= 0 && level <= n->level);
 
-    // Still above level for insertion, go down tree recursively
-    //
-    if (n->level > level)
+  // Still above level for insertion, go down tree recursively
+  //
+  if (n->level > level)
+  {
+    i = Xastir_RTreePickBranch(r, n);
+    if (!Xastir_RTreeInsertRect2(r, tid, n->branch[i].child, &n2, level))
     {
-        i = Xastir_RTreePickBranch(r, n);
-        if (!Xastir_RTreeInsertRect2(r, tid, n->branch[i].child, &n2, level))
-        {
-            // child was not split
-            //
-            n->branch[i].rect =
-                Xastir_RTreeCombineRect(r,&(n->branch[i].rect));
-            return 0;
-        }
-        else    // child was split
-        {
-            n->branch[i].rect = Xastir_RTreeNodeCover(n->branch[i].child);
-            b.child = n2;
-            b.rect = Xastir_RTreeNodeCover(n2);
-            return Xastir_RTreeAddBranch(&b, n, new_node);
-        }
+      // child was not split
+      //
+      n->branch[i].rect =
+        Xastir_RTreeCombineRect(r,&(n->branch[i].rect));
+      return 0;
     }
+    else    // child was split
+    {
+      n->branch[i].rect = Xastir_RTreeNodeCover(n->branch[i].child);
+      b.child = n2;
+      b.rect = Xastir_RTreeNodeCover(n2);
+      return Xastir_RTreeAddBranch(&b, n, new_node);
+    }
+  }
 
-    // Have reached level for insertion. Add rect, split if necessary
-    //
-    else if (n->level == level)
-    {
-        b.rect = *r;
-        b.child = (struct Node *) tid;
-        /* child field of leaves contains tid of data record */
-        return Xastir_RTreeAddBranch(&b, n, new_node);
-    }
-    else
-    {
-        /* Not supposed to happen */
-        assert (FALSE);
-        return 0;
-    }
+  // Have reached level for insertion. Add rect, split if necessary
+  //
+  else if (n->level == level)
+  {
+    b.rect = *r;
+    b.child = (struct Node *) tid;
+    /* child field of leaves contains tid of data record */
+    return Xastir_RTreeAddBranch(&b, n, new_node);
+  }
+  else
+  {
+    /* Not supposed to happen */
+    assert (FALSE);
+    return 0;
+  }
 }
 
 
@@ -166,38 +168,42 @@ static int Xastir_RTreeInsertRect2(struct Rect *r,
 //
 int Xastir_RTreeInsertRect(struct Rect *R, void *Tid, struct Node **Root, int Level)
 {
-    struct Rect *r = R;
-    void *tid = Tid;
-    struct Node **root = Root;
-    int level = Level;
-    int i;
-    struct Node *newroot;
-    struct Node *newnode;
-    struct Branch b;
-    int result;
+  struct Rect *r = R;
+  void *tid = Tid;
+  struct Node **root = Root;
+  int level = Level;
+  int i;
+  struct Node *newroot;
+  struct Node *newnode;
+  struct Branch b;
+  int result;
 
-    assert(r && root);
-    assert(level >= 0 && level <= (*root)->level);
-    for (i=0; i<NUMDIMS; i++)
-        assert(r->boundary[i] <= r->boundary[NUMDIMS+i]);
+  assert(r && root);
+  assert(level >= 0 && level <= (*root)->level);
+  for (i=0; i<NUMDIMS; i++)
+  {
+    assert(r->boundary[i] <= r->boundary[NUMDIMS+i]);
+  }
 
-    if (Xastir_RTreeInsertRect2(r, tid, *root, &newnode, level))  /* root split */
-    {
-        newroot = Xastir_RTreeNewNode();  /* grow a new root, & tree taller */
-        newroot->level = (*root)->level + 1;
-        b.rect = Xastir_RTreeNodeCover(*root);
-        b.child = *root;
-        Xastir_RTreeAddBranch(&b, newroot, NULL);
-        b.rect = Xastir_RTreeNodeCover(newnode);
-        b.child = newnode;
-        Xastir_RTreeAddBranch(&b, newroot, NULL);
-        *root = newroot;
-        result = 1;
-    }
-    else
-        result = 0;
+  if (Xastir_RTreeInsertRect2(r, tid, *root, &newnode, level))  /* root split */
+  {
+    newroot = Xastir_RTreeNewNode();  /* grow a new root, & tree taller */
+    newroot->level = (*root)->level + 1;
+    b.rect = Xastir_RTreeNodeCover(*root);
+    b.child = *root;
+    Xastir_RTreeAddBranch(&b, newroot, NULL);
+    b.rect = Xastir_RTreeNodeCover(newnode);
+    b.child = newnode;
+    Xastir_RTreeAddBranch(&b, newroot, NULL);
+    *root = newroot;
+    result = 1;
+  }
+  else
+  {
+    result = 0;
+  }
 
-    return result;
+  return result;
 }
 
 
@@ -208,15 +214,15 @@ int Xastir_RTreeInsertRect(struct Rect *R, void *Tid, struct Node **Root, int Le
 //
 static struct ListNode * Xastir_RTreeNewListNode(void)
 {
-    return (struct ListNode *) malloc(sizeof(struct ListNode));
-    //return new ListNode;
+  return (struct ListNode *) malloc(sizeof(struct ListNode));
+  //return new ListNode;
 }
 
 
 static void Xastir_RTreeFreeListNode(struct ListNode *p)
 {
-    free(p);
-    //delete(p);
+  free(p);
+  //delete(p);
 }
 
 
@@ -226,12 +232,12 @@ static void Xastir_RTreeFreeListNode(struct ListNode *p)
 //
 static void Xastir_RTreeReInsert(struct Node *n, struct ListNode **ee)
 {
-    struct ListNode *l;
+  struct ListNode *l;
 
-    l = Xastir_RTreeNewListNode();
-    l->node = n;
-    l->next = *ee;
-    *ee = l;
+  l = Xastir_RTreeNewListNode();
+  l->node = n;
+  l->next = *ee;
+  *ee = l;
 }
 
 
@@ -243,54 +249,54 @@ static void Xastir_RTreeReInsert(struct Node *n, struct ListNode **ee)
 static int
 Xastir_RTreeDeleteRect2(struct Rect *R, void *Tid, struct Node *N, struct ListNode **Ee)
 {
-    struct Rect *r = R;
-    void *tid = Tid;
-    struct Node *n = N;
-    struct ListNode **ee = Ee;
-    int i;
+  struct Rect *r = R;
+  void *tid = Tid;
+  struct Node *n = N;
+  struct ListNode **ee = Ee;
+  int i;
 
-    assert(r && n && ee);
-    assert(tid != NULL);
-    assert(n->level >= 0);
+  assert(r && n && ee);
+  assert(tid != NULL);
+  assert(n->level >= 0);
 
-    if (n->level > 0)  // not a leaf node
+  if (n->level > 0)  // not a leaf node
+  {
+    for (i = 0; i < Xastir_NODECARD; i++)
     {
-        for (i = 0; i < Xastir_NODECARD; i++)
+      if (n->branch[i].child && Xastir_RTreeOverlap(r, &(n->branch[i].rect)))
+      {
+        if (!Xastir_RTreeDeleteRect2(r, tid, n->branch[i].child, ee))
         {
-            if (n->branch[i].child && Xastir_RTreeOverlap(r, &(n->branch[i].rect)))
-            {
-                if (!Xastir_RTreeDeleteRect2(r, tid, n->branch[i].child, ee))
-                {
-                    if (n->branch[i].child->count >= MinNodeFill)
-                        n->branch[i].rect = Xastir_RTreeNodeCover(
-                                                                  n->branch[i].child);
-                    else
-                    {
-                        // not enough entries in child,
-                        // eliminate child node
-                        //
-                        Xastir_RTreeReInsert(n->branch[i].child, ee);
-                        Xastir_RTreeDisconnectBranch(n, i);
-                    }
-                    return 0;
-                }
-            }
+          if (n->branch[i].child->count >= MinNodeFill)
+            n->branch[i].rect = Xastir_RTreeNodeCover(
+                                  n->branch[i].child);
+          else
+          {
+            // not enough entries in child,
+            // eliminate child node
+            //
+            Xastir_RTreeReInsert(n->branch[i].child, ee);
+            Xastir_RTreeDisconnectBranch(n, i);
+          }
+          return 0;
         }
-        return 1;
+      }
     }
-    else  // a leaf node
+    return 1;
+  }
+  else  // a leaf node
+  {
+    for (i = 0; i < Xastir_LEAFCARD; i++)
     {
-        for (i = 0; i < Xastir_LEAFCARD; i++)
-        {
-            if (n->branch[i].child &&
-                n->branch[i].child == (struct Node *) tid)
-            {
-                Xastir_RTreeDisconnectBranch(n, i);
-                return 0;
-            }
-        }
-        return 1;
+      if (n->branch[i].child &&
+          n->branch[i].child == (struct Node *) tid)
+      {
+        Xastir_RTreeDisconnectBranch(n, i);
+        return 0;
+      }
     }
+    return 1;
+  }
 }
 
 
@@ -302,65 +308,67 @@ Xastir_RTreeDeleteRect2(struct Rect *R, void *Tid, struct Node *N, struct ListNo
 //
 int Xastir_RTreeDeleteRect(struct Rect *R, void *Tid, struct Node**Nn)
 {
-    struct Rect *r = R;
-    void *tid = Tid;
-    struct Node **nn = Nn;
-    int i;
-    struct Node *tmp_nptr=NULL; // Original superliminal.com
-    // source did not initialize.
-    // Code analysis says shouldn't
-    // matter, but let's initialize
-    // to shut up GCC
-    struct ListNode *reInsertList = NULL;
-    struct ListNode *e;
+  struct Rect *r = R;
+  void *tid = Tid;
+  struct Node **nn = Nn;
+  int i;
+  struct Node *tmp_nptr=NULL; // Original superliminal.com
+  // source did not initialize.
+  // Code analysis says shouldn't
+  // matter, but let's initialize
+  // to shut up GCC
+  struct ListNode *reInsertList = NULL;
+  struct ListNode *e;
 
-    assert(r && nn);
-    assert(*nn);
-    assert(tid != NULL);
+  assert(r && nn);
+  assert(*nn);
+  assert(tid != NULL);
 
-    if (!Xastir_RTreeDeleteRect2(r, tid, *nn, &reInsertList))
+  if (!Xastir_RTreeDeleteRect2(r, tid, *nn, &reInsertList))
+  {
+    /* found and deleted a data item */
+
+    /* reinsert any branches from eliminated nodes */
+    while (reInsertList)
     {
-        /* found and deleted a data item */
-
-        /* reinsert any branches from eliminated nodes */
-        while (reInsertList)
+      tmp_nptr = reInsertList->node;
+      for (i = 0; i < MAXKIDS(tmp_nptr); i++)
+      {
+        if (tmp_nptr->branch[i].child)
         {
-            tmp_nptr = reInsertList->node;
-            for (i = 0; i < MAXKIDS(tmp_nptr); i++)
-            {
-                if (tmp_nptr->branch[i].child)
-                {
-                    Xastir_RTreeInsertRect(
-                                           &(tmp_nptr->branch[i].rect),
-                                           tmp_nptr->branch[i].child,
-                                           nn,
-                                           tmp_nptr->level);
-                }
-            }
-            e = reInsertList;
-            reInsertList = reInsertList->next;
-            Xastir_RTreeFreeNode(e->node);
-            Xastir_RTreeFreeListNode(e);
+          Xastir_RTreeInsertRect(
+            &(tmp_nptr->branch[i].rect),
+            tmp_nptr->branch[i].child,
+            nn,
+            tmp_nptr->level);
         }
-
-        /* check for redundant root (not leaf, 1 child) and eliminate
-         */
-        if ((*nn)->count == 1 && (*nn)->level > 0)
-        {
-            for (i = 0; i < Xastir_NODECARD; i++)
-            {
-                tmp_nptr = (*nn)->branch[i].child;
-                if(tmp_nptr)
-                    break;
-            }
-            assert(tmp_nptr);
-            Xastir_RTreeFreeNode(*nn);
-            *nn = tmp_nptr;
-        }
-        return 0;
+      }
+      e = reInsertList;
+      reInsertList = reInsertList->next;
+      Xastir_RTreeFreeNode(e->node);
+      Xastir_RTreeFreeListNode(e);
     }
-    else
+
+    /* check for redundant root (not leaf, 1 child) and eliminate
+     */
+    if ((*nn)->count == 1 && (*nn)->level > 0)
     {
-        return 1;
+      for (i = 0; i < Xastir_NODECARD; i++)
+      {
+        tmp_nptr = (*nn)->branch[i].child;
+        if(tmp_nptr)
+        {
+          break;
+        }
+      }
+      assert(tmp_nptr);
+      Xastir_RTreeFreeNode(*nn);
+      *nn = tmp_nptr;
     }
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
 }

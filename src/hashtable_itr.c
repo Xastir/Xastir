@@ -4,7 +4,7 @@
 /* Portions Copyright (C) 2000-2019 The Xastir Group */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include <stdlib.h> /* defines NULL */
@@ -29,27 +29,33 @@
 struct hashtable_itr *
 hashtable_iterator(struct hashtable *h)
 {
-    unsigned int i, tablelength;
-    struct hashtable_itr *itr = (struct hashtable_itr *)
-        malloc(sizeof(struct hashtable_itr));
-    if (NULL == itr) return NULL;
-    itr->h = h;
-    itr->e = NULL;
-    itr->parent = NULL;
-    tablelength = h->tablelength;
-    itr->index = tablelength;
-    if (0 == h->entrycount) return itr;
-
-    for (i = 0; i < tablelength; i++)
-    {
-        if (NULL != h->table[i])
-        {
-            itr->e = h->table[i];
-            itr->index = i;
-            break;
-        }
-    }
+  unsigned int i, tablelength;
+  struct hashtable_itr *itr = (struct hashtable_itr *)
+                              malloc(sizeof(struct hashtable_itr));
+  if (NULL == itr)
+  {
+    return NULL;
+  }
+  itr->h = h;
+  itr->e = NULL;
+  itr->parent = NULL;
+  tablelength = h->tablelength;
+  itr->index = tablelength;
+  if (0 == h->entrycount)
+  {
     return itr;
+  }
+
+  for (i = 0; i < tablelength; i++)
+  {
+    if (NULL != h->table[i])
+    {
+      itr->e = h->table[i];
+      itr->index = i;
+      break;
+    }
+  }
+  return itr;
 }
 
 /*****************************************************************************/
@@ -58,25 +64,36 @@ hashtable_iterator(struct hashtable *h)
 
 void *
 hashtable_iterator_key(struct hashtable_itr *i)
-{ 
-    if (!i) 
-        return NULL;
-    if (i->e) 
-        return i->e->k;
-    else 
-        return NULL;
+{
+  if (!i)
+  {
+    return NULL;
+  }
+  if (i->e)
+  {
+    return i->e->k;
+  }
+  else
+  {
+    return NULL;
+  }
 }
 
 void *
 hashtable_iterator_value(struct hashtable_itr *i)
-{ 
-    if (!i) 
-        return NULL;
-    if (i->e) {
-        return i->e->v;
-    } else {
-        return NULL;
-    }
+{
+  if (!i)
+  {
+    return NULL;
+  }
+  if (i->e)
+  {
+    return i->e->v;
+  }
+  else
+  {
+    return NULL;
+  }
 
 }
 
@@ -87,38 +104,41 @@ hashtable_iterator_value(struct hashtable_itr *i)
 int
 hashtable_iterator_advance(struct hashtable_itr *itr)
 {
-    unsigned int j,tablelength;
-    struct entry **table;
-    struct entry *next;
-    if (NULL == itr->e) return 0; /* stupidity check */
+  unsigned int j,tablelength;
+  struct entry **table;
+  struct entry *next;
+  if (NULL == itr->e)
+  {
+    return 0;  /* stupidity check */
+  }
 
-    next = itr->e->next;
-    if (NULL != next)
-    {
-        itr->parent = itr->e;
-        itr->e = next;
-        return -1;
-    }
-    tablelength = itr->h->tablelength;
-    itr->parent = NULL;
-    if (tablelength <= (j = ++(itr->index)))
-    {
-        itr->e = NULL;
-        return 0;
-    }
-    table = itr->h->table;
-    while (NULL == (next = table[j]))
-    {
-        if (++j >= tablelength)
-        {
-            itr->index = tablelength;
-            itr->e = NULL;
-            return 0;
-        }
-    }
-    itr->index = j;
+  next = itr->e->next;
+  if (NULL != next)
+  {
+    itr->parent = itr->e;
     itr->e = next;
     return -1;
+  }
+  tablelength = itr->h->tablelength;
+  itr->parent = NULL;
+  if (tablelength <= (j = ++(itr->index)))
+  {
+    itr->e = NULL;
+    return 0;
+  }
+  table = itr->h->table;
+  while (NULL == (next = table[j]))
+  {
+    if (++j >= tablelength)
+    {
+      itr->index = tablelength;
+      itr->e = NULL;
+      return 0;
+    }
+  }
+  itr->index = j;
+  itr->e = next;
+  return -1;
 }
 
 /*****************************************************************************/
@@ -132,29 +152,34 @@ hashtable_iterator_advance(struct hashtable_itr *itr)
 int
 hashtable_iterator_remove(struct hashtable_itr *itr)
 {
-    struct entry *remember_e, *remember_parent;
-    int ret;
+  struct entry *remember_e, *remember_parent;
+  int ret;
 
-    /* Do the removal */
-    if (NULL == (itr->parent))
-    {
-        /* element is head of a chain */
-        itr->h->table[itr->index] = itr->e->next;
-    } else {
-        /* element is mid-chain */
-        itr->parent->next = itr->e->next;
-    }
-    /* itr->e is now outside the hashtable */
-    remember_e = itr->e;
-    itr->h->entrycount--;
-    freekey(remember_e->k);
+  /* Do the removal */
+  if (NULL == (itr->parent))
+  {
+    /* element is head of a chain */
+    itr->h->table[itr->index] = itr->e->next;
+  }
+  else
+  {
+    /* element is mid-chain */
+    itr->parent->next = itr->e->next;
+  }
+  /* itr->e is now outside the hashtable */
+  remember_e = itr->e;
+  itr->h->entrycount--;
+  freekey(remember_e->k);
 
-    /* Advance the iterator, correcting the parent */
-    remember_parent = itr->parent;
-    ret = hashtable_iterator_advance(itr);
-    if (itr->parent == remember_e) { itr->parent = remember_parent; }
-    free(remember_e);
-    return ret;
+  /* Advance the iterator, correcting the parent */
+  remember_parent = itr->parent;
+  ret = hashtable_iterator_advance(itr);
+  if (itr->parent == remember_e)
+  {
+    itr->parent = remember_parent;
+  }
+  free(remember_e);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -162,29 +187,29 @@ int /* returns zero if not found */
 hashtable_iterator_search(struct hashtable_itr *itr,
                           struct hashtable *h, void *k)
 {
-    struct entry *e, *parent;
-    unsigned int hashvalue, index;
+  struct entry *e, *parent;
+  unsigned int hashvalue, index;
 
-    hashvalue = hash(h,k);
-    index = indexFor(h->tablelength,hashvalue);
+  hashvalue = hash(h,k);
+  index = indexFor(h->tablelength,hashvalue);
 
-    e = h->table[index];
-    parent = NULL;
-    while (NULL != e)
+  e = h->table[index];
+  parent = NULL;
+  while (NULL != e)
+  {
+    /* Check hash value to short circuit heavier comparison */
+    if ((hashvalue == e->h) && (h->eqfn(k, e->k)))
     {
-        /* Check hash value to short circuit heavier comparison */
-        if ((hashvalue == e->h) && (h->eqfn(k, e->k)))
-        {
-            itr->index = index;
-            itr->e = e;
-            itr->parent = parent;
-            itr->h = h;
-            return -1;
-        }
-        parent = e;
-        e = e->next;
+      itr->index = index;
+      itr->e = e;
+      itr->parent = parent;
+      itr->h = h;
+      return -1;
     }
-    return 0;
+    parent = e;
+    e = e->next;
+  }
+  return 0;
 }
 
 

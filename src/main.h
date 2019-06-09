@@ -41,14 +41,14 @@
 // _NSIG is defined in /usr/include/bits/signum.h
 //
 #ifdef __linux__
-# ifdef _NSIG
-#  if (_NSIG <= 32)
-#   define OLD_PTHREADS
-//#   warning ***** OLD_PTHREADS DETECTED *****
-#  else
-//#   warning ***** NEW_PTHREADS DETECTED *****
-#  endif // if (_NSIG...)
-# endif  // _NSIG
+  #ifdef _NSIG
+    #if (_NSIG <= 32)
+      #define OLD_PTHREADS
+      //#   warning ***** OLD_PTHREADS DETECTED *****
+    #else
+      //#   warning ***** NEW_PTHREADS DETECTED *****
+    #endif // if (_NSIG...)
+  #endif  // _NSIG
 #endif  // __linux__
 
 
@@ -60,7 +60,7 @@
 //
 //#define TRANSMIT_RAW_WX
 
-// To use predefined object configuration files from within the 
+// To use predefined object configuration files from within the
 // user's base directory e.g. ~/.xastir/config/predefined_SAR.sys
 // rather than from the main base directory, enable this definition.
 //#define OBJECT_DEF_FILE_USER_BASE
@@ -74,16 +74,16 @@ extern Widget iface_da;
 extern FILE *read_file_ptr;
 extern int interrupt_drawing_now;
 
- 
+
 #define VERSIONFRM  (!altnet?XASTIR_TOCALL:altnet_call) /* Packet version info */
 
 
 #ifdef __LCLINT__
-#define PACKAGE "xastir"
-#define VERSION "lclint"
-#define VERSIONTXT "xastir lclint debug version"
+  #define PACKAGE "xastir"
+  #define VERSION "lclint"
+  #define VERSIONTXT "xastir lclint debug version"
 #else   // __LCLINT__
-#define VERSIONTXT PACKAGE " " VERSION
+  #define VERSIONTXT PACKAGE " " VERSION
 #endif  // __LCLINT__
 
 
@@ -190,63 +190,65 @@ extern int output_station_type;
 
 extern int emergency_beacon;
 
-typedef struct _selections {
-    int none;
-    int mine;
-    int tnc;
-    int direct;
-    int via_digi;
-    int net;
-    int tactical;
-    int old_data;
+typedef struct _selections
+{
+  int none;
+  int mine;
+  int tnc;
+  int direct;
+  int via_digi;
+  int net;
+  int tactical;
+  int old_data;
 
-    int stations;
-    int fixed_stations;
-    int moving_stations;
-    int weather_stations;
-    int CWOP_wx_stations;
-    int objects;
-    int weather_objects;
-    int gauge_objects;
-    int other_objects;
-    int aircraft_objects;
-    int vessel_objects;
+  int stations;
+  int fixed_stations;
+  int moving_stations;
+  int weather_stations;
+  int CWOP_wx_stations;
+  int objects;
+  int weather_objects;
+  int gauge_objects;
+  int other_objects;
+  int aircraft_objects;
+  int vessel_objects;
 } Selections;
 extern Selections Select_;
 
-typedef struct _what_to_display {
-    int callsign;
-    int label_all_trackpoints;
-    int symbol;
-    int symbol_rotate;
-    int trail;
+typedef struct _what_to_display
+{
+  int callsign;
+  int label_all_trackpoints;
+  int symbol;
+  int symbol_rotate;
+  int trail;
 
-    int course;
-    int speed;
-    int speed_short;
-    int altitude;
+  int course;
+  int speed;
+  int speed_short;
+  int altitude;
 
-    int weather;
-    int weather_text;
-    int temperature_only;
-    int wind_barb;
+  int weather;
+  int weather_text;
+  int temperature_only;
+  int wind_barb;
 
-    int aloha_circle;
-    int ambiguity;
-    int phg;
-    int default_phg;
-    int phg_of_moving;
+  int aloha_circle;
+  int ambiguity;
+  int phg;
+  int default_phg;
+  int phg_of_moving;
 
-    int df_data;
-    int df_beamwidth_data;
-    int df_bearing_data;
-    int dr_data;
-    int dr_arc;
-    int dr_course;
-    int dr_symbol;
+  int df_data;
+  int df_beamwidth_data;
+  int df_bearing_data;
+  int dr_data;
+  int dr_arc;
+  int dr_course;
+  int dr_symbol;
 
-    int dist_bearing;
-    int last_heard;
+  int dist_bearing;
+  int last_heard;
 } What_to_display;
 extern What_to_display Display_;
 
@@ -263,7 +265,7 @@ extern int redo_list;
 extern int operate_as_an_igate;
 
 #ifdef TRANSMIT_RAW_WX
-extern int transmit_raw_wx;
+  extern int transmit_raw_wx;
 #endif  // TRANSMIT_RAW_WX
 
 extern int transmit_compressed_posit;
@@ -355,14 +357,15 @@ extern int coordinate_system;
 #define USE_UTM_SPECIAL 4
 #define USE_MGRS        5
 
-typedef struct {
-    Widget calling_dialog;  // NULL if the calling dialog has been closed.
-    Widget input_lat_deg;   // Pointers to calling dialog's widgets
-    Widget input_lat_min;   // (Where to get/put the data)
-    Widget input_lat_dir;
-    Widget input_lon_deg;
-    Widget input_lon_min;
-    Widget input_lon_dir;
+typedef struct
+{
+  Widget calling_dialog;  // NULL if the calling dialog has been closed.
+  Widget input_lat_deg;   // Pointers to calling dialog's widgets
+  Widget input_lat_min;   // (Where to get/put the data)
+  Widget input_lat_dir;
+  Widget input_lon_deg;
+  Widget input_lon_min;
+  Widget input_lon_dir;
 } coordinate_calc_array_type;
 extern coordinate_calc_array_type coordinate_calc_array;
 extern void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData);
@@ -385,9 +388,10 @@ extern void busy_cursor(Widget w);
 extern void pos_dialog(Widget w);
 extern int create_image(Widget w);
 
-typedef struct _transparent_color_record{
-    unsigned long trans_color;
-    struct _transparent_color_record *next;
+typedef struct _transparent_color_record
+{
+  unsigned long trans_color;
+  struct _transparent_color_record *next;
 } transparent_color_record;
 
 extern int check_trans (XColor c, transparent_color_record *c_trans_color_head);
@@ -457,7 +461,7 @@ if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (
 } while(0)
 
 #ifdef HAVE_LIBSHP
-extern void create_map_from_trail(char *call_sign);
+  extern void create_map_from_trail(char *call_sign);
 #endif  // HAVE_LIBSHP
 
 

@@ -19,21 +19,23 @@ extern int show_destination_mark;
 extern char geocoder_map_filename[400];
 
 
-struct geo_corner {
+struct geo_corner
+{
   int address;
   double latitude,longitude;
 };
 
 /* Decoded address location. */
-struct geo_location {
-  /* "Before" and "after" are the previous and next "control point"; 
+struct geo_location
+{
+  /* "Before" and "after" are the previous and next "control point";
    * these are the known locations, "at" is the interpolated point
    * corresponding to the supplied address. */
   struct geo_corner before,after,at;
   int zip_code; /* 0 if none found in address */
   char side;    /* 'L' or 'R' */
   char street_name[41],city_name[41],state_name[41];
-                      /* Empty if none found in address */
+  /* Empty if none found in address */
 };
 
 /* Arguments: m = Address map file to use

@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-      printf("Usage:callpass <callsign>\n");
+    printf("Usage:callpass <callsign>\n");
   }
 
   return(0);

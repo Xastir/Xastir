@@ -36,15 +36,15 @@
 
 // Defines we can use to mark functions and parameters as "unused" to the compiler
 #ifdef __GNUC__
-#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+  #define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 #else
-#  define UNUSED(x) UNUSED_ ## x
+  #define UNUSED(x) UNUSED_ ## x
 #endif
 
 #ifdef __GNUC__
-#  define UNUSED_FUNCTION(x) __attribute__((__unused__)) UNUSED_ ## x
+  #define UNUSED_FUNCTION(x) __attribute__((__unused__)) UNUSED_ ## x
 #else
-#  define UNUSED_FUNCTION(x) UNUSED_ ## x
+  #define UNUSED_FUNCTION(x) UNUSED_ ## x
 #endif
 
 
@@ -83,7 +83,7 @@
 #define CONVERT_HP_NORMAL_FORMATED       9
 
 #ifndef M_PI                      /* if not defined in math.h */
-#define M_PI 3.14159265358979323846
+  #define M_PI 3.14159265358979323846
 #endif  // M_PI
 
 #define SPEECH_TEST_STRING      "Greeteengz frum eggzaster"
@@ -179,8 +179,8 @@ extern int index_maps_on_startup;
 extern char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
 
 #ifdef HAVE_LIBGEOTIFF
-extern int DRG_XOR_colors;
-extern int DRG_show_colors[13];
+  extern int DRG_XOR_colors;
+  extern int DRG_show_colors[13];
 #endif  // HAVE_LIBGEOTIFF
 
 
@@ -255,7 +255,7 @@ extern void popup_ID_message(char *banner, char *message);
 
 /* from view_messages.c */
 extern void all_messages(char from, char *call_sign, char *from_call, char *message);
-extern void view_all_messages(Widget w, XtPointer clientData, XtPointer callData);   
+extern void view_all_messages(Widget w, XtPointer clientData, XtPointer callData);
 
 /* from db.c */
 extern void setup_in_view(void);

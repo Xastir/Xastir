@@ -48,11 +48,14 @@
 //
 // Allocate an N-byte block of memory from the heap.
 // If N is zero, allocate a 1-byte block.
-// 
-void *rpl_malloc (size_t size) {
-    if (size == 0)
-        size++;
-    return malloc (size);
+//
+void *rpl_malloc (size_t size)
+{
+  if (size == 0)
+  {
+    size++;
+  }
+  return malloc (size);
 }
 
 

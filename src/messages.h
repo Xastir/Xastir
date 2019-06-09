@@ -40,43 +40,45 @@
 // Max tries to get a message through
 #define MAX_TRIES 18
 
-typedef struct {
-    char active;
-    char to_call_sign[MAX_CALLSIGN+1];
-    char from_call_sign[MAX_CALLSIGN+1];
-    char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1];
-    char path[200];
-    char seq[MAX_MESSAGE_ORDER+1];
-    time_t active_time;
-    time_t next_time;
-    int tries;
-    int wait_on_first_ack;
+typedef struct
+{
+  char active;
+  char to_call_sign[MAX_CALLSIGN+1];
+  char from_call_sign[MAX_CALLSIGN+1];
+  char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1];
+  char path[200];
+  char seq[MAX_MESSAGE_ORDER+1];
+  time_t active_time;
+  time_t next_time;
+  int tries;
+  int wait_on_first_ack;
 } Message_transmit;
 
 #define MAX_MESSAGE_WINDOWS 25
 
-typedef struct {
-    char win[10];
-    char to_call_sign[MAX_CALLSIGN+1];
-    int message_group;
-    Widget send_message_dialog;
-    Widget send_message_call_data;
-    Widget D700_mode;
-    Widget D7_mode;
-    Widget HamHUD_mode;
-    Widget message_data_line1;
-    Widget message_data_line2;
-    Widget message_data_line3;
-    Widget message_data_line4;
-    Widget send_message_text;
-    Widget send_message_path;
-    Widget send_message_reverse_path;
-    Widget send_message_change_path;
-    Widget pane, form, button_ok, button_cancel;
-    Widget button_clear_old_msgs, button_submit_call;
-    Widget button_clear_pending_msgs;
-    Widget button_kick_timer;
-    Widget call, message, path, reverse_path_label;
+typedef struct
+{
+  char win[10];
+  char to_call_sign[MAX_CALLSIGN+1];
+  int message_group;
+  Widget send_message_dialog;
+  Widget send_message_call_data;
+  Widget D700_mode;
+  Widget D7_mode;
+  Widget HamHUD_mode;
+  Widget message_data_line1;
+  Widget message_data_line2;
+  Widget message_data_line3;
+  Widget message_data_line4;
+  Widget send_message_text;
+  Widget send_message_path;
+  Widget send_message_reverse_path;
+  Widget send_message_change_path;
+  Widget pane, form, button_ok, button_cancel;
+  Widget button_clear_old_msgs, button_submit_call;
+  Widget button_clear_pending_msgs;
+  Widget button_kick_timer;
+  Widget call, message, path, reverse_path_label;
 } Message_Window;
 
 

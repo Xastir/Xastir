@@ -31,23 +31,23 @@
 #define MAX_OSMEXT     10  // max characters for a tilename extension
 
 void adj_to_OSM_level(
-        long *new_scale_x,
-        long *new_scale_y);
+  long *new_scale_x,
+  long *new_scale_y);
 
 void draw_OSM_map(Widget w,
-        char *filenm,
-        int destination_pixmap,
-        char *url,
-        char *style,
-        int nocache);
+                  char *filenm,
+                  int destination_pixmap,
+                  char *url,
+                  char *style,
+                  int nocache);
 
 void draw_OSM_tiles(Widget w,
-        char *filenm,
-        int destination_pixmap,
-        char *server_url,
-        char *tileCacheDir,
-        char *mapName,
-        char *tileExt);
+                    char *filenm,
+                    int destination_pixmap,
+                    char *server_url,
+                    char *tileCacheDir,
+                    char *mapName,
+                    char *tileExt);
 
 unsigned int osm_zoom_level(long scale_x);
 void init_OSM_values(void);
