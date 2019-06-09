@@ -342,7 +342,7 @@ int Xastir_RTreeDeleteRect(struct Rect *R, void *Tid, struct Node**Nn)
             Xastir_RTreeFreeNode(e->node);
             Xastir_RTreeFreeListNode(e);
         }
-		
+
         /* check for redundant root (not leaf, 1 child) and eliminate
          */
         if ((*nn)->count == 1 && (*nn)->level > 0)

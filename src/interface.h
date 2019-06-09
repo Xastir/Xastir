@@ -172,7 +172,7 @@ typedef struct {
     char   txtail[4];                             /* KISS parameter */
     int    fullduplex;                            /* KISS parameter */
     int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
-    int    init_kiss;				              /* Initialize KISS-Mode on startup */
+    int    init_kiss;                             /* Initialize KISS-Mode on startup */
 #ifdef HAVE_DB
     // to support connections to sql server databases for db_gis.c 
     char   database_username[20];                 /* Username to use to connect to database  */

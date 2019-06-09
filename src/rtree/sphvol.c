@@ -57,33 +57,33 @@
 #include <math.h>
 
 #ifndef M_PI
-#	define M_PI 3.1415926535
+# define M_PI 3.1415926535
 #endif
 
 static void print_volume(int dimension, double volume)
 {
-	printf("\t%.6f,  /* dimension %3d */\n", volume, dimension);
+  printf("\t%.6f,  /* dimension %3d */\n", volume, dimension);
 }
 
 static double sphere_volume(double dimension)
 {
-	const double log_pi = log(M_PI);
-	double log_gamma, log_volume;
-	log_gamma = gamma(dimension/2.0 + 1);
-	log_volume = dimension/2.0 * log_pi - log_gamma;
-	return exp(log_volume);
+  const double log_pi = log(M_PI);
+  double log_gamma, log_volume;
+  log_gamma = gamma(dimension/2.0 + 1);
+  log_volume = dimension/2.0 * log_pi - log_gamma;
+  return exp(log_volume);
 }
 
 extern int main(int argc, char *argv[])
 {
-	int dim, max_dims=9;
+  int dim, max_dims=9;
 
-	if(2 == argc)
-		max_dims = atoi(argv[1]);
+  if(2 == argc)
+    max_dims = atoi(argv[1]);
 
-	printf("static const double sphere_volumes[] = {\n");
-	for(dim=0; dim<max_dims+1; dim++)
-		print_volume(dim, sphere_volume(dim));
-	printf("};\n");
-	return 0;
+  printf("static const double sphere_volumes[] = {\n");
+  for(dim=0; dim<max_dims+1; dim++)
+    print_volume(dim, sphere_volume(dim));
+  printf("};\n");
+  return 0;
 }

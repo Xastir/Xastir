@@ -39,10 +39,10 @@ int Xastir_LEAFCARD = MAXCARD;
 
 static int set_max(int *which, int new_max)
 {
-	if(2 > new_max || new_max > MAXCARD)
-		return 0;
-	*which = new_max;
-	return 1;
+  if(2 > new_max || new_max > MAXCARD)
+    return 0;
+  *which = new_max;
+  return 1;
 }
 
 int Xastir_RTreeSetNodeMax(int new_max) { return set_max(&Xastir_NODECARD, new_max); }

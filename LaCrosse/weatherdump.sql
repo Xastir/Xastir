@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: open2300
 ---------------------------------------------------------
--- Server version	3.23.58-log
+-- Server version 3.23.58-log
 
 --
 -- Table structure for table `weather`

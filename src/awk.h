@@ -37,11 +37,11 @@ enum awk_symtype
   }; /* the only data types */
 
 typedef struct awk_symbol_
-{	/* symbol table entry */
+{   /* symbol table entry */
   struct awk_symbol_ *next_sym; /* linked list */
   const char *name;           /* name of the symbol */
   int namelen;                /* length of the name */
-  enum awk_symtype type;	/* data type of symbol value */
+  enum awk_symtype type;      /* data type of symbol value */
   void *val;                  /* storage for the value */
   int size;                   /* size of *val */
   int len;                    /* current length of *val */
@@ -62,7 +62,7 @@ typedef struct awk_action_
   /* a program statement */
   struct awk_action_ *next_act;
   enum {NOOP=0, NEXT, SKIP, ASSIGN} opcode;
-  awk_symbol *dest;		/* destination of assignment */
+  awk_symbol *dest;   /* destination of assignment */
   const char *expr;           /* value setting expression */
   int exprlen;                /* length of expression */
 } awk_action;
@@ -76,21 +76,21 @@ typedef struct awk_rule_
   pcre *re;                   /* pcre compiled pattern */
   pcre_extra *pe;             /* pcre optimized pattern */
   const char *act;            /* the program string */
-  awk_action *code;		/* compiled program */
-  int flags;			/* some flags */
-#define AR_MALLOC 0x01		/* pattern, act were malloc'd by me */
+  awk_action *code;           /* compiled program */
+  int flags;                  /* some flags */
+#define AR_MALLOC 0x01        /* pattern, act were malloc'd by me */
 } awk_rule;
 
 typedef struct awk_program_
 {
   /* anchor for the list of rules */
-  awk_symtab *symtbl;	       /* the symbol table for this program */
-  awk_rule *head;		/* head of list */
-  awk_rule *last;		/* last element */
-  awk_rule *begin;		/* optional BEGIN rule */
-  awk_rule *begin_rec;        /* optional BEGIN_RECORD rule */
-  awk_rule *end_rec;		/* optional END_RECORD rule */
-  awk_rule *end;		/* optional END rule */
+  awk_symtab *symtbl;   /* the symbol table for this program */
+  awk_rule *head;       /* head of list */
+  awk_rule *last;       /* last element */
+  awk_rule *begin;      /* optional BEGIN rule */
+  awk_rule *begin_rec;  /* optional BEGIN_RECORD rule */
+  awk_rule *end_rec;    /* optional END_RECORD rule */
+  awk_rule *end;        /* optional END rule */
 } awk_program;
 
 extern awk_symtab *awk_new_symtab(void);

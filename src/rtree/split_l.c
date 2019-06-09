@@ -134,7 +134,7 @@ static void Xastir_RTreePickSeeds(struct PartitionVars *P)
     int leastUpper[NUMDIMS], greatestLower[NUMDIMS];
     int seed0=0, seed1=0;
     assert(p);
-	
+
     for (dim=0; dim<NUMDIMS; dim++)
     {
         high = dim + NUMDIMS;

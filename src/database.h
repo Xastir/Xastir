@@ -396,8 +396,8 @@ typedef struct _DataRow {
                                 // is augmented, or is degraded by
                                 // less precision in the packet.
 
-    unsigned int lat_precision;	// In 100ths of a second latitude
-    unsigned int lon_precision;	// In 100ths of a second longitude
+    unsigned int lat_precision; // In 100ths of a second latitude
+    unsigned int lon_precision; // In 100ths of a second longitude
 
     int trail_color;            // trail color (when assigned)
     char record_type;

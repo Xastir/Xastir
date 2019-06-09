@@ -8,9 +8,9 @@
 //
 
 
-#define PORT	1313
-#define CONNECTIONS	20
-#define NOFILE		20
+#define PORT          1313
+#define CONNECTIONS   20
+#define NOFILE        20
 
 
 // Defines we can use to mark functions and parameters as "unused" to the compiler
