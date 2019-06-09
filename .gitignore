@@ -55,6 +55,6 @@ scripts/values
 scripts/values.pl
 config/tnc-startup.def
 callpass/callpass
-Davis/db2APRS
+Davis/src/db2APRS
 LaCrosse/src/open2300db2APRS
 
