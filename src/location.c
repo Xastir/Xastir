@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include <stdio.h>
@@ -52,11 +52,12 @@ static long last_scale_y;
 /* set last map position                                   */
 /* store lat long and zoom                                 */
 /***********************************************************/
-void set_last_position(void) {
-    last_center_longitude=center_longitude;
-    last_center_latitude=center_latitude;
-    last_scale_x = scale_x;     // we don't restore this...
-    last_scale_y = scale_y;
+void set_last_position(void)
+{
+  last_center_longitude=center_longitude;
+  last_center_latitude=center_latitude;
+  last_scale_x = scale_x;     // we don't restore this...
+  last_scale_y = scale_y;
 }
 
 
@@ -65,9 +66,10 @@ void set_last_position(void) {
 /* reset map to last position                              */
 /*                                                         */
 /***********************************************************/
-void map_pos_last_position(void) {
+void map_pos_last_position(void)
+{
 
-    map_pos(last_center_latitude,last_center_longitude,last_scale_y);
+  map_pos(last_center_latitude,last_center_longitude,last_scale_y);
 }
 
 
@@ -76,24 +78,25 @@ void map_pos_last_position(void) {
 /* Jump map to position                                    */
 /*                                                         */
 /***********************************************************/
-void map_pos(long mid_y, long mid_x, long sz) {
-    // see also set_map_position() in db.c
+void map_pos(long mid_y, long mid_x, long sz)
+{
+  // see also set_map_position() in db.c
 
-    // Set interrupt_drawing_now because conditions have changed
-    // (new map center).
-    interrupt_drawing_now++;
+  // Set interrupt_drawing_now because conditions have changed
+  // (new map center).
+  interrupt_drawing_now++;
 
-    set_last_position();
-    center_longitude = mid_x;
-    center_latitude  = mid_y;
-    scale_y = sz;
-    scale_x = get_x_scale(mid_x,mid_y,scale_y);
-    setup_in_view();  // flag all stations in screen view
+  set_last_position();
+  center_longitude = mid_x;
+  center_latitude  = mid_y;
+  scale_y = sz;
+  scale_x = get_x_scale(mid_x,mid_y,scale_y);
+  setup_in_view();  // flag all stations in screen view
 
-    // Request that a new image be created.  Calls create_image,
-    // XCopyArea, and display_zoom_status.
-    request_new_image++;
-    
+  // Request that a new image be created.  Calls create_image,
+  // XCopyArea, and display_zoom_status.
+  request_new_image++;
+
 //    if (create_image(da)) {
 //        // We don't care whether or not this succeeds?
 //        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,(unsigned int)screen_width,(unsigned int)screen_height,0,0);

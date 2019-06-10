@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include "snprintf.h"
@@ -45,79 +45,93 @@
 
 
 
-pid_t play_sound(char *sound_cmd, char *soundfile) {
-    pid_t sound_pid;
-    char command[600];
+pid_t play_sound(char *sound_cmd, char *soundfile)
+{
+  pid_t sound_pid;
+  char command[600];
 
-    sound_pid=0;
-    if (strlen(sound_cmd)>3 && strlen(soundfile)>1) {
-        if (last_sound_pid==0) {
+  sound_pid=0;
+  if (strlen(sound_cmd)>3 && strlen(soundfile)>1)
+  {
+    if (last_sound_pid==0)
+    {
 
-            // Create a new process to run in
-            sound_pid = fork();
-            if (sound_pid!=-1) {
-                if(sound_pid==0) {
+      // Create a new process to run in
+      sound_pid = fork();
+      if (sound_pid!=-1)
+      {
+        if(sound_pid==0)
+        {
 // This is the child process
 
 
-                    // Go back to default signal handler instead of
-                    // calling restart() on SIGHUP
-                    (void) signal(SIGHUP,SIG_DFL);
+          // Go back to default signal handler instead of
+          // calling restart() on SIGHUP
+          (void) signal(SIGHUP,SIG_DFL);
 
 
-                    // Change the name of the new child process.  So
-                    // far this only works for "ps" listings, not
-                    // for "top".  This code only works on Linux.
-                    // For BSD use setproctitle(3), NetBSD can use
-                    // setprogname(2).
+          // Change the name of the new child process.  So
+          // far this only works for "ps" listings, not
+          // for "top".  This code only works on Linux.
+          // For BSD use setproctitle(3), NetBSD can use
+          // setprogname(2).
 #ifdef __linux__
-                    init_set_proc_title(my_argc, my_argv, my_envp);
-                    set_proc_title("%s", "festival process (xastir)");
-                    //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
+          init_set_proc_title(my_argc, my_argv, my_envp);
+          set_proc_title("%s", "festival process (xastir)");
+          //fprintf(stderr,"DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 
 
-                    xastir_snprintf(command,
-                        sizeof(command),
-                        "%s %s/%s",
-                        sound_cmd,
-                        SOUND_DIR,
-                        soundfile);
+          xastir_snprintf(command,
+                          sizeof(command),
+                          "%s %s/%s",
+                          sound_cmd,
+                          SOUND_DIR,
+                          soundfile);
 
-                    if (system(command) != 0) {}  // We don't care whether it succeeded
-                    exit(0);    // Exits only this process, not Xastir itself
-                }
-                else {
-// This is the parent process
-                    last_sound_pid=sound_pid;
-                }
-            } else
-                fprintf(stderr,"Error! trying to play sound\n");
-        } else {
-            sound_pid=last_sound_pid;
-            /*fprintf(stderr,"Sound already running\n");*/
+          if (system(command) != 0) {}  // We don't care whether it succeeded
+          exit(0);    // Exits only this process, not Xastir itself
         }
+        else
+        {
+// This is the parent process
+          last_sound_pid=sound_pid;
+        }
+      }
+      else
+      {
+        fprintf(stderr,"Error! trying to play sound\n");
+      }
     }
-    return(sound_pid);
+    else
+    {
+      sound_pid=last_sound_pid;
+      /*fprintf(stderr,"Sound already running\n");*/
+    }
+  }
+  return(sound_pid);
 }
 
 
 
 
 
-int sound_done(void) {
-    int done;
-    int *status;
+int sound_done(void)
+{
+  int done;
+  int *status;
 
-    status=NULL;
-    done=0;
-    if(last_sound_pid!=0) {
-        if(waitpid(last_sound_pid,status,WNOHANG)==last_sound_pid) {
-            done=1;
-            last_sound_pid=0;
-        }
+  status=NULL;
+  done=0;
+  if(last_sound_pid!=0)
+  {
+    if(waitpid(last_sound_pid,status,WNOHANG)==last_sound_pid)
+    {
+      done=1;
+      last_sound_pid=0;
     }
-    return(done);
+  }
+  return(done);
 }
 
 

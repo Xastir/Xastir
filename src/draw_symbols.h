@@ -30,14 +30,15 @@
 
 #define MAX_SYMBOLS 400
 
-typedef struct {
-    char active;                // ??
-    char table;                 // table character
-    char symbol;                // symbol character
-    char orient;                // orientation of the symbol, one of ' ',  'l','r','u','d'
-    Pixmap pix;                 // icon picture
-    Pixmap pix_mask;            // mask for transparent background
-    Pixmap pix_mask_old;        // mask for ghost symbols, half transparent icons
+typedef struct
+{
+  char active;                // ??
+  char table;                 // table character
+  char symbol;                // symbol character
+  char orient;                // orientation of the symbol, one of ' ',  'l','r','u','d'
+  Pixmap pix;                 // icon picture
+  Pixmap pix_mask;            // mask for transparent background
+  Pixmap pix_mask_old;        // mask for ghost symbols, half transparent icons
 } SymbolData;
 
 extern SymbolData symbol_data[];

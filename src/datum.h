@@ -46,66 +46,70 @@
 void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID);
 void datum_shift(double *latitude, double *longitude, short fromDatumID, short toDatumID);
 
-typedef struct {
-    char  *name;    // name of ellipsoid
-    double a;       // semi-major axis, meters
-    double invf;    // 1/f
+typedef struct
+{
+  char  *name;    // name of ellipsoid
+  double a;       // semi-major axis, meters
+  double invf;    // 1/f
 } Ellipsoid;
 
 extern const Ellipsoid gEllipsoid[];
 
-enum Ellipsoid_Names { // Must match the order of the Ellipsoids defined in datum.c
-    E_AIRY_30,
-    E_MOD_AIRY,
-    E_AUS_NAT,
-    E_BESS_41,
-    E_BESS_41_NAM,
-    E_CLARKE_66,
-    E_CLARKE_80,
-    E_EVR_IND_30,
-    E_EVR_IND_56,
-    E_EVR_SAB_SAR,
-    E_EVR_MAL_69,
-    E_EVR_MAL_SING,
-    E_EVR_PAK,
-    E_FISCH_60_MERC,
-    E_MOD_FISCH_60,
-    E_FISCH_68,
-    E_HELM_06,
-    E_HOUGH_60,
-    E_IND_74,
-    E_INT_24,
-    E_KRASS_40,
-    E_GRS_67,
-    E_GRS_80,
-    E_S_AMER_69,
-    E_WGS_60,
-    E_WGS_66,
-    E_WGS_72,
-    E_WGS_84
+enum Ellipsoid_Names   // Must match the order of the Ellipsoids defined in datum.c
+{
+  E_AIRY_30,
+  E_MOD_AIRY,
+  E_AUS_NAT,
+  E_BESS_41,
+  E_BESS_41_NAM,
+  E_CLARKE_66,
+  E_CLARKE_80,
+  E_EVR_IND_30,
+  E_EVR_IND_56,
+  E_EVR_SAB_SAR,
+  E_EVR_MAL_69,
+  E_EVR_MAL_SING,
+  E_EVR_PAK,
+  E_FISCH_60_MERC,
+  E_MOD_FISCH_60,
+  E_FISCH_68,
+  E_HELM_06,
+  E_HOUGH_60,
+  E_IND_74,
+  E_INT_24,
+  E_KRASS_40,
+  E_GRS_67,
+  E_GRS_80,
+  E_S_AMER_69,
+  E_WGS_60,
+  E_WGS_66,
+  E_WGS_72,
+  E_WGS_84
 };
-    
-typedef struct {
-    char *name;
-    short ellipsoid;
-    short dx;
-    short dy;
-    short dz;
+
+typedef struct
+{
+  char *name;
+  short ellipsoid;
+  short dx;
+  short dy;
+  short dz;
 } Datum;
 
 extern const Datum gDatum[];
 
-enum Common_Datum_Names { // Must match the indices of the Datums defined in datum.c
-    D_NAD_27_CONUS = 131,
-    D_NAD_83_CONUS = 138,
-    D_WGS_72 = 215,
-    D_WGS_84 = 216
+enum Common_Datum_Names   // Must match the indices of the Datums defined in datum.c
+{
+  D_NAD_27_CONUS = 131,
+  D_NAD_83_CONUS = 138,
+  D_WGS_72 = 215,
+  D_WGS_84 = 216
 };
 
 void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
-             double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength);
+                   double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength);
 void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
-               const char* utmZone, double *lat, double *lon);
+                   const char* utmZone, double *lat, double *lon);
 char utm_letter_designator(double lat, double lon);
 
 

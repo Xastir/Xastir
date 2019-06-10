@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include <stdlib.h>
@@ -56,7 +56,7 @@ static xastir_mutex popup_message_dialog_lock;
 
 void popup_gui_init(void)
 {
-    init_critical_section( &popup_message_dialog_lock );
+  init_critical_section( &popup_message_dialog_lock );
 }
 
 
@@ -65,20 +65,22 @@ void popup_gui_init(void)
 
 /**** Popup Message ******/
 
-void clear_popup_message_windows(void) {
-    int i;
+void clear_popup_message_windows(void)
+{
+  int i;
 
-begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
+  begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
 
-    for (i=0;i<MAX_POPUPS;i++) {
-        pw[i].popup_message_dialog=(Widget)NULL;
-        pw[i].popup_message_data=(Widget)NULL;
-    }
+  for (i=0; i<MAX_POPUPS; i++)
+  {
+    pw[i].popup_message_dialog=(Widget)NULL;
+    pw[i].popup_message_data=(Widget)NULL;
+  }
 
-end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
+  end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
 
-    pwb.popup_message_dialog=(Widget)NULL;
-    pwb.popup_message_data=(Widget)NULL;
+  pwb.popup_message_dialog=(Widget)NULL;
+  pwb.popup_message_data=(Widget)NULL;
 }
 
 
@@ -86,20 +88,21 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_messag
 
 
 static void popup_message_destroy_shell(Widget UNUSED(w),
-                                XtPointer clientData,
-                                XtPointer UNUSED(callData) ) {
-    int i;
+                                        XtPointer clientData,
+                                        XtPointer UNUSED(callData) )
+{
+  int i;
 
-    i=atoi((char *)clientData);
-    XtPopdown(pw[i].popup_message_dialog);
+  i=atoi((char *)clientData);
+  XtPopdown(pw[i].popup_message_dialog);
 
-begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_destroy_shell" );
+  begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_destroy_shell" );
 
-    XtDestroyWidget(pw[i].popup_message_dialog);
-    pw[i].popup_message_dialog = (Widget)NULL;
-    pw[i].popup_message_data = (Widget)NULL;
+  XtDestroyWidget(pw[i].popup_message_dialog);
+  pw[i].popup_message_dialog = (Widget)NULL;
+  pw[i].popup_message_data = (Widget)NULL;
 
-end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_destroy_shell" );
+  end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_destroy_shell" );
 
 }
 
@@ -109,140 +112,154 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_dest
 
 time_t popup_time_out_check_last = (time_t)0l;
 
-void popup_time_out_check(int curr_sec) {
-    int i;
+void popup_time_out_check(int curr_sec)
+{
+  int i;
 
-    // Check only every two minutes or so
-    if (popup_time_out_check_last + 120 < curr_sec) {
-        popup_time_out_check_last = curr_sec;
+  // Check only every two minutes or so
+  if (popup_time_out_check_last + 120 < curr_sec)
+  {
+    popup_time_out_check_last = curr_sec;
 
-        for (i=0;i<MAX_POPUPS;i++) {
-            if (pw[i].popup_message_dialog!=NULL) {
-                if ((sec_now()-pw[i].sec_opened)>MAX_POPUPS_TIME) {
-                    XtPopdown(pw[i].popup_message_dialog);
+    for (i=0; i<MAX_POPUPS; i++)
+    {
+      if (pw[i].popup_message_dialog!=NULL)
+      {
+        if ((sec_now()-pw[i].sec_opened)>MAX_POPUPS_TIME)
+        {
+          XtPopdown(pw[i].popup_message_dialog);
 
-begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
+          begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
 
-                    XtDestroyWidget(pw[i].popup_message_dialog);
-                    pw[i].popup_message_dialog = (Widget)NULL;
-                    pw[i].popup_message_data = (Widget)NULL;
+          XtDestroyWidget(pw[i].popup_message_dialog);
+          pw[i].popup_message_dialog = (Widget)NULL;
+          pw[i].popup_message_data = (Widget)NULL;
 
-end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
+          end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
 
-                }
-
-            }
         }
+
+      }
     }
+  }
 }
 
 
 
 
 
-void popup_message_always(char *banner, char *message) {
-    XmString msg_str;
-    int j,i;
-    Atom delw;
+void popup_message_always(char *banner, char *message)
+{
+  XmString msg_str;
+  int j,i;
+  Atom delw;
 
 
-    if (disable_all_popups)
-        return;
+  if (disable_all_popups)
+  {
+    return;
+  }
 
-    if (banner == NULL || message == NULL)
-        return;
+  if (banner == NULL || message == NULL)
+  {
+    return;
+  }
 
-    i=0;
-    for (j=0; j<MAX_POPUPS; j++) {
-        if (!pw[j].popup_message_dialog) {
-            i=j;
-            j=MAX_POPUPS+1;
-        }
+  i=0;
+  for (j=0; j<MAX_POPUPS; j++)
+  {
+    if (!pw[j].popup_message_dialog)
+    {
+      i=j;
+      j=MAX_POPUPS+1;
     }
+  }
 
-    if(!pw[i].popup_message_dialog) {
-        if (banner!=NULL && message!=NULL) {
+  if(!pw[i].popup_message_dialog)
+  {
+    if (banner!=NULL && message!=NULL)
+    {
 
-begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
+      begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
-            pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,
-                xmDialogShellWidgetClass, appshell,
-                XmNdeleteResponse, XmDESTROY,
-                XmNdefaultPosition, FALSE,
-                XmNtitleString,banner,
+      pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,
+                                   xmDialogShellWidgetClass, appshell,
+                                   XmNdeleteResponse, XmDESTROY,
+                                   XmNdefaultPosition, FALSE,
+                                   XmNtitleString,banner,
 // An half-hearted attempt at fixing the problem where a popup
 // comes up extremely small.  Setting a minimum size for the popup.
-XmNminWidth, 220,
-XmNminHeight, 80,
-                XmNfontList, fontlist1,
-                NULL);
+                                   XmNminWidth, 220,
+                                   XmNminHeight, 80,
+                                   XmNfontList, fontlist1,
+                                   NULL);
 
-            pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+      pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
 
-            pw[i].form =  XtVaCreateWidget("popup_message form",xmFormWidgetClass, pw[i].pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+      pw[i].form =  XtVaCreateWidget("popup_message form",xmFormWidgetClass, pw[i].pane,
+                                     XmNfractionBase, 5,
+                                     XmNbackground, colors[0xff],
+                                     XmNautoUnmanage, FALSE,
+                                     XmNshadowThickness, 1,
+                                     NULL);
 
-            pw[i].popup_message_data = XtVaCreateManagedWidget("popup_message message",xmLabelWidgetClass, pw[i].form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_FORM,
-                                      XmNrightOffset, 10,
-                                      XmNbackground, colors[0xff],
-                                      XmNfontList, fontlist1,
-                                      NULL);
+      pw[i].popup_message_data = XtVaCreateManagedWidget("popup_message message",xmLabelWidgetClass, pw[i].form,
+                                 XmNtopAttachment, XmATTACH_FORM,
+                                 XmNtopOffset, 10,
+                                 XmNbottomAttachment, XmATTACH_NONE,
+                                 XmNleftAttachment, XmATTACH_FORM,
+                                 XmNleftOffset, 10,
+                                 XmNrightAttachment, XmATTACH_FORM,
+                                 XmNrightOffset, 10,
+                                 XmNbackground, colors[0xff],
+                                 XmNfontList, fontlist1,
+                                 NULL);
 
-            pw[i].button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, pw[i].form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, pw[i].popup_message_data,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      XmNbackground, colors[0xff],
-                                      XmNfontList, fontlist1,
-                                      NULL);
+      pw[i].button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, pw[i].form,
+                           XmNtopAttachment, XmATTACH_WIDGET,
+                           XmNtopWidget, pw[i].popup_message_data,
+                           XmNtopOffset, 10,
+                           XmNbottomAttachment, XmATTACH_FORM,
+                           XmNbottomOffset, 5,
+                           XmNleftAttachment, XmATTACH_POSITION,
+                           XmNleftPosition, 2,
+                           XmNrightAttachment, XmATTACH_POSITION,
+                           XmNrightPosition, 3,
+                           XmNbackground, colors[0xff],
+                           XmNfontList, fontlist1,
+                           NULL);
 
-            xastir_snprintf(pw[i].name,10,"%9d",i%1000);
+      xastir_snprintf(pw[i].name,10,"%9d",i%1000);
 
-            msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
-            XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
-            XmStringFree(msg_str);
+      msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
+      XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
+      XmStringFree(msg_str);
 
-            XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
+      XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
 
-            delw = XmInternAtom(XtDisplay(pw[i].popup_message_dialog),"WM_DELETE_WINDOW", FALSE);
+      delw = XmInternAtom(XtDisplay(pw[i].popup_message_dialog),"WM_DELETE_WINDOW", FALSE);
 
-            XmAddWMProtocolCallback(pw[i].popup_message_dialog, delw, popup_message_destroy_shell, (XtPointer)pw[i].name);
+      XmAddWMProtocolCallback(pw[i].popup_message_dialog, delw, popup_message_destroy_shell, (XtPointer)pw[i].name);
 
-            pos_dialog(pw[i].popup_message_dialog);
+      pos_dialog(pw[i].popup_message_dialog);
 
-            XtManageChild(pw[i].form);
-            XtManageChild(pw[i].pane);
+      XtManageChild(pw[i].form);
+      XtManageChild(pw[i].pane);
 
-end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
+      end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
-            XtPopup(pw[i].popup_message_dialog,XtGrabNone);
+      XtPopup(pw[i].popup_message_dialog,XtGrabNone);
 
 // An half-hearted attempt at fixing the problem where a popup
 // comes up extremely small.  Commenting out the below so we can
 // change the size if necessary to read the message.
 //            fix_dialog_size(pw[i].popup_message_dialog);
 
-            pw[i].sec_opened=sec_now();
-        }
+      pw[i].sec_opened=sec_now();
     }
+  }
 }
 
 
@@ -255,26 +272,32 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 // any error popups.  Add a timestamp to the front so we know when
 // the errors happened.
 //
-void popup_message(char *banner, char *message) {
-    char timestring[110];
+void popup_message(char *banner, char *message)
+{
+  char timestring[110];
 
 
-    if (disable_all_popups)
-        return;
+  if (disable_all_popups)
+  {
+    return;
+  }
 
-    if (banner == NULL || message == NULL)
-        return;
+  if (banner == NULL || message == NULL)
+  {
+    return;
+  }
 
-    get_timestamp(timestring);
-    fprintf(stderr, "%s:\n\t%s  %s\n\n", timestring, banner, message);
+  get_timestamp(timestring);
+  fprintf(stderr, "%s:\n\t%s  %s\n\n", timestring, banner, message);
 }
 #else   // HAVE_ERROR_POPUPS
 //
 // The user wishes to see popup error messages.  Call the routine
 // above which does so.
 //
-void popup_message(char *banner, char *message) {
-    popup_message_always(banner, message);
+void popup_message(char *banner, char *message)
+{
+  popup_message_always(banner, message);
 }
 #endif  // HAVE_ERROR_POPUPS
 
@@ -292,90 +315,97 @@ static XFontStruct *id_font=NULL;
 
 
 
- 
+
 // Routine which pops up a large message for a few seconds in the
 // middle of the screen, then removes it.
 //
-void popup_ID_message(char * UNUSED(banner), char *message) {
-    float my_rotation = 0.0;
-    int x = (int)(screen_width/10);
-    int y = (int)(screen_height/2);
+void popup_ID_message(char * UNUSED(banner), char *message)
+{
+  float my_rotation = 0.0;
+  int x = (int)(screen_width/10);
+  int y = (int)(screen_height/2);
 
-    if (ATV_screen_ID) {
+  if (ATV_screen_ID)
+  {
 
-        // Fill the pixmap with grey so that the black ID text will
-        // be seen.
-        (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
-        (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
-        (void)XFillRectangle(XtDisplay(appshell),
-            pixmap_alerts,
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height);
+    // Fill the pixmap with grey so that the black ID text will
+    // be seen.
+    (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
+    (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
+    (void)XFillRectangle(XtDisplay(appshell),
+                         pixmap_alerts,
+                         gc,
+                         0,
+                         0,
+                         (unsigned int)screen_width,
+                         (unsigned int)screen_height);
 
-        /* load font */
-        if(!id_font) {
-            id_font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), rotated_label_fontname[FONT_ATV_ID]);
- 
-            if (id_font == NULL) {    // Couldn't get the font!!!
-                fprintf(stderr,"popup_ID_message: Couldn't get ATV ID font %s\n",
-                    rotated_label_fontname[FONT_ATV_ID]);
-                pending_ID_message = 0;
-                return;
-            }
-        }
- 
-        (void)XSetForeground (XtDisplay(da), gc, colors[0x08]);
+    /* load font */
+    if(!id_font)
+    {
+      id_font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), rotated_label_fontname[FONT_ATV_ID]);
 
-        //fprintf(stderr,"%0.1f\t%s\n",my_rotation,label_text);
-
-        if (       ( (my_rotation < -90.0) && (my_rotation > -270.0) )
-                || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
-            my_rotation = my_rotation + 180.0;
-            (void)XRotDrawAlignedString(XtDisplay(da),
-                id_font,
-                my_rotation,
-                pixmap_alerts,
-                gc,
-                x,
-                y,
-                message,
-                BRIGHT);
-        }
-        else {
-            (void)XRotDrawAlignedString(XtDisplay(da),
-                id_font,
-                my_rotation,
-                pixmap_alerts,
-                gc,
-                x,
-                y,
-                message,
-                BLEFT);
-        }
-
-        // Schedule a screen update in roughly 3 seconds
-        remove_ID_message_time = sec_now() + 3;
-        pending_ID_message = 1;
-
-        // Write it to the screen.  Symbols/tracks will disappear during
-        // this short interval time.
-        (void)XCopyArea(XtDisplay(da),
-            pixmap_alerts,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            (unsigned int)screen_width,
-            (unsigned int)screen_height,
-            0,
-            0);
-    }
-    else {  // ATV Screen ID is not enabled
+      if (id_font == NULL)      // Couldn't get the font!!!
+      {
+        fprintf(stderr,"popup_ID_message: Couldn't get ATV ID font %s\n",
+                rotated_label_fontname[FONT_ATV_ID]);
         pending_ID_message = 0;
+        return;
+      }
     }
+
+    (void)XSetForeground (XtDisplay(da), gc, colors[0x08]);
+
+    //fprintf(stderr,"%0.1f\t%s\n",my_rotation,label_text);
+
+    if (       ( (my_rotation < -90.0) && (my_rotation > -270.0) )
+               || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) )
+    {
+      my_rotation = my_rotation + 180.0;
+      (void)XRotDrawAlignedString(XtDisplay(da),
+                                  id_font,
+                                  my_rotation,
+                                  pixmap_alerts,
+                                  gc,
+                                  x,
+                                  y,
+                                  message,
+                                  BRIGHT);
+    }
+    else
+    {
+      (void)XRotDrawAlignedString(XtDisplay(da),
+                                  id_font,
+                                  my_rotation,
+                                  pixmap_alerts,
+                                  gc,
+                                  x,
+                                  y,
+                                  message,
+                                  BLEFT);
+    }
+
+    // Schedule a screen update in roughly 3 seconds
+    remove_ID_message_time = sec_now() + 3;
+    pending_ID_message = 1;
+
+    // Write it to the screen.  Symbols/tracks will disappear during
+    // this short interval time.
+    (void)XCopyArea(XtDisplay(da),
+                    pixmap_alerts,
+                    XtWindow(da),
+                    gc,
+                    0,
+                    0,
+                    (unsigned int)screen_width,
+                    (unsigned int)screen_height,
+                    0,
+                    0);
+  }
+  else    // ATV Screen ID is not enabled
+  {
+    pending_ID_message = 0;
+  }
 }
 
 

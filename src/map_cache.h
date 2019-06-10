@@ -43,7 +43,7 @@ extern int map_cache_get( char * map_cache_url, char * map_cache_file );
 // Deletes cached map file and the entry from cache
 extern int map_cache_del( char * map_cache_url );
 
-// Checks to see if map is expired based on date embedded in filename 
+// Checks to see if map is expired based on date embedded in filename
 extern int map_cache_expired( char * mc_filename, time_t mc_max_age );
 
 // Generates filename based on current time
@@ -51,7 +51,7 @@ extern char * map_cache_fileid(void);
 
 
 // Static variable definitions
-// These should probably be runtime options 
+// These should probably be runtime options
 
 // Cache expiration times
 // about 6mo
@@ -60,7 +60,7 @@ extern char * map_cache_fileid(void);
 // 1 hr
 //#define MC_MAX_FILE_AGE 60*60
 
-// 5 seconds -- don't do this except for testing 
+// 5 seconds -- don't do this except for testing
 //#define MC_MAX_FILE_AGE 5
 
 // Cache Space Limit in bytes

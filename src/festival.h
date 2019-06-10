@@ -55,19 +55,19 @@
 
 typedef struct FT_Info
 {
-    int encoding;
-    char *server_host;
-    int server_port;
-    char *text_mode;
-    
-    int server_fd;
+  int encoding;
+  char *server_host;
+  int server_port;
+  char *text_mode;
+
+  int server_fd;
 } FT_Info;
 
 typedef struct FT_Wave
 {
-    int num_samples;
-    int sample_rate;
-    short *samples;
+  int num_samples;
+  int sample_rate;
+  short *samples;
 } FT_Wave;
 
 void delete_FT_Wave(FT_Wave *wave);

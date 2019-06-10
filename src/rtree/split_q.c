@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -84,7 +84,9 @@ static void RTreeClassify(int i, int group, struct PartitionVars *p)
   p->taken[i] = TRUE;
 
   if (p->count[group] == 0)
+  {
     p->cover[group] = BranchBuf[i].rect;
+  }
   else
     p->cover[group] =
       RTreeCombineRect(&BranchBuf[i].rect, &p->cover[group]);
@@ -105,7 +107,9 @@ static void RTreePickSeeds(struct PartitionVars *p)
   RectReal worst, waste, area[MAXCARD+1];
 
   for (i=0; i<p->total; i++)
+  {
     area[i] = RTreeRectSphericalVolume(&BranchBuf[i].rect);
+  }
 
   worst = -CoverSplitArea - 1;
   for (i=0; i<p->total-1; i++)
@@ -113,8 +117,8 @@ static void RTreePickSeeds(struct PartitionVars *p)
     for (j=i+1; j<p->total; j++)
     {
       struct Rect one_rect = RTreeCombineRect(
-            &BranchBuf[i].rect,
-            &BranchBuf[j].rect);
+                               &BranchBuf[i].rect,
+                               &BranchBuf[j].rect);
       waste = RTreeRectSphericalVolume(&one_rect) -
               area[i] - area[j];
       if (waste > worst)
@@ -136,7 +140,7 @@ static void RTreePickSeeds(struct PartitionVars *p)
 | Copy branches from the buffer into two nodes according to the partition.
 -----------------------------------------------------------------------------*/
 static void RTreeLoadNodes(struct Node *n, struct Node *q,
-    struct PartitionVars *p)
+                           struct PartitionVars *p)
 {
   register int i;
   assert(n);
@@ -147,9 +151,13 @@ static void RTreeLoadNodes(struct Node *n, struct Node *q,
   {
     assert(p->partition[i] == 0 || p->partition[i] == 1);
     if (p->partition[i] == 0)
+    {
       RTreeAddBranch(&BranchBuf[i], n, NULL);
+    }
     else if (p->partition[i] == 1)
+    {
       RTreeAddBranch(&BranchBuf[i], q, NULL);
+    }
   }
 }
 
@@ -196,9 +204,13 @@ static void RTreePrintPVars(struct PartitionVars *p)
   for (i=0; i<p->total; i++)
   {
     if (p->taken[i])
+    {
       printf("  t\t");
+    }
     else
+    {
       printf("\t");
+    }
   }
   printf("\n");
   for (i=0; i<p->total; i++)
@@ -212,8 +224,8 @@ static void RTreePrintPVars(struct PartitionVars *p)
   if (p->area[0] + p->area[1] > 0)
   {
     printf("total area = %f  effectiveness = %3.2f\n",
-      p->area[0] + p->area[1],
-      (float)CoverSplitArea / (p->area[0] + p->area[1]));
+           p->area[0] + p->area[1],
+           (float)CoverSplitArea / (p->area[0] + p->area[1]));
   }
   printf("cover[0]:\n");
   RTreePrintRect(&p->cover[0], 0);
@@ -247,8 +259,8 @@ static void RTreeMethodZero(struct PartitionVars *p, int minfill)
   RTreePickSeeds(p);
 
   while (p->count[0] + p->count[1] < p->total
-    && p->count[0] < p->total - p->minfill
-    && p->count[1] < p->total - p->minfill)
+         && p->count[0] < p->total - p->minfill
+         && p->count[1] < p->total - p->minfill)
   {
     biggestDiff = (RectReal)-1.;
     for (i=0; i<p->total; i++)
@@ -262,12 +274,14 @@ static void RTreeMethodZero(struct PartitionVars *p, int minfill)
         rect_0 = RTreeCombineRect(r, &p->cover[0]);
         rect_1 = RTreeCombineRect(r, &p->cover[1]);
         growth0 = RTreeRectSphericalVolume(
-            &rect_0)-p->area[0];
+                    &rect_0)-p->area[0];
         growth1 = RTreeRectSphericalVolume(
-            &rect_1)-p->area[1];
+                    &rect_1)-p->area[1];
         diff = growth1 - growth0;
         if (diff >= 0)
+        {
           group = 0;
+        }
         else
         {
           group = 1;
@@ -281,7 +295,7 @@ static void RTreeMethodZero(struct PartitionVars *p, int minfill)
           betterGroup = group;
         }
         else if (diff==biggestDiff &&
-          p->count[group]<p->count[betterGroup])
+                 p->count[group]<p->count[betterGroup])
         {
           chosen = i;
           betterGroup = group;
@@ -295,13 +309,19 @@ static void RTreeMethodZero(struct PartitionVars *p, int minfill)
   if (p->count[0] + p->count[1] < p->total)
   {
     if (p->count[0] >= p->total - p->minfill)
+    {
       group = 1;
+    }
     else
+    {
       group = 0;
+    }
     for (i=0; i<p->total; i++)
     {
       if (!p->taken[i])
+      {
         RTreeClassify(i, group, p);
+      }
     }
   }
 

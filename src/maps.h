@@ -40,14 +40,16 @@
 
 /* memory structs */
 
-typedef struct {
+typedef struct
+{
   unsigned char vector_start_color;
   unsigned char object_behavior;
   unsigned long longitude;
   unsigned long latitude;
 } map_vectors;
 
-typedef struct {
+typedef struct
+{
   unsigned long longitude;
   unsigned long latitude;
   unsigned int mag;
@@ -55,7 +57,8 @@ typedef struct {
   unsigned char text_color_quad;
 } text_label;
 
-typedef struct {
+typedef struct
+{
   unsigned long longitude;
   unsigned long latitude;
   unsigned int mag;
@@ -65,53 +68,55 @@ typedef struct {
   char label_text[30];
 } symbol_label;
 
-typedef struct _map_index_record{
-    char filename[MAX_FILENAME];
-    XmString XmStringPtr;
-    unsigned long bottom;
-    unsigned long top;
-    unsigned long left;
-    unsigned long right;
-    int accessed;
-    int max_zoom;       // Specify maximum zoom at which this layer is drawn.
-    int min_zoom;       // Specify minimum zoom at which this layer is drawn.
-    int map_layer;      // Specify which layer to draw the map on.
-    int draw_filled;    // Specify whether to fill polygons when drawing.
-                        // 0 = Global No-Fill (Vector)
-                        // 1 = Global Fill
-                        // 2 = Auto (dbfawk controls it if present)
-    int usgs_drg;       // Specify whether the map has USGS DRG colormap
-                        // and should have color configuration applied
-                        // 0 = No
-                        // 1 = Yes
-                        // 2 = Auto (detect from TIFFTAG_IMAGEDESCRIPTION)
-    int selected;       // Specifies if map is currently selected
-    int temp_select;    // Temporary selection used in map properties dialog
-    int auto_maps;      // Specifies if map included in automaps function
-    struct _map_index_record *next;
+typedef struct _map_index_record
+{
+  char filename[MAX_FILENAME];
+  XmString XmStringPtr;
+  unsigned long bottom;
+  unsigned long top;
+  unsigned long left;
+  unsigned long right;
+  int accessed;
+  int max_zoom;       // Specify maximum zoom at which this layer is drawn.
+  int min_zoom;       // Specify minimum zoom at which this layer is drawn.
+  int map_layer;      // Specify which layer to draw the map on.
+  int draw_filled;    // Specify whether to fill polygons when drawing.
+  // 0 = Global No-Fill (Vector)
+  // 1 = Global Fill
+  // 2 = Auto (dbfawk controls it if present)
+  int usgs_drg;       // Specify whether the map has USGS DRG colormap
+  // and should have color configuration applied
+  // 0 = No
+  // 1 = Yes
+  // 2 = Auto (detect from TIFFTAG_IMAGEDESCRIPTION)
+  int selected;       // Specifies if map is currently selected
+  int temp_select;    // Temporary selection used in map properties dialog
+  int auto_maps;      // Specifies if map included in automaps function
+  struct _map_index_record *next;
 } map_index_record;
 extern map_index_record *map_index_head;
 
-typedef struct {
-    int img_x;
-    int img_y;
-    unsigned long x_long;
-    unsigned long y_lat;
+typedef struct
+{
+  int img_x;
+  int img_y;
+  unsigned long x_long;
+  unsigned long y_lat;
 } tiepoint;
 
 void draw_point(Widget w,
-                 unsigned long x1,
-                 unsigned long y1,
-                 GC gc,
-                 Pixmap which_pixmap,
-                 int skip_duplicates);
+                unsigned long x1,
+                unsigned long y1,
+                GC gc,
+                Pixmap which_pixmap,
+                int skip_duplicates);
 
 void draw_point_ll(Widget w,
-                 float y1,
-                 float x1,
-                 GC gc,
-                 Pixmap which_pixmap,
-                 int skip_duplicates);
+                   float y1,
+                   float x1,
+                   GC gc,
+                   Pixmap which_pixmap,
+                   int skip_duplicates);
 
 void draw_vector(Widget w,
                  unsigned long x1,
@@ -123,13 +128,13 @@ void draw_vector(Widget w,
                  int skip_duplicates);
 
 void draw_vector_ll(Widget w,
-                 float y1,
-                 float x1,
-                 float y2,
-                 float x2,
-                 GC gc,
-                 Pixmap which_pixmap,
-                 int skip_duplicates);
+                    float y1,
+                    float x1,
+                    float y2,
+                    float x2,
+                    GC gc,
+                    Pixmap which_pixmap,
+                    int skip_duplicates);
 
 char *get_map_ext (char *filename);
 char *get_map_dir (char *fullpath);
@@ -143,14 +148,14 @@ extern void get_horizontal_datum(char *datum, int sizeof_datum);
 void draw_grid (Widget w);
 void Snapshot(void);
 extern int index_retrieve(char *filename, unsigned long *bottom,
-    unsigned long *top, unsigned long *left, unsigned long *right,
-    int *max_zoom, int *min_zoom, int *map_layer, int *draw_filled, 
-    int *usgs_drg, int *automaps);
+                          unsigned long *top, unsigned long *left, unsigned long *right,
+                          int *max_zoom, int *min_zoom, int *map_layer, int *draw_filled,
+                          int *usgs_drg, int *automaps);
 extern void index_restore_from_file(void);
 extern void index_save_to_file(void);
 extern void map_indexer(int parameter);
-extern void get_viewport_lat_lon(double *xmin, 
-                                 double *ymin, 
+extern void get_viewport_lat_lon(double *xmin,
+                                 double *ymin,
                                  double *xmax,
                                  double *ymax);
 extern int map_visible (unsigned long bottom_map_boundary,
@@ -181,14 +186,14 @@ extern char printer_program[MAX_FILENAME+1];
 extern char previewer_program[MAX_FILENAME+1];
 
 extern int  gnis_locate_place(Widget w, char *name, char *state,
-char *county, char *quad, char* type, char *filename, int
-follow_case, int get_match, char match_array_name[50][200], long
-match_array_lat[50], long match_array_long[50]);
+                              char *county, char *quad, char* type, char *filename, int
+                              follow_case, int get_match, char match_array_name[50][200], long
+                              match_array_lat[50], long match_array_long[50]);
 
 extern int  pop_locate_place(Widget w, char *name, char *state,
-char *county, char *quad, char* type, char *filename, int
-follow_case, int get_match, char match_array_name[50][200], long
-match_array_lat[50], long match_array_long[50]);
+                             char *county, char *quad, char* type, char *filename, int
+                             follow_case, int get_match, char match_array_name[50][200], long
+                             match_array_lat[50], long match_array_long[50]);
 
 
 extern void maps_init(void);
@@ -208,18 +213,19 @@ extern int grid_size;
 #endif  // NO_GRAPHICS
 
 extern float raster_map_intensity;
- 
+
 extern void Print_Postscript(Widget widget, XtPointer clientData, XtPointer callData);
 
-extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y_lat_cord, unsigned char color, long object_behavior, int destination_pixmap, int draw_filled); 
+extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y_lat_cord, unsigned char color, long object_behavior, int destination_pixmap, int draw_filled);
 
-// A struct to pass down in to map driver functions so they can have 
+// A struct to pass down in to map driver functions so they can have
 // driver-specific flags.  Most drivers won't care about any (or even all)
 // of the flags, but this way we can just pass a single pointer rather than
 // adding new arguments to the generic interface each time we want new flags
-typedef struct {
-    int draw_filled;
-    int usgs_drg;
+typedef struct
+{
+  int draw_filled;
+  int usgs_drg;
 } map_draw_flags;
 
 #endif /* __XASTIR_MAPS_H */

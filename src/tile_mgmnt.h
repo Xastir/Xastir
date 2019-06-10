@@ -23,24 +23,27 @@
 #define __TILE_MGMNT_H
 
 #ifdef HAVE_LIBCURL
-#include <curl/curl.h>
+  #include <curl/curl.h>
 #endif // HAVE_LIBCURL
 
-typedef struct tileNum_s {
-    unsigned long x;
-    unsigned long y;
+typedef struct tileNum_s
+{
+  unsigned long x;
+  unsigned long y;
 } tileNum_t;
 
-typedef struct coord_s {
-    double lat;
-    double lon;
+typedef struct coord_s
+{
+  double lat;
+  double lon;
 } coord_t;
 
-typedef struct tileArea_s {
-    unsigned long startx;
-    unsigned long endx;
-    unsigned long starty;
-    unsigned long endy;
+typedef struct tileArea_s
+{
+  unsigned long startx;
+  unsigned long endx;
+  unsigned long starty;
+  unsigned long endy;
 } tileArea_t;
 
 #define MAX_LAT_OSM 85.0511
@@ -51,9 +54,9 @@ void tile2coord(unsigned long tilex, unsigned long tiley, int zoom, coord_t *NWc
 void calcTileArea(double lon_upper_left,double lat_upper_left,double lon_lower_right,double lat_lower_right,int zoom,tileArea_t *tiles);
 
 #ifdef HAVE_LIBCURL
-int getOneTile(CURL *session, char *baseURL, unsigned long x, unsigned long y, int zoom, char *baseDir, char *tileExt);
+  int getOneTile(CURL *session, char *baseURL, unsigned long x, unsigned long y, int zoom, char *baseDir, char *tileExt);
 #else
-int getOneTile(char *baseURL, unsigned long x, unsigned long y, int zoom, char *baseDir, char *tileExt);
+  int getOneTile(char *baseURL, unsigned long x, unsigned long y, int zoom, char *baseDir, char *tileExt);
 #endif // HAVE_LIBCURL
 
 void mkOSMmapDirs(char *baseDir, unsigned long startx, unsigned long endx, int zoom);

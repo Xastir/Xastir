@@ -35,11 +35,11 @@
 
 
 #ifdef __LCLINT__
-#define PACKAGE "xastir"
-#define VERSION "lclint"
-#define VERSIONTXT "xastir lclint debug version"
+  #define PACKAGE "xastir"
+  #define VERSION "lclint"
+  #define VERSIONTXT "xastir lclint debug version"
 #else   // __LCLINT__
-#define VERSIONTXT PACKAGE " " VERSION
+  #define VERSIONTXT PACKAGE " " VERSION
 #endif  // __LCLINT__
 
 
@@ -62,7 +62,7 @@ extern int CAD_draw_objects;
 extern int CAD_show_label;
 extern int CAD_show_raw_probability;
 extern int CAD_show_comment;
-extern int CAD_show_area; 
+extern int CAD_show_area;
 
 /* JMT - works in FreeBSD */
 // Note: weird conditional thing is there just to shut up
@@ -84,23 +84,23 @@ if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (
 // objects.
 //
 //
-// MAX_NUMBER_OF_PREDEFINED_OBJECTS is the maximum number of predefined 
+// MAX_NUMBER_OF_PREDEFINED_OBJECTS is the maximum number of predefined
 // objects that can appear on the Create/Move Here popup menu.
 #define MAX_NUMBER_OF_PREDEFINED_OBJECTS  11
 //
-// PREDEFINED_OBJECT_DATA_LENGTH is the maximum length of a string 
-// that can follow the symbol specifier in a predefined object (such 
+// PREDEFINED_OBJECT_DATA_LENGTH is the maximum length of a string
+// that can follow the symbol specifier in a predefined object (such
 // as a probability circle definition) plus one (for the terminator).
-#define PREDEFINED_OBJECT_DATA_LENGTH 44 
+#define PREDEFINED_OBJECT_DATA_LENGTH 44
 //
 // number_of_predefined_objects holds the actual number of predefined
 // objects available to display on the Create/Move popup menu.
-int number_of_predefined_objects;  
-// File name of ~/.xastir/config file containing definitions for 
+int number_of_predefined_objects;
+// File name of ~/.xastir/config file containing definitions for
 // a predefined object menu.
 extern char predefined_object_definition_filename[256];
 // Flag to indicate whether or not to load the predefined objects menu
-// from the file specified by predefined_object_definition_filename or 
+// from the file specified by predefined_object_definition_filename or
 // to use the hardcoded SAR object set.  0=use hardcoded SAR
 // 1=use predefined_object_definition_filename
 extern int predefined_menu_from_file;
@@ -108,21 +108,22 @@ extern int predefined_menu_from_file;
 //extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Create_SAR_Object(Widget w, XtPointer clientData, XtPointer calldata);
 
-typedef struct {
-    char call[MAX_CALLSIGN+1];  // Callsign = object name.
-    char page[2];               // APRS symbol code page.
-    char symbol[2];             // APRS symbol specifier.
-    char data[PREDEFINED_OBJECT_DATA_LENGTH]; 
-                                // Data following the symbol.
-    char menu_call[26];         // Name to display on menu.
-    intptr_t index;             // Index of this object 
-                                // in the predefinedObjects array.
-    int show_on_menu;           // !=1 to hide on menu.
-    int index_of_child;         // > -1 to create two objects
-                                // in the same place at the 
-                                // same time, value is the 
-                                // index of the second object
-                                // in the predefinedObjects array.
+typedef struct
+{
+  char call[MAX_CALLSIGN+1];  // Callsign = object name.
+  char page[2];               // APRS symbol code page.
+  char symbol[2];             // APRS symbol specifier.
+  char data[PREDEFINED_OBJECT_DATA_LENGTH];
+  // Data following the symbol.
+  char menu_call[26];         // Name to display on menu.
+  intptr_t index;             // Index of this object
+  // in the predefinedObjects array.
+  int show_on_menu;           // !=1 to hide on menu.
+  int index_of_child;         // > -1 to create two objects
+  // in the same place at the
+  // same time, value is the
+  // index of the second object
+  // in the predefinedObjects array.
 } predefinedObject;
 
 

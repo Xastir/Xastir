@@ -25,8 +25,9 @@
 #ifndef __XASTIR_IGATE_H
 #define __XASTIR_IGATE_H
 
-typedef struct {
-    char call[12];
+typedef struct
+{
+  char call[12];
 } NWS_Data;
 
 extern void igate_init(void);

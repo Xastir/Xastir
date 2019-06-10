@@ -20,7 +20,7 @@
  * Look at the README for more information on the program.
  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #include <stdio.h>
@@ -40,7 +40,7 @@
 #include "maps.h"
 
 #ifdef HAVE_LIBCURL
-#include <curl/curl.h>
+  #include <curl/curl.h>
 #endif // HAVE_LIBCURL
 
 #include "tile_mgmnt.h"
@@ -58,42 +58,49 @@
  * tilenum argument.
  */
 void latLon2tileNum (double lon_deg,
-        double lat_deg,
-        int zoom,
-        tileNum_t *tilenum) {
-    unsigned long ntiles;
-    double lat_rad;
-    ntiles = 1 << zoom;
+                     double lat_deg,
+                     int zoom,
+                     tileNum_t *tilenum)
+{
+  unsigned long ntiles;
+  double lat_rad;
+  ntiles = 1 << zoom;
 
-    if (lat_deg > MAX_LAT_OSM) {
-        lat_deg = MAX_LAT_OSM;
-    }
-    else if (lat_deg < (-1.0 * MAX_LAT_OSM)) {
-        lat_deg = -1.0 * MAX_LAT_OSM;
-    }
+  if (lat_deg > MAX_LAT_OSM)
+  {
+    lat_deg = MAX_LAT_OSM;
+  }
+  else if (lat_deg < (-1.0 * MAX_LAT_OSM))
+  {
+    lat_deg = -1.0 * MAX_LAT_OSM;
+  }
 
-    if (lon_deg > MAX_LON_OSM) {
-        lon_deg = MAX_LON_OSM;
-    }
-    else if (lon_deg < (-1.0 * MAX_LON_OSM)) {
-        lon_deg = -1.0 * MAX_LON_OSM;
-    }
+  if (lon_deg > MAX_LON_OSM)
+  {
+    lon_deg = MAX_LON_OSM;
+  }
+  else if (lon_deg < (-1.0 * MAX_LON_OSM))
+  {
+    lon_deg = -1.0 * MAX_LON_OSM;
+  }
 
-    lat_rad = (lat_deg * M_PI) / 180.0;
+  lat_rad = (lat_deg * M_PI) / 180.0;
 
-    tilenum->x = ((lon_deg + 180.0) / 360.0) * ntiles;
-    tilenum->y = ((1 - (log(tan(lat_rad)
-                            + (1.0 / cos(lat_rad))) / M_PI)) / 2.0) * ntiles;
+  tilenum->x = ((lon_deg + 180.0) / 360.0) * ntiles;
+  tilenum->y = ((1 - (log(tan(lat_rad)
+                          + (1.0 / cos(lat_rad))) / M_PI)) / 2.0) * ntiles;
 
-    if (tilenum->y >= ntiles) {
-        tilenum->y = (ntiles - 1);
-    }
+  if (tilenum->y >= ntiles)
+  {
+    tilenum->y = (ntiles - 1);
+  }
 
-    if (tilenum->x >= ntiles) {
-        tilenum->x = (ntiles - 1);
-    }
+  if (tilenum->x >= ntiles)
+  {
+    tilenum->x = (ntiles - 1);
+  }
 
-    return;
+  return;
 
 } // latLon2tileNum()
 
@@ -108,19 +115,20 @@ void latLon2tileNum (double lon_deg,
  *
  */
 void tile2coord (unsigned long tilex,
-        unsigned long tiley,
-        int zoom,
-        coord_t *NWcorner) {
-    unsigned long ntiles;
-    double lat_rad;
+                 unsigned long tiley,
+                 int zoom,
+                 coord_t *NWcorner)
+{
+  unsigned long ntiles;
+  double lat_rad;
 
-    ntiles = 1 << zoom;
-    lat_rad = M_PI - ((2.0 * M_PI) * ((double)(tiley) / (double)ntiles));
-    NWcorner->lat = (180.0 / M_PI) * atan(0.5 * (exp((double)lat_rad) - exp(-1.0 * (double)lat_rad)));
+  ntiles = 1 << zoom;
+  lat_rad = M_PI - ((2.0 * M_PI) * ((double)(tiley) / (double)ntiles));
+  NWcorner->lat = (180.0 / M_PI) * atan(0.5 * (exp((double)lat_rad) - exp(-1.0 * (double)lat_rad)));
 
-    NWcorner->lon = (((double)(tilex) / (double)ntiles) * 360.0) - 180.0;
+  NWcorner->lon = (((double)(tilex) / (double)ntiles) * 360.0) - 180.0;
 
-    return;
+  return;
 
 } // tile2coord()
 
@@ -131,19 +139,20 @@ void tile2coord (unsigned long tilex,
  * tiles argument.
  */
 void calcTileArea (double lon_upper_left,
-        double lat_upper_left,
-        double lon_lower_right,
-        double lat_lower_right,
-        int zoom,
-        tileArea_t *tiles) {
-    tileNum_t tilenum;
-    latLon2tileNum(lon_upper_left, lat_upper_left, zoom, &tilenum);
-    tiles->startx = tilenum.x;
-    tiles->starty = tilenum.y;
-    latLon2tileNum(lon_lower_right, lat_lower_right, zoom, &tilenum);
-    tiles->endx = tilenum.x;
-    tiles->endy = tilenum.y;
-    return;
+                   double lat_upper_left,
+                   double lon_lower_right,
+                   double lat_lower_right,
+                   int zoom,
+                   tileArea_t *tiles)
+{
+  tileNum_t tilenum;
+  latLon2tileNum(lon_upper_left, lat_upper_left, zoom, &tilenum);
+  tiles->startx = tilenum.x;
+  tiles->starty = tilenum.y;
+  latLon2tileNum(lon_lower_right, lat_lower_right, zoom, &tilenum);
+  tiles->endx = tilenum.x;
+  tiles->endy = tilenum.y;
+  return;
 
 } // calcTileArea()
 
@@ -152,29 +161,33 @@ void calcTileArea (double lon_upper_left,
  * tilesMissing - return the count of tiles that are missing from the cache
  */
 int tilesMissing (unsigned long startx,
-        unsigned long endx,
-        unsigned long starty,
-        unsigned long endy,
-        int zoom,
-        char *cacheDir,
-        char *tileExt) {
-    struct stat sb;
-    char local_filename[1100];
-    unsigned long x, y;
-    int numMissing = 0;
+                  unsigned long endx,
+                  unsigned long starty,
+                  unsigned long endy,
+                  int zoom,
+                  char *cacheDir,
+                  char *tileExt)
+{
+  struct stat sb;
+  char local_filename[1100];
+  unsigned long x, y;
+  int numMissing = 0;
 
-    for (x = startx; x <= endx; x++) {
-        for (y = starty; y <= endy; y++) {
+  for (x = startx; x <= endx; x++)
+  {
+    for (y = starty; y <= endy; y++)
+    {
 
-            xastir_snprintf(local_filename, sizeof(local_filename),
-                    "%s/%u/%lu/%lu.%s", cacheDir, zoom, x, y, tileExt);
+      xastir_snprintf(local_filename, sizeof(local_filename),
+                      "%s/%u/%lu/%lu.%s", cacheDir, zoom, x, y, tileExt);
 
-            if (stat(local_filename, &sb) == -1) {
-                numMissing++;
-            }
-        }
+      if (stat(local_filename, &sb) == -1)
+      {
+        numMissing++;
+      }
     }
-    return(numMissing);
+  }
+  return(numMissing);
 
 }  // end of tilesMissing()
 
@@ -197,82 +210,94 @@ int tilesMissing (unsigned long startx,
  */
 #ifdef HAVE_LIBCURL
 int getOneTile (CURL *session,
-        char *baseURL,
-        unsigned long x,
-        unsigned long y,
-        int zoom,
-        char *baseDir,
-        char *tileExt) {
-    CURLcode res;
-    time_t cacheTimeout;
+                char *baseURL,
+                unsigned long x,
+                unsigned long y,
+                int zoom,
+                char *baseDir,
+                char *tileExt)
+{
+  CURLcode res;
+  time_t cacheTimeout;
 #else
 int getOneTile (char *baseURL,
-        unsigned long x,
-        unsigned long y,
-        int zoom,
-        char *baseDir,
-        char *tileExt) {
+                unsigned long x,
+                unsigned long y,
+                int zoom,
+                char *baseDir,
+                char *tileExt)
+{
 #endif // HAVE_LIBCURL
-    
-    struct stat sb;
-    char url[1100];
-    char local_filename[1100];
-    int result = 0;
 
-    xastir_snprintf(url, sizeof(url), "%s/%u/%lu/%lu.%s", baseURL, zoom,
-            x, y, tileExt);
-    xastir_snprintf(local_filename, sizeof(local_filename),
-            "%s/%u/%lu/%lu.%s", baseDir, zoom, x, y, tileExt);
+  struct stat sb;
+  char url[1100];
+  char local_filename[1100];
+  int result = 0;
 
-    if (stat(local_filename, &sb) == -1) {
-        if (debug_level & 512) {
-            fprintf(stderr, "Fetching %s\n", url);
-        }
-        result = 1;  // only count files that do not exist
+  xastir_snprintf(url, sizeof(url), "%s/%u/%lu/%lu.%s", baseURL, zoom,
+                  x, y, tileExt);
+  xastir_snprintf(local_filename, sizeof(local_filename),
+                  "%s/%u/%lu/%lu.%s", baseDir, zoom, x, y, tileExt);
+
+  if (stat(local_filename, &sb) == -1)
+  {
+    if (debug_level & 512)
+    {
+      fprintf(stderr, "Fetching %s\n", url);
+    }
+    result = 1;  // only count files that do not exist
 
 #ifdef HAVE_LIBCURL
-        res = fetch_remote_tile(session, url, local_filename);
+    res = fetch_remote_tile(session, url, local_filename);
 
-    } else {
+  }
+  else
+  {
 
-        // Check for updated tiles after 7 days, per
-        // OSM Tile Usage Policy,
-        // http://wiki.openstreetmap.org/wiki/Tile_usage_policy,
-        // 2010/07/29
-        cacheTimeout = sb.st_mtime + SECONDS_7_DAYS;
-        if (cacheTimeout <= time(NULL)) {
-            // tile exists in the cache, but is older than 7 days, so
-            // check the server for a newer version.
-            if (debug_level & 512) {
-                fprintf(stderr, "Refreshing %s.\n", url);
-            }
-            res = fetch_remote_tile(session, url, local_filename);
+    // Check for updated tiles after 7 days, per
+    // OSM Tile Usage Policy,
+    // http://wiki.openstreetmap.org/wiki/Tile_usage_policy,
+    // 2010/07/29
+    cacheTimeout = sb.st_mtime + SECONDS_7_DAYS;
+    if (cacheTimeout <= time(NULL))
+    {
+      // tile exists in the cache, but is older than 7 days, so
+      // check the server for a newer version.
+      if (debug_level & 512)
+      {
+        fprintf(stderr, "Refreshing %s.\n", url);
+      }
+      res = fetch_remote_tile(session, url, local_filename);
 
-        } else {
-
-            if (debug_level & 512) {
-                fprintf(stderr, "Skipping- %s\n", url);
-                fprintf(stderr, "          because cache time has not expired.\n");
-                fprintf(stderr, "          cache expires %s",
-                        ctime(&cacheTimeout));
-            }
-
-            res = CURLE_OK;
-        }
     }
+    else
+    {
 
-    if (CURLE_OK != res) {
-        // return the curl error as a negative value to distinqusih it
-        // successful values
-        result = -1 * (int)res;
+      if (debug_level & 512)
+      {
+        fprintf(stderr, "Skipping- %s\n", url);
+        fprintf(stderr, "          because cache time has not expired.\n");
+        fprintf(stderr, "          cache expires %s",
+                ctime(&cacheTimeout));
+      }
+
+      res = CURLE_OK;
     }
+  }
+
+  if (CURLE_OK != res)
+  {
+    // return the curl error as a negative value to distinqusih it
+    // successful values
+    result = -1 * (int)res;
+  }
 
 #else  // don't HAVE_LIBCURL
-        (void)fetch_remote_file(url, local_filename);
-    }
+    (void)fetch_remote_file(url, local_filename);
+  }
 #endif // HAVE_LIBCURL
 
-    return(result);
+  return(result);
 
 } // getOneTile()
 
@@ -280,27 +305,31 @@ int getOneTile (char *baseURL,
 /*
  * mkpath() - attempt to make each directory in a path
  */
-static void mkpath(const char *dir) {
-    char tmp[MAX_FILENAME];
-    char *p = NULL;
-    size_t len;
+static void mkpath(const char *dir)
+{
+  char tmp[MAX_FILENAME];
+  char *p = NULL;
+  size_t len;
 
-    xastir_snprintf(tmp, sizeof(tmp),"%s", dir);
-    len = strlen(tmp);
-    if(tmp[len - 1] == '/') {
-        tmp[len - 1] = 0;
+  xastir_snprintf(tmp, sizeof(tmp),"%s", dir);
+  len = strlen(tmp);
+  if(tmp[len - 1] == '/')
+  {
+    tmp[len - 1] = 0;
+  }
+
+  for (p = tmp + 1; *p; p++)
+  {
+    if(*p == '/')
+    {
+      *p = 0;
+      mkdir(tmp, S_IRWXU);
+      *p = '/';
     }
+  }
+  mkdir(tmp, S_IRWXU);
 
-    for (p = tmp + 1; *p; p++) {
-        if(*p == '/') {
-            *p = 0;
-            mkdir(tmp, S_IRWXU);
-            *p = '/';
-        }
-    }
-    mkdir(tmp, S_IRWXU);
-
-    return;
+  return;
 }  // end of mkpath()
 
 
@@ -312,45 +341,51 @@ static void mkpath(const char *dir) {
  * structure.
  */
 void mkOSMmapDirs (char *baseDir,
-        unsigned long startx,
-        unsigned long endx,
-        int zoom) {
-    char fullPath[MAX_FILENAME];
+                   unsigned long startx,
+                   unsigned long endx,
+                   int zoom)
+{
+  char fullPath[MAX_FILENAME];
 #ifdef HAVE_POSIX_STRERROR_R
-    char errmsg[1024];
+  char errmsg[1024];
 #endif
-    struct stat sb;
-    unsigned long dnum;
+  struct stat sb;
+  unsigned long dnum;
 
 
-    xastir_snprintf(fullPath, sizeof(fullPath), "%s/%u/", baseDir, zoom);
-    mkpath(fullPath);
+  xastir_snprintf(fullPath, sizeof(fullPath), "%s/%u/", baseDir, zoom);
+  mkpath(fullPath);
 
-    for (dnum = startx; dnum <= endx; dnum++) {
-        xastir_snprintf(fullPath, sizeof(fullPath), "%s/%u/%lu/",
-                baseDir, zoom, dnum);
-        mkdir(fullPath, S_IRWXU);
+  for (dnum = startx; dnum <= endx; dnum++)
+  {
+    xastir_snprintf(fullPath, sizeof(fullPath), "%s/%u/%lu/",
+                    baseDir, zoom, dnum);
+    mkdir(fullPath, S_IRWXU);
 
-        if (debug_level & 512) {
-            if (stat(fullPath, &sb) == -1) {
+    if (debug_level & 512)
+    {
+      if (stat(fullPath, &sb) == -1)
+      {
 #ifdef HAVE_POSIX_STRERROR_R
-                strerror_r(errno, errmsg, sizeof(errmsg));
-                fprintf(stderr, "%s: %s\n", errmsg, fullPath);
+        strerror_r(errno, errmsg, sizeof(errmsg));
+        fprintf(stderr, "%s: %s\n", errmsg, fullPath);
 #else
-                fprintf(stderr, "%s: %s\n",
-                        strerror(errno), fullPath);
+        fprintf(stderr, "%s: %s\n",
+                strerror(errno), fullPath);
 #endif
-            }
-            else if ((sb.st_mode & S_IWUSR) != S_IWUSR) {
-                fprintf(stderr, "warning: directory %s is not writable\n", fullPath);
-            }
-            else if (!S_ISDIR(sb.st_mode)) {
-                fprintf(stderr, "warning: %s is not a directory\n", fullPath);
-            }
-        }
+      }
+      else if ((sb.st_mode & S_IWUSR) != S_IWUSR)
+      {
+        fprintf(stderr, "warning: directory %s is not writable\n", fullPath);
+      }
+      else if (!S_ISDIR(sb.st_mode))
+      {
+        fprintf(stderr, "warning: %s is not a directory\n", fullPath);
+      }
     }
+  }
 
-    return;
+  return;
 } // mkOSMmapDirs()
 
 

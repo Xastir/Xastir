@@ -27,17 +27,19 @@
 #define MAX_COLORS 81
 
 #define MAX_COLORNAME 40
-typedef struct {
-    char colorname[MAX_COLORNAME];
-    XColor color;
+typedef struct
+{
+  char colorname[MAX_COLORNAME];
+  XColor color;
 } color_load;
 
-typedef enum {
-    NOT_TRUE_NOR_DIRECT,
-    RGB_565,
-    RGB_555,
-    RGB_888,
-    RGB_OTHER
+typedef enum
+{
+  NOT_TRUE_NOR_DIRECT,
+  RGB_565,
+  RGB_555,
+  RGB_888,
+  RGB_OTHER
 } Pixel_Format;
 extern Pixel_Format visual_type;
 extern int visual_depth;

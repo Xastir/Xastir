@@ -12,8 +12,8 @@
 
 struct io_file;
 
-/* Open a file.  The file will be created if it did not exist. 
- * It will be opened R/W if possible, R/O otherwise. 
+/* Open a file.  The file will be created if it did not exist.
+ * It will be opened R/W if possible, R/O otherwise.
  * Returns NULL on error.*/
 
 struct io_file *io_open(const char *fname);
@@ -30,7 +30,7 @@ void io_close(struct io_file *);
  *
  * If an error occurs, the return value will be -1.  If the input "pos"
  * is -1, these functions will silently return -1, so you can safely wait
- * until the end of a "chain" to check for errors, if you want. 
+ * until the end of a "chain" to check for errors, if you want.
  *
  * Integer values are written in byte-order-independent fashion. */
 

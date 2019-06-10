@@ -24,7 +24,7 @@ struct hashtable;
  *      v = (struct some_value *)   malloc(sizeof(struct some_value));
  *
  *      (initialise k and v to suitable values)
- * 
+ *
  *      if (! hashtable_insert(h,k,v) )
  *      {     exit(-1);               }
  *
@@ -38,7 +38,7 @@ struct hashtable;
 
 /* Macros may be used to define type-safe(r) hashtable access functions, with
  * methods specialized to take known key and value types as parameters.
- * 
+ *
  * Example:
  *
  * Insert this at the start of your file:
@@ -68,7 +68,7 @@ struct hashtable;
 
 /*****************************************************************************
  * create_hashtable
-   
+
  * @name                    create_hashtable
  * @param   minsize         minimum initial size of hashtable
  * @param   hashfunction    function for hashing keys
@@ -83,7 +83,7 @@ create_hashtable(unsigned int minsize,
 
 /*****************************************************************************
  * hashtable_insert
-   
+
  * @name        hashtable_insert
  * @param   h   the hashtable to insert into
  * @param   k   the key - hashtable claims ownership and will free on removal
@@ -100,7 +100,7 @@ create_hashtable(unsigned int minsize,
  * If in doubt, remove before insert.
  */
 
-int 
+int
 hashtable_insert(struct hashtable *h, void *k, void *v);
 
 #define DEFINE_HASHTABLE_INSERT(fnname, keytype, valuetype) \
@@ -111,7 +111,7 @@ int fnname (struct hashtable *h, keytype *k, valuetype *v) \
 
 /*****************************************************************************
  * hashtable_search
-   
+
  * @name        hashtable_search
  * @param   h   the hashtable to search
  * @param   k   the key to search for  - does not claim ownership
@@ -129,7 +129,7 @@ valuetype * fnname (struct hashtable *h, keytype *k) \
 
 /*****************************************************************************
  * hashtable_remove
-   
+
  * @name        hashtable_remove
  * @param   h   the hashtable to remove the item from
  * @param   k   the key to search for  - does not claim ownership
@@ -148,7 +148,7 @@ valuetype * fnname (struct hashtable *h, keytype *k) \
 
 /*****************************************************************************
  * hashtable_count
-   
+
  * @name        hashtable_count
  * @param   h   the hashtable
  * @return      the number of items stored in the hashtable
@@ -159,7 +159,7 @@ hashtable_count(struct hashtable *h);
 
 /*****************************************************************************
  * hashtable_destroy
-   
+
  * @name        hashtable_destroy
  * @param   h   the hashtable
  * @param       free_values     whether to call 'free' on the remaining values

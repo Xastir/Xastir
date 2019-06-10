@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -43,30 +43,30 @@
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreeGetBranches(struct Node *N, struct Branch *B)
 {
-    register struct Node *n = N;
-    register struct Branch *b = B;
-    register int i;
+  register struct Node *n = N;
+  register struct Branch *b = B;
+  register int i;
 
-    assert(n);
-    assert(b);
+  assert(n);
+  assert(b);
 
-    /* load the branch buffer */
-    for (i=0; i<MAXKIDS(n); i++)
-    {
-        assert(n->branch[i].child);  /* every entry should be full */
-        Xastir_BranchBuf[i] = n->branch[i];
-    }
-    Xastir_BranchBuf[MAXKIDS(n)] = *b;
-    Xastir_BranchCount = MAXKIDS(n) + 1;
+  /* load the branch buffer */
+  for (i=0; i<MAXKIDS(n); i++)
+  {
+    assert(n->branch[i].child);  /* every entry should be full */
+    Xastir_BranchBuf[i] = n->branch[i];
+  }
+  Xastir_BranchBuf[MAXKIDS(n)] = *b;
+  Xastir_BranchCount = MAXKIDS(n) + 1;
 
-    /* calculate rect containing all in the set */
-    Xastir_CoverSplit = Xastir_BranchBuf[0].rect;
-    for (i=1; i<MAXKIDS(n)+1; i++)
-    {
-        Xastir_CoverSplit = Xastir_RTreeCombineRect(&Xastir_CoverSplit, &Xastir_BranchBuf[i].rect);
-    }
+  /* calculate rect containing all in the set */
+  Xastir_CoverSplit = Xastir_BranchBuf[0].rect;
+  for (i=1; i<MAXKIDS(n)+1; i++)
+  {
+    Xastir_CoverSplit = Xastir_RTreeCombineRect(&Xastir_CoverSplit, &Xastir_BranchBuf[i].rect);
+  }
 
-    Xastir_RTreeInitNode(n);
+  Xastir_RTreeInitNode(n);
 }
 
 
@@ -76,18 +76,18 @@ static void Xastir_RTreeGetBranches(struct Node *N, struct Branch *B)
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreeInitPVars(struct PartitionVars *P, int maxrects, int minfill)
 {
-    register struct PartitionVars *p = P;
-    register int i;
-    assert(p);
+  register struct PartitionVars *p = P;
+  register int i;
+  assert(p);
 
-    p->count[0] = p->count[1] = 0;
-    p->total = maxrects;
-    p->minfill = minfill;
-    for (i=0; i<maxrects; i++)
-    {
-        p->taken[i] = FALSE;
-        p->partition[i] = -1;
-    }
+  p->count[0] = p->count[1] = 0;
+  p->total = maxrects;
+  p->minfill = minfill;
+  for (i=0; i<maxrects; i++)
+  {
+    p->taken[i] = FALSE;
+    p->partition[i] = -1;
+  }
 }
 
 
@@ -97,19 +97,21 @@ static void Xastir_RTreeInitPVars(struct PartitionVars *P, int maxrects, int min
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreeClassify(int i, int group, struct PartitionVars *p)
 {
-    assert(p);
-    assert(!p->taken[i]);
+  assert(p);
+  assert(!p->taken[i]);
 
-    p->partition[i] = group;
-    p->taken[i] = TRUE;
+  p->partition[i] = group;
+  p->taken[i] = TRUE;
 
-    if (p->count[group] == 0)
-        p->cover[group] = Xastir_BranchBuf[i].rect;
-    else
-        p->cover[group] = Xastir_RTreeCombineRect(&Xastir_BranchBuf[i].rect,
-                                                  &p->cover[group]);
-    p->area[group] = Xastir_RTreeRectSphericalVolume(&p->cover[group]);
-    p->count[group]++;
+  if (p->count[group] == 0)
+  {
+    p->cover[group] = Xastir_BranchBuf[i].rect;
+  }
+  else
+    p->cover[group] = Xastir_RTreeCombineRect(&Xastir_BranchBuf[i].rect,
+                      &p->cover[group]);
+  p->area[group] = Xastir_RTreeRectSphericalVolume(&p->cover[group]);
+  p->count[group]++;
 }
 
 
@@ -122,87 +124,91 @@ static void Xastir_RTreeClassify(int i, int group, struct PartitionVars *p)
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreePickSeeds(struct PartitionVars *P)
 {
-    register struct PartitionVars *p = P;
-    register int i, dim, high;
-    register struct Rect *r, *rlow, *rhigh;
-    // Original superliminal.com implementation had no initializers here.
-    // They are not strictly necessary, as the variables are initialized
-    // in the first iteration of the first for loop, but GCC complains
-    // anyway.  Initializers added to keep it happy.
-    register float w, separation, bestSep=0.0;
-    RectReal width[NUMDIMS];
-    int leastUpper[NUMDIMS], greatestLower[NUMDIMS];
-    int seed0=0, seed1=0;
-    assert(p);
+  register struct PartitionVars *p = P;
+  register int i, dim, high;
+  register struct Rect *r, *rlow, *rhigh;
+  // Original superliminal.com implementation had no initializers here.
+  // They are not strictly necessary, as the variables are initialized
+  // in the first iteration of the first for loop, but GCC complains
+  // anyway.  Initializers added to keep it happy.
+  register float w, separation, bestSep=0.0;
+  RectReal width[NUMDIMS];
+  int leastUpper[NUMDIMS], greatestLower[NUMDIMS];
+  int seed0=0, seed1=0;
+  assert(p);
 
-    for (dim=0; dim<NUMDIMS; dim++)
+  for (dim=0; dim<NUMDIMS; dim++)
+  {
+    high = dim + NUMDIMS;
+
+    /* find the rectangles farthest out in each direction
+     * along this dimens */
+    greatestLower[dim] = leastUpper[dim] = 0;
+    for (i=1; i<Xastir_NODECARD+1; i++)
     {
-        high = dim + NUMDIMS;
-
-        /* find the rectangles farthest out in each direction
-         * along this dimens */
-        greatestLower[dim] = leastUpper[dim] = 0;
-        for (i=1; i<Xastir_NODECARD+1; i++)
-        {
-            r = &Xastir_BranchBuf[i].rect;
-            if (r->boundary[dim] >
-                Xastir_BranchBuf[greatestLower[dim]].rect.boundary[dim])
-            {
-                greatestLower[dim] = i;
-            }
-            if (r->boundary[high] <
-                Xastir_BranchBuf[leastUpper[dim]].rect.boundary[high])
-            {
-                leastUpper[dim] = i;
-            }
-        }
-
-        /* find width of the whole collection along this dimension */
-        width[dim] = Xastir_CoverSplit.boundary[high] -
-            Xastir_CoverSplit.boundary[dim];
+      r = &Xastir_BranchBuf[i].rect;
+      if (r->boundary[dim] >
+          Xastir_BranchBuf[greatestLower[dim]].rect.boundary[dim])
+      {
+        greatestLower[dim] = i;
+      }
+      if (r->boundary[high] <
+          Xastir_BranchBuf[leastUpper[dim]].rect.boundary[high])
+      {
+        leastUpper[dim] = i;
+      }
     }
 
-    /* pick the best separation dimension and the two seed rects */
-    for (dim=0; dim<NUMDIMS; dim++)
+    /* find width of the whole collection along this dimension */
+    width[dim] = Xastir_CoverSplit.boundary[high] -
+                 Xastir_CoverSplit.boundary[dim];
+  }
+
+  /* pick the best separation dimension and the two seed rects */
+  for (dim=0; dim<NUMDIMS; dim++)
+  {
+    high = dim + NUMDIMS;
+
+    /* divisor for normalizing by width */
+    assert(width[dim] >= 0);
+    if (width[dim] == 0)
     {
-        high = dim + NUMDIMS;
-
-        /* divisor for normalizing by width */
-        assert(width[dim] >= 0);
-        if (width[dim] == 0)
-            w = (RectReal)1;
-        else
-            w = width[dim];
-
-        rlow = &Xastir_BranchBuf[leastUpper[dim]].rect;
-        rhigh = &Xastir_BranchBuf[greatestLower[dim]].rect;
-        if (dim == 0)
-        {
-            seed0 = leastUpper[0];
-            seed1 = greatestLower[0];
-            separation = bestSep =
-                (rhigh->boundary[0] -
-                 rlow->boundary[NUMDIMS]) / w;
-        }
-        else
-        {
-            separation =
-                (rhigh->boundary[dim] -
-                 rlow->boundary[dim+NUMDIMS]) / w;
-            if (separation > bestSep)
-            {
-                seed0 = leastUpper[dim];
-                seed1 = greatestLower[dim];
-                bestSep = separation;
-            }
-        }
+      w = (RectReal)1;
+    }
+    else
+    {
+      w = width[dim];
     }
 
-    if (seed0 != seed1)
+    rlow = &Xastir_BranchBuf[leastUpper[dim]].rect;
+    rhigh = &Xastir_BranchBuf[greatestLower[dim]].rect;
+    if (dim == 0)
     {
-        Xastir_RTreeClassify(seed0, 0, p);
-        Xastir_RTreeClassify(seed1, 1, p);
+      seed0 = leastUpper[0];
+      seed1 = greatestLower[0];
+      separation = bestSep =
+                     (rhigh->boundary[0] -
+                      rlow->boundary[NUMDIMS]) / w;
     }
+    else
+    {
+      separation =
+        (rhigh->boundary[dim] -
+         rlow->boundary[dim+NUMDIMS]) / w;
+      if (separation > bestSep)
+      {
+        seed0 = leastUpper[dim];
+        seed1 = greatestLower[dim];
+        bestSep = separation;
+      }
+    }
+  }
+
+  if (seed0 != seed1)
+  {
+    Xastir_RTreeClassify(seed0, 0, p);
+    Xastir_RTreeClassify(seed1, 1, p);
+  }
 }
 
 
@@ -224,61 +230,75 @@ static void Xastir_RTreePickSeeds(struct PartitionVars *P)
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreePigeonhole(struct PartitionVars *P)
 {
-    register struct PartitionVars *p = P;
-    struct Rect newCover[2];
-    register int i, group;
-    RectReal newArea[2], increase[2];
+  register struct PartitionVars *p = P;
+  struct Rect newCover[2];
+  register int i, group;
+  RectReal newArea[2], increase[2];
 
-    for (i=0; i<Xastir_NODECARD+1; i++)
+  for (i=0; i<Xastir_NODECARD+1; i++)
+  {
+    if (!p->taken[i])
     {
-        if (!p->taken[i])
+      /* if one group too full, put rect in the other */
+      if (p->count[0] >= p->total - p->minfill)
+      {
+        Xastir_RTreeClassify(i, 1, p);
+        continue;
+      }
+      else if (p->count[1] >= p->total - p->minfill)
+      {
+        Xastir_RTreeClassify(i, 0, p);
+        continue;
+      }
+
+      /* find areas of the two groups' old and new covers */
+      for (group=0; group<2; group++)
+      {
+        if (p->count[group]>0)
+          newCover[group] = Xastir_RTreeCombineRect(
+                              &Xastir_BranchBuf[i].rect,
+                              &p->cover[group]);
+        else
         {
-            /* if one group too full, put rect in the other */
-            if (p->count[0] >= p->total - p->minfill)
-            {
-                Xastir_RTreeClassify(i, 1, p);
-                continue;
-            }
-            else if (p->count[1] >= p->total - p->minfill)
-            {
-                Xastir_RTreeClassify(i, 0, p);
-                continue;
-            }
-
-            /* find areas of the two groups' old and new covers */
-            for (group=0; group<2; group++)
-            {
-                if (p->count[group]>0)
-                    newCover[group] = Xastir_RTreeCombineRect(
-                                                              &Xastir_BranchBuf[i].rect,
-                                                              &p->cover[group]);
-                else
-                    newCover[group] = Xastir_BranchBuf[i].rect;
-                newArea[group] = Xastir_RTreeRectSphericalVolume(
-                                                                 &newCover[group]);
-                increase[group] = newArea[group]-p->area[group];
-            }
-
-            /* put rect in group whose cover will expand less */
-            if (increase[0] < increase[1])
-                Xastir_RTreeClassify(i, 0, p);
-            else if (increase[1] < increase[0])
-                Xastir_RTreeClassify(i, 1, p);
-
-            /* put rect in group that will have a smaller cover */
-            else if (p->area[0] < p->area[1])
-                Xastir_RTreeClassify(i, 0, p);
-            else if (p->area[1] < p->area[0])
-                Xastir_RTreeClassify(i, 1, p);
-
-            /* put rect in group with fewer elements */
-            else if (p->count[0] < p->count[1])
-                Xastir_RTreeClassify(i, 0, p);
-            else
-                Xastir_RTreeClassify(i, 1, p);
+          newCover[group] = Xastir_BranchBuf[i].rect;
         }
+        newArea[group] = Xastir_RTreeRectSphericalVolume(
+                           &newCover[group]);
+        increase[group] = newArea[group]-p->area[group];
+      }
+
+      /* put rect in group whose cover will expand less */
+      if (increase[0] < increase[1])
+      {
+        Xastir_RTreeClassify(i, 0, p);
+      }
+      else if (increase[1] < increase[0])
+      {
+        Xastir_RTreeClassify(i, 1, p);
+      }
+
+      /* put rect in group that will have a smaller cover */
+      else if (p->area[0] < p->area[1])
+      {
+        Xastir_RTreeClassify(i, 0, p);
+      }
+      else if (p->area[1] < p->area[0])
+      {
+        Xastir_RTreeClassify(i, 1, p);
+      }
+
+      /* put rect in group with fewer elements */
+      else if (p->count[0] < p->count[1])
+      {
+        Xastir_RTreeClassify(i, 0, p);
+      }
+      else
+      {
+        Xastir_RTreeClassify(i, 1, p);
+      }
     }
-    assert(p->count[0] + p->count[1] == Xastir_NODECARD + 1);
+  }
+  assert(p->count[0] + p->count[1] == Xastir_NODECARD + 1);
 }
 
 
@@ -290,9 +310,9 @@ static void Xastir_RTreePigeonhole(struct PartitionVars *P)
   -----------------------------------------------------------------------------*/
 static void Xastir_RTreeMethodZero(struct PartitionVars *p, int minfill)
 {
-    Xastir_RTreeInitPVars(p, Xastir_BranchCount, minfill);
-    Xastir_RTreePickSeeds(p);
-    Xastir_RTreePigeonhole(p);
+  Xastir_RTreeInitPVars(p, Xastir_BranchCount, minfill);
+  Xastir_RTreePickSeeds(p);
+  Xastir_RTreePigeonhole(p);
 }
 
 
@@ -304,22 +324,28 @@ static void Xastir_RTreeMethodZero(struct PartitionVars *p, int minfill)
 static void Xastir_RTreeLoadNodes(struct Node *N, struct Node *Q,
                                   struct PartitionVars *P)
 {
-    register struct Node *n = N, *q = Q;
-    register struct PartitionVars *p = P;
-    register int i;
-    assert(n);
-    assert(q);
-    assert(p);
+  register struct Node *n = N, *q = Q;
+  register struct PartitionVars *p = P;
+  register int i;
+  assert(n);
+  assert(q);
+  assert(p);
 
-    for (i=0; i<Xastir_NODECARD+1; i++)
+  for (i=0; i<Xastir_NODECARD+1; i++)
+  {
+    if (p->partition[i] == 0)
     {
-        if (p->partition[i] == 0)
-            Xastir_RTreeAddBranch(&Xastir_BranchBuf[i], n, NULL);
-        else if (p->partition[i] == 1)
-            Xastir_RTreeAddBranch(&Xastir_BranchBuf[i], q, NULL);
-        else
-            assert(FALSE);
+      Xastir_RTreeAddBranch(&Xastir_BranchBuf[i], n, NULL);
     }
+    else if (p->partition[i] == 1)
+    {
+      Xastir_RTreeAddBranch(&Xastir_BranchBuf[i], q, NULL);
+    }
+    else
+    {
+      assert(FALSE);
+    }
+  }
 }
 
 
@@ -331,35 +357,35 @@ static void Xastir_RTreeLoadNodes(struct Node *N, struct Node *Q,
   -----------------------------------------------------------------------------*/
 void Xastir_RTreeSplitNode(struct Node *n, struct Branch *b, struct Node **nn)
 {
-    register struct PartitionVars *p;
-    register int level;
-    // This variable is declared, assigned a value, then never used.
-    // Newer GCCs warn about that.  Shut them up.
-    // RectReal area;
+  register struct PartitionVars *p;
+  register int level;
+  // This variable is declared, assigned a value, then never used.
+  // Newer GCCs warn about that.  Shut them up.
+  // RectReal area;
 
-    assert(n);
-    assert(b);
+  assert(n);
+  assert(b);
 
-    /* load all the branches into a buffer, initialize old node */
-    level = n->level;
-    Xastir_RTreeGetBranches(n, b);
+  /* load all the branches into a buffer, initialize old node */
+  level = n->level;
+  Xastir_RTreeGetBranches(n, b);
 
-    /* find partition */
-    p = &Xastir_Partitions[0];
+  /* find partition */
+  p = &Xastir_Partitions[0];
 
-    /* Note: can't use MINFILL(n) below since n was cleared by GetBranches() */
-    Xastir_RTreeMethodZero(p, level>0 ? MinNodeFill : MinLeafFill);
+  /* Note: can't use MINFILL(n) below since n was cleared by GetBranches() */
+  Xastir_RTreeMethodZero(p, level>0 ? MinNodeFill : MinLeafFill);
 
-    /* record how good the split was for statistics */
-    // This variable is declared, assigned a value, then never used.
-    // Newer GCCs warn about that.  Shut them up.
-    // area = p->area[0] + p->area[1];
+  /* record how good the split was for statistics */
+  // This variable is declared, assigned a value, then never used.
+  // Newer GCCs warn about that.  Shut them up.
+  // area = p->area[0] + p->area[1];
 
-    /* put branches from buffer in 2 nodes according to chosen partition */
-    *nn = Xastir_RTreeNewNode();
-    (*nn)->level = n->level = level;
-    Xastir_RTreeLoadNodes(n, *nn, p);
-    assert(n->count + (*nn)->count == Xastir_NODECARD+1);
+  /* put branches from buffer in 2 nodes according to chosen partition */
+  *nn = Xastir_RTreeNewNode();
+  (*nn)->level = n->level = level;
+  Xastir_RTreeLoadNodes(n, *nn, p);
+  assert(n->count + (*nn)->count == Xastir_NODECARD+1);
 }
 
 
@@ -373,39 +399,43 @@ void Xastir_RTreeSplitNode(struct Node *n, struct Branch *b, struct Node **nn)
 #if 0
 static void Xastir_RTreePrintPVars(struct PartitionVars *p)
 {
-    int i;
-    assert(p);
+  int i;
+  assert(p);
 
-    printf("\npartition:\n");
-    for (i=0; i<Xastir_NODECARD+1; i++)
+  printf("\npartition:\n");
+  for (i=0; i<Xastir_NODECARD+1; i++)
+  {
+    printf("%3d\t", i);
+  }
+  printf("\n");
+  for (i=0; i<Xastir_NODECARD+1; i++)
+  {
+    if (p->taken[i])
     {
-        printf("%3d\t", i);
+      printf("  t\t");
     }
-    printf("\n");
-    for (i=0; i<Xastir_NODECARD+1; i++)
+    else
     {
-        if (p->taken[i])
-            printf("  t\t");
-        else
-            printf("\t");
+      printf("\t");
     }
-    printf("\n");
-    for (i=0; i<Xastir_NODECARD+1; i++)
-    {
-        printf("%3d\t", p->partition[i]);
-    }
-    printf("\n");
+  }
+  printf("\n");
+  for (i=0; i<Xastir_NODECARD+1; i++)
+  {
+    printf("%3d\t", p->partition[i]);
+  }
+  printf("\n");
 
-    printf("count[0] = %d  area = %f\n", p->count[0], p->area[0]);
-    printf("count[1] = %d  area = %f\n", p->count[1], p->area[1]);
-    printf("total area = %f  effectiveness = %3.2f\n",
-           p->area[0] + p->area[1],
-           Xastir_RTreeRectSphericalVolume(&Xastir_CoverSplit)/(p->area[0]+p->area[1]));
+  printf("count[0] = %d  area = %f\n", p->count[0], p->area[0]);
+  printf("count[1] = %d  area = %f\n", p->count[1], p->area[1]);
+  printf("total area = %f  effectiveness = %3.2f\n",
+         p->area[0] + p->area[1],
+         Xastir_RTreeRectSphericalVolume(&Xastir_CoverSplit)/(p->area[0]+p->area[1]));
 
-    printf("cover[0]:\n");
-    Xastir_RTreePrintRect(&p->cover[0], 0);
+  printf("cover[0]:\n");
+  Xastir_RTreePrintRect(&p->cover[0], 0);
 
-    printf("cover[1]:\n");
-    Xastir_RTreePrintRect(&p->cover[1], 0);
+  printf("cover[1]:\n");
+  Xastir_RTreePrintRect(&p->cover[1], 0);
 }
 #endif // shut up GCC

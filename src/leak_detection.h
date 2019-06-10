@@ -41,7 +41,7 @@
 // export GC_PRINT_STATS=1; xastir &
 //
 // Compile libgc with this option for more debugging output.  I
-// didn't do so:  --enable-full_debug 
+// didn't do so:  --enable-full_debug
 //
 // If we enable these thread options, Xastir won't link with the
 // library.  Since we don't allocate dynamic memory in the child
@@ -62,7 +62,7 @@
 #include <pthread.h>
 #include <stdlib.h> /* Where malloc/free definitions reside */
 #ifdef HAVE_DMALLOC
-#include <dmalloc.h>
+  #include <dmalloc.h>
 #endif  // HAVE_DMALLOC
 //
 #ifdef HAVE_GC_H
@@ -78,8 +78,8 @@
       #define GC_LINUX_THREADS
     #endif  // __LINUX__
 
-//    #define _REENTRANT
- 
+    //    #define _REENTRANT
+
     // Ask for more debugging
     #define GC_DEBUG
 
@@ -92,7 +92,7 @@
 
   #endif    // HAVE_LIBGC
 #endif  // HAVE_GC_H
- 
+
 
 
 #endif /* LEAK_DETECTION_H */

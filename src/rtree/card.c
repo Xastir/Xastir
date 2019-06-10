@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -40,12 +40,26 @@ int Xastir_LEAFCARD = MAXCARD;
 static int set_max(int *which, int new_max)
 {
   if(2 > new_max || new_max > MAXCARD)
+  {
     return 0;
+  }
   *which = new_max;
   return 1;
 }
 
-int Xastir_RTreeSetNodeMax(int new_max) { return set_max(&Xastir_NODECARD, new_max); }
-int Xastir_RTreeSetLeafMax(int new_max) { return set_max(&Xastir_LEAFCARD, new_max); }
-int Xastir_RTreeGetNodeMax(void) { return Xastir_NODECARD; }
-int Xastir_RTreeGetLeafMax(void) { return Xastir_LEAFCARD; }
+int Xastir_RTreeSetNodeMax(int new_max)
+{
+  return set_max(&Xastir_NODECARD, new_max);
+}
+int Xastir_RTreeSetLeafMax(int new_max)
+{
+  return set_max(&Xastir_LEAFCARD, new_max);
+}
+int Xastir_RTreeGetNodeMax(void)
+{
+  return Xastir_NODECARD;
+}
+int Xastir_RTreeGetLeafMax(void)
+{
+  return Xastir_LEAFCARD;
+}

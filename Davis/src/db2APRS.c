@@ -77,8 +77,8 @@
 
 #define OUTDOOR_SENSOR  1
 
-    //---From the static table "mfield", which really should be dynamically read here---
-    //     (but then I couldn't use a switch statement)
+//---From the static table "mfield", which really should be dynamically read here---
+//     (but then I couldn't use a switch statement)
 
 #define TEMPERATURE         0
 #define TEMPERATURE_MIN     1
@@ -95,7 +95,7 @@
 #define SOLAR               40
 #define UV                  41
 #define RAIN                50
-    // note: "51" is really rain total
+// note: "51" is really rain total
 #define RAIN_PER_DAY        51
 #define RAIN_PER_HOUR       52
 #define WIND_SPEED          60
@@ -146,7 +146,8 @@ int outdoor_instr = OUTDOOR_SENSOR;
 *******************************************************************/
 void usage(int ret)
 {
-  if (query) {
+  if (query)
+  {
     printf("Content-type: text/plain\nStatus: 200\n\n");
   }
   printf("usage: %s [options] \n",progname);
@@ -655,7 +656,7 @@ int Get_Latest_WX( double *winddir,
   if (mysql_num_rows(result) != 1 )
   {
     sprintf(death_msg,"err: Latest timestamp query failed - exiting: number of results %d\n",
-      mysql_num_rows(result));
+            mysql_num_rows(result));
     if (debug_level & 1)
     {
       fprintf(stderr,"%s",death_msg);
@@ -705,7 +706,7 @@ int Get_Latest_WX( double *winddir,
   if (mysql_query(&mysql, query_buffer))
   {
     sprintf(death_msg,"err: Latest Weather Data query failed - exiting: %s\n\t --Query: %s\n",
-    mysql_error(&mysql), query_buffer);
+            mysql_error(&mysql), query_buffer);
     if (debug_level & 1)
     {
       fprintf(stderr,"%s",death_msg);
@@ -727,7 +728,7 @@ int Get_Latest_WX( double *winddir,
     sprintf(death_msg,"err: Latest Weather Data query failed - exiting: number of results %d\n",nrows);
     if (debug_level & 1)
     {
-            fprintf(stderr,"%s",death_msg);
+      fprintf(stderr,"%s",death_msg);
     }
     // release query buffer
     mysql_free_result(result);
@@ -935,7 +936,7 @@ int Get_Latest_WX( double *winddir,
   // release query buffer
   mysql_free_result(result);
 
-/*    Last 24 hours    */
+  /*    Last 24 hours    */
 
   last_24_timestamp = atol(last_timestamp) - 86400;
   sprintf(query_buffer,"SELECT round(sum(value),2) FROM sdata WHERE timekey > %ld and fieldid = %d", last_24_timestamp,RAIN);
@@ -1028,9 +1029,9 @@ int Get_Latest_WX( double *winddir,
   mysql_free_result(result);
 #else
 
-/*    since midnite    */
+  /*    since midnite    */
 
-/*    we can get the timestamp for midnite from the avg table */
+  /*    we can get the timestamp for midnite from the avg table */
   last_day_timestamp = 0;
   sprintf(query_buffer,"SELECT max(timekey) FROM avg WHERE fieldid = %d and intval = 86400", last_hour_timestamp,RAIN);
   if (mysql_query(&mysql, query_buffer))
@@ -1055,7 +1056,7 @@ int Get_Latest_WX( double *winddir,
   {
     row = mysql_fetch_row(result);
     if (row[0] != NULL)
-    {  
+    {
       last_day_timestamp = strtod(row[0],NULL);
     }
   }
@@ -1303,7 +1304,7 @@ int main(int argc, char **argv)
       fprintf(stdout, " one pass only ");
     }
     fprintf(stdout," with  database user=%s, password=%s, for database=%s\n",
-      db.user, db.pswrd, db.name);
+            db.user, db.pswrd, db.name);
     if (not_a_daemon)
     {
       fprintf(stdout," as a program ");
@@ -1336,7 +1337,10 @@ int main(int argc, char **argv)
     for (i = 0; i < NOFILE; i++)
     {
       // NOTE: Gcc warns that "ss" could be uninitialized here.
-      if ( i != ss) close(i);
+      if ( i != ss)
+      {
+        close(i);
+      }
     }
   }
 
@@ -1373,9 +1377,9 @@ int main(int argc, char **argv)
   i = 1;
   if (setsockopt(ss, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)) == -1)
   {
-  if (debug_level & 1)
+    if (debug_level & 1)
     {
-    fprintf(stderr, "err: %s - setsockopt", progname);
+      fprintf(stderr, "err: %s - setsockopt", progname);
     }
   }
   if (bind(ss, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) == -1)
@@ -1401,7 +1405,10 @@ int main(int argc, char **argv)
   }
 
   umask(0022);
-  for (i = 0; i < CONNECTIONS; i++) fd[i] = -1;
+  for (i = 0; i < CONNECTIONS; i++)
+  {
+    fd[i] = -1;
+  }
   tv.tv_sec = 0;
   tv.tv_usec = 0;
 
@@ -1422,7 +1429,7 @@ int main(int argc, char **argv)
     {
       dly_cnt = poll_interval;    // Every 'dly_cnt' passes check for WX data update
       dsts = Get_Latest_WX(&winddir,&windspeed,&windgust,
-             &temp,&rain1hr,&rain24hr,&rainday,&humidity,&airpressure, &valid_data_flgs);
+                           &temp,&rain1hr,&rain24hr,&rainday,&humidity,&airpressure, &valid_data_flgs);
       if ( dsts < 0 )
       {
         if (debug_level & 1)
@@ -1436,8 +1443,8 @@ int main(int argc, char **argv)
       if (dsts)
       {
         data_len = APRS_str(WX_APRS, last_datetime, winddir,windspeed,windgust,
-                   temp, rain1hr, rain24hr, rainday, humidity, airpressure,
-                   valid_data_flgs,Metric_Dat);
+                            temp, rain1hr, rain24hr, rainday, humidity, airpressure,
+                            valid_data_flgs,Metric_Dat);
 
         if (!data_len)
         {
@@ -1480,7 +1487,8 @@ int main(int argc, char **argv)
       for (current = fd; current <=max; current++)
       {
         if (*current > 0)
-        {   // active socket
+        {
+          // active socket
           if (debug_level & 1)
           {
             fprintf(stdout," #");
@@ -1495,7 +1503,8 @@ int main(int argc, char **argv)
       }
     }
     sleep(1);
-  } while (repetitive);
+  }
+  while (repetitive);
 
   mysql_close(&mysql);
 

@@ -49,7 +49,7 @@
  * values when rendering shapefile maps, or rewriting labels
  * (e.g. callsigns into tactical calls), etc.
  *
- * Uses Philip Hazel's Perl-compatible regular expression library (pcre).  
+ * Uses Philip Hazel's Perl-compatible regular expression library (pcre).
  * See www.pcre.org.
  *
  * Alan Crosswell, n2ygk@weca.org
@@ -61,7 +61,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif  // HAVE_CONFIG_H
 
 #ifdef HAVE_LIBPCRE
@@ -70,7 +70,7 @@
 
 // Needed for Solaris
 #ifdef HAVE_STRINGS_H
-#include <strings.h>
+  #include <strings.h>
 #endif  // HAVE_STRINGS_H
 
 #include <ctype.h>
@@ -157,7 +157,7 @@ void awk_free_symtab(awk_symtab *s)
  * awk_declare_sym: declare a symbol and bind to storage for its value.
  */
 int awk_declare_sym(awk_symtab *this,
-                    const char *name, 
+                    const char *name,
                     enum awk_symtype type,
                     const void *val,
                     const int size)
@@ -227,9 +227,13 @@ awk_symbol *awk_find_sym(awk_symtab *this,
         // Ok so far, test the entire string (slow
         // operation, case sensitive)
         if (len == 1)
+        {
           return s;
+        }
         if (len > 1 && strncmp(s->name+1,name+1,len-1) == 0)
+        {
           return s;
+        }
       }
     }
   }
@@ -246,7 +250,7 @@ awk_symbol *awk_find_sym(awk_symtab *this,
  */
 /*
 int awk_set_sym(awk_symbol *s,
-                const char *val, 
+                const char *val,
                 const int len)
 {
   int l = len + 1;
@@ -289,14 +293,15 @@ int awk_set_sym(awk_symbol *s,
 
 
 
-/* 
- * awk_get_sym: copy (and cast) symbol's value into supplied string buffer 
+/*
+ * awk_get_sym: copy (and cast) symbol's value into supplied string buffer
  */
 int awk_get_sym(awk_symbol *s,          /* symbol */
                 char *store,        /* store result here */
                 int size,           /* sizeof(*store) */
                 int *len)
-{         /* store length here */
+{
+  /* store length here */
   int minlen;
   char cbuf[128];             /* conversion buffer for int/float */
   int cbl;
@@ -309,76 +314,76 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
   *len = 0;
   switch(s->type)
   {
-  case STRING:
-    if (s->len > 0)
-    {
-      minlen = min(s->len,size-1);
-      if (minlen > 0)
+    case STRING:
+      if (s->len > 0)
       {
-        xastir_snprintf(store,
-                        size,
-                        "%s",
-                        (char *)(s->val));
-        *len = minlen;
+        minlen = min(s->len,size-1);
+        if (minlen > 0)
+        {
+          xastir_snprintf(store,
+                          size,
+                          "%s",
+                          (char *)(s->val));
+          *len = minlen;
+        }
+        else
+        {
+          *len = 0;
+        }
       }
       else
       {
         *len = 0;
       }
-    }
-    else
-    {
-      *len = 0;
-    }
-    break;
-  case INT:
-    if (s->len > 0)
-    {
-      sprintf(cbuf,"%d",*((int *)s->val));
-      cbl = strlen(cbuf);
-      minlen = min(cbl,size-1);
-      if (minlen > 0)
+      break;
+    case INT:
+      if (s->len > 0)
       {
-        xastir_snprintf(store,
-                        size,
-                        "%s",
-                        cbuf);
-        *len = minlen;
+        sprintf(cbuf,"%d",*((int *)s->val));
+        cbl = strlen(cbuf);
+        minlen = min(cbl,size-1);
+        if (minlen > 0)
+        {
+          xastir_snprintf(store,
+                          size,
+                          "%s",
+                          cbuf);
+          *len = minlen;
+        }
+        else
+        {
+          *len = 0;
+        }
       }
       else
       {
         *len = 0;
       }
-    }
-    else
-    {
-      *len = 0;
-    }
-    break;
-  case FLOAT:
-    if (s->len > 0)
-    {
-      sprintf(cbuf,"%f",*((double *)s->val));
-      cbl = strlen(cbuf);
-      minlen = min(cbl,size-1);
-      if (minlen > 0)
+      break;
+    case FLOAT:
+      if (s->len > 0)
       {
-        xastir_snprintf(store,
-                        size,
-                        "%s",
-                        cbuf);
-        *len = minlen;
+        sprintf(cbuf,"%f",*((double *)s->val));
+        cbl = strlen(cbuf);
+        minlen = min(cbl,size-1);
+        if (minlen > 0)
+        {
+          xastir_snprintf(store,
+                          size,
+                          "%s",
+                          cbuf);
+          *len = minlen;
+        }
+        else
+        {
+          *len = 0;
+        }
       }
       else
       {
         *len = 0;
       }
-    }
-    else
-    {
-      *len = 0;
-    }
-    break;
+      break;
   }
   return 0;
 }
@@ -391,12 +396,12 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
  *  Action compilation and interpretation.
  *
  *  Action grammar is:
- *  <attr_set> := <attr> "=" value 
+ *  <attr_set> := <attr> "=" value
  *  <op>   := "next" | "skip"   (next skips to next field;  skip skips to next
  *                               record.)
  *  <stmt> := <attr_set> | <op>
  *  <stmt_list> := <stmt_list> ";" <stmt> | <stmt>
- *  <action> := <stmt_list> 
+ *  <action> := <stmt_list>
  *
  * It's a trivial grammar so no need for yacc/bison.
  */
@@ -410,7 +415,7 @@ int awk_compile_stmt(awk_symtab *this,
                      int len)
 {
   const char *s = stmt, *op, *ep;
-  
+
   while (isspace((int)*s))
   {
     /* clean up leading white space */
@@ -443,7 +448,8 @@ int awk_compile_stmt(awk_symtab *this,
     p->exprlen = (ep-val);
   }
   else
-  {                    /* or the "next" keyword */
+  {
+    /* or the "next" keyword */
     const char *r;
 
     for (r=&s[len-1]; isspace((int)*r); r--,len--)
@@ -459,7 +465,8 @@ int awk_compile_stmt(awk_symtab *this,
       p->opcode = SKIP;
     }
     else
-    {                /* failed to parse */
+    {
+      /* failed to parse */
       return -1;
     }
   }
@@ -504,7 +511,7 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act)
       }
       p = p->next_act;
     }
-  } 
+  }
   return first;
 }
 
@@ -530,13 +537,13 @@ void awk_free_action(awk_action *a)
 
 
 
-/* 
+/*
  * awk_eval_expr: expand $vars into dest and do type conversions as
  *  needed.  For strings, just write directly into dest->val.  For
  *  ints/floats, write to a temp buffer and then atoi() or atof().
  */
 void awk_eval_expr(awk_symtab *this,
-                   awk_symbol *dest, 
+                   awk_symbol *dest,
                    const char *expr,
                    int exprlen)
 {
@@ -564,156 +571,159 @@ void awk_eval_expr(awk_symtab *this,
     {
       switch (c = *expr)
       {
-      case '"':
-      case '\'':          /* trim off string delims */
-        ++expr;
-        --exprlen;
-        if (expr[exprlen-1] == c) /* look for matching close delim */
-        {
-          --exprlen;
-        }
-        break;
-      case '$':        /* $... look for variable substitution */
-        if (--exprlen < 0)
-        {
-          done = 1;
-          break;
-        }
-        c = *++expr;            /* what's after the $? */
-        switch (c)
-        {
-        case '{':       /* ${var}... currently broken (see TODO) */
-          delim='}';
-          ++expr;     /* skip the open delim */
-          --exprlen;
-          break;
-        case '(':       /* $(var)... */
-          delim=')';
+        case '"':
+        case '\'':          /* trim off string delims */
           ++expr;
           --exprlen;
-          break;
-        default:        /* $var ... */
-          delim='\0';
-          break;
-        }
-        /* now search for the var name using closing delim */
-        symname = expr;
-        if (delim == '\0')
-        {
-          /* no close delim */
-          while (!isspace((int)*expr) && !ispunct((int)*expr) && exprlen > 0)
+          if (expr[exprlen-1] == c) /* look for matching close delim */
           {
-            ++expr;
             --exprlen;
           }
-        }
-        else
-        {                /* search for close delim */
-          while (*expr != delim && exprlen > 0)
+          break;
+        case '$':        /* $... look for variable substitution */
+          if (--exprlen < 0)
           {
-            ++expr;
-            --exprlen;
+            done = 1;
+            break;
           }
-        }
-        src = awk_find_sym(this,symname,(expr-symname));
-        if (delim)
-        {    /* gotta skip over the close delim */
-          ++expr;
-          --exprlen;
-        }
-        /* make sure src and dest of string copy don't overlap */
-        if (src && src->type == STRING 
-            && dp >= (char *)src->val 
-            && dp <= &((char *)src->val)[src->size])
-        {
-          char *sp;
-          int free_it = 0;
-
-          if ((int)sizeof(tbuf) >= src->size)
+          c = *++expr;            /* what's after the $? */
+          switch (c)
           {
-            /* tbuf big enuf */
-            sp = tbuf;
+            case '{':       /* ${var}... currently broken (see TODO) */
+              delim='}';
+              ++expr;     /* skip the open delim */
+              --exprlen;
+              break;
+            case '(':       /* $(var)... */
+              delim=')';
+              ++expr;
+              --exprlen;
+              break;
+            default:        /* $var ... */
+              delim='\0';
+              break;
+          }
+          /* now search for the var name using closing delim */
+          symname = expr;
+          if (delim == '\0')
+          {
+            /* no close delim */
+            while (!isspace((int)*expr) && !ispunct((int)*expr) && exprlen > 0)
+            {
+              ++expr;
+              --exprlen;
+            }
           }
           else
           {
-            /* tbuf too small */
-            free_it++;
-            sp = malloc(src->size);
-            if (!sp)
-            { /* oh well! */
-              fprintf(stderr,"Couldn't allocate memory in awk_eval_expr()\n");
-              break; 
+            /* search for close delim */
+            while (*expr != delim && exprlen > 0)
+            {
+              ++expr;
+              --exprlen;
             }
           }
-          awk_get_sym(src,sp,src->size,&newlen);
-          bcopy(sp,dp,newlen); /* now copy it in */
+          src = awk_find_sym(this,symname,(expr-symname));
+          if (delim)
+          {
+            /* gotta skip over the close delim */
+            ++expr;
+            --exprlen;
+          }
+          /* make sure src and dest of string copy don't overlap */
+          if (src && src->type == STRING
+              && dp >= (char *)src->val
+              && dp <= &((char *)src->val)[src->size])
+          {
+            char *sp;
+            int free_it = 0;
 
-          // We only want to free it if we malloc'ed it.
-          if (free_it)
-          {
-            free(sp);
+            if ((int)sizeof(tbuf) >= src->size)
+            {
+              /* tbuf big enuf */
+              sp = tbuf;
+            }
+            else
+            {
+              /* tbuf too small */
+              free_it++;
+              sp = malloc(src->size);
+              if (!sp)
+              {
+                /* oh well! */
+                fprintf(stderr,"Couldn't allocate memory in awk_eval_expr()\n");
+                break;
+              }
+            }
+            awk_get_sym(src,sp,src->size,&newlen);
+            bcopy(sp,dp,newlen); /* now copy it in */
+
+            // We only want to free it if we malloc'ed it.
+            if (free_it)
+            {
+              free(sp);
+            }
           }
-        }
-        else
-        {
-          awk_get_sym(src,dp,(dmax-dl),&newlen);
-        }
-        dl += newlen;
-        dp += newlen;
-        break;
-      case '\\':          /* \... quote next char */
-        /* XXX TODO: implement \n,\t,\0[x].. etc. */
-        if (--exprlen < 0)
-        {
-          done = 1;
-        }
-        else
-        {
-          if (dl < dmax)
+          else
           {
-            *dp++ = *expr++;        /* copy the quoted char */
-            ++dl;
+            awk_get_sym(src,dp,(dmax-dl),&newlen);
           }
-        }
-        break;
-      default:                    /* just copy the character */
-        if (--exprlen < 0)
-        {
-          done = 1;
-        }
-        else
-        {
-          if (dl < dmax)
+          dl += newlen;
+          dp += newlen;
+          break;
+        case '\\':          /* \... quote next char */
+          /* XXX TODO: implement \n,\t,\0[x].. etc. */
+          if (--exprlen < 0)
           {
-            *dp++ = *expr++;        /* copy the char */
-            ++dl;
+            done = 1;
           }
-        }
-        break;
+          else
+          {
+            if (dl < dmax)
+            {
+              *dp++ = *expr++;        /* copy the quoted char */
+              ++dl;
+            }
+          }
+          break;
+        default:                    /* just copy the character */
+          if (--exprlen < 0)
+          {
+            done = 1;
+          }
+          else
+          {
+            if (dl < dmax)
+            {
+              *dp++ = *expr++;        /* copy the char */
+              ++dl;
+            }
+          }
+          break;
       }   /* end switch (*expr) */
     } /* end for loop */
     *dp = '\0';                     /* null terminate the string */
     switch(dest->type)
     {
-    case INT:
-      if (dest->size >= (int)sizeof(int))
-      {
-        *((int *)dest->val) = atoi(tbuf);
-        dest->len = sizeof(int);
-      }
-      break;
-    case FLOAT:
-      if (dest->size >= (int)sizeof(double))
-      {
-        *((double *)dest->val) = atof(tbuf);
-        dest->len = sizeof(double);
-      }
-      break;
-    case STRING:            /* already filled val in */
-      dest->len = dl;     /* just update len */
-      break;
-    default:
-      break;
+      case INT:
+        if (dest->size >= (int)sizeof(int))
+        {
+          *((int *)dest->val) = atoi(tbuf);
+          dest->len = sizeof(int);
+        }
+        break;
+      case FLOAT:
+        if (dest->size >= (int)sizeof(double))
+        {
+          *((double *)dest->val) = atof(tbuf);
+          dest->len = sizeof(double);
+        }
+        break;
+      case STRING:            /* already filled val in */
+        dest->len = dl;     /* just update len */
+        break;
+      default:
+        break;
     }
   }
 }
@@ -734,19 +744,19 @@ int awk_exec_action(awk_symtab *this, const awk_action *code)
   {
     switch (p->opcode)
     {
-    case NEXT:
-      done = 1;
-      break;
-    case SKIP:
-      done = 2;
-      break;
-    case ASSIGN:
-      awk_eval_expr(this,p->dest,p->expr,p->exprlen);
-      break;
-    case NOOP:
-      break;
-    default:
-      break;
+      case NEXT:
+        done = 1;
+        break;
+      case SKIP:
+        done = 2;
+        break;
+      case ASSIGN:
+        awk_eval_expr(this,p->dest,p->expr,p->exprlen);
+        break;
+      case NOOP:
+        break;
+      default:
+        break;
     }
   }
   return done;
@@ -788,15 +798,25 @@ void awk_free_rule(awk_rule *r)
     if (r->flags&AR_MALLOC)
     {
       if (r->act)
+      {
         free((char *)r->act);
+      }
       if (r->pattern)
+      {
         free((char *)r->pattern);
+      }
       if (r->tables)
+      {
         pcre_free((void *)r->tables);
+      }
       if (r->re)
+      {
         pcre_free(r->re);
+      }
       if (r->pe)
+      {
         pcre_free(r->pe);
+      }
     }
     if (r->code)
     {
@@ -881,9 +901,10 @@ void awk_add_rule(awk_program *this, awk_rule *r)
  */
 awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
                                     int nrules)
-{ /* size of array */
+{
+  /* size of array */
   awk_program *n = awk_new_program();
-  awk_rule *r; 
+  awk_rule *r;
 
   if (!n)
   {
@@ -901,9 +922,9 @@ awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
 
 
 
-static void garbage(const char *file, 
-                    int line, 
-                    const char *buf, 
+static void garbage(const char *file,
+                    int line,
+                    const char *buf,
                     const char *cp)
 {
   fprintf(stderr,"%s:%d: parse error:\n",file,line);
@@ -937,9 +958,10 @@ static void garbage(const char *file,
  * Note that action can continue onto subsequent lines.
  */
 awk_program *awk_load_program_file(const char *file)
-{ /* rules filename */
+{
+  /* rules filename */
   awk_program *n = awk_new_program();
-  awk_rule *r; 
+  awk_rule *r;
   FILE *f = fopen(file,"r");
   char in[1024];
   int line = 0;
@@ -974,72 +996,73 @@ awk_program *awk_load_program_file(const char *file)
     }
     switch(*cp)
     {
-    case '\0':              /* empty line */
-      continue;
-    case '#':               /* comment line */
-      continue;
-    case '/':               /* begin regexp */
-      r = awk_new_rule();
-      r->ruletype = REGEXP;
-      p = ++cp;;              /* now points at pattern */
-    more:
-      while (*cp && *cp != '/')
-      {
-        ++cp; /* find end of pattern */
-      }
-      if (cp > in && cp[-1] == '\\')
-      { /* '/' quoted */
-        ++cp;
-        goto more;      /* so keep going */
-      }
-      if (*cp != '\0')    /* zap end of pattern */
-      {
-        *cp++ = '\0';
-      }
-      r->pattern = strdup(p);
+      case '\0':              /* empty line */
+        continue;
+      case '#':               /* comment line */
+        continue;
+      case '/':               /* begin regexp */
+        r = awk_new_rule();
+        r->ruletype = REGEXP;
+        p = ++cp;;              /* now points at pattern */
+more:
+        while (*cp && *cp != '/')
+        {
+          ++cp; /* find end of pattern */
+        }
+        if (cp > in && cp[-1] == '\\')
+        {
+          /* '/' quoted */
+          ++cp;
+          goto more;      /* so keep going */
+        }
+        if (*cp != '\0')    /* zap end of pattern */
+        {
+          *cp++ = '\0';
+        }
+        r->pattern = strdup(p);
 
-      break;
-    case 'B':               /* BEGIN? */
-      if (strncmp(cp,"BEGIN_RECORD",12) == 0)
-      {
-        r = awk_new_rule();
-        r->ruletype = BEGIN_REC;
-        cp += 12;        /* strlen("BEGIN_RECORD") */
-      }
-      else if (strncmp(cp,"BEGIN",5) == 0)
-      {
-        r = awk_new_rule();
-        r->ruletype = BEGIN;
-        cp += 5;        /* strlen("BEGIN") */
-      }
-      else
-      {
+        break;
+      case 'B':               /* BEGIN? */
+        if (strncmp(cp,"BEGIN_RECORD",12) == 0)
+        {
+          r = awk_new_rule();
+          r->ruletype = BEGIN_REC;
+          cp += 12;        /* strlen("BEGIN_RECORD") */
+        }
+        else if (strncmp(cp,"BEGIN",5) == 0)
+        {
+          r = awk_new_rule();
+          r->ruletype = BEGIN;
+          cp += 5;        /* strlen("BEGIN") */
+        }
+        else
+        {
+          garbage(file,line,in,cp);
+          continue;
+        }
+        break;
+      case 'E':               /* END? */
+        if (strncmp(cp,"END_RECORD",10) == 0)
+        {
+          r = awk_new_rule();
+          r->ruletype = END_REC;
+          cp += 10;        /* strlen("END_RECORD") */
+        }
+        else if (strncmp(cp,"END",3) == 0)
+        {
+          r = awk_new_rule();
+          r->ruletype = END;
+          cp += 3;        /* strlen("END") */
+        }
+        else
+        {
+          garbage(file,line,in,cp);
+          continue;
+        }
+        break;
+      default:
         garbage(file,line,in,cp);
         continue;
-      }
-      break;
-    case 'E':               /* END? */
-      if (strncmp(cp,"END_RECORD",10) == 0)
-      {
-        r = awk_new_rule();
-        r->ruletype = END_REC;
-        cp += 10;        /* strlen("END_RECORD") */
-      }
-      else if (strncmp(cp,"END",3) == 0)
-      {
-        r = awk_new_rule();
-        r->ruletype = END;
-        cp += 3;        /* strlen("END") */
-      }
-      else
-      {
-        garbage(file,line,in,cp);
-        continue;
-      }
-      break;
-    default:
-      garbage(file,line,in,cp);
-      continue;
     }
     while (isspace((int)*cp))
     {
@@ -1048,7 +1071,7 @@ awk_program *awk_load_program_file(const char *file)
     if (*cp == '{')
     {
       p = ++cp;
-    loop: 
+loop:
       while (*cp && *cp != '}' && *cp != '#')
       {
         ++cp;
@@ -1117,7 +1140,9 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
   int erroffset;
 
   if (!rs)
+  {
     return -1;
+  }
 
   rs->symtbl = symtab;
   for (r = rs->head; r; r = r->next_rule)
@@ -1140,7 +1165,7 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
       if (!r->re)
       {
         int i;
-                
+
         fprintf(stderr,"parse error: %s\n",r->pattern);
         fprintf(stderr,"             ");
         for (i = 0; i < erroffset; i++)
@@ -1183,7 +1208,7 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
 
 
 
-/* 
+/*
  * awk_uncompile_program: Frees the compiled program (patterns and stmts)
  * but keeps the program text loaded so it can be recompiled (e.g. with a
  * new symtbl).
@@ -1267,7 +1292,7 @@ int awk_exec_program(awk_program *this, char *buf, int len)
       {
         char symname[10];
         awk_symbol *s;
-                
+
         symname[0] = i + '0';
         symname[1] = '\0';
         s = awk_find_sym(this->symtbl,symname,1);

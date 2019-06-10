@@ -28,16 +28,16 @@
 #include "config.h"
 
 #ifdef HAVE_STDARG_H
-#include <stdarg.h>
+  #include <stdarg.h>
 #endif  // HAVE_STDARG_H
 
 /* Use the system libraries version of vsnprintf() if available. Otherwise
  * use our own.
  */
 #ifndef HAVE_VSNPRINTF
-int xastir_vsnprintf(char *str, size_t count, const char *fmt, va_list ap);
+  int xastir_vsnprintf(char *str, size_t count, const char *fmt, va_list ap);
 #else   // HAVE_VSNPRINTF
-#  define xastir_vsnprintf vsnprintf
+  #define xastir_vsnprintf vsnprintf
 #endif  // HAVE_VSNPRINTF
 
 /* Use the system libraries version of snprintf() if available. Otherwise

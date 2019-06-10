@@ -64,23 +64,24 @@ type_applicant - Indicates type of application.  Codes are:
 
 #define FCC_DATA_LEN 200
 
-typedef struct{
-    char id_callsign[11];
-    char id_file_num[11];
-    char type_purpose[9];
-    char type_applicant;
-    char name_licensee[41];
-    char text_street[36];
-    char text_pobox[21];
-    char city[30];
-    char state[3];
-    char zipcode[10];
-    char filler;
-    char date_issue[7];
-    char date_expire[7];
-    char date_last_change[7];
-    char id_examiner[4];
-    char renewal_notice;
+typedef struct
+{
+  char id_callsign[11];
+  char id_file_num[11];
+  char type_purpose[9];
+  char type_applicant;
+  char name_licensee[41];
+  char text_street[36];
+  char text_pobox[21];
+  char city[30];
+  char state[3];
+  char zipcode[10];
+  char filler;
+  char date_issue[7];
+  char date_expire[7];
+  char date_last_change[7];
+  char id_examiner[4];
+  char renewal_notice;
 } FccAppl;
 
 extern int check_fcc_data(void);

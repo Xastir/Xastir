@@ -21,12 +21,12 @@
  * Look at the README for more information on the program.
  */
 /****************************************************************************
- * MODULE:       R-Tree library 
- *              
+ * MODULE:       R-Tree library
+ *
  * AUTHOR(S):    Antonin Guttman - original code
  *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
- *               
+ *
  * PURPOSE:      Multidimensional index
  *
  */
@@ -58,7 +58,9 @@ void Xastir_RTreeInitNode(struct Node *N)
   n->count = 0;
   n->level = -1;
   for (i = 0; i < MAXCARD; i++)
+  {
     Xastir_RTreeInitBranch(&(n->branch[i]));
+  }
 }
 
 
@@ -72,9 +74,9 @@ struct Node * Xastir_RTreeNewNode(void)
   //n = new Node;
   n = (struct Node*)malloc(sizeof(struct Node));
   assert(n);
-        //        nnodes_alloced++;
-        //        bytes_malloced+= sizeof(struct Node);
-        //        fprintf(stderr,"   Currently %d nodes (%ld bytes) in all rtrees\n",nnodes_alloced, bytes_malloced);
+  //        nnodes_alloced++;
+  //        bytes_malloced+= sizeof(struct Node);
+  //        fprintf(stderr,"   Currently %d nodes (%ld bytes) in all rtrees\n",nnodes_alloced, bytes_malloced);
   Xastir_RTreeInitNode(n);
   return n;
 }
@@ -84,8 +86,8 @@ void Xastir_RTreeFreeNode(struct Node *p)
 {
   assert(p);
   //delete p;
-        //        nnodes_alloced--;
-        //        bytes_malloced-= sizeof(struct Node);
+  //        nnodes_alloced--;
+  //        bytes_malloced-= sizeof(struct Node);
   free(p);
 }
 
@@ -102,7 +104,9 @@ extern void Xastir_RTreeTabIn(int depth)
 {
   int i;
   for(i=0; i<depth; i++)
+  {
     putchar('\t');
+  }
 }
 
 
@@ -116,22 +120,30 @@ void Xastir_RTreePrintNode(struct Node *n, int depth)
   Xastir_RTreeTabIn(depth);
   printf("node");
   if (n->level == 0)
+  {
     printf(" LEAF");
+  }
   else if (n->level > 0)
+  {
     printf(" NONLEAF");
+  }
   else
+  {
     printf(" TYPE=?");
-        // Original superliminal.com implementation had no cast before 
-        // n, gcc gripes about "int format, pointer arg"
-        printf("  level=%d  count=%d  address=%lx\n", n->level, n->count, (unsigned long) n);
+  }
+  // Original superliminal.com implementation had no cast before
+  // n, gcc gripes about "int format, pointer arg"
+  printf("  level=%d  count=%d  address=%lx\n", n->level, n->count, (unsigned long) n);
 
   for (i=0; i<n->count; i++)
   {
-    if(n->level == 0) {
-                    //  Xastir_RTreeTabIn(depth);
-                    //  printf("\t%d: data = %d\n", i, n->branch[i].child);
+    if(n->level == 0)
+    {
+      //  Xastir_RTreeTabIn(depth);
+      //  printf("\t%d: data = %d\n", i, n->branch[i].child);
     }
-    else {
+    else
+    {
       Xastir_RTreeTabIn(depth);
       printf("branch %d\n", i);
       Xastir_RTreePrintBranch(&n->branch[i], depth+1);
@@ -161,7 +173,9 @@ struct Rect Xastir_RTreeNodeCover(struct Node *N)
         first_time = 0;
       }
       else
+      {
         r = Xastir_RTreeCombineRect(&r, &(n->branch[i].rect));
+      }
     }
   return r;
 }
@@ -180,10 +194,10 @@ int Xastir_RTreePickBranch(struct Rect *R, struct Node *N)
   register struct Node *n = N;
   register struct Rect *rr;
   register int i, first_time=1;
-        // Although it is impossible for bestArea and best to be used
-        // unininitialized the way the code is structured, gcc complains 
-        // about possible uninitialized usage.  Let's keep it happy.
-        // Original superliminal.com had no initializers here.
+  // Although it is impossible for bestArea and best to be used
+  // unininitialized the way the code is structured, gcc complains
+  // about possible uninitialized usage.  Let's keep it happy.
+  // Original superliminal.com had no initializers here.
   RectReal increase, bestIncr=(RectReal)-1, area, bestArea=0.0;
   int best=0;
   struct Rect tmp_rect;
@@ -266,19 +280,22 @@ void Xastir_RTreeDisconnectBranch(struct Node *n, int i)
   n->count--;
 }
 
-// Destroy (free) node recursively. 
+// Destroy (free) node recursively.
 void Xastir_RTreeDestroyNode (struct Node *n)
 {
-    int i;
-    //    fprintf(stderr,"  Freeing node %lx\n",(unsigned long int) n);
-    if (n->level > 0) {  //it is not leaf -> destroy childs 
-        for ( i = 0; i < Xastir_NODECARD; i++) {
-            if ( n->branch[i].child ) {
-                Xastir_RTreeDestroyNode ( n->branch[i].child );
-            }
-        }
+  int i;
+  //    fprintf(stderr,"  Freeing node %lx\n",(unsigned long int) n);
+  if (n->level > 0)    //it is not leaf -> destroy childs
+  {
+    for ( i = 0; i < Xastir_NODECARD; i++)
+    {
+      if ( n->branch[i].child )
+      {
+        Xastir_RTreeDestroyNode ( n->branch[i].child );
+      }
     }
-    
-    //
-    Xastir_RTreeFreeNode( n );
+  }
+
+  //
+  Xastir_RTreeFreeNode( n );
 }
