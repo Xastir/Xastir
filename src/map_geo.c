@@ -124,20 +124,7 @@
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #ifdef HAVE_GRAPHICSMAGICK
-    /*#include <GraphicsMagick/magick/api.h>*/
-    /* Define MAGICK_IMPLEMENTATION to access private interfaces
-    * such as DestroyImagePixels(). This may not be a good thing,
-    * but DestroyImagePixels() has been in this code for a long
-    * time. Defining MAGIC_IMPLEMENTATION eliminates the warning that is
-    * now (9/28/2010) being seen on some distros (Ubuntu 10.04 and
-    * OpenSuSE-11.3)
-    */
-    #define MAGICK_IMPLEMENTATION
-    #include <magick/api.h>
-  #else   // HAVE_GRAPHICSMAGICK
-    #include <magick/api.h>
-  #endif  // HAVE_GRAPHICSMAGICK
+  #include <magick/api.h>
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
@@ -2336,7 +2323,6 @@ void draw_geo_image_map (Widget w,
         fprintf(stderr, "SyncImagePixels Failed....\n");
       }
     }
-    DestroyImagePixels(image);
   }
 
   // If were are drawing to a low bpp display (typically < 8bpp)
