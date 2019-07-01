@@ -96,6 +96,7 @@ matrix:
 
     - os: osx
       name: "OSX semi-light w/GraphicsMagick"
+      osx_image: xcode10.2
       script:
         - ./bootstrap.sh
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
