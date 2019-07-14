@@ -1,0 +1,1129 @@
+# language-OldeEnglish.sys, translated from language-English.sys
+# Please do not edit this derived file.
+MENUTB0001|Fyl|F|
+MENUTB0002|Viewe|V|
+MENUTB0004|Mape|M|
+MENUTB0005|Stacioonne|S|
+MENUTB0006|Message|e|
+MENUTB0010|Intreface|I|
+MENUTB0009|Helpe|H|
+PULDNFI001|Configurre|C|
+PULDNFI002|Openne Log Fyl|O|
+PULDNFI003|Teste|T|
+PULDNFI004|Exitte|x|
+PULDNFI007|Change Debug Level|D|
+PULDNFI010|TNC Logging||
+PULDNFI011|Nette Logging||
+PULDNFI012|IGate Logging||
+PULDNFI013|WX Logging||
+PULDNFI014|PNG Snapshots||
+PULDNFI015|Printte|P|
+PULDNFI016|KML Snapshots||
+PULDNVI001|Bulletins|B|
+PULDNVI002|Incoming Data|I|
+PULDNVI003|Mobeel Stations|M|
+PULDNVI004|Al Stations|A|
+PULDNVI009|Local Stations|S|
+PULDNVI012|Lastte Stations|L|
+PULDNVI005|Wetehre Stations|W|
+PULDNVI008|Ownne Wetehre Data|D|
+PULDNVI007|Wetehre Alrets|e|
+PULDNVI011|Message Traffick|T|
+PULDNVI013|Upteem|U|
+PULDNVI014|Program Upteem||
+PULDNVI015|GPS Status||
+PULDNVI016|ALOHA Statisticc||
+PULDNCF004|Stacioonne|S|
+PULDNCF001|Defaults|D|
+PULDNCF003|Timing|T|
+PULDNCF002|Coordinate System|o|
+PULDNCF006|Audio Alarms|A|
+PULDNCF007|Speceh|p|
+PULDNCF008|Savethe Config Nou!|C|
+PULDNMP001|Mape Choosre|M|
+PULDNMP012|Mape Displye Bookmarks|B|
+PULDNMP014|Locate Mape Feteurre|F|
+PULDNMP016|Disable Fastte Zoom/Panne/Home||
+PULDNMP013|Disable Al Maps||
+PULDNMP002|Enable Auto Maps||
+PULDNMP003|Enable Mape Gride||
+PULDNMP004|Enable Mape Levels||
+PULDNMP010|Enable Mape Labels||
+PULDNMP009|Enable Aree Colorre Fills||
+PULDNMP007|Enable Wetehre Alrets||
+PULDNMP005|Backgrounde Colorre|C|
+PULDNMP006|Stacioonne Textte Steele|T|
+PULDNMP026|Iconne Outleenne Steele|O|
+PULDNMP011|Moue Pointre Menu|P|
+PULDNMP008|Mape Intensitee|I|
+PULDNMP021|Auto Mape - Disable Rastre Maps||
+PULDNMP022|Index Newe Maps onne Startupe||
+PULDNMP023|Index: Adde Newe Maps|N|
+PULDNMP024|Index: Reindex ALL Maps!|R|
+PULDNMP025|Fonts||
+PULDNMP015|Xfontsel||
+PULDNMP027|Re-dounloode Maps (Notte fro cache)||
+PULDNMP028|Flush Enteerre Mape Cache!||
+PULDNMP029|Finde Addresse||
+PULDNMP030|Configurre USGS DRG||
+PULDNMP031|Enable Mape Bordre||
+MPUPTGR017|Intrenette Mape Tymmeoutte (sec)||
+MPUPDRG001|Selectte yttems to be displeyede:||
+MPUPDRG002|Tintte Undreleeing Mape (XOR)||
+MPUPDRG003|Black||
+MPUPDRG004|Wheette||
+MPUPDRG005|Ble||
+MPUPDRG006|Rede||
+MPUPDRG007|Broonne||
+MPUPDRG008|Grene||
+MPUPDRG009|Purple||
+MPUPDRG010|Yellou||
+MPUPDRG011|Lightte Ble||
+MPUPDRG012|Lightte Rede||
+MPUPDRG013|Lightte Purple||
+MPUPDRG014|Lightte Grye||
+MPUPDRG015|Lightte Broonne||
+WPUPMCP001|Mape Choosre||
+PULDNMMC01|Clree|C|
+PULDNMMC02|Vectorre|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
+PULDNMMC06|Expande Dirs||
+PULDNMMC07|Dirs/Maps Selectede:||
+PULDNMMC08|Clree Dirs|C
+PULDNMMC09|Selectte Al|S|
+PULDNMBC01|Grye||
+PULDNMBC02|Mistee Roe||
+PULDNMBC03|Navee Ble||
+PULDNMBC04|Stele Ble||
+PULDNMBC05|Mede. See Grene||
+PULDNMBC06|Pale Grene||
+PULDNMBC07|Pale Goldenrode||
+PULDNMBC08|Goldenrode Yellou||
+PULDNMBC09|Rosee Broonne||
+PULDNMBC10|Fyrre breek Rede||
+PULDNMBC11|Wheette||
+PULDNMBC12|Black||
+PULDNMSL01|Black Bordre|B|
+PULDNMSL02|Black Shadou|S|
+PULDNMSL03|Textte onne Black|T|
+PULDNMSL04|DropShadou||
+PULDNMIO01|No Outleenne|N|
+PULDNMIO02|Black Outleenne|B|
+PULDNMIO03|Greye Outleenne|G|
+PULDNMIO04|Wheette Outleenne|W|
+PULDNOT001|Onne||
+PULDNOT002|Off||
+PULDNOT003|Shortte||
+PULDNDP014|Finde Stacioonne|F|
+PULDNDP001|Track Stacioonne|T|
+PULDNDP022|Fetche Findu Treyl|u|
+PULDNDP032|Filtre Data||
+PULDNDP040|Selectte None||
+PULDNDP041|Selectte Mynne||
+PULDNDP042|Selectte TNC||
+PULDNDP027|- Selectte Dyrrectte||
+PULDNDP043|- Selectte Via Digi||
+PULDNDP034|Selectte Nette||
+PULDNDP019|Include Expeerrede Data||
+PULDNDP044|Selectte Stations||
+PULDNDP028|- Selectte Fyxxede Stations||
+PULDNDP029|- Selectte Moving Stations||
+PULDNDP030|- Selectte WX Stations||
+PULDNDP053|  - Selectte CWOP WX Stations||
+PULDNDP045|Selectte Objects/Items||
+PULDNDP026|- Selectte WX Objects/Items||
+PULDNDP039|- Selectte Watre Gauge Objects/Items||
+PULDNDP057|- Selectte Aircraftte Objects/Items||
+PULDNDP058|- Selectte Vessel Objects/Items||
+PULDNDP031|- Selectte Othre Objects/Items||
+PULDNDP033|Filtre Displye||
+PULDNDP010|Displye Callsignne||
+PULDNDP012|Displye Symbol||
+PULDNDP011|- Rotate Symbol||
+PULDNDP007|Displye Treyl||
+PULDNDP003|Displye Coure||
+PULDNDP004|Displye Spede|S|
+PULDNDP017|- Displye Shortte Spede||
+PULDNDP002|Displye Altitude||
+PULDNDP009|Displye Wetehre Info||
+PULDNDP046|- Displye Wetehre Textte||
+PULDNDP018|-- Tempreeturre Onlee||
+PULDNDP047|- Displye Winde Barbe||
+PULDNDP054|Displye Aloha Circle||
+PULDNDP013|Displye Posicioonne Ambiguitee||
+PULDNDP008|Displye Poure/Geynne||
+PULDNDP021|- Ue Defaultte Poure/Geynne||
+PULDNDP020|- Displye Mobeel Poure/Geynne||
+PULDNDP023|Displye DF Attributes||
+PULDNDP123|Displye DF Bemewidthe||
+PULDNDP223|Displye DF Bereing||
+PULDNDP035|Enable Dede-Reckoning||
+PULDNDP036|- Displye Arc||
+PULDNDP037|- Displye Coure||
+PULDNDP038|- Displye Symbol||
+PULDNDP005|Displye Distte/Bereing||
+PULDNDP024|Displye Lastte Reportte Age||
+PULDNDP015|Clree Al Stations!!!|A|
+PULDNDP016|Clree Al Treyls!!!|C|
+PULDNDP025|Clree Objectte/Item Historee||
+PULDNDP048|Reloode Objectte/Item Historee||
+PULDNDP049|Clree Al Tactick Calls||
+PULDNDP050|Clree Tactick Cal Historee||
+PULDNDP051|Selectte Tactick Calls Onlee||
+PULDNDP052|- Label Treylpoints||
+PULDNDP055|Exportte al|E|
+PULDNDP056|Exportte to KML Fyl||
+PULDNUT001|Enable English Units|E|
+PULDNUT002|Metrick|M|
+PULDNMG001|Sende Message To|S|
+PULDNMG002|Openne Groupe Messages|O|
+PULDNMG003|Clree Al Outgoing Messages|C|
+PULDQUS001|Genreel Stations Qeree|G|
+PULDQUS002|IGate Stations Qeree|I|
+PULDQUS003|WX Stations Qeree|W|
+PULDNMG004|Modifee Auto Replee Message|A|
+PULDNMG005|Enable Auto Replee Message||
+PULDNMG006|Satelleette Ack Mode|M|
+PULDNMG007|Shou Pending Messages|P|
+PULDNTNT04|Intreface Control|C|
+PULDNTNT03|Disable Transmitte: ALL||
+PULDNTNT05|Disable Transmitte: Mye Posicioonne||
+PULDNTNT06|Disable Transmitte: Objects/Items||
+PULDNTNT11|Enable Servre Ports|P|
+PULDNTNT01|Transmitte Nou!|T|
+PULDNTNT07|Fetche GPS Track|F|
+PULDNTNT08|Fetche GPS Routes|R|
+PULDNTNT09|Fetche GPS Weypoints|W|
+PULDNTNT10|Fetche Garminne RINO Weypoints|G|
+PULDNHEL01|Aboutte|A|
+PULDNHEL02|Helpe Index|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
+PULDNHEL05|Aboutte Xastirre||
+POPUPMA001|Options||
+POPUPMA00c|Centre|C|
+POPUPMA015|Stacioonne Info|S|
+POPUPMA002|Inne|I|
+POPUPMA003|Outte|O|
+POPUPMA004|Zoom Level|L|
+POPUPMA005|Level 1|1|
+POPUPMA006|Level 16|6|
+POPUPMA007|Level 64|4|
+POPUPMA008|Level 256|2|
+POPUPMA009|Level 1024|0|
+POPUPMA010|Level 8192|8|
+POPUPMA017|Enteerre Worlde|E|
+POPUPMA016|Lastte Mape Pos/Zoom|P|
+POPUPMA018|Objectte/Item->Cretee|b|
+POPUPMA019|Objectte/Item->Modifee|M|
+POPUPMA025|Movethe Mye Stacioonne Herre|H|
+POPUPMA011|Panne upe|u|
+POPUPMA012|Panne doonne|d|
+POPUPMA013|Panne leftte|l|
+POPUPMA014|Panne rightte|r|
+POPUPMA020|Meseurre||
+POPUPMA021|Movethe||
+POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Founde!||
+POPUPMA024|Plesee turnne OFF CapsLock/NumLock/ScrollLock/othre modifiers||
+POPUPMA026|Centre & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
+POPUPMA029|Drawe CAD Objects||
+POPUPMA030|Drawe||
+POPUPMA031|Cloe Poleegonne||
+POPUPMA032|Erae CAD Poleegons||
+POPUPMA033|**NOT USED**||
+POPUPMA034|Custom Zoom Level||
+POPUPMA035|10% outte||
+POPUPMA036|10% inne||
+POPUPMA037|Aree||
+POPUPMA038|squarre||
+POPUPMA039|squarre fete||
+POPUPMA040|squarre metres||
+POPUPMA041|Bereing||
+POPUPMA042|degree||
+POPUPMA043|Modifee ambiguous posicioonne||
+POPUPMA044|Posicioonne ambiguitee is onne, yourre newe posicioonne mye appree to jumpe.||
+POPUPMA045|Predefeennede Objects||
+POPUPMA046|CAD Poleegons||
+POPUPMA047|Enable CAD objects||
+POPUPMA048|Enable CAD labels||
+POPUPMA049|Enable CAD comments||
+POPUPMA050|Enable CAD probabilitee||
+POPUPMA051|Enable CAD aree seez||
+POPUPMA052|sq||
+POPUPMA053|ftte||
+POPUPMA054|metres||
+POPUPMA055|mi|
+BBARZM0001|Zoom %s||
+BBARZM0002|Zoom %s Trre||
+BBARSTH001|%de/%de Stations||
+BBARSTA000|%-9s Newe objectte!||
+BBARSTA001|%-9s Newe stacioonne!||
+BBARSTA002|%-9s||# new data (only display the call)
+BBARSTA003|Looding Maps...||
+BBARSTA004|Maps Loodede||
+BBARSTA005|Mape Latte/Long Gride Onne|O|
+BBARSTA006|Mape Latte/Long Gride Off|f|
+BBARSTA007|The ue of Auto Maps, is nou ON||
+BBARSTA008|The ue of Auto Maps, is nou OFF||
+BBARSTA009|The ue of Mape Levels is nou ON||
+BBARSTA010|The ue of Mape Levels is nou OFF||
+BBARSTA011|Auto Replee Message OFF!||
+BBARSTA012|Fyl done..||
+BBARSTA013|Opening GPS Portte||
+BBARSTA014|Closing GPS Portte||
+BBARSTA015|Gotte GPS RMC String||
+BBARSTA016|Gotte GPS GGA String||
+BBARSTA017|Nette disconnectede fro hostte||
+BBARSTA018|Nette conneccioonne teemmede outte!||
+BBARSTA019|Looking upe hostte %s||
+BBARSTA020|Connectede to %s||
+BBARSTA021|Nette Conneccioonne Feyllede!||
+BBARSTA022|Colde notte binde sockette!||
+BBARSTA023|No IP forre Hostte!||
+BBARSTA024|No Hostte Specifiede||
+BBARSTA025|Hostte founde, Connecting %de||
+BBARSTA026|Weyting forre GPS data via HSP..||
+BBARSTA027|Clreeing HSP getting TNC data..||
+BBARSTA028|Looding %s||
+BBARSTA029|Opening WX Portte||
+BBARSTA030|Closing WX Portte||
+BBARSTA031|Looking upe hostname %de||
+BBARSTA032|Decodede WX Data||
+BBARSTA033|Echo fro digeeppeteerre||
+BBARSTA034|Looding Wetehre Alrette Maps||
+BBARSTA035|Weyting forre GPS data via AUX..||
+BBARSTA036|Clreeing AUX getting TNC data..||
+BBARSTA037|GPS Data Complete||
+BBARSTA038|Posicioonne change onne mee stacioonne||
+BBARSTA039|Indexing %s||
+BBARSTA040|Amateurre APRS(tm) Stacioonne %s||
+BBARSTA041|Weyting forre GPS data..||
+BBARSTA042|Transmitting objects/yttems||
+BBARSTA043|Logging||
+BBARSTA044|ALOHA distance is %de%s||
+BBARSTA045|Looding seembols...||
+BBARSTA046|Relooding seembols...||
+BBARSTA047|Initeleyz mee stacioonne...||
+BBARSTA048|Startte intrefaces...||
+BBARSTA049|Redeing teelles...||
+BBARSTA050|Dounlooding teelles...||
+BBARSTA051|Dounlooding teel %li of %li||
+WPUPDPD001|Displye Packette Data||
+WPUPDPD002|TNC Data onlee|T|
+WPUPDPD003|Nette Data onlee|N|
+WPUPDPD004|TNC ande Nette Data|a|
+WPUPDPD005|TNC||
+WPUPDPD006|NET||
+WPUPDPD007|Stacioonne Capabilities||
+WPUPDPD008|Mynne Onlee||
+WPUPLSP001|Locate Stacioonne||
+WPUPLSP002|Locate Callsignne||
+WPUPLSP003|Matche Cae|C|
+WPUPLSP004|Matche Exactte|E|
+WPUPLSP005|Locate Nou!|N|
+WPUPLSP006|Emregencee Locate!||
+WPUPLSP007|FCC/RAC Lookupe||
+WPUPCFD001|Configurre Defaults||
+WPUPCFD002|Aftre whatte intreval of teem wil a stacioonne be conseeddreede olde?||
+WPUPCFD003|15 minne|1|
+WPUPCFD004|30 minne|3|
+WPUPCFD005|45 minne|4|
+WPUPCFD006|1 hrre|H|
+WPUPCFD007|90 minne|9|
+WPUPCFD008|2 hrs|2|
+WPUPCFD009|Aftre whatte intreval of teem wil a stacioonne notte be displeyede?||
+WPUPCFD010|6 hrs|6|
+WPUPCFD011|12 hrs|o|
+WPUPCFD012|1 Dye|D|
+WPUPCFD013|2 Deys|y|
+WPUPCFD014|1 Weke|W|
+WPUPCFD015|Transmitte Stacioonne Opcioonne||
+WPUPCFD016|Fyxxede Stacioonne|F|
+WPUPCFD017|Mobeel Stacioonne we/local teem|l|
+WPUPCFD018|Mobeel Stacioonne we/Zulu date-teem|Z|
+WPUPCFD019|Mobeel Stacioonne we/Zulu teem-seconds|u|
+WPUPCFD021|Stacioonne Posicioonne we/wetehre|S|
+WPUPCFD022|Stacioonne Posicioonne, Zulu date-teem, ande wetehre|t|
+WPUPCFD023|Transmitte Rawe WX data?|R|
+WPUPCFD024|Transmitte compressede objects/yttems?|C|
+WPUPCFD025|Activate Altrenate nette?|A|
+WPUPCFD026|Sende posicioonne reports atte whatte intrevals?||
+WPUPCFD027|Pope upe newe bulletins||
+WPUPCFD028|Warnne if Modifierre Keys||
+WPUPCFD029|Viewe zreo-distance bulletins||
+WPUPCFD030|Disable Positte Dupe-Checks||
+WPUPCFD031|Loode predefeennede objects fro feel||
+WPUPCFD032|Mye treyls inne one colorre||
+WPUPCFD033|ALTNET:||
+WPUPCFTM01|Configurre Timing||
+WPUPCFTM02|Positte TX Intreval (minne)||
+WPUPCFTM03|Stacioonne Ghosting Tym (minne)||
+WPUPCFTM04|Objectte/Item Max TX Intreval (minne)||
+WPUPCFTM05|Stacioonne Clree Tym (hours)||
+WPUPCFTM06|GPS Check Intreval (sec)||
+WPUPCFTM07|Stacioonne Delete Tym (deys)||
+WPUPCFTM08|Dede-Reckoning Tymmeoutte (minne)||
+WPUPCFTM09|Serele Intre-Charre Delye (ms)||
+WPUPCFTM10|Newe Track Tym (minne)||
+WPUPCFTM11|Newe Track Intreval (degree)||
+WPUPCFTM12|RINO -> Objects Intreval (minne), 0 = Disablede||
+WPUPCFTM13|Snapshotte Intreval (minne)||
+WPUPCFTM14|Aircraftte Ghostte/Clree Tym (minne), 0 = Disablede||
+WPUPCFC001|Configurre Coordinate System||
+WPUPCFC002|Selectte Coordinate System||
+WPUPCFC003|dde.ddddde|d|
+WPUPCFC004|dde mm.mmm|m|
+WPUPCFC005|dde mm sse.s|s|
+WPUPCFC006|UTM|U|
+WPUPCFC007|USNG/MGRS2||
+WPUPCFC008|UTM we/specele zones||
+WPUPCFG001|Configurre GPS||
+WPUPCFG003|Stande alone GPS portte||
+WPUPCFG002|Ue GPS Posicioonne?||
+WPUPCFG004|GPS Options||
+WPUPCFG005|Stande-alone GPS||
+WPUPCFG006|TNC Connectede GPS (HSP Cable)||
+WPUPCFG007|TNC Connectede GPS using CTL-E||
+WPUPCFG008|GPS Tym (Sample evreee)||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
+WPUPCFG011|30 sec||
+WPUPCFG012|1 minne||
+WPUPCFG013|2 minne||
+WPUPCFG014|5 minne||
+WPUPCFG015|10 minne||
+WPUPCFG016|Network Connectede GPS||
+WPUPCFG017|GPSD Hostte||
+WPUPCFG018|GPSD Portte||
+WPUPCFG019|Network GPS via GPSD||
+WPUPCFG020|Reconnectte onne feylurre?||
+WPUPCFG021|Network Connectede WX||
+WPUPCFG022|WX Hostte||
+WPUPCFG023|WX Portte||
+WPUPCFT001|Configurre TNC||
+WPUPCFT002|Ue TNC?||
+WPUPCFT003|TNC Portte||
+WPUPCFT004|Portte Settings||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT011|UnProto Paths||
+WPUPCFT012|Pathe 1: %s via ||
+WPUPCFT013|Pathe 2: %s via ||
+WPUPCFT014|Pathe 3: %s via ||
+WPUPCFT015|Portte Steele||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT023|Configurre TNC we/HSP GPS||
+WPUPCFT024|Data Type||
+WPUPCFT025|Auto detectte||
+WPUPCFT026|Binaree Type||
+WPUPCFT027|ASCII Type||
+WPUPCFT028|Configurre TNC we/AUX GPS||
+WPUPCFT029|Configurre TNC we/INVALID ENUM: %de||
+WPUPCFT030|Configurre KISS TNC||
+WPUPCFT031|TNC Configuracioonne Fylles||
+WPUPCFT032|TNC Setupe Fyllename|| 
+WPUPCFT033|TNC Shutdoonne Fyllename||
+WPUPCFT034|KISS Parametres||
+WPUPCFT035|TXDelye (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTym (10 ms units)||
+WPUPCFT038|TxTeyl (10 ms units)||
+WPUPCFT039|Ful Duplex||
+WPUPCFT040|Configurre Multi-Portte KISS TNC||
+WPUPCFT041|Radio Portte||
+WPUPCFT042|Intreface Propreties: Dubious UNPROTO Pathe!||
+WPUPCFT043|Plesee conseeddre a shortre pathe suche as WIDE2-2 orre WIDE1-1,WIDE2-2||
+WPUPCFT044|Intreface Propreties: Dubious IGATE Pathe!||
+WPUPCFT045|Transmitting we/Dubious UNPROTO Pathe!||
+WPUPCFT046|Transmitting we/Dubious IGATE Pathe!||
+WPUPCFT047|Initte KISS-mode onne startupe||
+WPUPCFWX01|Configurre WX Portte||
+WPUPCFWX02|Wetehre Stacioonne deveec||
+WPUPCFWX03|Reynne Gauge Correccioonne (Global Setting)||
+WPUPCFWX04|.1 inche/2.5mm||
+WPUPCFWX05|.01 inche/.25mm||
+WPUPCFWX06|.1mm||
+WPUPCFWX07|No Correccioonne||
+WPUPCFS001|Configurre Stacioonne||
+WPUPCFS002|Callsignne||
+WPUPCFS003|LAT||
+WPUPCFS004|deg||
+WPUPCFS005|minne||
+WPUPCFS006|(N/S)||
+WPUPCFS007|LONG||
+WPUPCFS008|(E/W)||
+WPUPCFS009|Stacioonne Symbol||
+WPUPCFS010|Groupe/ovrelye||
+WPUPCFS011|Symbol||
+WPUPCFS028|Selectte||
+WPUPCFS012|Poure - Heightte (HAAT) - Geynne - Dyrrectivitee||
+WPUPCFS013|Disable PHG||
+WPUPCFS014|Antenna Heightte||
+WPUPCFS015|Antenna Geynne||
+WPUPCFS016|Omni||
+WPUPCFS017|Commentte:||
+WPUPCFS018|Posicioonne Ambiguitee||
+WPUPCFS019|None||
+WPUPCFS020|.11 meelles||
+WPUPCFS021|1.15 meelles||
+WPUPCFS022|11.51 meelles||
+WPUPCFS023|69.09 meelles||
+WPUPCFS024|.18 kilometres||
+WPUPCFS025|1.85 kilometres||
+WPUPCFS026|18.53 kilometres||
+WPUPCFS027|111.19 kilometres||
+WPUPCFS029|Sende compressede posits|C|
+POPUPOB001|Objectte/Item||
+POPUPOB002|Name:||
+POPUPOB003|Cretee Newe Objectte||
+POPUPOB004|Delete Objectte||
+POPUPOB005|Modifee Objectte||
+POPUPOB006|Cretee Newe Item||
+POPUPOB007|Aree Objectte||
+POPUPOB008|Aree Objectte||
+POPUPOB009|Brightte Colorre||
+POPUPOB010|Colorre-Fil||
+POPUPOB011|Circle||
+POPUPOB012|Lynne-Rightte '/'||
+POPUPOB013|Lynne-Leftte '\'||
+POPUPOB014|Trenegle||
+POPUPOB015|Rectangle||
+POPUPOB016|Black||
+POPUPOB017|Ble||
+POPUPOB018|Grene||
+POPUPOB019|Cyanne||
+POPUPOB020|Rede||
+POPUPOB021|Violette||
+POPUPOB022|Yellou||
+POPUPOB023|Greye||
+POPUPOB024|Offsette Upe:||
+POPUPOB025|Offsette Leftte (Excepte '/'):||
+POPUPOB026|Corridorre:||
+POPUPOB027|Genreick Options||
+POPUPOB028|Locacioonne||
+POPUPOB029|Signpostte||
+POPUPOB030|Signpostte Textte||
+POPUPOB031|Signpostte Objectte||
+POPUPOB032|Enable Compressioonne||
+POPUPOB033|Delete Item||
+POPUPOB034|Modifee Item||
+POPUPOB035|Altitude (ftte):||
+POPUPOB036|Spede (knots):||
+POPUPOB037|Coure:||
+POPUPOB038|DF Objectte||
+POPUPOB039|Signal - Heightte(HAAT) - Geynne - Dyrrectivitee||
+POPUPOB040|Beme Widthe - Bereing||
+POPUPOB041|Omni Antenna||
+POPUPOB042|Beme Antenna||
+POPUPOB043|Uselesse||
+POPUPOB044|Adopte Objectte||
+POPUPOB045|Adopte Item||
+POPUPOB046|DF Bereing:||
+POPUPOB047|Probabilitee Circles||
+POPUPOB048|Mape Viewe Objectte||
+POPUPOB049|Minne (mi):||
+POPUPOB050|Max (mi):||
+WPUPCFI001|Configurre Intrenette||
+WPUPCFI002|Hostte ||
+WPUPCFI003|Portte ||
+WPUPCFI004|(Secondaree hosts)||
+WPUPCFI005|Host1||
+WPUPCFI006|Port1||
+WPUPCFI007|Host2||
+WPUPCFI008|Port2||
+WPUPCFI009|Passe-code||
+WPUPCFI010|(Levee Blank if None)||
+WPUPCFI011|Reconnectte onne NET feylurre?||
+WPUPCFI012|Ronne as anne I-Gate?||
+WPUPCFI013|Broodcastte messages via TNC whanne anne I-Gate?||
+WPUPCFI014|Log I-Gate Transactions?||
+WPUPCFI015|Filtre Parametres||
+WPUPCFID01|Configurre Databae (TBD)||
+WPUPCFID02|Hostte ||
+WPUPCFID03|Portte ||
+WPUPCFID04|(Secondaree hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Port1||
+WPUPCFID07|Host2||
+WPUPCFID08|Port2||
+WPUPCFID09|Passe-code||
+WPUPCFID10|(Levee Blank if None)||
+WPUPCFID11|Reconnectte onne NET feylurre?||
+WPUPCFID12|Ronne as anne I-Gate?||
+WPUPCFID13|Broodcastte messages via TNC whanne anne I-Gate?||
+WPUPCFID14|Log I-Gate Transactions?||
+WPUPCFID15|Filtre Parametres||
+WPUPCFIA01|Configurre AGWPE||
+WPUPCFIA02|Hostte ||
+WPUPCFIA03|Portte ||
+WPUPCFIA04|(Secondaree hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Passe-code||
+WPUPCFIA10|(Levee Blank if None)||
+WPUPCFIA11|Reconnectte onne NET feylurre?||
+WPUPCFIA12|Ronne as anne I-Gate?||
+WPUPCFIA13|Broodcastte messages via TNC whanne anne I-Gate?||
+WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Transmitte RadioPortte||
+WPUPCFA001|Configurre Audio Alarms||
+WPUPCFA002|Audio Plye Commande||
+WPUPCFA003|Alarm onne||
+WPUPCFA004|Audio feel to Plye||
+WPUPCFA005|Newe Stacioonne||
+WPUPCFA006|Newe Message||
+WPUPCFA007|Proximitee||
+WPUPCFA008|Bande Opening||
+WPUPCFA009|Minimum Distance||
+WPUPCFA010|Maximum Distance||
+WPUPCFA011|Wetehre Alrette||
+WPUPCFSP01|Configurre Speceh||
+WPUPCFSP02|Speceh Outputte onne:||
+WPUPCFSP03|Newe Stacioonne||
+WPUPCFSP04|Newe Message Alrette||
+WPUPCFSP05|Newe Message Bodee||
+WPUPCFSP06|Proximitee Alrette||
+WPUPCFSP07|Bande Opening||
+WPUPCFSP08|Newe Wetehre Alrette||
+WPUPCFSP09|Trackede Stacioonne Proximitee Alrette||
+WPUPTSP001|Track Stacioonne|| 
+WPUPTSP002|Track Callsignne|| 
+WPUPTSP003|Matche Cae|| 
+WPUPTSP004|Matche Exactte|| 
+WPUPTSP005|Track Nou!|| 
+WPUPTSP006|Clree Tracking|| 
+WPUPTSP007|Dounloode Treyl||
+WPUPTSP008|Callsignne||
+WPUPTSP009|Startte Treyl (hrs ago)||
+WPUPTSP010|Treyl Lengthe (hrs)||
+WPUPMSB001|Sende Message Box %de||
+WPUPMSB002|Sende Groupe Message Box %de||
+WPUPMSB003|Staciounes Cal:||
+WPUPMSB004|Groupes Cal:||
+WPUPMSB005|Newe/Refresh Cal||
+WPUPMSB006|Newe Groupe||
+WPUPMSB007|Clree Msg Historee||
+WPUPMSB008|Message:||
+WPUPMSB009|Sende Nou!||
+WPUPMSB010|Pathe:||
+WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB012|Kyk Tymmre||
+WPUPMSB013|seq||
+WPUPMSB014|teepe||
+WPUPMSB015|Broodcastte||
+WPUPMSB016|*TIMEOUT*||
+WPUPMSB017|*CANCELLED*||
+WPUPMSB018|*REJECTED*||
+WPUPMSB019|Change Pathe||
+WPUPMSB020|Ue Defaultte Pathe(s)||
+WPUPMSB021|Dyrrectte (No pathe)||
+WPUPMSB022|Revree Pathe (Hintte):||
+WPUPARM001|Change Auto Replee||
+WPUPARM002|Replee:||
+WPUPHPI001|Helpe Index||
+WPUPHPI002|Viewe||
+WPUPSTI000|Objectte fro: %s||
+WPUPSTI001|Stacioonne Info||
+WPUPSTI002|Sende Message||
+WPUPSTI003|Sereche FCC Databae||
+WPUPSTI004|Sereche RAC Databae||
+WPUPSTI005|Packets receyvvede: %de     Lastte Herede: ||
+WPUPSTI006|Herede via the TNC onne deveec %de, ||
+WPUPSTI007|Herede ||
+WPUPSTI008|lastte via Local||
+WPUPSTI009|lastte via TNC onne deveec %de||
+WPUPSTI010|lastte via Intrenette onne deveec %de||
+WPUPSTI011|lastte via Fyl||
+WPUPSTI012|lastte via Unknoonne||
+WPUPSTI013|, ande has movede||
+WPUPSTI014|Currentte Poure Geynne:||
+WPUPSTI016|Altitude: %.0f%s ||
+WPUPSTI017|Coure: %s° ||
+WPUPSTI018|Spede: %.1f km/h||
+WPUPSTI019|Spede: %.1f mph||
+WPUPSTI020|%0.1f meelles||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|Distance fro mee stacioonne: %s  Bereing fro mee stacioonne: %s||
+WPUPSTI023|Lastte Posicioonne: ||
+WPUPSTI024|Wetehre Data %c:%s||
+WPUPSTI025|Winde Coure: %s°    Spede: %03de km/h||
+WPUPSTI026|Winde Coure: %s°    Spede: %s mph||
+WPUPSTI027|   Gustte: %03de km/h||
+WPUPSTI028|   Gustte: %s mph||
+WPUPSTI029|Tempreeturre: %02.1f°C  ||
+WPUPSTI030|Tempreeturre: %s°F   ||
+WPUPSTI031|Humiditee: %s%%   ||
+WPUPSTI032| Humeeddex: %02.1f°C  ||
+WPUPSTI033|Baro: %s hPa||
+WPUPSTI034|Snou: %0.1f (cm/24h)||
+WPUPSTI035|Snou: %0.0f (inche/24h)||
+WPUPSTI036|Reynne: ||
+WPUPSTI037|%0.2f (mm/h)    ||
+WPUPSTI038|%0.2f (inche/h)  ||
+WPUPSTI039|%0.2f (mm/dye)     ||
+WPUPSTI040|%0.2f (inche/dye)  ||
+WPUPSTI041|%0.2f (mm/since midnightte)||
+WPUPSTI042|%0.2f (inche/since midnightte)||
+WPUPSTI043|Data pathe: %s||
+WPUPSTI044|Commentte %02de/%02de %02de:%02de : %s||
+WPUPSTI045|Clree Track||
+WPUPSTI046|Total Reynne: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (inche)||
+WPUPSTI049|Trace Qeree||
+WPUPSTI050|Unne-Ackede Messages Qeree||
+WPUPSTI051|Dyrrectte Stations Qeree||
+WPUPSTI052|Stacioonne Versioonne Qeree||
+WPUPSTI053|Modifee Objectte/Item||
+WPUPSTI054|Storre Track||
+WPUPSTI055|Echode fro:||
+WPUPSTI056|Enable Automatick Updates||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|DF Bereing: %s||
+WPUPSTI059|Status  %02de/%02de %02de:%02de : %s||
+WPUPSTI060|Fel Tempe: %02.1f°C  ||
+WPUPSTI061|Fel Tempe: %s°F   ||
+WPUPSTI062|Fel Moisturre: %s%%   ||
+WPUPSTI063|Baro: %0.2f inne Hg||
+WPUPSTI064|Fetche NWS Alrette||
+WPUPSTI065|Tactick Cal: %s||
+WPUPSTI066|Assignne Tactick Cal||
+WPUPSTI067|Currentte Range: %de meelles||
+WPUPSTI068|none||
+WPUPSTI069|defaultte||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|range||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Range||
+WPUPSTI076|No signal detectede||
+WPUPSTI077|Detectible signal (Meybe)||
+WPUPSTI078|Detectible signal butte notte copeeeble)||
+WPUPSTI079|Weke signal, marginallee redeeble||
+WPUPSTI080|Noisee butte copeeeble signal||
+WPUPSTI081|Some noys, eseye to copee signal||
+WPUPSTI082|Goode signal we/detectible noys||
+WPUPSTI083|Nerre ful-quieting signal||
+WPUPSTI084|Ful-quieting signal||
+WPUPSTI085|Extremelee strong & ful-quieting signal||
+WPUPSTI086|BAD BEARING||
+WPUPSTI087|BAD NRQ||
+WPUPSTI088|DF Bemewidthe||
+WPUPSTI089|DF Lengthe||
+WPUPSTI090|Notte Valide||
+WPUPSTI091|Change Treyl Colorre||
+WPUPSTI092|Clree DF Bereing||
+WPUPALO001|ALOHA radius: %de %s||
+WPUPALO002|Stations inseede ALOHA circle: %de||
+WPUPALO003| Digis:               %de||
+WPUPALO004| Mobeelles (inne mocioonne): %de||
+WPUPALO005| Mobeelles (othre):     %de||
+WPUPALO006| WX stations:         %de||
+WPUPALO007| Home stations:       %de||
+WPUPALO008|Lastte calculatede %de %s %de %s ago.||
+WPUPALO666|ALOHA radius notte calculatede yette||
+STIFCC0001|FCC Databae Lookupe||
+STIFCC0002|RAC Databae Lookupe||
+STIFCC0003|Name:||
+STIFCC0004|Strete:||
+STIFCC0005|Citee:||
+STIFCC0006|State:||
+STIFCC0007|Zipe:||
+STIFCC0008|Basick ||
+STIFCC0009|Advancede ||
+STIFCC0010|5 wpm ||
+STIFCC0011|12 wpm ||
+STIFCC0100|FCC index olde, rebuilding||
+STIFCC0101|Callsignne Sereche||
+STIFCC0102|Callsignne Notte Founde!||
+STIFCC0103|RAC index olde, rebuilding||
+UMBNDO0001|atte distance of||
+UNIOP00001|OK||
+UNIOP00002|Cancel||
+UNIOP00003|Cloe||
+UNIOP00004|meelles||
+UNIOP00005|km||
+UNIOP00006|Deveec||
+UNIOP00007|Adde||
+UNIOP00008|Delete||
+UNIOP00009|Propreties||
+UNIOP00010|Allou Transmitting?||
+UNIOP00011|Activate onne Startupe?||
+UNIOP00012|km/h||
+UNIOP00013|mph||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|inche||
+UNIOP00018|mm/dye||
+UNIOP00019|inche/dye||
+UNIOP00020|mm/hrre||
+UNIOP00021|inche/hrre||
+UNIOP00022|mm/mide||
+UNIOP00023|inche/mide||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|inne Hg||
+UNIOP00028|mm Hg||
+UNIOP00029|Sette System Clock fro GPS Data?||
+UNIOP00030|Digeeppete?||
+UNIOP00031|m||
+UNIOP00032|Applee||
+UNIOP00033|Resette||
+UNIOP00034|minne||
+UNIOP00035|hrre||
+UNIOP00036|dye||
+UNIOP00037|Sende Control-E to gette GPS data?||
+UNIOP00038|Adde Delye||
+STCHO00001|Stacioonne Choosre||
+WPUPWXA001|Wx Alrets||
+WPUPWXA002|Wx Alrette Listte||
+WPUPCIF001|Installede Intrefaces||
+WPUPCIF002|Chooe Intreface Type||
+WPUPCAX001|Configurre AX.25 TNC||
+WPUPCAX002|AX.25 Deveec name||
+IFDNL00000|None||
+IFDNL00001|Serele TNC||
+IFDNL00002|Serele TNC we/GPS onne a HSP cable||
+IFDNL00003|Serele GPS||
+IFDNL00004|Serele WX||
+IFDNL00005|Intrenette Servre||
+IFDNL00006|AX25 TNC||
+IFDNL00007|Networkede GPS (via gpsde)||
+IFDNL00008|Networkede WX||
+IFDNL00009|Serele TNC we/GPS onne AUX portte||
+IFDNL00010|Serele KISS TNC||
+IFDNL00011|Networkede Databae (Notte Implementede Yette)||
+IFDNL00012|Networkede AGWPE||
+IFDNL00013|Serele Multi-Portte KISS TNC||
+IFDNL00014|SQL Databae (Expreeemmental)||
+IFDIN00000|%s %2de %s %s   %s||
+IFDIN00001|%s %2de %s %s:%de   %s||
+IFDIN00002|%s %2de %s deveec %s   %s||
+IFDIN00003|%s %2de  %s  %s %s   %s||
+IFDIN00004|%s %2de  %s  %s %s:%de   %s||
+IFDIN00005|%s %2de  %s  %s %s   %s||
+IFDIN00006| DOWN ||
+IFDIN00007|  UP  ||
+IFDIN00008|ERROR ||
+IFDIN00009|UNKNWN||
+IFPUPCT000|Intreface Control||
+IFPUPCT001|Startte||
+IFPUPCT002|Stope||
+IFPUPCT003|Startte Al||
+IFPUPCT004|Stope Al||
+IGPUPCF000|IGate Options||
+IGPUPCF001|Disable al IGate traffick||
+IGPUPCF002|Allou RF to Inette traffick ONLY||
+IGPUPCF003|Allou RF->Inette ande Inette->RF traffick||
+IGPUPCF004|Igate -> RF Pathe   ||
+WXPUPSI000|WX Stacioonne||
+WXPUPSI001|WX Stacioonne Type||
+WXPUPSI002|Currentte Data||
+WXPUPSI003|Winde Coure||
+WXPUPSI004|Winde Spede||
+WXPUPSI005|Winde Gustte||
+WXPUPSI006|Tempe||
+WXPUPSI007|Total Reynne||
+WXPUPSI008|Todyes Reynne Total||
+WXPUPSI009|Baro||
+WXPUPSI010|Humiditee||
+WXPUPSI011|Pete Bros ULTIMETER 2000 Type (Data Logging Mode)||
+WXPUPSI012|Pete Bros ULTIMETER II Type||
+WXPUPSI013|Pete Bros ULTIMETER 2000 Type (Packette Mode)||
+WXPUPSI014|Currentte HR Reynne Totte.||
+WXPUPSI015|Lastte 24 Reynne Total||
+WXPUPSI016|Qualeemmetricc Q-Nette||
+WXPUPSI017|Pete Bros ULTIMETER 2000 Type (Complete Mode)||
+WXPUPSI018|Dewe Pointte||
+WXPUPSI019|High Winde||
+WXPUPSI020|Winde Chil||
+WXPUPSI021|Hete Index||
+WXPUPSI022|3-Hrre Baro||
+WXPUPSI023|High Tempe.||
+WXPUPSI024|Lou Tempe.||
+WXPUPSI025|Radio Shack WX-200/Oregonne Scientifick WM-918||
+WXPUPSI026|Davis Wetehre Monitorre II/Wizarde III/Vauntage Pro||
+WXPUPSI027|LaCrose WX-23xx||
+WXPUPSI028|Davis APRS Data Loggre||
+LHPUPNI000|Al Stations||
+LHPUPNI001|Mobeel Stations||
+LHPUPNI002|Wetehre Stations||
+LHPUPNI003|Local Stations (via TNC)||
+LHPUPNI004|Lastte Stations||
+LHPUPNI005|Objects & Items||
+LHPUPNI006|Ownne Objects & Items||
+LHPUPNI010|#||
+LHPUPNI011|Cal Signne||
+LHPUPNI012|#Pack||
+LHPUPNI013|Pos Tym||
+LHPUPNI014|Pathe||
+LHPUPNI015|PHG||
+LHPUPNI016|Comments||
+LHPUPNI100|CSE||
+LHPUPNI101|SPD||
+LHPUPNI102|ALT.||
+LHPUPNI103|Latte||
+LHPUPNI104|Long||
+LHPUPNI105|#Pack||
+LHPUPNI106|LSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|CSE||
+LHPUPNI201|SPD||
+LHPUPNI202|GST||
+LHPUPNI203|Tempe||
+LHPUPNI204|Hum||
+LHPUPNI205|Baro||
+LHPUPNI206|RN-H||
+LHPUPNI207|RNSM||
+LHPUPNI208|RN24||
+LHPUPNI209|Latte/Lonne orre UTM||
+PULDNMAT01|Shou Alrette maps abovethe othre maps||
+PULDNMAT02|Shou Alrette maps undre othre maps||
+POPEM00001|Locate Errorre!||
+POPEM00002|Stacioonne %s was notte founde!||
+POPEM00003|Tracking Errorre!||
+POPEM00004|Intreface Errorre!||
+POPEM00005|Invalide AX.25 portte name %s||
+POPEM00006|Invalide AX.25 portte name %s||
+POPEM00007|Invalide callsignne %s||
+POPEM00008|Invalide AX.25 destinacioonne callsignne orre digeeppeteerre||
+POPEM00009|Cannotte openne AX.25 sockette, %s||
+POPEM00010|Cannotte binde AX.25 sockette, %s||
+POPEM00011|Cannotte connectte to AX.25 callsignne, %s||
+POPEM00012|AX.25 errorre onne outputte of UI||
+POPEM00013|AX.25 problem withe axports feel||
+POPEM00014|AX.25 invalide portte name %s||
+POPEM00015|Errorre opening intreface %de Harde Feyl||
+POPEM00016|Errorre opening intreface %de Tym Outte||
+POPEM00017|No morre intrefaces Aveylable!||
+POPEM00018|Data Qeree - Single Message Lynne||
+POPEM00019|Portte transmitting is off forre portte %de||
+POPEM00020|Databae Errorre!||
+POPEM00021|AX.25 supportte notte compeellede into Xastirre!||
+POPEM00022|Inputte Errorre!||
+POPEM00023|No locacioonne name specifiede!||
+POPEM00024|Locacioonne name specifiede is inne ue!||
+POPEM00025|Notte Founde!||
+POPEM00026|Tracking wil commence whanne itte apprees||
+POPEM00027|Impropre info.  Some fields emptee?||
+POPEM00028|Canne'tte openne feel||
+POPEM00029|Founde Itte!||
+POPEM00030|Wetehre Stacioonne Symbol||
+POPEM00031|Changede to WX seembol '/_', othre options:  '\_'  '/W'  ande  '\W'||
+POPEM00032|Warning: Using National Wetehre Serveec Symbol!||
+POPEM00033|No GPS Data!||
+POPEM00034|Disabling Mye Posicioonne TX Until Valide GPS Data!||
+POPEM00035|Warning||
+POPEM00036|Noteec||
+POPEM00037|HSP intreface presentte: GPS timing has bene increseede||
+POPEM00038|Name Conflicts Withe Existing Objectte/Item/Stacioonne||
+POPEM00039|Illegal charactres founde, substituting preiods inne theirre place||
+POPEM00040|Custom outgoing pathe was lostte||
+POPEM00041|Processing anothre feel.  Weytte a bitte, thenne tree ageynne||
+POPEM00042|Objectte notte ounede bee me! Tree adopting the objectte firstte.||
+POPEM00043|Notte anne Objectte/Item!||
+POPEM00044|Fetche Findu Treyl: Feyllede||
+POPEM00045|Fetche Findu Treyl: Complete||
+POPEM00046|Berkeleye DB hideerre/sharede libraree do NOT matche! Disabling mape cache.||
+POPEM00047|Global transmitte is DISABLED. Emregencee beceons arre NOT going outte!||
+POPEM00048|Emregencee Beceonne Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmitting evreee 60 seconds!||
+POPEM00050|Intrefaces orre posits/transmits DISABLED.  Emregencee beceons arre NOT going outte!||
+POPEM00051|Altnette is enablede (Configurre->Defaults deleog)||
+POPEM00052|Callsignne is EMPTY!||
+POPEM00053|Message is EMPTY!||
+POPEM00054|We're treeing to talk to ourselves!||
+JMLPO00001|Mape Displye Bookmarks||
+JMLPO00002|Activate!||
+JMLPO00003|Newe Name:||
+BULMW00001|Bulletins||
+BULMW00002|Limitte Range to (0, is no limitte)||
+BULMW00003|Change Range||
+AMTMW00001|Al Message Traffick||
+AMTMW00002|Limitte Range to (0, is no limitte)||
+SPCHSTR001|kilometres||
+SPCHSTR002|metres||
+SPCHSTR003|meelles||
+SPCHSTR004|yards||
+SPCHSTR005|%s, distance is %de %s.||
+SPCHSTR006|%s, distance is %.1f %s.||
+SPCHSTR007|%s, distance is %de %s %s %s.||
+SPCHSTR008|%s, distance is %.1f %s %s %s.||
+SPCHSTR009|Newe Wetehre Alrette||
+SPCHSTR010|Newe Stacioonne||
+SPCHSTR011|Herede, D X, %s, atte distance of %.1f %s||
+SPCHDIRN00|northe of||
+SPCHDIRS00|southe of||
+SPCHDIRE00|esette of||
+SPCHDIRW00|weste of||
+SPCHDIRNE0|northesette of||
+SPCHDIRNW0|northweste of||
+SPCHDIRSE0|southesette of||
+SPCHDIRSW0|southweste of||
+SYMSEL0001|Selectte Symbol||
+SYMSEL0002|Primaree Symbol Table||
+SYMSEL0003|Secondaree Symbol Table||
+PRINT0001|Printte Propreties||
+PRINT0002|Papre Syz||
+PRINT0003|Auto-Rotate Image||
+PRINT0004|Rotate Image 90° CCW||
+PRINT0005|Auto-Scale Image||
+PRINT0006|Scale:||
+PRINT0007|Force defaultte backgrounde colorre to wheette||
+PRINT0008|Printte inne Black ande Wheette||
+PRINT0016|Revree Colors||
+PRINT0009|Postscripte Resolucioonne:||
+PRINT0010|Previewe||
+PRINT0011|Printte to Fyl||
+PRINT0012|Dumping image to feel...||
+PRINT0013|Convreting to Postscripte...||
+PRINT0014|Finishede creteing printte feel||
+PRINT0015|Printte Status||
+PRINT1001|Dyrrectte to:||
+PRINT1002|Via Previewre:||
+FEATURE001|Name:||
+FEATURE002|State/Province:||
+FEATURE003|Countee:||
+FEATURE004|Mape Quade:||
+FEATURE005|Type:||
+FEATURE006|GNIS Fyl:||
+FEATURE007|Addresse:||
+FEATURE008|Citee:||
+FEATURE009|Mark Destinacioonne||
+FEATURE010|Zipe Code:||
+FEATURE011|Geocoding Fyl||
+COORD001|Coordinate Calculatorre||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clree||
+COORD005|UTM||
+COORD006|Latitude orre||
+COORD007|Longitude orre||
+COORD008|Zone||
+COORD009|UTM Easting||
+COORD010|UTM Northing||
+COORD011|               Decimal Degree:  ||
+COORD012|       Degree/Decimal Minutes:  ||
+COORD013|  Degree/Minutes/Dec. Seconds:  ||
+COORD014| Uneevvresal Transvree Mercatorre:  ||
+COORD015|Militaree Gride Refreence System:  ||
+COORD016|       Meyddenhede Gride Locatorre:  ||
+COORD017| **       Sorree, yourre inputte was notte recogneezzede!        **||
+COORD018| **   Plesee ue one of the follouing inputte formats:   **||
+SMARTB001|Smartte Beceoning||
+SMARTB002|High Rate (secs):||
+SMARTB003|High Spede (mph):||
+SMARTB004|High Spede (kph):||
+SMARTB005|Lou Rate (mins):||
+SMARTB006|Lou Spede (mph):||
+SMARTB007|Lou Spede (kph):||
+SMARTB008|Minimum Turnne (deg):||
+SMARTB009|Turnne Slope:||
+SMARTB010|Weytte Tym (secs):||
+SMARTB011|Enable SmartBeceoning(tm)||
+GAMMA001|Adjustte Gamma Correccioonne||
+GAMMA002|Gamma Correccioonne||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Mape Fontte Tinee||
+MAPFONT004|Mape Fontte Smal||
+MAPFONT005|Mape Fontte Medium||
+MAPFONT006|Mape Fontte Large||
+MAPFONT007|Mape Fontte Huge||
+MAPFONT008|Mape Fontte Bordre||
+MAPFONT009|Menu Fontte||
+MAPFONT010|Stacioonne Fontte||
+MAPFONT011|ATV ID Fontte||
+PULDNDB001|Distte/Bereing Status||
+GPS001|GPS Transfre||
+GPS002|Fyllename||
+GPS003|Selectte Colorre||
+GPS004|Rede||
+GPS005|Grene||
+GPS006|Black||
+GPS007|Wheette||
+GPS008|Orange||
+GPS009|Ble||
+GPS010|Yellou||
+GPS011|Violette||
+MAPP001|Mape Propreties||
+MAPP002|Max   Minne    Mape         USGS  Auto||
+MAPP003|Zoom  Zoom  Leyre  Fil  DRG   Mape   Pathe/Fyllename||
+MAPP004|Change Leyre->||
+MAPP005|Fillede->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+MAPP009|Max Zoom->||
+MAPP010|Minne Zoom->||
+MAPP011|Auto||
+MAPP012|USGS DRG->||
+TIME001|Dye||
+TIME002|Deys||
+TIME003|Hourre||
+TIME004|Hours||
+TIME005|Minute||
+TIME006|Minutes||
+TIME007|Seconde||
+TIME008|Seconds||
+CACHE001|Mape nou cachede||
+CACHE002|Looding Cachede Mape||
+CACHE003|Mape notte founde inne cache...||
+RANGE001|RANGE SCALE||
+GPSS001|WAAS orre PPS||
+GPSS002|DGPS||
+GPSS003|Valide SPS||
+GPSS004|Invalide||
+GPSS005|Sats/Viewe||
+GPSS006|Fix||
+GPSS007|!GPS data is oldre thanne 30 seconds!||
+GPSS008|Simulacioonne||
+GPSS009|Manual||
+GPSS010|Estimatede||
+GPSS011|Flootte RTK||
+GPSS012|RTK||
+CADPUD001|Aree Objectte||
+CADPUD002|Aree Label:||
+CADPUD003|Commentte:||
+CADPUD004|Probabilitee (%):||
+CADPUD005|OK||
+CADPUD006|CAD Deleog||
+CADPUD007|Shou/Editte Deteyls||
+CADPUD008|Cancel||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete Al||
+CADPUD011|Delete Selectede||
+CADPUD012|Solide||
+CADPUD013|Dashede||
+CADPUD014|Double Dash||
+MDATA001|XASTIR Mape of %s (uppre leftte) to %s (loure rightte).  UTM %de m gride, %s datum. ||
+MDATA002|XASTIR Mape of %s (uppre leftte) to %s %s (loure rightte).  Latte/Long gride, %s datum.||
+MDATA003|XASTIR Mape of %s (uppre leftte) to %s (loure rightte).  UTM zones, %s datum.||
+XADBMST001|MySQL (latte/long)||
+XADBMST002|Postgreql withe Postgis||
+XADBMST003|MySQL (spatele)||
+XASCHEMA01|Xastirre Simple Schema||
+XASCHEMA02|Xastirre CAD Schema||
+XASCHEMA03|Xastirre ful Schema||
+XASCHEMA04|APRSWorlde Schema||
