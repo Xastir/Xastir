@@ -398,10 +398,14 @@ BINPATH="${PATH}${EXTRA_BIN_PATH}"
 # because AC_CHECK_PROG will do nothing if the variable is already set!
 #
 use_imagemagick=no
-AC_PATH_PROG(MAGIC_BIN, [Magick-config], no, $BINPATH)
+AC_PATH_PROG(MAGIC_BIN, [MagickCore-config], no, $BINPATH)
 if test "$MAGIC_BIN" != "no"; then
   use_imagemagick=yes
-#else
+else
+  AC_PATH_PROG(MAGIC_BIN, [Magick-config], no, $BINPATH)
+  if test "$MAGIC_BIN" != "no"; then
+    use_imagemagick=yes
+  fi
 #  AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***)
 fi
 
