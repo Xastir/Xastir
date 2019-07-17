@@ -436,14 +436,37 @@ if test "${use_imagemagick}" = "yes"; then
   CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`" 
   LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
   LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS" 
-  # 
-  AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
-  if test "${use_imagemagick}" = "no"; then
-    AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
+  #
+  AC_CHECK_HEADERS([MagickCore/MagickCore.h],[use_imagemagick="yes"],
+                   [AC_CHECK_HEADERS([magick/api.h],[use_imagemagick="yes"],
+                                     [use_imagemagick="no"])])
+
+  if test "${use_imagemagick}" = "no"
+  then
+    AC_MSG_WARN([*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***])
   else
-    AC_SEARCH_LIBS([WriteImage],[Magick MagickCore], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
-    if test "${use_imagemagick}" = "no"; then
-      AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
+    AC_MSG_CHECKING([if your ImageMagick is old enough for us to use])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
+    #include <MagickCore/MagickCore.h>
+    #else
+    #include <magick/api.h>
+    #endif
+    #if (MagickLibVersion > 0x0700)
+    #error Your Magick is way too new
+    #endif
+    ])],[AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])
+     AC_MSG_WARN([***Your ImageMagick is too new and Xastir cannot use it***])
+     use_imagemagick="no"
+     ])
+    if test "${use_imagemagick}" = "yes"
+    then
+      AC_SEARCH_LIBS([WriteImage],[Magick MagickCore], [AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])], [use_imagemagick="no"])
+      if test "${use_imagemagick}" = "no"
+      then
+        AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
+      fi
     fi
   fi
   #
@@ -500,7 +523,7 @@ if test "${use_graphicsmagick}" = "yes"; then
   LDFLAGS="`${GMAGIC_BIN} --ldflags` $LDFLAGS" 
   LIBS="${MAGIC_LIB_DIR} `${GMAGIC_BIN} --libs` $LIBS" 
   # 
-  AC_CHECK_HEADER(GraphicsMagick/magick/api.h, use_graphicsmagick="yes", use_graphicsmagick="no")
+  AC_CHECK_HEADERS([magick/api.h], [use_graphicsmagick="yes"],[use_graphicsmagick="no"])
   if test "${use_graphicsmagick}" = "no"; then
     AC_MSG_WARN(*** Cannot find GraphicsMagick include files: Building w/o GraphicsMagick support. ***)
   else
