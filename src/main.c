@@ -90,7 +90,15 @@ char *xastir_version=VERSION;
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #include <magick/api.h>
+  #ifdef HAVE_MAGICK
+    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
+      #include <MagickCore/MagickCore.h>
+    #else
+      #ifdef HAVE_MAGICK_API_H
+        #include <magick/api.h>
+      #endif // HAVE_MAGICK_API_H
+    #endif //HAVE_MAGICKCORE_MAGICKCORE_H
+  #endif //HAVE_MAGICK
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
@@ -29822,8 +29830,12 @@ int main(int argc, char *argv[], char *envp[])
 #ifdef HAVE_IMAGEMAGICK
 #if (MagickLibVersion < 0x0538)
   MagickIncarnate(*argv);
-#else   // MagickLibVersion < 0x0538
-  InitializeMagick(*argv);
+#else   // 0x0538 < MagickLibVersion < 0x0669
+  #if (MagickLibVersion < 0x0669)
+    InitializeMagick(*argv);
+  #else // > 0x669
+    MagickCoreGenesis(*argv, MagickTrue);
+  #endif
 #endif  // MagickLibVersion < 0x0538
 #endif  // HAVE_IMAGEMAGICK
 #endif  //HAVE_GRAPHICSMAGICK

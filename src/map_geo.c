@@ -124,7 +124,15 @@
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #include <magick/api.h>
+  #ifdef HAVE_MAGICK
+    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
+      #include <MagickCore/MagickCore.h>
+    #else
+      #ifdef HAVE_MAGICK_API_H
+        #include <magick/api.h>
+      #endif // HAVE_MAGICK_API_H
+    #endif //HAVE_MAGICKCORE_MAGICKCORE_H
+  #endif //HAVE_MAGICK
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
@@ -2304,7 +2312,11 @@ void draw_geo_image_map (Widget w,
     //        target=GetOnePixel(image,0,0);
     for (y=0; y < (long) image->rows; y++)
     {
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
       q=GetImagePixels(image,0,y,image->columns,1);
+#else
+      q=GetAuthenticPixels(image,0,y,image->columns,1,&exception);
+#endif
       if (q == (PixelPacket *) NULL)
       {
         fprintf(stderr, "GetImagePixels Failed....\n");
@@ -2318,10 +2330,17 @@ void draw_geo_image_map (Widget w,
         }
         q++;
       }
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
       if (!SyncImagePixels(image))
       {
         fprintf(stderr, "SyncImagePixels Failed....\n");
       }
+#else
+      if (!SyncAuthenticPixels(image,&exception))
+      {
+        fprintf(stderr, "SyncImagePixels Failed....\n");
+      }
+#endif
     }
   }
 
@@ -2355,7 +2374,11 @@ void draw_geo_image_map (Widget w,
     return;
   }
 
+#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
   pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
+#else
+  pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows,&exception);
+#endif
   if (!pixel_pack)
   {
     fprintf(stderr,"pixel_pack == NULL!!!");
