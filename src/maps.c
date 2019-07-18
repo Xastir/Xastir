@@ -76,12 +76,15 @@
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #ifdef HAVE_GRAPHICSMAGICK
-    /*#include <GraphicsMagick/magick/api.h>*/
-    #include <magick/api.h>
-  #else   // HAVE_GRAPHICSMAGICK
-    #include <magick/api.h>
-  #endif  // HAVE_GRAPHICSMAGICK
+  #ifdef HAVE_MAGICK
+    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
+      #include <MagickCore/MagickCore.h>
+    #else
+      #ifdef HAVE_MAGICK_API_H
+        #include <magick/api.h>
+      #endif // HAVE_MAGICK_API_H
+    #endif //HAVE_MAGICKCORE_MAGICKCORE_H
+  #endif //HAVE_MAGICK
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
