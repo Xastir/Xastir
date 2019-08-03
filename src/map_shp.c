@@ -688,7 +688,6 @@ MRC         string      (8,0)   48122-G7
 
  **********************************************************/
 
-#ifdef WITH_DBFAWK
 static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
 /* default dbfawk rule when no better signature match is found */
@@ -708,7 +707,6 @@ static awk_rule dbfawk_default_rules[] =
 };
 #define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
 static dbfawk_sig_info *dbfawk_default_sig = NULL;
-#endif  // WITH_DBFAWK
 
 void draw_shapefile_map (Widget w,
                          char *dir,
@@ -725,10 +723,6 @@ void draw_shapefile_map (Widget w,
   char            file[MAX_FILENAME];  /* Complete path/name of image file */
   char            short_filenm[MAX_FILENAME];
   int             i, fieldcount, recordcount, structure, ring;
-#ifndef WITH_DBFAWK
-  char            ftype[15];
-  int             nWidth, nDecimals;
-#endif /*!WITH_DBFAWK*/
   SHPHandle       hSHP;
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
@@ -747,34 +741,15 @@ void draw_shapefile_map (Widget w,
   int             gps_flag = 0;
   char            gps_label[100];
   int             gps_color = 0x0c;
-#ifndef WITH_DBFAWK
-  int             road_flag = 0;
-  int             lake_flag = 0;
-  int             river_flag = 0;
-  int             railroad_flag = 0;
-  int             school_flag = 0;
-  int             path_flag = 0;
-  int             city_flag = 0;
-#endif /*!WITH_DBFAWK*/
   int             quad_overlay_flag = 0;
-#ifndef WITH_DBFAWK
-  int             mapshots_labels_flag = 0;
-#endif /*!WITH_DBFAWK*/
   int             weather_alert_flag = 0;
   char            *filename;  // filename itself w/o directory
-#ifndef WITH_DBFAWK
-  int             search_field1 = 0;
-  int             search_field2 = -1;
-  char            search_param1[10];
-  char            search_param2[10];
-#endif /* !WITH_DBFAWK */
   int             found_shape = -1;
   int             ok_to_draw = 0;
   int             high_water_mark_i = 0;
   int             high_water_mark_index = 0;
   char            quad_label[100];
   char            status_text[MAX_FILENAME];
-#ifdef WITH_DBFAWK
   /* these have to be static since I recycle Symtbl between calls */
   static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
   static int      color,lanes,filled,pattern,display_level,label_level;
@@ -786,7 +761,6 @@ void draw_shapefile_map (Widget w,
 
 
   int draw_filled_orig;
-#endif  // WITH_DBFAWK
   int draw_filled;
   static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
   static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
@@ -820,7 +794,6 @@ void draw_shapefile_map (Widget w,
   }
 
 
-#ifdef WITH_DBFAWK
   // We're going to change draw_filled a bunch if we've got Auto turned
   // on, but we have to check --- save this!
   draw_filled_orig=draw_filled;
@@ -839,9 +812,7 @@ void draw_shapefile_map (Widget w,
   label_level=0;
   label_color=8;
   font_size=FONT_DEFAULT;
-#endif  // WITH_DBFAWK
 
-#ifdef WITH_DBFAWK
   if (Dbf_sigs == NULL)
   {
     Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
@@ -865,7 +836,6 @@ void draw_shapefile_map (Widget w,
     // once per runtime.
     dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
   }
-#endif  // WITH_DBFAWK
 
   //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
 
@@ -875,10 +845,6 @@ void draw_shapefile_map (Widget w,
     ok_to_draw++;
   }
 
-#ifndef WITH_DBFAWK
-  search_param1[0] = '\0';
-  search_param2[0] = '\0';
-#endif /* !WITH_DBFAWK */
 
   xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
@@ -943,12 +909,8 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"\n---------------------------------------------\nInfo for %s\n",filenm);
   }
 
-#ifdef WITH_DBFAWK
   *dbfsig = '\0';
   fieldcount = dbfawk_sig(hDBF,dbfsig,sizeof(dbfsig));
-#else   // WITH_DBFAWK
-  fieldcount = DBFGetFieldCount(hDBF);
-#endif /* !WITH_DBFAWK */
   if (fieldcount == 0)
   {
     DBFClose( hDBF );   // Clean up open file descriptors
@@ -964,11 +926,8 @@ void draw_shapefile_map (Widget w,
   if (debug_level & 16)
   {
     fprintf(stderr,"%d Columns,  %d Records in file\n", fieldcount, recordcount);
-#ifdef WITH_DBFAWK
     fprintf(stderr,"DBF signature: %s\n",dbfsig);
-#endif  // WITH_DBFAWK
   }
-#ifdef WITH_DBFAWK
   if (Dbf_sigs)     /* see if we have a .dbfawk file that matches */
   {
     sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
@@ -1027,407 +986,21 @@ void draw_shapefile_map (Widget w,
       return;
     }
   }
-#endif /* WITH_DBFAWK */
   /*
    * DBFAWK: all this WX junk following to set up the search fields and
    * parameters is now done by the dbfawk file which sets the "key"
    * variable to the appropriate search key for each record which is
    * compared to the alert->title[].
    */
-#ifndef WITH_DBFAWK
-  // If we're doing weather alerts and index is not filled in yet
-  if (weather_alert_flag && (alert->index == -1) )
-  {
-
-    // For weather alerts:
-    // Need to figure out from the initial characters of the filename which
-    // type of file we're using, then compute the fields we're looking for.
-    // After we know that, need to look in the DBF file for a match.  Once
-    // we find a match, we can open up the SHX/SHP files, go straight to
-    // the shape we want, and draw it.
-    switch (filenm[0])
-    {
-
-      case 'c':   // County File
-        // County, c_ files:  WI_C037
-        // STATE  CWA  COUNTYNAME
-        // AL     BMX  Morgan
-        // Need fields 0/1:
-        search_field1 = 0;  // STATE
-        search_field2 = 3;  // FIPS
-        xastir_snprintf(search_param1,sizeof(search_param1),"%c%c",
-                        alert->title[0],
-                        alert->title[1]);
-        xastir_snprintf(search_param2,sizeof(search_param2),"%c%c%c",
-                        alert->title[4],
-                        alert->title[5],
-                        alert->title[6]);
-        break;
-
-      case 'w':   // County Warning Area File
-        // County Warning Area, w_ files:  CW_ATAE
-        // WFO  CWA
-        // TAE  TAE
-        // Need field 0
-        search_field1 = 0;  // WFO
-        search_field2 = -1;
-        xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c",
-                        alert->title[4],
-                        alert->title[5],
-                        alert->title[6]);
-        break;
-
-      case 'o':   // Offshore Marine Area File
-        // Offshore Marine Zones, oz files:  AN_Z081
-        // ID      WFO  NAME
-        // ANZ081  MPC  Gulf of Maine
-        // Need field 0
-        search_field1 = 0;  // ID
-        search_field2 = -1;
-        xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
-                        alert->title[0],
-                        alert->title[1],
-                        alert->title[3],
-                        alert->title[4],
-                        alert->title[5],
-                        alert->title[6]);
-        break;
-
-      case 'm':   // Marine Area File
-        // Marine Zones, mz?????? files:  PK_Z120
-        // ID      WFO  NAME
-        // PKZ120  AJK  Area 1B. Southeast Alaska,
-        // Need field 0
-        search_field1 = 0;  // ID
-        search_field2 = -1;
-        xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
-                        alert->title[0],
-                        alert->title[1],
-                        alert->title[3],
-                        alert->title[4],
-                        alert->title[5],
-                        alert->title[6]);
-        break;
-
-      case 'z':   // Zone File
-      case 'f':   // Fire zone file, KS_F033
-      default:
-        // Weather alert zones, z_ files:  KS_Z033
-        // STATE_ZONE
-        // AK225
-        // Need field 4
-        search_field1 = 4;  // STATE_ZONE
-        search_field2 = -1;
-        xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
-                        alert->title[0],
-                        alert->title[1],
-                        alert->title[4],
-                        alert->title[5],
-                        alert->title[6]);
-        break;
-    }
-
-    //fprintf(stderr,"Search_param1: %s,\t",search_param1);
-    //fprintf(stderr,"Search_param2: %s\n",search_param2);
-  } /* weather_alert */
-
-  for (i=0; i < fieldcount; i++)
-  {
-    char szTitle[12];
-
-    switch (DBFGetFieldInfo(hDBF, i, szTitle, &nWidth, &nDecimals))
-    {
-      case FTString:
-        xastir_snprintf(ftype,sizeof(ftype),"string");
-        break;
-
-      case FTInteger:
-        xastir_snprintf(ftype,sizeof(ftype),"integer");
-        break;
-
-      case FTDouble:
-        xastir_snprintf(ftype,sizeof(ftype),"float");
-        break;
-
-      case FTInvalid:
-        xastir_snprintf(ftype,sizeof(ftype),"invalid/unsupported");
-        break;
-
-      default:
-        xastir_snprintf(ftype,sizeof(ftype),"unknown");
-        break;
-    }
-
-    // Check for quad overlay type of map
-    if (strstr(filename,"24kgrid"))    // USGS Quad overlay file
-    {
-      quad_overlay_flag++;
-    }
-
-    // Check the filename for mapshots.com filetypes to see what
-    // type of file we may be dealing with.
-    if (strncasecmp(filename,"tgr",3) == 0)     // Found Mapshots or GeographyNetwork file
-    {
-
-      if (strstr(filename,"lpt"))             // Point file
-      {
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found point file ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"plc"))           // Designated Places:  Arlington
-      {
-        city_flag++;
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found (Designated Places) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"ctycu"))      // County Boundaries: WA, Snohomish
-      {
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found county (mapshots county) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"lkA"))        // Roads
-      {
-        road_flag++;
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found some roads (mapshots roads) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"lkB"))        // Railroads
-      {
-        railroad_flag++;
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found some railroads (mapshots railroads) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"lkC"))        // Paths/etc.  Pipelines?  Transmission lines?
-      {
-        path_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found some paths (mapshots paths/etc) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"lkH"))        // Rivers/Streams/Lakes/Glaciers
-      {
-        river_flag++;
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found water (mapshots rivers/streams/lakes/glaciers) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (  strstr(filename,"elm")       // Elementary school district
-                 || strstr(filename,"mid")       // Middle school district
-                 || strstr(filename,"sec")       // Secondary school district
-                 || strstr(filename,"uni") )     // Unified school district
-      {
-        school_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found school district ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"urb"))        // Urban areas: Seattle, WA
-      {
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found (mapshots urban areas) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if (strstr(filename,"wat"))        // Bodies of water, creeks/lakes/glaciers
-      {
-        lake_flag++;
-        mapshots_labels_flag++;
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found some water (mapshots bodies of water, creeks/lakes/glaciers) ***\n");
-          break;
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-
-
-    // Attempt to guess which type of shapefile we're dealing
-    // with, and how we should draw it.
-    // If debug is on, we want to print out every field, otherwise
-    // break once we've made our guess on the type of shapefile.
-    if (debug_level & 16)
-    {
-      fprintf(stderr,"%15.15s\t%15s  (%d,%d)\n", szTitle, ftype, nWidth, nDecimals);
-    }
-
-    if (strncasecmp(szTitle, "SPEEDLIM", 8) == 0)
-    {
-      // sewroads shapefile?
-      road_flag++;
-      if (debug_level & 16)
-      {
-        fprintf(stderr,"*** Found some roads (SPEEDLIM*) ***\n");
-      }
-      else
-      {
-        break;
-      }
-    }
-    else if (strncasecmp(szTitle, "US_RIVS_ID", 10) == 0)
-    {
-      // which shapefile?
-      river_flag++;
-      if (debug_level & 16)
-      {
-        fprintf(stderr,"*** Found some rivers (US_RIVS_ID*) ***\n");
-      }
-      else
-      {
-        break;
-      }
-    }
-    else if (strcasecmp(szTitle, "FEATURE") == 0)
-    {
-      char *attr_str;
-      int j;
-      for (j=0; j < recordcount; j++)
-      {
-        if (fieldcount >= (i+1))
-        {
-          attr_str = (char*)DBFReadStringAttribute(hDBF, j, i);
-          if (strncasecmp(attr_str, "LAKE", 4) == 0)
-          {
-            // NOAA Lakes and Water Bodies (lk17de98) shapefile
-            lake_flag++;
-            if (debug_level & 16)
-            {
-              fprintf(stderr,"*** Found some lakes (FEATURE == LAKE*) ***\n");
-            }
-            break;
-          }
-          else if (strstr(attr_str, "Highway") != NULL ||
-                   strstr(attr_str, "highway") != NULL ||
-                   strstr(attr_str, "HIGHWAY") != NULL)
-          {
-            // NOAA Interstate Highways of the US (in011502) shapefile
-            // NOAA Major Roads of the US (rd011802) shapefile
-            road_flag++;
-            if (debug_level & 16)
-            {
-              fprintf(stderr,"*** Found some roads (FEATURE == *HIGHWAY*) ***\n");
-            }
-            break;
-          }
-        }
-      }
-      if (!(debug_level & 16) && (lake_flag || road_flag))
-      {
-        break;
-      }
-    }
-    else if (strcasecmp(szTitle, "LENGTH") == 0 ||
-             strcasecmp(szTitle, "RR")     == 0 ||
-             strcasecmp(szTitle, "HUC")    == 0 ||
-             strcasecmp(szTitle, "TYPE")   == 0 ||
-             strcasecmp(szTitle, "SEGL")   == 0 ||
-             strcasecmp(szTitle, "PMILE")  == 0 ||
-             strcasecmp(szTitle, "ARBSUM") == 0 ||
-             strcasecmp(szTitle, "PNAME")  == 0 ||
-             strcasecmp(szTitle, "OWNAME") == 0 ||
-             strcasecmp(szTitle, "PNMCD")  == 0 ||
-             strcasecmp(szTitle, "OWNMCD") == 0 ||
-             strcasecmp(szTitle, "DSRR")   == 0 ||
-             strcasecmp(szTitle, "DSHUC")  == 0 ||
-             strcasecmp(szTitle, "USDIR")  == 0)
-    {
-      // NOAA Rivers of the US (rv14fe02) shapefile
-      // NOAA Rivers of the US Subset (rt14fe02) shapefile
-      river_flag++;
-      if (river_flag >= 14)
-      {
-        if (debug_level & 16)
-        {
-          fprintf(stderr,"*** Found some rivers (NOAA Rivers of the US or Subset) ***\n");
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-  } /* ... end for (i = 0; i < fieldcount; i++) */
-#endif /* !WITH_DBFAWK */
 
   // Search for specific record if we're doing alerts
   if (weather_alert_flag && (alert->index == -1) )
   {
     int done = 0;
-#ifndef WITH_DBFAWK
-    char *string1;
-    char *string2;
-#endif /* !DBFAWK */
 
     // Step through all records
     for( i = 0; i < recordcount && !done; i++ )
     {
-#ifdef WITH_DBFAWK
       int keylen;
 
       if (sig_info)
@@ -1502,92 +1075,6 @@ void draw_shapefile_map (Widget w,
           }
         }
       }
-#else /* !WITH_DBFAWK */
-      char *ptr;
-      switch (filenm[0])
-      {
-        case 'c':   // County File
-          // Remember that there's only one place for
-          // internal storage of the DBF string.  This is
-          // why this code is organized with two "if"
-          // statements.
-          if (fieldcount >= (search_field1 + 1) )
-          {
-            string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-            if (!strncasecmp(search_param1,string1,2))
-            {
-              //fprintf(stderr,"Found state\n");
-              if (fieldcount >= (search_field2 + 1) )
-              {
-                string2 = (char *)DBFReadStringAttribute(hDBF,i,search_field2);
-                ptr = string2;
-                ptr += 2;   // Skip past first two characters of FIPS code
-                if (!strncasecmp(search_param2,ptr,3))
-                {
-//fprintf(stderr,"Found it!  %s\tShape: %d\n",string1,i);
-                  done++;
-                  found_shape = i;
-                }
-              }
-            }
-          }
-          break;
-        case 'w':   // County Warning Area File
-          if (fieldcount >= (search_field1 + 1) )
-          {
-            string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-            if ( !strncasecmp(search_param1,string1,strlen(string1))
-                 && (strlen(string1) != 0) )
-            {
-//fprintf(stderr,"Found it!  %s\tShape: %d\n",string1,i);
-              done++;
-              found_shape = i;
-            }
-          }
-          break;
-        case 'o':   // Offshore Marine Area File
-          if (fieldcount >= (search_field1 + 1) )
-          {
-            string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-            if ( !strncasecmp(search_param1,string1,strlen(string1))
-                 && (strlen(string1) != 0) )
-            {
-//fprintf(stderr,"Found it!  %s\tShape: %d\n",string1,i);
-              done++;
-              found_shape = i;
-            }
-          }
-          break;
-        case 'm':   // Marine Area File
-          if (fieldcount >= (search_field1 + 1) )
-          {
-            string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-            if ( !strncasecmp(search_param1,string1,strlen(string1))
-                 && (strlen(string1) != 0) )
-            {
-//fprintf(stderr,"Found it!  %s\tShape: %d\n",string1,i);
-              done++;
-              found_shape = i;
-            }
-          }
-          break;
-        case 'z':   // Zone File
-        case 'f':   // Fire zone file
-          if (fieldcount >= (search_field1 + 1) )
-          {
-            string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-            if ( !strncasecmp(search_param1,string1,strlen(string1))
-                 && (strlen(string1) != 0) )
-            {
-//fprintf(stderr,"Found it!  %s\tShape: %d\n",string1,i);
-              done++;
-              found_shape = i;
-            }
-          }
-        default:
-          break;
-      }
-#endif /* !WITH_DBFAWK */
     }
     alert->index = found_shape; // Fill it in 'cuz we just found it
   } /* if (weather_alert_flag && alert_index == -1)... */
@@ -1617,13 +1104,11 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
     DBFClose( hDBF );   // Clean up open file descriptors
 
-#ifdef WITH_DBFAWK
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
     {
       dbfawk_free_sigs(sig_info);
     }
-#endif  // WITH_DBFAWK
 
     return;
   }
@@ -1655,13 +1140,11 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-#ifdef WITH_DBFAWK
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
     {
       dbfawk_free_sigs(sig_info);
     }
-#endif  // WITH_DBFAWK
 
     return; // Done indexing this file
   }
@@ -1744,13 +1227,11 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-#ifdef WITH_DBFAWK
       dbfawk_free_info(fld_info);
       if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
       {
         dbfawk_free_sigs(sig_info);
       }
-#endif  // WITH_DBFAWK
 
       return; // Multipoint type.  Not implemented yet.
       break;
@@ -1759,13 +1240,11 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-#ifdef WITH_DBFAWK
       dbfawk_free_info(fld_info);
       if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
       {
         dbfawk_free_sigs(sig_info);
       }
-#endif  // WITH_DBFAWK
 
       return; // Unknown type.  Don't know how to process it.
       break;
@@ -1801,13 +1280,11 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-#ifdef WITH_DBFAWK
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
     {
       dbfawk_free_sigs(sig_info);
     }
-#endif  // WITH_DBFAWK
 
     return;     // The file contains no shapes in our viewport
   }
@@ -1951,28 +1428,6 @@ void draw_shapefile_map (Widget w,
   {
 // Are these actually used anymore by the code?  Colors get set later
 // when we know more about what we're dealing with.
-#ifndef WITH_DBFAWK
-    if (lake_flag || river_flag)
-    {
-      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
-    }
-    else if (path_flag)
-    {
-      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-    }
-    else if (railroad_flag)
-    {
-      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]);  // purple
-    }
-    else if (city_flag || school_flag)
-    {
-      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-    }
-    else
-    {
-      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-    }
-#endif /* !WITH_DBFAWK */
   }
 
   // Now that we have the file open, we can read out the structures.
@@ -1997,13 +1452,11 @@ void draw_shapefile_map (Widget w,
                     0,
                     0);
 
-#ifdef WITH_DBFAWK
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
     {
       dbfawk_free_sigs(sig_info);
     }
-#endif  // WITH_DBFAWK
 
     return;
   }
@@ -2093,13 +1546,11 @@ void draw_shapefile_map (Widget w,
                         (unsigned int)screen_height,
                         0,
                         0);
-#ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
         {
           dbfawk_free_sigs(sig_info);
         }
-#endif  // WITH_DBFAWK
         return;
       }
     }
@@ -2156,9 +1607,6 @@ void draw_shapefile_map (Widget w,
     {
 
       const char *temp;
-#ifndef WITH_DBFAWK
-      char temp2[100];
-#endif /*!WITH_DBFAWK*/
       int jj;
       int x0 = 0; // Used for computing label rotation
       int x1 = 0;
@@ -2189,7 +1637,6 @@ void draw_shapefile_map (Widget w,
         fprintf(stderr,"\n");
         fprintf(stderr,"Done with field contents\n");
       }
-#ifdef WITH_DBFAWK
       if (sig_info)
       {
         dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
@@ -2265,15 +1712,6 @@ void draw_shapefile_map (Widget w,
         skip_label = (map_color_levels && (scale_y > label_level));
 
       }
-#else   /* WITH_DBFAWK */
-      if (draw_filled == 2)
-      {
-        // "Auto" fill was chosen, but dbfawk support is not
-        // compiled in.  Default to vector mode (no polygon
-        // fills)
-        draw_filled = 0;
-      }
-#endif /* WITH_DBFAWK */
 
       /* This case statement is a mess.  Lots of common code could be
          used before the case but currently isn't */
@@ -2310,20 +1748,10 @@ void draw_shapefile_map (Widget w,
             int ok = 1;
             int temp_ok;
 
-#ifdef WITH_DBFAWK
             if (map_labels)
             {
               temp = name;
             }
-#else /* !WITH_DBFAWK */
-            // If labels are enabled and we have enough
-            // fields in the .dbf file, read the label.
-            if (map_labels && fieldcount >= 1)
-            {
-              // Snag the label from the .dbf file
-              temp = DBFReadStringAttribute( hDBF, structure, 0 );
-            }
-#endif /* !WITH_DBFAWK */
             // Convert point to Xastir coordinates
             temp_ok = convert_to_xastir_coordinates(&my_long,
                                                     &my_lat,
@@ -2359,7 +1787,6 @@ void draw_shapefile_map (Widget w,
               // Fine-tuned the location here so that
               // the middle of the 'X' would be at the
               // proper pixel.
-#ifdef WITH_DBFAWK
               if (*sym)
               {
                 symbol(w,0,sym[0],sym[1],sym[2],pixmap,1,x-10,y-10,' ');
@@ -2368,9 +1795,6 @@ void draw_shapefile_map (Widget w,
               {
                 symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
               }
-#else // WITH_DBFAWK
-              symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
-#endif //WITH_DBFAWK
 
               // Fine-tuned this string so that it is
               // to the right of the 'X' and aligned
@@ -2407,7 +1831,6 @@ void draw_shapefile_map (Widget w,
           (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 
 
-#ifdef WITH_DBFAWK
           if (!skip_it)
           {
             (void)XSetForeground(XtDisplay(w), gc, colors[color]);
@@ -2416,461 +1839,6 @@ void draw_shapefile_map (Widget w,
                                      pattern,
                                      CapButt,JoinMiter);
           }
-#else /*!WITH_DBFAWK*/
-// Set up width and zoom level for roads
-          if (road_flag)
-          {
-            int lanes = 0;
-            int dashed_line = 0;
-
-            if ( mapshots_labels_flag && (fieldcount >= 9) )
-            {
-              const char *temp;
-
-              temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
-              switch (temp[1])
-              {
-                case '1':   // A1? = Primary road or interstate highway
-                  if (map_color_levels && scale_y > 16384)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16384)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 4;
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
-                  break;
-                case '2':   // A2? = Primary road w/o limited access, US highways
-                  if (map_color_levels && scale_y > 8192)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 8192)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 3;
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
-                  break;
-                case '3':   // A3? = Secondary road & connecting road, state highways
-                  // Skip the road if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 2;
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
-                  switch (temp[2])
-                  {
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                      break;
-                    case '7':
-                    case '8':
-                    default:
-                      if (map_color_levels && scale_y > 128)
-                      {
-                        skip_label++;
-                      }
-                      break;
-                  }
-                  break;
-                case '4':   // A4? = Local, neighborhood & rural roads, city streets
-                  // Skip the road if we're above this zoom level
-                  if (map_color_levels && scale_y > 96)
-                  {
-                    skip_it++;
-                  }
-                  // Skip labels above this zoom level to keep things uncluttered
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-                  break;
-                case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
-                  // Skip the road if we're above this zoom level
-                  if (map_color_levels && scale_y > 64)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  dashed_line++;
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-                  break;
-                case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
-                  // service drive, ferry crossing
-                  if (map_color_levels && scale_y > 64)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-
-                  switch (temp[2])
-                  {
-                    case '5':   // Ferry crossing
-                      lanes = 2;
-                      dashed_line++;
-                      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
-                      break;
-                    default:
-                      lanes = 1;
-                      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-                      break;
-                  }
-
-                  break;
-                case '7':   // A7? = Walkway or pedestrian trail, stairway,
-                  // alley, driveway or service road
-                  // Skip the road if we're above this zoom level
-                  if (map_color_levels && scale_y > 64)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  dashed_line++;
-
-                  switch (temp[2])
-                  {
-                    case '1':   // Walkway or trail for pedestrians
-                    case '2':   // Stairway or stepped road for pedestrians
-                      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
-                      break;
-                    default:
-                      (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-                      break;
-                  }
-
-                  break;
-                default:
-                  lanes = 1;
-                  if (map_color_levels && scale_y > 64)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-                  break;
-              }
-            }
-            else    // Must not be a mapshots or ESRI Tiger map
-            {
-              if (fieldcount >= 7)    // Need at least 7 fields if we're snagging #6, else segfault
-              {
-                lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
-
-                // In case we guess wrong on the
-                // type of file and the lanes are
-                // really out of bounds:
-                if (lanes < 1 || lanes > 10)
-                {
-                  //fprintf(stderr,"lanes = %d\n",lanes);
-                  lanes = 1;
-                }
-              }
-              (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
-            }
-            if (lanes != 0)
-            {
-              if (dashed_line)
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
-              }
-              else
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
-              }
-            }
-            else
-            {
-              (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-            }
-          }   // End of road flag portion
-
-// Set up width and zoom levels for water
-          else if (river_flag || lake_flag)
-          {
-            int lanes = 0;
-            int dashed_line = 0;
-            int glacier_flag = 0;
-
-            if ( mapshots_labels_flag && (fieldcount >= 9) )
-            {
-              const char *temp;
-
-              temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
-              switch (temp[1])
-              {
-                case '0':   // H0? = Water feature/shoreline
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 4096)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 0;
-
-                  switch (temp[2])
-                  {
-                    case '2':   // Intermittent
-                      dashed_line++;
-                      // Skip the vector if we're above this zoom level
-                      if (map_color_levels && scale_y > 64)
-                      {
-                        skip_it++;
-                      }
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      break;
-                    default:
-                      break;
-                  }
-
-                  break;
-                case '1':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 128)
-                  {
-                    skip_label++;
-                  }
-                  switch (temp[2])
-                  {
-                    case '0':
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      lanes = 1;
-                      break;
-                    case '1':
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      lanes = 1;
-                      break;
-                    case '2':
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      lanes = 1;
-                      dashed_line++;
-                      break;
-                    case '3':
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      lanes = 1;
-                      break;
-                    default:
-                      if (map_color_levels && scale_y > 16)
-                      {
-                        skip_label++;
-                      }
-                      lanes = 1;
-                      break;
-                  }
-                  break;
-                case '2':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-
-                  switch (temp[2])
-                  {
-                    case '2':   // Intermittent
-                      dashed_line++;
-                      break;
-                    default:
-                      break;
-                  }
-
-                  break;
-                case '3':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-
-                  switch (temp[2])
-                  {
-                    case '2':   // Intermittent
-                      dashed_line++;
-                      break;
-                    default:
-                      break;
-                  }
-
-                  break;
-                case '4':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-
-                  switch (temp[2])
-                  {
-                    case '2':   // Intermittent
-                      dashed_line++;
-                      break;
-                    default:
-                      break;
-                  }
-
-                  break;
-                case '5':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  break;
-                case '6':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  break;
-                case '7':   // Nonvisible stuff.  Don't draw these
-                  skip_it++;
-                  skip_label++;
-                  break;
-                case '8':
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-
-                  switch (temp[2])
-                  {
-                    case '1':   // Glacier
-                      glacier_flag++;
-                      break;
-                    default:
-                      break;
-                  }
-
-                  break;
-                default:
-                  // Skip the vector if we're above this zoom level
-                  if (map_color_levels && scale_y > 256)
-                  {
-                    skip_it++;
-                  }
-                  if (map_color_levels && scale_y > 16)
-                  {
-                    skip_label++;
-                  }
-                  lanes = 1;
-                  break;
-              }
-              if (dashed_line)
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineOnOffDash, CapButt,JoinMiter);
-              }
-              else
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
-              }
-            }
-            else    // We don't know how wide to make it, not a mapshots or ESRI Tiger maps
-            {
-              if (dashed_line)
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-              }
-              else
-              {
-                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-              }
-            }
-            if (glacier_flag)
-            {
-              (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]);  // white
-            }
-            else
-            {
-              (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
-            }
-          }   // End of river_flag/lake_flag code
-
-          else    // Set default line width, use whatever color is already defined by this point.
-          {
-            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-          }
-#endif /* !WITH_DBFAWK */
 
 //WE7U
 // I'd like to be able to change the color of each GPS track for
@@ -3059,209 +2027,7 @@ void draw_shapefile_map (Widget w,
 // Don't do unnecessary calculations if we're not going to draw the
 // label.
 
-#ifdef WITH_DBFAWK
           temp = (gps_flag)?gps_label:name;
-#else /* !WITH_DBFAWK */
-          // We're done with drawing the arc's.  Draw the
-          // labels in this next section.
-          //
-          temp = "";
-          if (       !skip_label
-                     && !skip_it
-                     && map_labels
-                     && road_flag)
-          {
-            char a[2],b[2],c[2];
-
-            if ( (mapshots_labels_flag) && (fieldcount >= 8) )
-            {
-              char temp3[3];
-              char temp4[31];
-              char temp5[5];
-              char temp6[3];
-
-              temp = DBFReadStringAttribute( hDBF, structure, 4 );
-              xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 5 );
-              xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 6 );
-              xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 7 );
-              xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
-
-              // Take care to not insert spaces if
-              // some of the strings are empty.
-              if (strlen(temp3) != 0)
-              {
-                xastir_snprintf(a,sizeof(a)," ");
-              }
-              else
-              {
-                a[0] = '\0';
-              }
-              if (strlen(temp4) != 0)
-              {
-                xastir_snprintf(b,sizeof(b)," ");
-              }
-              else
-              {
-                b[0] = '\0';
-              }
-              if (strlen(temp5) != 0)
-              {
-                xastir_snprintf(c,sizeof(c)," ");
-              }
-              else
-              {
-                c[0] = '\0';
-              }
-
-              xastir_snprintf(temp2,sizeof(temp2),"%s%s%s%s%s%s%s",
-                              temp3,a,temp4,b,temp5,c,temp6);
-              temp = temp2;
-            }
-            else if (fieldcount >=10)    // Need at least 10 fields if we're snagging #9, else segfault
-            {
-              // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
-              temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
-            }
-            if ( (temp == NULL) || (strlen(temp) == 0) )
-            {
-              if (fieldcount >=13)    // Need at least 13 fields if we're snagging #12, else segfault
-              {
-                temp = DBFReadStringAttribute( hDBF, structure, 12 );  // DESCRIP
-              }
-              else
-              {
-                temp = NULL;
-              }
-            }
-          }
-          else if (!skip_label
-                   && map_labels
-                   && !skip_it
-                   && (lake_flag || river_flag) )
-          {
-
-            if ( mapshots_labels_flag && river_flag && (fieldcount >= 8) )
-            {
-              char temp3[3];
-              char temp4[31];
-              char temp5[5];
-              char temp6[3];
-
-
-              temp = DBFReadStringAttribute( hDBF, structure, 4 );
-              xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 5 );
-              xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 6 );
-              xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
-              temp = DBFReadStringAttribute( hDBF, structure, 7 );
-              xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
-              xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
-                              temp3,temp4,temp5,temp6);
-              temp = temp2;
-            }
-            else if (mapshots_labels_flag && lake_flag && (fieldcount >= 4) )
-            {
-              temp = DBFReadStringAttribute( hDBF, structure, 3 );
-            }
-            else if (fieldcount >=14)    // Need at least 14 fields if we're snagging #13, else segfault
-            {
-              temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
-            }
-            else
-            {
-              temp = NULL;
-            }
-          }
-
-
-          // First we need to convert over to using the
-          // temp2 variable, which is changeable.  Make
-          // temp point to it.  temp may already be
-          // pointing to the temp2 variable.
-
-          if (temp != temp2)
-          {
-            // temp points to an unchangeable string
-
-            if (temp != NULL)   // NOAA interstates file has a NULL at this point
-            {
-              // Copy the string so we can change it
-              xastir_snprintf(temp2,sizeof(temp2),"%s",temp);
-              temp = temp2;                       // Point temp to it (for later use)
-            }
-            else
-            {
-              temp2[0] = '\0';
-            }
-          }
-          else    // We're already set to work on temp2!
-          {
-          }
-
-
-          if ( map_labels && gps_flag )
-          {
-            // We're drawing GPS info.  Use gps_label,
-            // overriding anything set before.
-            xastir_snprintf(temp2,
-                            sizeof(temp2),
-                            "%s",
-                            gps_label);
-          }
-
-
-          // Change "United States Highway 2" into "US 2"
-          // Look for substring at start of string
-          if ( strstr(temp2,"United States Highway") == temp2 )
-          {
-            int index;
-            // Convert to "US"
-            temp2[1] = 'S';  // Add an 'S'
-            index = 2;
-            while (temp2[index+19] != '\0')
-            {
-              temp2[index] = temp2[index+19];
-              index++;
-            }
-            temp2[index] = '\0';
-          }
-          else    // Change "State Highway 204" into "State 204"
-          {
-            // Look for substring at start of string
-            if ( strstr(temp2,"State Highway") == temp2 )
-            {
-              int index;
-              // Convert to "State"
-              index = 5;
-              while (temp2[index+8] != '\0')
-              {
-                temp2[index] = temp2[index+8];
-                index++;
-              }
-              temp2[index] = '\0';
-            }
-            else    // Change "State Route 2" into "State 2"
-            {
-              // Look for substring at start of string
-              if ( strstr(temp2,"State Route") == temp2 )
-              {
-                int index;
-                // Convert to "State"
-                index = 5;
-                while (temp2[index+6] != '\0')
-                {
-                  temp2[index] = temp2[index+6];
-                  index++;
-                }
-                temp2[index] = '\0';
-              }
-            }
-          }
-#endif /* !WITH_DBFAWK */
           if ( (temp != NULL)
                && (strlen(temp) != 0)
                && map_labels
@@ -3515,7 +2281,6 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Polygons\n");
           }
 
-#ifdef WITH_DBFAWK
           // User requested filled polygons with stippling.
           // Set the stipple now.  need to do here, because if
           // done earlier the labels get stippled, too.
@@ -3541,7 +2306,6 @@ void draw_shapefile_map (Widget w,
                 break;
             }
           }
-#endif  // WITH_DBFAWK
 
           // Each polygon can be made up of multiple
           // rings, and each ring has multiple points that
@@ -4095,33 +2859,6 @@ void draw_shapefile_map (Widget w,
           for (ring = 0; ring < object->nParts; ring++ )
           {
             int endpoint;
-#ifndef WITH_DBFAWK
-            int glacier_flag = 0;
-            const char *temp;
-
-            if (lake_flag || river_flag)
-            {
-              if ( mapshots_labels_flag && (fieldcount >= 3) )
-              {
-                temp = DBFReadStringAttribute( hDBF, structure, 2 );    // CFCC Field
-                switch (temp[1])
-                {
-                  case '8':   // Special water feature
-                    switch(temp[2])
-                    {
-                      case '1':
-                        glacier_flag++;  // Found a glacier
-                        break;
-                      default:
-                        break;
-                    }
-                    break;
-                  default:
-                    break;
-                }
-              }
-            }
-#endif /* !WITH_DBFAWK */
             //fprintf(stderr,"Ring: %d\t\t", ring);
 
             if ( (ring+1) < object->nParts)
@@ -4222,11 +2959,7 @@ void draw_shapefile_map (Widget w,
               {
                 // We have a hole drawn as unfilled.
                 // Draw as a black dashed line.
-#ifdef WITH_DBFAWK
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-#else   // WITH_DBFAWK
-                (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
-#endif  // WITH_DBFAWK
                 (void)XSetLineAttributes (XtDisplay (w),
                                           gc,
                                           0,
@@ -4257,7 +2990,6 @@ void draw_shapefile_map (Widget w,
               }
               /* old glacier, lake and river code was identical
                  with the exception of what color to use! */
-#ifdef WITH_DBFAWK
               else if (!weather_alert_flag)
               {
                 /* color is already set by dbfawk(?) */
@@ -4269,22 +3001,12 @@ void draw_shapefile_map (Widget w,
                                          pattern,
                                          CapButt,
                                          JoinMiter);
-#else /* !WITH_DBFAWK */
-              else if (glacier_flag||lake_flag||river_flag)
-              {
-                int color = (glacier_flag)?0x0f:
-                            (lake_flag||river_flag)?0x1a:8;
-#endif /* !WITH_DBFAWK */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                 if (map_color_fill && draw_filled)
                 {
                   if (polygon_hole_flag)
                   {
-#ifdef WITH_DBFAWK
                     (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-#else   // WITH_DBFAWK
-                    (void)XSetForeground(XtDisplay(w), gc_temp, colors[color]);
-#endif  // WITH_DBFAWK
                     if (i >= 3)
                     {
                       (void)XFillPolygon(XtDisplay(w),
@@ -4307,9 +3029,7 @@ void draw_shapefile_map (Widget w,
                     if (i >= 3)
                     {
                       /* draw the filled polygon */
-#ifdef WITH_DBFAWK
                       (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-#endif  // WITH_DBFAWK
                       (void)XFillPolygon(XtDisplay(w),
                                          pixmap,
                                          gc,
@@ -4370,19 +3090,7 @@ void draw_shapefile_map (Widget w,
               {
                 if (polygon_hole_flag)
                 {
-#ifndef WITH_DBFAWK
-                  /* city_flag not needed WITH_DBFAWK */
-                  if (city_flag)
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
-                  }
-                  else
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc_temp, colors[0xff]);  // grey
-                  }
-#else   // WITH_DBFAWK
                   (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-#endif /* WITH_DBFAWK */
                   if (i >= 3)
                   {
                     (void)XFillPolygon(XtDisplay(w),
@@ -4402,18 +3110,7 @@ void draw_shapefile_map (Widget w,
                 }
                 else   /* no polygon hole */
                 {
-#ifndef WITH_DBFAWK
-                  if (city_flag)
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
-                  }
-                  else
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc, colors[0xff]);  // grey
-                  }
-#else   // WITH_DBFAWK
                   (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-#endif /* !WITH_DFBAWK */
                   if (i >= 3)
                   {
                     (void)XFillPolygon(XtDisplay (w),
@@ -4432,37 +3129,11 @@ void draw_shapefile_map (Widget w,
                   }
                 }
 
-#ifdef WITH_DBFAWK
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-#endif  // WITH_DBFAWK
 
                 // Draw a thicker border for city boundaries
-#ifndef WITH_DBFAWK
-                if (city_flag)
-                {
-                  if (scale_y <= 64)
-                  {
-                    (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
-                  }
-                  else if (scale_y <= 128)
-                  {
-                    (void)XSetLineAttributes(XtDisplay(w), gc, 1, LineSolid, CapButt,JoinMiter);
-                  }
-                  else
-                  {
-                    (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
-                  }
-
-                  (void)XSetForeground(XtDisplay(w), gc, colors[0x14]); // lightgray for border
-                }
-                else
-                {
-                  (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
-                }
-#else   // WITH_DBFAWK
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-#endif /* WITH_DBFAWK */
 
                 (void)XDrawLines(XtDisplay(w),
                                  pixmap,
@@ -4500,51 +3171,11 @@ void draw_shapefile_map (Widget w,
 // Done with drawing shapes, now draw labels
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef WITH_DBFAWK
           temp = name;
           // Set fill style back to defaults, or labels will get
           // stippled along with polygons!
           XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
-#else /* !WITH_DBFAWK */
-          /* labels come from dbfawk, not here... */
-
-          temp = "";
-          if (lake_flag)
-          {
-            if (map_color_levels && scale_y > 128)
-            {
-              skip_label++;
-            }
-            if (mapshots_labels_flag && (fieldcount >= 4) )
-            {
-              temp = DBFReadStringAttribute( hDBF, structure, 3 );
-            }
-            else if (fieldcount >= 1)
-            {
-              temp = DBFReadStringAttribute( hDBF, structure, 0 );  // NAME (lakes)
-            }
-            else
-            {
-              temp = NULL;
-            }
-          }
-          else if (city_flag)
-          {
-            if (map_color_levels && scale_y > 512)
-            {
-              skip_label++;
-            }
-            if (mapshots_labels_flag && (fieldcount >= 4) )
-            {
-              temp = DBFReadStringAttribute( hDBF, structure, 3 );  // NAME (designated places)
-            }
-            else
-            {
-              temp = NULL;
-            }
-          }
-#endif /* !WITH_DBFAWK */
           /* XXX - figure out how to set this from dbfawk: */
           if (quad_overlay_flag)
           {
@@ -4739,13 +3370,11 @@ void draw_shapefile_map (Widget w,
     }
   }
 
-#ifdef WITH_DBFAWK
   dbfawk_free_info(fld_info);
   if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
   {
     dbfawk_free_sigs(sig_info);
   }
-#endif  // WITH_DBFAWK
 
   DBFClose( hDBF );
   SHPClose( hSHP );
@@ -4768,7 +3397,6 @@ void draw_shapefile_map (Widget w,
 
 
 
-#ifdef WITH_DBFAWK
 
 // This function will delete any pre-loaded dbfawk sigs and clear Dbf_sigs
 // This will trigger a  reload the first time a shapfile is redisplayed
@@ -4782,7 +3410,6 @@ void clear_dbfawk_sigs(void)
   }
 }
 
-#endif  // WITH_DBFAWK
 
 
 #endif  // HAVE_LIBSHP

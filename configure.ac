@@ -377,13 +377,34 @@ if test "${shapelib_desired}" = "no"; then
 fi
 if test "${shapelib_desired}" = "yes" ; then
   use_shapelib=no
-  AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
-    LIBS="$LIBS -lshp"
-    AC_CHECK_LIB(shp,DBFGetFieldIndex,
-      AC_DEFINE(HAVE_DBFGETFIELDINDEX, 1, Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
-    AC_DEFINE(HAVE_LIBSHP, 1, Define to 1 if you have the `shp' library (-lshp). )
-    break)])
+  AC_CHECK_HEADERS([shapefil.h libshp/shapefil.h],
+                   [AC_CHECK_LIB([shp], [DBFOpen],
+                                 [use_shapelib=yes
+                                  LIBS="$LIBS -lshp"
+                                  AC_DEFINE(HAVE_LIBSHP, 1,
+                                            [Define to 1 if you have the `shp' library (-lshp).])
+                                  ])
+                    break
+                   ])
 fi
+
+# Shapelib requires pcre now
+use_pcre=no
+if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "yes"; then
+  AC_CHECK_HEADERS([pcre.h pcre/pcre.h],
+                   [AC_CHECK_LIB([pcre], [pcre_compile],
+                                 [use_pcre=yes
+                                  LIBS="$LIBS -lpcre"
+                                  AC_DEFINE(HAVE_LIBPCRE, 1, Define to 1 if you have the `pcre' library (-lpcre). )
+                                  ])
+                    break
+                    ])
+ if test "${use_pcre}" = "no"
+ then
+    AC_MSG_ERROR([Shapelib support requires PCRE, and we could not find PCRE.  Either disable shapelib by specifying "--without-shapelib" or install PCRE libraries and headers])
+ fi
+fi
+
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
  AC_MSG_WARN([**************************************************************** ])  
  AC_MSG_WARN([Your system does not have shapelib installed.                    ])
@@ -393,16 +414,6 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "no"; then
 fi
 
 
-# Check for pcre
-use_pcre=yes
-AC_ARG_WITH(pcre,[  --without-pcre            Disable pcre features.],use_pcre=$withval)
-if test "${use_pcre}" = "yes"; then
-  use_pcre=no
-  AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
-  LIBS="$LIBS -lpcre"
-  AC_DEFINE(HAVE_LIBPCRE, 1, Define to 1 if you have the `pcre' library (-lpcre). )
-  break)])
-fi
 
 
 # Check for XPM
@@ -518,21 +529,6 @@ if test "${use_ax25}" = "yes"; then
   AC_DEFINE(HAVE_LIBAX25, 1, Define to 1 if you have the `ax25' library (-lax25). )
   break)])
 fi
-
-
-# use dbfawk
-use_dbfawk=yes
-AC_ARG_WITH(dbfawk,[  --without-dbfawk          Disable dbfawk features.],use_dbfawk=$withval)
-# dbfawk requires shapelib and pcre.  Make sure:
-if test "${use_dbfawk}" = "yes"; then
-  if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
-    AC_DEFINE(WITH_DBFAWK, 1, Define to 1 to use dbfawk features. )
-  else
-    echo "*** Warning: dbfawk requires both pcre and shapelib."
-    use_dbfawk=no
-  fi
-fi
-
 
 
 AC_ARG_ENABLE(davis, [  --enable-davis          Turn on Davis support],
@@ -761,11 +757,6 @@ if test "${use_pcre}" = "yes"; then
 else
   ILIBS="$ILIBS     "
 fi
-if test "${use_dbfawk}" = "yes"; then
-  ILIBS="$ILIBS Dbfawk"
-else
-  ILIBS="$ILIBS       "
-fi
 if test "${use_map_cache}" = "yes"; then
   ILIBS="$ILIBS map_caching"
 else
@@ -914,7 +905,6 @@ else
   fi
 fi
 echo "  pcre (Shapefile customization) ............ : $use_pcre"
-echo "  dbfawk (Shapefile customization) .......... : $use_dbfawk"
 echo "  Berkeley DB map caching-Raster map speedups : $use_map_cache"
 echo "  internet map retrieval .................... : $use_retrieval"
 echo

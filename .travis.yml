@@ -160,11 +160,6 @@ matrix:
 #        - make
 #        - sudo make install
  
-##        - ./configure --without-pcre CPPFLAGS="-I/usr/include/geotiff"
-##        - make clean
-##        - make
-##        - sudo make install
- 
 #        - ./configure --without-geotiff CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
 #        - make
@@ -173,11 +168,6 @@ matrix:
 #        - ./configure --without-ax25 CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
 #        - make
-#        - sudo make install
- 
-        - ./configure --without-dbfawk CPPFLAGS="-I/usr/include/geotiff"
-#        - make clean
-        - make
 #        - sudo make install
  
 #        - ./configure --without-map-cache CPPFLAGS="-I/usr/include/geotiff"
@@ -200,7 +190,7 @@ matrix:
         - make
 #        - sudo make install
 
-        - ./configure --without-imagemagick --without-graphicsmagick --without-shapelib --without-pcre --without-dbfawk --without-map-cache --without-libcurl --without-ax25 --without-libproj --without-geotiff --without-festival --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
+        - ./configure --without-imagemagick --without-graphicsmagick --without-shapelib --without-map-cache --without-libcurl --without-ax25 --without-libproj --without-geotiff --without-festival --without-gpsman CPPFLAGS="-I/usr/include/geotiff"
 #        - make clean
         - make
 #        - sudo make install
