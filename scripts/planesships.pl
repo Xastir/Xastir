@@ -50,10 +50,10 @@ if ($enable_planes == 1) {
   sleep(3); # Give time to start programs above before Perl script connects
 
   if ($enable_plane_logging) {
-    system("$XTERM -T ads-b.pl -e $ADSBPL planes 10163 --logging &");
+    system("$XTERM -T ads-b.pl -geometry 175x25 -e $ADSBPL planes 10163 --logging &");
   }
   else {
-    system("$XTERM -T ads-b.pl -e $ADSBPL planes 10163 &");
+    system("$XTERM -T ads-b.pl -geometry 175x25 -e $ADSBPL planes 10163 &");
   }
 }
 
