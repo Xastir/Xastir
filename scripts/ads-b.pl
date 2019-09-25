@@ -54,7 +54,7 @@ use warnings;
 #   "./dump1090 --interactive --net --net-sbs-port 30003 --phase-enhance --oversample --fix --ppm -1 --gain -10 --device-index 0
 #
 #
-# Note: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
+# NOTE: There's also "dump978" which listens to 978 MHz ADS-B transmissions. You can
 # invoke "dump1090" as above, then invoke "dump978" like this:
 #
 #       rtl_sdr -f 978000000 -s 2083334 -g 0 -d 1 - | ./dump978 | ./uat2esnt | nc -q1 localhost 30001
@@ -151,10 +151,11 @@ use warnings;
 #   1/4 wavelength on 978 MHz: 2.87" or 2  7/8"
 #
 #
-# NOTE: In the tables below, lines marked with "Per COUNTRIES.txt file" are derived
-# from the work of Pete 'Aviatek'/'aviateknema' of the Yahoo Group "Mode_S" and
+# NOTE: In the tables below, lines marked with "Per Countries.dat file" are derived
+# from the work of "Alexis" of the Group "https://mode-s.groups.io/g/mode-s"
 # most likely arrived at via observation of Mode-S transponder activity. They are
-# not guaranteed to represent reality in any way.
+# not guaranteed to represent reality in any way. Find the file in the Files section
+# of the group.
 #
 # Most of the rest of the data in the tables was derived from:
 #   http://www.kloth.net/radio/icao24alloc.php (Created 2003-01-12, Last modified 2011-06-23).
@@ -335,452 +336,961 @@ while (<$socket>)
   # from the comment field since it is redundant.
   # Match on more specific first (longer string).
   #
+  # NOTE: The above link has the countries arranged alphabetically.
+  # The code below is arranged in this order (because of the order
+  # in which they must be decoded):
+  #
+  #    1024 addresses (14 bits defined)
+  #    4096 addresses (12 bits defined)
+  #   32768 addresses (9 bits defined)
+  #  262144 addresses (6 bits defined)
+  # 1048576 addresses (4 bits defined)
+  #
+  # The code below is basically the 1024 column from the chart in
+  # alphabetical order, then the 2nd column, and so on. The chart
+  # should be reviewed against the code periodically, perhaps yearly.
+  # You'll see longer bits decoded here and there prior to the normal
+  # bit lengths in each section, for instance "Azerbaijan Military"
+  # just prior to the "Azerbaijan" entry in the 14-bit address section.
+  #
   $registry = "Registry?";
 
   # Convert $plane_id to binary string
   $binary_plane_id = unpack ('B*', pack ('H*',$plane_id) );
 
-  # 14-bit addresses:
-  # -----------------
-  if    ($binary_plane_id =~ m/^01010000000100/) { $registry = "Albania"; }
-  elsif ($binary_plane_id =~ m/^00001100101000/) { $registry = "Antigua and Barbuda"; }
-  elsif ($binary_plane_id =~ m/^01100000000000/) { $registry = "Armenia"; }
-  elsif ($binary_plane_id =~ m/^011000000000100000000001/) { $registry = "Azerbaijan Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01100000000010/) { $registry = "Azerbaijan"; }
-  elsif ($binary_plane_id =~ m/^00001010101000/) { $registry = "Barbados"; }
-  elsif ($binary_plane_id =~ m/^01010001000000/) { $registry = "Belarus"; }
-  elsif ($binary_plane_id =~ m/^00001010101100/) { $registry = "Belize"; }
-  elsif ($binary_plane_id =~ m/^010000000000000110/) { $registry = "Bermuda"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000000000000001/) { $registry = "Bermuda"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000000000000010/) { $registry = "Bermuda"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0100001001000000/) { $registry = "Bermuda"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^00001001010000/) { $registry = "Benin"; }
-  elsif ($binary_plane_id =~ m/^01101000000000/) { $registry = "Bhutan"; }
-  elsif ($binary_plane_id =~ m/^01010001001100/) { $registry = "Bosnia and Herzegovina"; }
-  elsif ($binary_plane_id =~ m/^000000110000000000001000/) { $registry = "Botswana Military" }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^00000011000000/) { $registry = "Botswana"; }
-  elsif ($binary_plane_id =~ m/^10001001010100/) { $registry = "Brunei Darussalam"; }
-  elsif ($binary_plane_id =~ m/^00001001011000/) { $registry = "Cape Verde"; }
-  elsif ($binary_plane_id =~ m/^01000000000000001000000/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000000011010/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000000000000001100/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000010010000010011/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000000001/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000000111/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000100100000101/) { $registry = "Cayman Islands"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^00000011010100/) { $registry = "Comoros"; }
-  elsif ($binary_plane_id =~ m/^10010000000100/) { $registry = "Cook Islands"; }
-  elsif ($binary_plane_id =~ m/^01010000000111/) { $registry = "Croatia"; }
-  elsif ($binary_plane_id =~ m/^01001100100000/) { $registry = "Cyprus"; }
-  elsif ($binary_plane_id =~ m/^00001001100000/) { $registry = "Djibouti"; }
-  elsif ($binary_plane_id =~ m/^00100000001000/) { $registry = "Eritrea"; }
-  elsif ($binary_plane_id =~ m/^01010001000100/) { $registry = "Estonia"; }
-  elsif ($binary_plane_id =~ m/^010000100100000111110100/) { $registry = "Falklands"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000100100000111110101/) { $registry = "Falklands"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000111011111001011011/) { $registry = "Falklands"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01010001010000/) { $registry = "Georgia"; }
-  elsif ($binary_plane_id =~ m/^00001100110000/) { $registry = "Grenada"; }
-  elsif ($binary_plane_id =~ m/^00000100100000/) { $registry = "Guinea-Bissau"; }
-  elsif ($binary_plane_id =~ m/^01000011111001110001011/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000011111010010000100/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000111110011100011/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000111110100100000/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0100001111100111001/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000111110011101/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01000011111001111/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0100001111101000/) { $registry = "Isle of Man"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01101000001100/) { $registry = "Kazakhstan"; }
-  elsif ($binary_plane_id =~ m/^11001000111000/) { $registry = "Kiribati"; }
-  elsif ($binary_plane_id =~ m/^01100000000100/) { $registry = "Kyrgyzstan"; }
-  elsif ($binary_plane_id =~ m/^01010000001011/) { $registry = "Latvia"; }
-  elsif ($binary_plane_id =~ m/^00000100101000/) { $registry = "Lesotho"; }
-  elsif ($binary_plane_id =~ m/^111111111000100011001110/) { $registry = "Lithuania Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01010000001111/) { $registry = "Lithuania"; }
-  elsif ($binary_plane_id =~ m/^01001101000000/) { $registry = "Luxembourg"; }
-  elsif ($binary_plane_id =~ m/^00000101101000/) { $registry = "Maldives"; }
-  elsif ($binary_plane_id =~ m/^01001101001000/) { $registry = "Malta"; }
-  elsif ($binary_plane_id =~ m/^10010000000000/) { $registry = "Marshall Islands"; }
-  elsif ($binary_plane_id =~ m/^00000101111000/) { $registry = "Mauritania"; }
-  elsif ($binary_plane_id =~ m/^00000110000000/) { $registry = "Mauritius"; }
-  elsif ($binary_plane_id =~ m/^01101000000100/) { $registry = "Micronesia"; }   # Micronesia, Federated States of
-  elsif ($binary_plane_id =~ m/^01001101010000/) { $registry = "Monaco"; }
-  elsif ($binary_plane_id =~ m/^01101000001000/) { $registry = "Mongolia"; }
-  elsif ($binary_plane_id =~ m/^00100000000100/) { $registry = "Namibia"; }
-  elsif ($binary_plane_id =~ m/^0100110100000011110/) { $registry = "NATO"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^11001000101000/) { $registry = "Nauru"; }
-  elsif ($binary_plane_id =~ m/^011100001100000001111000/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100001100000001111001/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100001100000001111010/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100001100000001110101/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100001100000001110110/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100001100000001110111/) { $registry = "Oman Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01110000110000/) { $registry = "Oman"; }
-  elsif ($binary_plane_id =~ m/^01101000010000/) { $registry = "Palau"; }
-  elsif ($binary_plane_id =~ m/^00000110101000/) { $registry = "Qatar"; }
-  elsif ($binary_plane_id =~ m/^01010000010011/) { $registry = "Rep. of Moldova"; }   # Republic of Moldova
-  elsif ($binary_plane_id =~ m/^11001000110000/) { $registry = "Saint Lucia"; }
-  elsif ($binary_plane_id =~ m/^00001011110000/) { $registry = "Saint Vincent and the Grenadines"; }
-  elsif ($binary_plane_id =~ m/^10010000001000/) { $registry = "Samoa"; }
-  elsif ($binary_plane_id =~ m/^01010000000000/) { $registry = "San Marino"; }
-  elsif ($binary_plane_id =~ m/^00001001111000/) { $registry = "Sao Tome and Principe"; }
-  elsif ($binary_plane_id =~ m/^00000111010000/) { $registry = "Seychelles"; }
-  elsif ($binary_plane_id =~ m/^00000111011000/) { $registry = "Sierra Leone"; }
-  elsif ($binary_plane_id =~ m/^01010000010111/) { $registry = "Slovakia"; }
-  elsif ($binary_plane_id =~ m/^010100000110111100100001/) { $registry = "Slovenia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010100000110111101100011/) { $registry = "Slovenia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010100000110111101100100/) { $registry = "Slovenia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01010000011011/) { $registry = "Slovenia"; }
-  elsif ($binary_plane_id =~ m/^10001001011100/) { $registry = "Solomon Islands"; }
-  elsif ($binary_plane_id =~ m/^00000111101000/) { $registry = "Swaziland"; }
-  elsif ($binary_plane_id =~ m/^10001001100100/) { $registry = "Taiwan"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01010001010100/) { $registry = "Tajikistan"; }
-  elsif ($binary_plane_id =~ m/^01010001001000/) { $registry = "Macedonia"; } # The former Yugoslav Republic of Macedonia
-  elsif ($binary_plane_id =~ m/^11001000110100/) { $registry = "Tonga"; }
-  elsif ($binary_plane_id =~ m/^01100000000110/) { $registry = "Turkmenistan"; }
-  elsif ($binary_plane_id =~ m/^01010000011111/) { $registry = "Uzbekistan"; }
-  elsif ($binary_plane_id =~ m/^11001001000000/) { $registry = "Vanuatu"; }
-  elsif ($binary_plane_id =~ m/^00000000010000/) { $registry = "Zimbabwe"; }
-  elsif ($binary_plane_id =~ m/^11110000100100/) { $registry = "ICAO(2) Flight Safety"; }
+  # NOTE: In the code below, more specific addresses (more bits) should
+  # appear prior to less specific. The code will snag the first match.
+
+
+
   #
-  # 12-bit addresses:
-  # -----------------
-  elsif ($binary_plane_id =~ m/^011100000000/) { $registry = "Afghanistan"; }
-  elsif ($binary_plane_id =~ m/^000010010000/) { $registry = "Angola"; }
-  elsif ($binary_plane_id =~ m/^010010000100/) { $registry = "Aruba"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000010101000/) { $registry = "Bahamas"; }
-  elsif ($binary_plane_id =~ m/^100010010100000000010001/) { $registry = "Bahrain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010100000000010110/) { $registry = "Bahrain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010100/) { $registry = "Bahrain"; }
-  elsif ($binary_plane_id =~ m/^011100000010/) { $registry = "Bangladesh"; }
-  elsif ($binary_plane_id =~ m/^111010010100/) { $registry = "Bolivia"; }
-  elsif ($binary_plane_id =~ m/^000010011100/) { $registry = "Burkina Faso"; }
-  elsif ($binary_plane_id =~ m/^000000110010/) { $registry = "Burundi"; }
-  elsif ($binary_plane_id =~ m/^011100001110/) { $registry = "Cambodia"; }
-  elsif ($binary_plane_id =~ m/^000000110100/) { $registry = "Cameroon"; }
-  elsif ($binary_plane_id =~ m/^000001101100/) { $registry = "Central African Rep."; }    # Central African Republic
-  elsif ($binary_plane_id =~ m/^000010000100/) { $registry = "Chad"; }
-  elsif ($binary_plane_id =~ m/^1110100000000110/) { $registry = "Chile Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^111010000000/) { $registry = "Chile"; }
-  elsif ($binary_plane_id =~ m/^000010101100/) { $registry = "Colombia"; }
-  elsif ($binary_plane_id =~ m/^000000110110/) { $registry = "Congo"; }
-  elsif ($binary_plane_id =~ m/^000010101110/) { $registry = "Costa Rica"; }
-  elsif ($binary_plane_id =~ m/^000000111000/) { $registry = "Cote d Ivoire"; }
-  elsif ($binary_plane_id =~ m/^000010110000/) { $registry = "Cuba"; }
-  elsif ($binary_plane_id =~ m/^000010001100/) { $registry = "Dem. Rep. of the Congo"; }    # Democratic Republic of the Congo
-  elsif ($binary_plane_id =~ m/^000011000100/) { $registry = "Dominican Republic"; }
-  elsif ($binary_plane_id =~ m/^111010000100/) { $registry = "Ecuador"; }
-  elsif ($binary_plane_id =~ m/^000010110010/) { $registry = "El Salvador"; }
-  elsif ($binary_plane_id =~ m/^000001000010/) { $registry = "Equatorial Guinea"; }
-  elsif ($binary_plane_id =~ m/^000001000000/) { $registry = "Ethiopia"; }
-  elsif ($binary_plane_id =~ m/^110010001000/) { $registry = "Fiji"; }
-  elsif ($binary_plane_id =~ m/^000000111110/) { $registry = "Gabon"; }
-  elsif ($binary_plane_id =~ m/^000010011010/) { $registry = "Gambia"; }
-  elsif ($binary_plane_id =~ m/^000001000100/) { $registry = "Ghana"; }
-  elsif ($binary_plane_id =~ m/^000010110100/) { $registry = "Guatemala"; }
-  elsif ($binary_plane_id =~ m/^000001000110/) { $registry = "Guinea"; }
-  elsif ($binary_plane_id =~ m/^000010110110/) { $registry = "Guyana"; }
-  elsif ($binary_plane_id =~ m/^000010111000/) { $registry = "Haiti"; }
-  elsif ($binary_plane_id =~ m/^000010111010/) { $registry = "Honduras"; }
-  elsif ($binary_plane_id =~ m/^010011001100/) { $registry = "Iceland"; }
-  elsif ($binary_plane_id =~ m/^010011001010000000100011/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010000110010111/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010000110011000/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000101011000/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001000000100/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111100111/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101000/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101001/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101010/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101011/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101100/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101101/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010000111101110/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001010001100/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001010001011/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001100011110/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001100110000/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001100110001/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010001100110010/) { $registry = "Ireland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010011001010/) { $registry = "Ireland"; }
-  elsif ($binary_plane_id =~ m/^000010111110/) { $registry = "Jamaica"; }
-  elsif ($binary_plane_id =~ m/^000001001100/) { $registry = "Kenya"; }
-  elsif ($binary_plane_id =~ m/^011100000110/) { $registry = "Kuwait"; }
-  elsif ($binary_plane_id =~ m/^011100001000/) { $registry = "Laos"; }    # Lao People's Democratic Republic
-  elsif ($binary_plane_id =~ m/^000001010000/) { $registry = "Liberia"; }
-  elsif ($binary_plane_id =~ m/^000001010100/) { $registry = "Madagascar"; }
-  elsif ($binary_plane_id =~ m/^000001011000/) { $registry = "Malawi"; }
-  elsif ($binary_plane_id =~ m/^000001011100/) { $registry = "Mali"; }
-  elsif ($binary_plane_id =~ m/^000000000110/) { $registry = "Mozambique"; }
-  elsif ($binary_plane_id =~ m/^011100000100/) { $registry = "Myanmar"; }
-  elsif ($binary_plane_id =~ m/^011100001010/) { $registry = "Nepal"; }
-  elsif ($binary_plane_id =~ m/^000011000000/) { $registry = "Nicaragua"; }
-  elsif ($binary_plane_id =~ m/^000001100010/) { $registry = "Niger"; }
-  elsif ($binary_plane_id =~ m/^000001100100/) { $registry = "Nigeria"; }
-  elsif ($binary_plane_id =~ m/^000011000010/) { $registry = "Panama"; }
-  elsif ($binary_plane_id =~ m/^100010011000/) { $registry = "Papua New Guinea"; }
-  elsif ($binary_plane_id =~ m/^111010001000/) { $registry = "Paraguay"; }
-  elsif ($binary_plane_id =~ m/^111010001100000000000111/) { $registry = "Peru Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^111010001100/) { $registry = "Peru"; }
-  elsif ($binary_plane_id =~ m/^000001101110/) { $registry = "Rwanda"; }
-  elsif ($binary_plane_id =~ m/^000001110000/) { $registry = "Senegal"; }
-  elsif ($binary_plane_id =~ m/^000001111000/) { $registry = "Somalia"; }
-  elsif ($binary_plane_id =~ m/^000001111100/) { $registry = "Sudan"; }
-  elsif ($binary_plane_id =~ m/^000011001000/) { $registry = "Suriname"; }
-  elsif ($binary_plane_id =~ m/^000010001000/) { $registry = "Togo"; }
-  elsif ($binary_plane_id =~ m/^000011000110/) { $registry = "Trinidad and Tobago"; }
-  elsif ($binary_plane_id =~ m/^000001101000/) { $registry = "Uganda"; }
-  elsif ($binary_plane_id =~ m/^100010010110000100100110/) { $registry = "United Arab Emirates Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010110000000101001/) { $registry = "United Arab Emirates Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010110000000101010/) { $registry = "United Arab Emirates Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010110000000101011/) { $registry = "United Arab Emirates Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010110000000101110/) { $registry = "United Arab Emirates Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010010110/) { $registry = "United Arab Emirates"; }
-  elsif ($binary_plane_id =~ m/^000010000000/) { $registry = "Tanzania"; } # United Republic of Tanzania
-  elsif ($binary_plane_id =~ m/^111010010000/) { $registry = "Uruguay"; }
-  elsif ($binary_plane_id =~ m/^100010010000/) { $registry = "Yemen"; }
-  elsif ($binary_plane_id =~ m/^000010001010/) { $registry = "Zambia"; }
+  # 4-bit addresses (column "1048576" in the table):
+  # ------------------------------------------------
+  if      ($binary_plane_id =~ m/^0001/) { $registry = "Russia"; }  # Russian Federation
+
+  elsif   ($binary_plane_id =~ m/^1010/) { $registry = "U.S.";        # United States
+    if    ($binary_plane_id =~ m/^1010111/) { $registry = "U.S. Military"; }        # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^1010110111111/) { $registry = "U.S. Military"; }        # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^1010110111110111111/) { $registry = "U.S. Military"; }        # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^10101101111101111101/) { $registry = "U.S. Military"; }        # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^101011011111011111001/) { $registry = "U.S. Military"; }        # Per Countries.dat file
+  }
+
+ 
+
   #
-  # 9-bit addresses:
-  # ----------------
-  elsif ($binary_plane_id =~ m/^000010100100/) { $registry = "Algeria Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000010100/) { $registry = "Algeria"; }
-  elsif ($binary_plane_id =~ m/^0100010001/) { $registry = "Austria Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001000/) { $registry = "Austria"; }
-  elsif ($binary_plane_id =~ m/^010001001100000111100001/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001100000111100101/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001100000111100111/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001100000111101000/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001100000111100011/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001100000111100100/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001111/) { $registry = "Belgium Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001001/) { $registry = "Belgium"; }
-  elsif ($binary_plane_id =~ m/^010001010111000000000000/) { $registry = "Bulgaria Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001010/) { $registry = "Bulgaria"; }
-  elsif ($binary_plane_id =~ m/^010010011/) { $registry = "Czech Rep."; } # Czech Republic
-  elsif ($binary_plane_id =~ m/^010010011000010000101000/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011000101100100110/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011000101100101101/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011000101100111010/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011000010000100111/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011000101100000001/) { $registry = "Czech Rep. Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010011/) { $registry = "Czech Rep."; } # Czech Republic
-  elsif ($binary_plane_id =~ m/^011100100/) { $registry = "North Korea"; }  # Democratic People's Republic of Korea
-  elsif ($binary_plane_id =~ m/^010001011111/) { $registry = "Denmark Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001011/) { $registry = "Denmark"; }
-  elsif ($binary_plane_id =~ m/^000000010/) { $registry = "Egypt"; }
-  elsif ($binary_plane_id =~ m/^010001100111100000000001/) { $registry = "Finland Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001100/) { $registry = "Finland"; }
-  elsif ($binary_plane_id =~ m/^01000110100000/) { $registry = "Greece Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001101/) { $registry = "Greece"; }
-  elsif ($binary_plane_id =~ m/^010001110/) { $registry = "Hungary"; }
-  elsif ($binary_plane_id =~ m/^100010100/) { $registry = "Indonesia"; }
-  elsif ($binary_plane_id =~ m/^011100110/) { $registry = "Iran"; }  # Iran, Islamic Republic of
-  elsif ($binary_plane_id =~ m/^011100101/) { $registry = "Iraq"; }
-  elsif ($binary_plane_id =~ m/^0111001110001010/) { $registry = "Israel Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100111/) { $registry = "Israel"; }
-  elsif ($binary_plane_id =~ m/^011101000/) { $registry = "Jordan"; }
-  elsif ($binary_plane_id =~ m/^011101001/) { $registry = "Lebanon"; }
-  elsif ($binary_plane_id =~ m/^000000011/) { $registry = "Libyan Arab Jamahiriya"; }
-  elsif ($binary_plane_id =~ m/^011101010000000010111101/) { $registry = "Malaysia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011101010000000011000101/) { $registry = "Malaysia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011101010000000011010111/) { $registry = "Malaysia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011101010/) { $registry = "Malaysia"; }
-  elsif ($binary_plane_id =~ m/^000011010000000000011011/) { $registry = "Mexico Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000011010000000000111111/) { $registry = "Mexico Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000011010/) { $registry = "Mexico"; }
-  elsif ($binary_plane_id =~ m/^000000100000000001001101/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000001001110/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000000110001/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000000110111/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000000111011/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000001001011/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000001000110/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100000000001001100/) { $registry = "Morocco Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000100/) { $registry = "Morocco"; }
-  elsif ($binary_plane_id =~ m/^010010000000/) { $registry = "Netherlands Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010000/) { $registry = "Netherlands"; }    # Netherlands, Kingdom of the
-  elsif ($binary_plane_id =~ m/^110010000010010100011100/) { $registry = "New Zealand Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110010000010010100011101/) { $registry = "New Zealand Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110010000/) { $registry = "New Zealand"; }
-  elsif ($binary_plane_id =~ m/^0100011110000001/) { $registry = "Norway Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010001111/) { $registry = "Norway"; }
-  elsif ($binary_plane_id =~ m/^011101100001000000110000/) { $registry = "Pakistan Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011101100/) { $registry = "Pakistan"; }
-  elsif ($binary_plane_id =~ m/^011101011/) { $registry = "Phillipines"; }
-  elsif ($binary_plane_id =~ m/^001101000001010110001101/) { $registry = "Poland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010000010000001/) { $registry = "Poland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010001000000110001110/) { $registry = "Poland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010001101100000000000/) { $registry = "Poland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000010000101100001100010/) { $registry = "Poland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010001/) { $registry = "Poland"; }
-  elsif ($binary_plane_id =~ m/^010010010/) { $registry = "Portugal"; }
-  elsif ($binary_plane_id =~ m/^011100011/) { $registry = "Rep. of Korea"; }  # Republic of Korea
-  elsif ($binary_plane_id =~ m/^010010100/) { $registry = "Romania"; }
-  elsif ($binary_plane_id =~ m/^011100010000001110010001/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110010010/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000000100001010/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110001010/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110001100/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110001101/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110001000/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110000101/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000000100001011/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110000110/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110000111/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001110001110/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001011010/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001011011/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001011100/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001011110/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001010001011/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001110100/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010000001001011101/) { $registry = "Saudi Arabia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011100010/) { $registry = "Saudi Arabia"; }
-  elsif ($binary_plane_id =~ m/^011101101/) { $registry = "Singapore"; }
-  elsif ($binary_plane_id =~ m/^000000001/) { $registry = "South Africa"; }
-  elsif ($binary_plane_id =~ m/^011101110/) { $registry = "Sri Lanka"; }
-  elsif ($binary_plane_id =~ m/^010010101000000110000001/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000010/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000011/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000100/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000101/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000110/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110000111/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110001000/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111100110/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000100010100/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111110010/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000001000000111/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111110011/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111110100/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111110101/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000011010000/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111111001/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000111111000/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101000000110011001/) { $registry = "Sweden Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010101/) { $registry = "Sweden"; }
-  elsif ($binary_plane_id =~ m/^010010110111/) { $registry = "Switzerland Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010110/) { $registry = "Switzerland"; }
-  elsif ($binary_plane_id =~ m/^011101111/) { $registry = "Syrian Arab Rep."; }   # Syrian Arab Republic
-  elsif ($binary_plane_id =~ m/^100010000101001100110011/) { $registry = "Thailand Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010000010001001001000/) { $registry = "Thailand Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100010000/) { $registry = "Thailand"; }
-  elsif ($binary_plane_id =~ m/^000000101/) { $registry = "Tunisia"; }
-  elsif ($binary_plane_id =~ m/^0100101110000010/) { $registry = "Turkey Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010010111/) { $registry = "Turkey"; }
-  elsif ($binary_plane_id =~ m/^010100001/) { $registry = "Ukraine"; }
-  elsif ($binary_plane_id =~ m/^000011011/) { $registry = "Venezuela"; }
-  elsif ($binary_plane_id =~ m/^100010001/) { $registry = "Viet Nam"; }
-  elsif ($binary_plane_id =~ m/^010011000/) { $registry = "Yugoslavia"; }
-  elsif ($binary_plane_id =~ m/^111100000/) { $registry = "ICAO(1) Temp Address"; }
+  # 6-bit addresses (column "262144" in the table):
+  # -----------------------------------------------
+  elsif   ($binary_plane_id =~ m/^111000/) { $registry = "Argentina";
+    if    ($binary_plane_id =~ m/^111000010100110000110001/) { $registry = "Argentina Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111000010100110000110010/) { $registry = "Argentina Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111000010100110000110011/) { $registry = "Argentina Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111000010100110001110000/) { $registry = "Argentina Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011111/) { $registry = "Australia";
+    if    ($binary_plane_id =~ m/^0111111/) { $registry = "Australia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111101/) { $registry = "Australia Military"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111110011/) { $registry = "Australia Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111100101/) { $registry = "Australia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011111001001/) { $registry = "Australia Military"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111110010001/) { $registry = "Australia Military"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111100100001/) { $registry = "Australia Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111110010000011/) { $registry = "Australia Military"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111100100000101/) { $registry = "Australia Military"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011111001000001001/) { $registry = "Australia Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111100100000100011/) { $registry = "Australia Military"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01111100100000100010111/) { $registry = "Australia Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^111001/) { $registry = "Brazil";
+    if    ($binary_plane_id =~ m/^11100100000/) { $registry = "Brazil Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^111001001000100110111001/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001000111110111111110/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001000111111001000000/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000000111110110/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000000111110111/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001110111010/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001110111011/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000100101101010/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001011000010/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001011000011/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000010001000011/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000010001000100/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000010111100111/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000010111101000/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000010111101001/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000100100011111/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000100100100000/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000100100100001/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001110101000/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001110101010/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111001001000001110101011/) { $registry = "Brazil Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^110000/) { $registry = "Canada";
+    if    ($binary_plane_id =~ m/^1100001/) { $registry = "Canada Military"; }   # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011110/) { $registry = "China";
+    if    ($binary_plane_id =~ m/^0111100000000001000/) { $registry = "China"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111100000000001/) { $registry = "China Hong Kong"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011110000000001000/) { $registry = "China Hong Kong"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011110000000101000/) { $registry = "China Hong Kong"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111100000001010010/) { $registry = "China Hong Kong"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011110000000001100111/) { $registry = "China Macau"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011110000000001101000/) { $registry = "China Macau"; }   # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^001110/) { $registry = "France";
+    if    ($binary_plane_id =~ m/^00111011/) { $registry = "France Military"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^001110101/) { $registry = "France Military"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^001110000000001001011011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000000110100011011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000001111001111011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000001110000111011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000001111000111011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000001101110111011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^001110000000110100111011/) { $registry = "France Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^001111/) { $registry = "Germany";
+    if    ($binary_plane_id =~ m/^0011111010/) { $registry = "Germany Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0011111101/) { $registry = "Germany Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0011111110/) { $registry = "Germany Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^100000/) { $registry = "India";
+    if    ($binary_plane_id =~ m/^1000000000000010/) { $registry = "India Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^100000000000001100001101/) { $registry = "India Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100000000000000001111000/) { $registry = "India Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100000000000000001111001/) { $registry = "India Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100000000000000011010110/) { $registry = "India Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100000011110000011100011/) { $registry = "India Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^001100/) { $registry = "Italy";
+    if    ($binary_plane_id =~ m/^0011001111111111/) { $registry = "Italy Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^100001/) { $registry = "Japan";
+    if    ($binary_plane_id =~ m/^100001111100110000001010/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100000000000000/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100000000000001/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100110000000001/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100110000001011/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100110000001000/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100001111100110000001001/) { $registry = "Japan Military"; }    # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^001101/) { $registry = "Spain";
+    if    ($binary_plane_id =~ m/^0011011/) { $registry = "Spain Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^00110100/) { $registry = "Spain Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010000/) { $registry = "U.K.";  # United Kingdom
+    if    ($binary_plane_id =~ m/^010000100100010110111010/) { $registry = "Montserrat"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000100100000111110100/) { $registry = "Falkland Is."; }   # Per Countries.dat file specific plane)
+    elsif ($binary_plane_id =~ m/^010000100100000111110101/) { $registry = "Falkland Is."; }   # Per Countries.dat file specific plane)
+    elsif ($binary_plane_id =~ m/^010000100100000111110110/) { $registry = "Falkland Is."; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000100100000111110111/) { $registry = "Falkland Is."; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000111011111001011011/) { $registry = "Falkland Is."; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000000000110111111101/) { $registry = "U.K. Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000000000110111111110/) { $registry = "U.K. Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010000000000110111111111/) { $registry = "U.K. Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^01000011111100101100111/) { $registry = "U.K. Jersey"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000011111001110001011/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001001101/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001001100/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100000000000000100010/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000011010/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000010000/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000111110011100011/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000100100000100111/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000100100100011011/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000010010000010010/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000010010000100011/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000010010000010011/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000010010010100000/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000000000000001100/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001110111110100/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001111100111001/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001100/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001101/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001110/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000001000/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000010100/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000110000/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001001000111/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000111110011101/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000100100000101/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000100100001001/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000110/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000001/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000111/) { $registry = "Cayman Islands"; }    # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000000000000000/) { $registry = "U.K. MoD"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000011111001111/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000000000000001/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000000000000010/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001111101010/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000000/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001000101/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001001001001/) { $registry = "Bermuda"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010000111110100/) { $registry = "Isle of Man"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001111101/) { $registry = "U.K. Guernsey"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100001111/) { $registry = "U.K. Military"; }   # Per Countries.dat file
+  }
+
+
+
   #
-  # 6-bit addresses:
-  # ----------------
-  elsif ($binary_plane_id =~ m/^0011001111111111/) { $registry = "Italy Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001100/) { $registry = "Italy"; }
-  elsif ($binary_plane_id =~ m/^001101000001000110001011/) { $registry = "Spain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000001010110000001/) { $registry = "Spain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010000110011001/) { $registry = "Spain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^00110100/) { $registry = "Spain"; }
-  elsif ($binary_plane_id =~ m/^001101/) { $registry = "Spain Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000000001001011011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000000110100011011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000001111001111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000001110000111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000001111000111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010001010000011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000001101110111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001101000010001010001100/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110000000110100111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110101/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^00111011/) { $registry = "France Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001110/) { $registry = "France"; }
-  elsif ($binary_plane_id =~ m/^0011111010/) { $registry = "Germany Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0011111101/) { $registry = "Germany Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0011111110/) { $registry = "Germany Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^001111/) { $registry = "Germany"; }
-  elsif ($binary_plane_id =~ m/^010000000000110111111101/) { $registry = "U.K. Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000110111111110/) { $registry = "U.K. Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000110111111111/) { $registry = "U.K. Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000000000000000/) { $registry = "U.K. MoD"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0100001111/) { $registry = "U.K. Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^010000/) { $registry = "U.K."; }  # United Kingdom
-  elsif ($binary_plane_id =~ m/^011110000000000100011111/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001000000000/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001000001011/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001000000110/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001000001100/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001000000111/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0111100000000001/) { $registry = "China Hong Kong"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001100110110/) { $registry = "China Macau"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000000100001000/) { $registry = "China Macau"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001011000100/) { $registry = "China Macau"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110000000001100111/) { $registry = "China Macau"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111000000000110100/) { $registry = "China Macau"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011110/) { $registry = "China"; }
-  elsif ($binary_plane_id =~ m/^01111100100000100010111/) { $registry = "Australia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111100100000100011/) { $registry = "Australia Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011111001000001001/) { $registry = "Australia Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111100100000101/) { $registry = "Australia Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0111110010000011/) { $registry = "Australia Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111100100001/) { $registry = "Australia Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0111110010001/) { $registry = "Australia Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011111001001/) { $registry = "Australia Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111100101/) { $registry = "Australia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0111110011/) { $registry = "Australia Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^01111101/) { $registry = "Australia Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^0111111/) { $registry = "Australia Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^011111/) { $registry = "Australia"; }
-  elsif ($binary_plane_id =~ m/^100000000000000001111000/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100000000000000001111001/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^000000000000000100000000/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100000000000000011010110/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100000000000001011110000/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^1000000000000010/) { $registry = "India Military"; }  # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100000/) { $registry = "India"; }
-  elsif ($binary_plane_id =~ m/^100001111100000000000000/) { $registry = "Japan Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100001111100000000000001/) { $registry = "Japan Military"; }    # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^100001/) { $registry = "Japan"; }
-  elsif ($binary_plane_id =~ m/^110000000100100110001100/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000000110001111110100/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000000011101001111110/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000000010010010010100/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000000001010010111100/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000001000100100111011/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000001000100100111100/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000001000100101000001/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000001000100101000000/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000001000100100111110/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^1100001/) { $registry = "Canada Military"; }   # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^110000/) { $registry = "Canada"; }
-  elsif ($binary_plane_id =~ m/^111000/) { $registry = "Argentina"; }
-  elsif ($binary_plane_id =~ m/^11100100000/) { $registry = "Brazil Military"; } # Per COUNTRIES.txt file
-  elsif ($binary_plane_id =~ m/^111001/) { $registry = "Brazil"; }
+  # 9-bit addresses (column "32768" in the table):
+  # ----------------------------------------------
+  elsif   ($binary_plane_id =~ m/^000010100/) { $registry = "Algeria";
+    if    ($binary_plane_id =~ m/^000010100100/) { $registry = "Algeria Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001000/) { $registry = "Austria";
+    if    ($binary_plane_id =~ m/^0100010001/) { $registry = "Austria Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001001/) { $registry = "Belgium";
+    if    ($binary_plane_id =~ m/^010001001111/) { $registry = "Belgium Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010001001100000111100001/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001100000111100101/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001100000111100111/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001100000111101000/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001100000111100011/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001100000111100100/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001110110110000001/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001110110110000010/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001001110110110000011/) { $registry = "Belgium Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001010/) { $registry = "Bulgaria";
+    if    ($binary_plane_id =~ m/^010001010111/) { $registry = "Bulgaria Military"; }    # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010010011/) { $registry = "Czech"; # Czech Republic
+    if    ($binary_plane_id =~ m/^0100100110000100/) { $registry = "Czech Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100100/) { $registry = "North Korea"; }  # Democratic People's Republic of Korea
+
+  elsif   ($binary_plane_id =~ m/^010001011/) { $registry = "Denmark";
+    if    ($binary_plane_id =~ m/^0100010111110100/) { $registry = "Denmark Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^000000010/) { $registry = "Egypt";
+    if    ($binary_plane_id =~ m/^00000001000000000111/) { $registry = "Egypt Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^00000001000000001000/) { $registry = "Egypt Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^000000010000000100101100/) { $registry = "Egypt Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001100/) { $registry = "Finland";
+    if    ($binary_plane_id =~ m/^0100011001111000/) { $registry = "Finland Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001101/) { $registry = "Greece";
+    if    ($binary_plane_id =~ m/^01000110100000/) { $registry = "Greece Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000110111101011001001/) { $registry = "Greece Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010001101010000010010001/) { $registry = "Greece Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001101010000010010011/) { $registry = "Greece Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010001101010000010010101/) { $registry = "Greece Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001110/) { $registry = "Hungary";
+    if    ($binary_plane_id =~ m/^01000111001111/) { $registry = "Hungary Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000111011111111111/) { $registry = "Hungary Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^100010100/) { $registry = "Indonesia";
+    if    ($binary_plane_id =~ m/^100010100010100100000001/) { $registry = "Indonesia Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010100010100100000010/) { $registry = "Indonesia Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010100000000000100100/) { $registry = "Indonesia Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010100000000000101001/) { $registry = "Indonesia Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100110/) { $registry = "Iran";   # Iran, Islamic Republic of
+    if    ($binary_plane_id =~ m/^011100110100110100011110/) { $registry = "Iran Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100101/) { $registry = "Iraq";
+    if    ($binary_plane_id =~ m/^011100101000000111111/) { $registry = "Iraq Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111001010000010000000/) { $registry = "Iraq Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01110010100000011111011/) { $registry = "Iraq Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011100101000000111110101/) { $registry = "Iraq Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100111/) { $registry = "Israel";
+    if    ($binary_plane_id =~ m/^0111001110001010/) { $registry = "Israel Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011101000/) { $registry = "Jordan"; }
+
+  elsif   ($binary_plane_id =~ m/^011101001/) { $registry = "Lebanon"; }
+
+  elsif   ($binary_plane_id =~ m/^000000011/) { $registry = "Libya";   # Libyan Arab Jamahiriya
+    if    ($binary_plane_id =~ m/^000000011000001111101011/) { $registry = "Libya Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011101010/) { $registry = "Malaysia";
+    if    ($binary_plane_id =~ m/^011101010000000101010110/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000011010100/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000001100/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000001111/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000100100/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000100101/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000100110/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000000100111/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000010111101/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000011000101/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101010000000011010111/) { $registry = "Malaysia Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000011010/) { $registry = "Mexico";
+    if    ($binary_plane_id =~ m/^000011010000011000010101/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000010011000010/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000000110111010/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000010101000110/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000010101000111/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000000000011011/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000000000111111/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000001010111001/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000000001000101/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000000001011010/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000011001001111/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011010000011001001101/) { $registry = "Mexico Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000000100/) { $registry = "Morocco";
+    if    ($binary_plane_id =~ m/^00000010000000001011/) { $registry = "Morocco Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^000000100000000011000/) { $registry = "Morocco Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^000000100000000001011101/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001011110/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010101000/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010101011/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010100000/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010100011/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010100010/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010100101/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000010101100/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001001011/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001000110/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001001100/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001001101/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001001110/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000110001/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000110111/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111000/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111001/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111010/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111011/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111100/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000000111110/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000001000001/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000011001001/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000100000000011001100/) { $registry = "Morocco Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010010000/) { $registry = "Netherlands";    # Netherlands, Kingdom of the
+    if    ($binary_plane_id =~ m/^010010000000/) { $registry = "Netherlands Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010010000100000010010101/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010010110/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010001001/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000100001111/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000100010001/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000100010010/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010001011/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010000000/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010000001/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010000010/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010100100/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100000010100101/) { $registry = "Netherlands Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010000100/) { $registry = "Aruba"; } # Per Countries.dat file (In Netherlands block)
+  }
+
+  elsif   ($binary_plane_id =~ m/^110010000/) { $registry = "New Zealand";
+    if    ($binary_plane_id =~ m/^1100100001111111/) { $registry = "New Zealand Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^110010000010010100011100/) { $registry = "New Zealand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^110010000010010100011101/) { $registry = "New Zealand Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010001111/) { $registry = "Norway";
+    if    ($binary_plane_id =~ m/^0100011110000001/) { $registry = "Norway Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0100011110000000111/) { $registry = "Norway Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000111100000001101/) { $registry = "Norway Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010001111000000011001/) { $registry = "Norway Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^01000111100000001100011/) { $registry = "Norway Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011101100/) { $registry = "Pakistan";
+    if    ($binary_plane_id =~ m/^011101100000000011101001/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100000000000011001/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000000110000/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000011010110/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000011011000/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000000111111/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000001001011/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000001010001/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000001010010/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000001010100/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100001000001011101/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100011100110000111/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100010101011110011/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100010101111110100/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100000001011110101/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101100010000010011010/) { $registry = "Pakistan Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011101011/) { $registry = "Philipines"; }
+
+  elsif   ($binary_plane_id =~ m/^010010001/) { $registry = "Poland";
+    if    ($binary_plane_id =~ m/^0100100011011000/) { $registry = "Poland Military"; }  # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^010010001000000110001110/) { $registry = "Poland Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010010010/) { $registry = "Portugal";
+    if    ($binary_plane_id =~ m/^0100100101111100/) { $registry = "Portugal Military"; } # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100011/) { $registry = "South Korea";   # Republic of Korea
+    if    ($binary_plane_id =~ m/^011100011111101100000001/) { $registry = "South Korea Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100011111101100000010/) { $registry = "South Korea Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100011111100100001010/) { $registry = "South Korea Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100011111100100000110/) { $registry = "South Korea Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010010100/) { $registry = "Romania";
+    if    ($binary_plane_id =~ m/^010010100011010110101010/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010100011010110101011/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010100011010110101100/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010100001011100101010/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010100001100000010110/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010100001100000101111/) { $registry = "Romania Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100010/) { $registry = "Saudi Arabia";
+    if    ($binary_plane_id =~ m/^0111000100000010011/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111000100000010100/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^0111000100000011100/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011100010000001001011/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011100010000000100001010/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000000100001011/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011100001/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011100010/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011010101/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011100011/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011100100/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001011111001/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001001011010/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001001011011/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001001011100/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001001011110/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100010000001001011101/) { $registry = "Saudi Arabia Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  # Serbia: See Yugoslavia slot
+
+  elsif   ($binary_plane_id =~ m/^011101101/) { $registry = "Singapore";
+    if    ($binary_plane_id =~ m/^011101101110001100000011/) { $registry = "Singapore Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101101110001100000010/) { $registry = "Singapore Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101101110001100000100/) { $registry = "Singapore Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101101110001100000001/) { $registry = "Singapore Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011101101000010011000011/) { $registry = "Singapore Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000000001/) { $registry = "South Africa"; }
+
+  elsif   ($binary_plane_id =~ m/^011101110/) { $registry = "Sri Lanka"; }
+
+  elsif   ($binary_plane_id =~ m/^010010101/) { $registry = "Sweden";
+    if    ($binary_plane_id =~ m/^010010101000000110000001/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000010/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000011/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000100/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000101/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000110/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110000111/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110001000/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111100110/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000100010100/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000001000011111/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111110010/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000001000000111/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111110011/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111110100/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111110101/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000011010000/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111111001/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000111111000/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000000110011001/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010010101000001000101010/) { $registry = "Sweden Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^010010110/) { $registry = "Switzerland";
+    if    ($binary_plane_id =~ m/^010010110111/) { $registry = "Switzerland Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^011101111/) { $registry = "Syria"; }   # Syrian Arab Republic
+
+  elsif   ($binary_plane_id =~ m/^100010000/) { $registry = "Thailand";
+    if    ($binary_plane_id =~ m/^100010000101001100110011/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000010001001001000/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110100011/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110110000/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010000000001/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000011101011000001/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000000000100111/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000000000101100/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110100111/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101000/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101001/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101010/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101011/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101100/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101101/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101110/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000010110101111/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000000001001001/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000101001100110010/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000001110001100001/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000001110001100010/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000001110001100011/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000001110001100100/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010000000110110110110/) { $registry = "Thailand Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000000101/) { $registry = "Tunisia"; }
+
+  elsif   ($binary_plane_id =~ m/^010010111/) { $registry = "Turkey";
+    if    ($binary_plane_id =~ m/^0100101110000010/) { $registry = "Turkey Military"; }  # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^010100001/) { $registry = "Ukraine"; }
+
+  elsif   ($binary_plane_id =~ m/^000011011/) { $registry = "Venezuela";
+    if    ($binary_plane_id =~ m/^000011011000000000110010/) { $registry = "Venezuela Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011011000000001100000/) { $registry = "Venezuela Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000011011000000001101100/) { $registry = "Venezuela Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^100010001/) { $registry = "Viet Nam"; }
+
+  elsif   ($binary_plane_id =~ m/^010011000/) { $registry = "Serbia";  # Was Yugoslavia
+    if    ($binary_plane_id =~ m/^010011000000000101010101/) { $registry = "Serbia Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^111100000/) { $registry = "ICAO(1) Temp. Address"; }
+
+
+
   #
-  # 4-bit addresses:
-  # ----------------
-  elsif ($binary_plane_id =~ m/^101011011111011111001/) { $registry = "U.S. Military"; }        # Per COUNTRIES.txt file (Changed A.F. to Military)
-  elsif ($binary_plane_id =~ m/^10101101111101111101/) { $registry = "U.S. Military"; }        # Per COUNTRIES.txt file (Changed A.F. to Military)
-  elsif ($binary_plane_id =~ m/^1010110111110111111/) { $registry = "U.S. Military"; }        # Per COUNTRIES.txt file (Changed A.F. to Military)
-  elsif ($binary_plane_id =~ m/^1010110111111/) { $registry = "U.S. Military"; }        # Per COUNTRIES.txt file (Changed A.F. to Military)
-  elsif ($binary_plane_id =~ m/^1010111/) { $registry = "U.S. Military"; }        # Per COUNTRIES.txt file (Changed A.F. to Military)
-  elsif ($binary_plane_id =~ m/^1010/) { $registry = "U.S."; }        # United States
-  elsif ($binary_plane_id =~ m/^0001/) { $registry = "Russian Fed."; }  # Russian Federation
+  # 12-bit addresses (column "4096" in the table):
+  # ----------------------------------------------
+  elsif   ($binary_plane_id =~ m/^011100000000/) { $registry = "Afghanistan"; }
+
+  elsif   ($binary_plane_id =~ m/^000010010000/) { $registry = "Angola"; }
+
+  elsif   ($binary_plane_id =~ m/^000010101000/) { $registry = "Bahamas";
+    if    ($binary_plane_id =~ m/^000010101000000000100001/) { $registry = "Bahamas Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^100010010100/) { $registry = "Bahrain";
+    if    ($binary_plane_id =~ m/^100010010100000000010001/) { $registry = "Bahrain Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010100000000010110/) { $registry = "Bahrain Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^011100000010/) { $registry = "Bangladesh";
+    if    ($binary_plane_id =~ m/^011100000010110000000010/) { $registry = "Bangladesh Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100000010110000000011/) { $registry = "Bangladesh Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100000010110000000100/) { $registry = "Bangladesh Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^111010010100/) { $registry = "Bolivia";
+    if    ($binary_plane_id =~ m/^111010010100000011111010/) { $registry = "Bolivia Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111010010100000100000100/) { $registry = "Bolivia Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010011100/) { $registry = "Burkina Faso"; }
+
+  elsif   ($binary_plane_id =~ m/^000000110010/) { $registry = "Burundi"; }
+
+  elsif   ($binary_plane_id =~ m/^011100001110/) { $registry = "Cambodia"; }
+
+  elsif   ($binary_plane_id =~ m/^000000110100/) { $registry = "Cameroon";
+    if    ($binary_plane_id =~ m/^000000110100010001000011/) { $registry = "Cameroon Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000110100010001000101/) { $registry = "Cameroon Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000001101100/) { $registry = "Central African Rep."; }    # Central African Republic
+
+  elsif   ($binary_plane_id =~ m/^000010000100/) { $registry = "Chad"; }
+
+  elsif   ($binary_plane_id =~ m/^111010000000/) { $registry = "Chile";
+    if    ($binary_plane_id =~ m/^1110100000000110/) { $registry = "Chile Military"; }    # Per Countries.dat file
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010101100/) { $registry = "Colombia";
+    if    ($binary_plane_id =~ m/^000010101100000000000101/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000000111011/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000001100110/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000001100111/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000001110001/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000100001100/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000010101100000000110110/) { $registry = "Columbia Military"; }    # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010001100/) { $registry = "Congo DRC"; } # Democratic Republic of the Congo
+
+  elsif   ($binary_plane_id =~ m/^000000110110/) { $registry = "Congo ROC"; }
+
+  elsif   ($binary_plane_id =~ m/^000010101110/) { $registry = "Costa Rica"; }
+
+  elsif   ($binary_plane_id =~ m/^000000111000/) { $registry = "Cote d Ivoire"; }
+
+  elsif   ($binary_plane_id =~ m/^000010110000/) { $registry = "Cuba"; }
+
+  elsif   ($binary_plane_id =~ m/^000011000100/) { $registry = "Dominican Republic"; }
+
+  elsif   ($binary_plane_id =~ m/^111010000100/) { $registry = "Ecuador";
+    if    ($binary_plane_id =~ m/^111010000100000000110101/) { $registry = "Ecuador Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^111010000100000000110000/) { $registry = "Ecuador Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010110010/) { $registry = "El Salvador"; }
+
+  elsif   ($binary_plane_id =~ m/^000001000010/) { $registry = "Equatorial Guinea"; }
+
+  elsif   ($binary_plane_id =~ m/^000001000000/) { $registry = "Ethiopia"; }
+
+  elsif   ($binary_plane_id =~ m/^110010001000/) { $registry = "Fiji"; }
+
+  elsif   ($binary_plane_id =~ m/^000000111110/) { $registry = "Gabon"; }
+
+  elsif   ($binary_plane_id =~ m/^000010011010/) { $registry = "Gambia"; }
+
+  elsif   ($binary_plane_id =~ m/^000001000100/) { $registry = "Ghana"; }
+
+  elsif   ($binary_plane_id =~ m/^000010110100/) { $registry = "Guatemala"; }
+
+  elsif   ($binary_plane_id =~ m/^000001000110/) { $registry = "Guinea"; }
+
+  elsif   ($binary_plane_id =~ m/^000010110110/) { $registry = "Guyana"; }
+
+  elsif   ($binary_plane_id =~ m/^000010111000/) { $registry = "Haiti"; }
+
+  elsif   ($binary_plane_id =~ m/^000010111010/) { $registry = "Honduras"; }
+
+  elsif   ($binary_plane_id =~ m/^010011001100/) { $registry = "Iceland"; }
+
+  elsif   ($binary_plane_id =~ m/^010011001010/) { $registry = "Ireland";
+    if    ($binary_plane_id =~ m/^010011001010000000100011/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000100111110/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000100111111/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000101011000/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001000000100/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111100111/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101000/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101001/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101010/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101011/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101100/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101101/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010000111101110/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001010001100/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001010001011/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100011010/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100011110/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100110000/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100110001/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100110010/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100110101/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010011001010001100110110/) { $registry = "Ireland Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010111110/) { $registry = "Jamaica"; }
+
+  elsif   ($binary_plane_id =~ m/^000001001100/) { $registry = "Kenya"; }
+
+  elsif   ($binary_plane_id =~ m/^011100000110/) { $registry = "Kuwait"; }
+
+  elsif   ($binary_plane_id =~ m/^011100001000/) { $registry = "Laos"; }    # Lao People's Democratic Republic
+
+  elsif   ($binary_plane_id =~ m/^000001010000/) { $registry = "Liberia"; }
+
+  elsif   ($binary_plane_id =~ m/^000001010100/) { $registry = "Madagascar"; }
+
+  elsif   ($binary_plane_id =~ m/^000001011000/) { $registry = "Malawi"; }
+
+  elsif   ($binary_plane_id =~ m/^000001011100/) { $registry = "Mali"; }
+
+  elsif   ($binary_plane_id =~ m/^000000000110/) { $registry = "Mozambique"; }
+
+  elsif   ($binary_plane_id =~ m/^011100000100/) { $registry = "Myanmar"; }
+
+  elsif   ($binary_plane_id =~ m/^011100001010/) { $registry = "Nepal"; }
+
+  elsif   ($binary_plane_id =~ m/^000011000000/) { $registry = "Nicaragua"; }
+
+  elsif   ($binary_plane_id =~ m/^000001100010/) { $registry = "Niger"; }
+
+  elsif   ($binary_plane_id =~ m/^000001100100/) { $registry = "Nigeria";
+    if    ($binary_plane_id =~ m/^000001100100000001010001/) { $registry = "Nigeria Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001100100000011110000/) { $registry = "Nigeria Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000011000010/) { $registry = "Panama";
+    if    ($binary_plane_id =~ m/^000011000010000001001110/) { $registry = "Panama Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^100010011000/) { $registry = "Papua New Guinea"; }
+
+  elsif   ($binary_plane_id =~ m/^111010001000/) { $registry = "Paraguay"; }
+
+  elsif   ($binary_plane_id =~ m/^111010001100/) { $registry = "Peru";
+    if    ($binary_plane_id =~ m/^111010001100000000000111/) { $registry = "Peru Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000001101110/) { $registry = "Rwanda"; }
+
+  elsif   ($binary_plane_id =~ m/^000001110000/) { $registry = "Senegal"; }
+
+  elsif   ($binary_plane_id =~ m/^000001111000/) { $registry = "Somalia"; }
+
+  elsif   ($binary_plane_id =~ m/^000001111100/) { $registry = "Sudan"; }
+
+  elsif   ($binary_plane_id =~ m/^000011001000/) { $registry = "Suriname"; }
+
+  elsif   ($binary_plane_id =~ m/^000010001000/) { $registry = "Togo"; }
+
+  elsif   ($binary_plane_id =~ m/^000011000110/) { $registry = "Trinidad and Tobago"; }
+
+  elsif   ($binary_plane_id =~ m/^000001101000/) { $registry = "Uganda"; }
+
+  elsif   ($binary_plane_id =~ m/^100010010110/) { $registry = "United Arab Emirates";
+    if    ($binary_plane_id =~ m/^100010010110110000/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^100010010110000100100110/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010110000000101001/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010110000000101010/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010110000000101011/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010110000000101110/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^100010010110000000101100/) { $registry = "United Arab Emirates Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^000010000000/) { $registry = "Tanzania"; } # United Republic of Tanzania
+
+  elsif   ($binary_plane_id =~ m/^111010010000/) { $registry = "Uruguay"; }
+
+  elsif   ($binary_plane_id =~ m/^100010010000/) { $registry = "Yemen"; }
+
+  elsif   ($binary_plane_id =~ m/^000010001010/) { $registry = "Zambia"; }
+
+
+
+  # 14-bit addresses (column "1024" in the table):
+  # ----------------------------------------------
+  elsif   ($binary_plane_id =~ m/^01010000000100/) { $registry = "Albania"; }
+
+  elsif   ($binary_plane_id =~ m/^00001100101000/) { $registry = "Antigua and Barbuda"; }
+
+  elsif   ($binary_plane_id =~ m/^01100000000000/) { $registry = "Armenia"; }
+
+  elsif   ($binary_plane_id =~ m/^01100000000010/) { $registry = "Azerbaijan";
+    if    ($binary_plane_id =~ m/^011000000000100000000001/) { $registry = "Azerbaijan Military"; }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^00001010101000/) { $registry = "Barbados"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001000000/) { $registry = "Belarus"; }
+
+  elsif   ($binary_plane_id =~ m/^00001010101100/) { $registry = "Belize"; }
+
+  elsif   ($binary_plane_id =~ m/^00001001010000/) { $registry = "Benin"; }
+
+  elsif   ($binary_plane_id =~ m/^01101000000000/) { $registry = "Bhutan"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001001100/) { $registry = "Bosnia and Herzegovina"; }
+
+  elsif   ($binary_plane_id =~ m/^00000011000000/) { $registry = "Botswana";
+    if    ($binary_plane_id =~ m/^000000110000000000010010/) { $registry = "Botswana Military" }  # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000000110000000000011010/) { $registry = "Botswana Military" }  # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^10001001010100/) { $registry = "Brunei Darussalam"; }
+
+  elsif   ($binary_plane_id =~ m/^00001001011000/) { $registry = "Cape Verde"; }
+
+  elsif   ($binary_plane_id =~ m/^00000011010100/) { $registry = "Comoros"; }
+
+  elsif   ($binary_plane_id =~ m/^10010000000100/) { $registry = "Cook Islands"; }
+
+  elsif   ($binary_plane_id =~ m/^01010000000111/) { $registry = "Croatia";
+    if    ($binary_plane_id =~ m/^010100000001110100010011/) { $registry = "Croatia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000001111110000101/) { $registry = "Croatia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000001111110000110/) { $registry = "Croatia Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^01001100100000/) { $registry = "Cyprus"; }
+
+  elsif   ($binary_plane_id =~ m/^00001001100000/) { $registry = "Djibouti"; }
+
+  elsif   ($binary_plane_id =~ m/^00100000001000/) { $registry = "Eritrea"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001000100/) { $registry = "Estonia"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001010000/) { $registry = "Georgia"; }
+
+  elsif   ($binary_plane_id =~ m/^00001100110000/) { $registry = "Grenada"; }
+
+  elsif   ($binary_plane_id =~ m/^00000100100000/) { $registry = "Guinea-Bissau"; }
+
+  elsif   ($binary_plane_id =~ m/^01101000001100/) { $registry = "Kazakhstan"; }
+
+  elsif   ($binary_plane_id =~ m/^11001000111000/) { $registry = "Kiribati"; }
+
+  elsif   ($binary_plane_id =~ m/^01100000000100/) { $registry = "Kyrgyzstan"; }
+
+  elsif   ($binary_plane_id =~ m/^01010000001011/) { $registry = "Latvia"; }
+
+  elsif   ($binary_plane_id =~ m/^00000100101000/) { $registry = "Lesotho"; }
+
+  elsif   ($binary_plane_id =~ m/^01010000001111/) { $registry = "Lithuania";
+    if    ($binary_plane_id =~ m/^010100000011111111010010/) { $registry = "Lithuania Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000011111111010011/) { $registry = "Lithuania Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^01001101000000/) { $registry = "Luxembourg";
+    if    ($binary_plane_id =~ m/^0100110100000011110/) { $registry = "NATO"; }   # Per Countries.dat file (In Luxembourg block)
+  }
+
+  # Also see NATO in the Luxembourg block above
+  elsif   ($binary_plane_id =~ m/^010001110111111111110001/) { $registry = "NATO Military"; } # Per Countries.dat file (specific plane)
+  elsif   ($binary_plane_id =~ m/^010001110111111111110010/) { $registry = "NATO Military"; } # Per Countries.dat file (specific plane)
+  elsif   ($binary_plane_id =~ m/^010001110111111111110011/) { $registry = "NATO Military"; } # Per Countries.dat file (specific plane)
+
+
+  elsif   ($binary_plane_id =~ m/^00000101101000/) { $registry = "Maldives"; }
+
+  elsif   ($binary_plane_id =~ m/^01001101001000/) { $registry = "Malta";
+    if    ($binary_plane_id =~ m/^010011010010000001011000/) { $registry = "Malta Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^10010000000000/) { $registry = "Marshall Islands"; }
+
+  elsif   ($binary_plane_id =~ m/^00000101111000/) { $registry = "Mauritania"; }
+
+  elsif   ($binary_plane_id =~ m/^00000110000000/) { $registry = "Mauritius"; }
+
+  elsif   ($binary_plane_id =~ m/^01101000000100/) { $registry = "Micronesia"; }   # Micronesia, Federated States of
+
+  elsif   ($binary_plane_id =~ m/^01001101010000/) { $registry = "Monaco"; }
+
+  elsif   ($binary_plane_id =~ m/^01101000001000/) { $registry = "Mongolia"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001011000/) { $registry = "Montenegro"; } # Per Countries.dat file
+
+  elsif   ($binary_plane_id =~ m/^00100000000100/) { $registry = "Namibia"; }
+
+  elsif   ($binary_plane_id =~ m/^11001000101000/) { $registry = "Nauru"; }
+
+  elsif   ($binary_plane_id =~ m/^01110000110000/) { $registry = "Oman";
+    if    ($binary_plane_id =~ m/^01110000110000000111/) { $registry = "Oman Military"; }   # Per Countries.dat file
+    elsif ($binary_plane_id =~ m/^011100001100000010001100/) { $registry = "Oman Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^011100001100000010001011/) { $registry = "Oman Military"; }   # Per Countries.dat file (specific plane)
+ 
+  }
+
+  elsif   ($binary_plane_id =~ m/^01101000010000/) { $registry = "Palau"; }
+
+  elsif   ($binary_plane_id =~ m/^00000110101000/) { $registry = "Qatar";
+    if    ($binary_plane_id =~ m/^000001101010001001001010/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001001011/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001001100/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001001101/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010000011011001/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010000011011010/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001001000/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001001001/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001010101/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^000001101010001001010110/) { $registry = "Qatar Military"; }   # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^01010000010011/) { $registry = "Moldova"; }   # Republic of Moldova
+
+  elsif   ($binary_plane_id =~ m/^11001000110000/) { $registry = "Saint Lucia"; }
+
+  elsif   ($binary_plane_id =~ m/^00001011110000/) { $registry = "Saint Vincent and the Grenadines"; }
+
+  elsif   ($binary_plane_id =~ m/^10010000001000/) { $registry = "Samoa"; }
+
+  elsif   ($binary_plane_id =~ m/^01010000000000/) { $registry = "San Marino"; }
+
+  elsif   ($binary_plane_id =~ m/^00001001111000/) { $registry = "Sao Tome and Principe"; }
+
+  elsif   ($binary_plane_id =~ m/^00000111010000/) { $registry = "Seychelles"; }
+
+  elsif   ($binary_plane_id =~ m/^00000111011000/) { $registry = "Sierra Leone"; }
+
+  elsif   ($binary_plane_id =~ m/^01010000010111/) { $registry = "Slovakia";
+    if    ($binary_plane_id =~ m/^010100000101111101101100/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000101111101100011/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000101111101100001/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000101111101100010/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000101111101101010/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+    elsif ($binary_plane_id =~ m/^010100000101111101101000/) { $registry = "Slovakia Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^01010000011011/) { $registry = "Slovenia";
+    if    ($binary_plane_id =~ m/^0101000001101111/) { $registry = "Slovenia Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^10001001011100/) { $registry = "Solomon Islands"; }
+
+  elsif   ($binary_plane_id =~ m/^00000111101000/) { $registry = "Swaziland"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001010100/) { $registry = "Tajikistan"; }
+
+  elsif   ($binary_plane_id =~ m/^01010001001000/) { $registry = "Macedonia"; } # The former Yugoslav Republic of Macedonia
+
+  elsif   ($binary_plane_id =~ m/^11001000110100/) { $registry = "Tonga"; }
+
+  elsif   ($binary_plane_id =~ m/^01100000000110/) { $registry = "Turkmenistan";
+    if    ($binary_plane_id =~ m/^011000000001100001100010/) { $registry = "Turkmenistan Military"; } # Per Countries.dat file (specific plane)
+  }
+
+  elsif   ($binary_plane_id =~ m/^01010000011111/) { $registry = "Uzbekistan"; }
+
+  elsif   ($binary_plane_id =~ m/^11001001000000/) { $registry = "Vanuatu"; }
+
+  elsif   ($binary_plane_id =~ m/^00000000010000/) { $registry = "Zimbabwe"; }
+
+  elsif   ($binary_plane_id =~ m/^10001001100100/) { $registry = "Taiwan";   # Per Countries.dat file (In ICAO(2) Flight Safety block below)
+    if    ($binary_plane_id =~ m/^100010011001000101100000/) { $registry = "Taiwan Military"; } # Per Countries.dat file (specific plane)
+  }
+  elsif   ($binary_plane_id =~ m/^10001001100100/) { $registry = "ICAO(2) Flight Safety"; }
+
+  elsif   ($binary_plane_id =~ m/^11110000100100/) { $registry = "ICAO(2) Flight Safety"; }
+
+# NOTE: ICAO blocks are different in Countries.dat file
+
+
   #
-  # Blocks of addresses for anything that hasn't matched so far:
+  # Blocks of addresses for anything that hasn't matched so far, from <http://www.kloth.net/radio/icao24alloc.php> :
   # ------------------------------------------------------------
-  elsif ($binary_plane_id =~ m/^00100/)  { $registry = "Africa Region"; }                   # AFI Region
-  elsif ($binary_plane_id =~ m/^00101/)  { $registry = "South America Region"; }            # SAM Region
-  elsif ($binary_plane_id =~ m/^0101/)   { $registry = "Europe/North Atlantic Regions"; }   # EUR and NAT Regions
-  elsif ($binary_plane_id =~ m/^01100/)  { $registry = "Middle East Region"; }              # MID Region
-  elsif ($binary_plane_id =~ m/^01101/)  { $registry = "Asia Region"; }                     # ASIA Region
-  elsif ($binary_plane_id =~ m/^1001/)   { $registry = "North America/Pacific Regions"; }   # NAM and PAC Regions
-  elsif ($binary_plane_id =~ m/^111011/) { $registry = "Carribean Region"; }                # CAR Region
-  elsif ($binary_plane_id =~ m/^1011/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
-  elsif ($binary_plane_id =~ m/^1101/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
-  elsif ($binary_plane_id =~ m/^1111/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
-  elsif ($binary_plane_id =~ m/^000000000000000000000000/) { $registry = "Country Code DISALLOWED"; }   # Shall not be assigned
-  elsif ($binary_plane_id =~ m/^111111111111111111111111/) { $registry = "Country Code DISALLOWED"; }   # Shall not be assigned
+  elsif   ($binary_plane_id =~ m/^00100/)  { $registry = "Africa Region"; }                   # AFI Region
+  elsif   ($binary_plane_id =~ m/^00101/)  { $registry = "South America Region"; }            # SAM Region
+  elsif   ($binary_plane_id =~ m/^0101/)   { $registry = "Europe/North Atlantic Regions"; }   # EUR and NAT Regions
+  elsif   ($binary_plane_id =~ m/^01100/)  { $registry = "Middle East Region"; }              # MID Region
+  elsif   ($binary_plane_id =~ m/^01101/)  { $registry = "Asia Region"; }                     # ASIA Region
+  elsif   ($binary_plane_id =~ m/^1001/)   { $registry = "North America/Pacific Regions"; }   # NAM and PAC Regions
+  elsif   ($binary_plane_id =~ m/^111011/) { $registry = "Carribean Region"; }                # CAR Region
+  elsif   ($binary_plane_id =~ m/^1011/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
+  elsif   ($binary_plane_id =~ m/^1101/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
+  elsif   ($binary_plane_id =~ m/^1111/)   { $registry = "Country Code RESERVED"; }           # Reserved for future use
+  elsif   ($binary_plane_id =~ m/^000000000000000000000000/) { $registry = "Country Code DISALLOWED"; }   # Shall not be assigned
+  elsif   ($binary_plane_id =~ m/^111111111111111111111111/) { $registry = "Country Code DISALLOWED"; }   # Shall not be assigned
+
 
  
   # Parse altitude if MSG Type 2, 3, 5, 6, or 7, save in hash.
