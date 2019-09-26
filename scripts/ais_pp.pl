@@ -103,7 +103,7 @@ if ( !(-e $persistentFileSpec )) {
     "264" => "Romania",
     "265" => "Sweden",
     "266" => "Sweden",
-    "267" => "Slovak",    # "Slovak Republic"
+    "267" => "Slovakia",    # "Slovak Republic"
     "268" => "San Marino",    # "San Marino (Republic of)"
     "269" => "Switzerland",    # "Switzerland (Confederation of)"
     "270" => "Czech Rep.",    # "Czech Republic"
@@ -144,8 +144,8 @@ if ( !(-e $persistentFileSpec )) {
     "336" => "Haiti",    # "Haiti (Republic of)"
     "338" => "U.S.", # "United States of America"
     "339" => "Jamaica",
-    "341" => "Saint Kitts & Nevis",    # "Saint Kitts and Nevis (Federation of)"
-    "343" => "Saint Lucia",
+    "341" => "St. Kitts & Nevis",    # "Saint Kitts and Nevis (Federation of)"
+    "343" => "St. Lucia",
     "345" => "Mexico",
     "347" => "Martinique",    # "Martinique (French Department of) - France"
     "348" => "Montserrat",    # "Montserrat - United Kingdom of Great Britain and Northern Ireland"
@@ -159,7 +159,7 @@ if ( !(-e $persistentFileSpec )) {
     "357" => "Panama",    # "Panama (Republic of)"
     "358" => "Puerto Rico - U.S.",   # "Puerto Rico - United States of America"
     "359" => "El Salvador",    # "El Salvador (Republic of)"
-    "361" => "Saint Pierre & Miquelon",    # "Saint Pierre and Miquelon (Territorial Collectivity of) - France"
+    "361" => "St. Pierre & Miquelon",    # "Saint Pierre and Miquelon (Territorial Collectivity of) - France"
     "362" => "Trinidad & Tobago",    # "Trinidad and Tobago"
     "364" => "Turks & Caicos Is.",    # "Turks and Caicos Islands - United Kingdom of Great Britain and Northern Ireland"
     "366" => "U.S.", # "United States of America"
@@ -171,9 +171,9 @@ if ( !(-e $persistentFileSpec )) {
     "372" => "Panama",    # "Panama (Republic of)"
     "373" => "Panama",    # "Panama (Republic of)"
     "374" => "Panama",    # "Panama (Republic of)"
-    "375" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
-    "376" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
-    "377" => "Saint Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
+    "375" => "St. Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
+    "376" => "St. Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
+    "377" => "St. Vincent & the Grenadines",    # "Saint Vincent and the Grenadines"
     "378" => "British Virgin Is.",    # "British Virgin Islands - United Kingdom of Great Britain and Northern Ireland"
     "379" => "U.S. Virgin Is.",    # "United States Virgin Islands - United States of America"
     "401" => "Afghanistan",
@@ -203,7 +203,7 @@ if ( !(-e $persistentFileSpec )) {
     "445" => "N. Korea",    # "Democratic People's Republic of Korea"
     "447" => "Kuwait",    # "Kuwait (State of)"
     "450" => "Lebanon",
-    "451" => "Kyrgyz Rep.",    # "Kyrgyz Republic"
+    "451" => "Kyrgyzstan",    # "Kyrgyz Republic"
     "453" => "Macao",    # "Macao (Special Administrative Region of China) - China (People's Republic of)"
     "455" => "Maldives",    # "Maldives (Republic of)"
     "457" => "Mongolia",
@@ -213,6 +213,7 @@ if ( !(-e $persistentFileSpec )) {
     "466" => "Qatar",    # "Qatar (State of)"
     "468" => "Syria",    # "Syrian Arab Republic"
     "470" => "United Arab Emirates",
+    "471" => "United Arab Emirates",
     "472" => "Tajikistan",    # "Tajikistan (Republic of)"
     "473" => "Yemen",    # "Yemen (Republic of)"
     "475" => "Yemen",    # "Yemen (Republic of)"
@@ -261,7 +262,7 @@ if ( !(-e $persistentFileSpec )) {
     "601" => "S. Africa",    # "South Africa (Republic of)"
     "603" => "Angola",    # "Angola (Republic of)"
     "605" => "Algeria",    # "Algeria (People's Democratic Republic of)"
-    "607" => "Saint Paul & Amsterdam Is.",    # "Saint Paul and Amsterdam Islands - France"
+    "607" => "St. Paul & Amsterdam Is.",    # "Saint Paul and Amsterdam Islands - France"
     "608" => "Ascension Is.",    # "Ascension Island - United Kingdom of Great Britain and Northern Ireland"
     "609" => "Burundi",    # "Burundi (Republic of)"
     "610" => "Benin",    # "Benin (Republic of)"
@@ -270,7 +271,7 @@ if ( !(-e $persistentFileSpec )) {
     "613" => "Cameroon",    # "Cameroon (Republic of)"
     "615" => "Congo",    # "Congo (Republic of the)"
     "616" => "Comoros",    # "Comoros (Union of the)"
-    "617" => "Cabo Verde",    # "Cabo Verde (Republic of)"
+    "617" => "Cape Verde",    # "Cabo Verde (Republic of)"
     "618" => "Crozet Archipelago",    # "Crozet Archipelago - France"
     "619" => "Côte d'Ivoire",    # "Côte d'Ivoire (Republic of)"
     "620" => "Comoros",    # "Comoros (Union of the)"
@@ -306,7 +307,7 @@ if ( !(-e $persistentFileSpec )) {
     "662" => "Sudan",    # "Sudan (Republic of the)"
     "663" => "Senegal",    # "Senegal (Republic of)"
     "664" => "Seychelles",    # "Seychelles (Republic of)"
-    "665" => "Saint Helena",    # "Saint Helena - United Kingdom of Great Britain and Northern Ireland"
+    "665" => "St. Helena",    # "Saint Helena - United Kingdom of Great Britain and Northern Ireland"
     "666" => "Somalia",    # "Somalia (Federal Republic of)"
     "667" => "Sierra Leone",
     "668" => "Sao Tome & Principe",    # "Sao Tome and Principe (Democratic Republic of)"
@@ -329,7 +330,7 @@ if ( !(-e $persistentFileSpec )) {
     "740" => "Falkland Is.",    # "Falkland Islands (Malvinas) - United Kingdom of Great Britain and Northern Ireland"
     "745" => "Guiana",    # "Guiana (French Department of) - France"
     "750" => "Guyana",
-    "755" => "Parguay",    # "Paraguay (Republic of)"
+    "755" => "Paraguay",    # "Paraguay (Republic of)"
     "760" => "Peru",
     "765" => "Suriname",    # "Suriname (Republic of)"
     "770" => "Uruguay",    # "Uruguay (Eastern Republic of)"
