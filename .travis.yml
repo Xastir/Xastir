@@ -8,6 +8,50 @@ matrix:
   include:
 
 
+    # Note: For 18.04LTS can install gcc-8 or gcc-9 however
+    # neither will be needed for the config below.
+    #
+    #   gcc-8
+    # -or-
+    #   sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    #   sudo apt update
+    #   sudo apt install gcc-9
+    #
+    - os: linux
+      dist: bionic
+      name: "Ubuntu-18.04 light w/ImageMagick"
+      env:
+        - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-Q16/Magick-config"
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+        - cd Davis
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+        - cd ../LaCrosse
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+      addons:
+        apt:
+          packages:
+            - imagemagick
+            - libmagickcore-dev
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libdb5.3-dev
+            - shapelib
+            - libshp-dev
+            - libxpm-dev
+
+
+
     - os: linux
       dist: xenial
       name: "Ubuntu-16.04 light w/ImageMagick"
