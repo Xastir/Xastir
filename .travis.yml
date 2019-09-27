@@ -21,7 +21,7 @@ matrix:
       dist: bionic
       name: "Ubuntu-18.04 light w/ImageMagick"
       env:
-        - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-Q16/Magick-config"
+        - MAGIC_BIN="/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-q16/Magick-config"
       script:
         - ./bootstrap.sh
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
