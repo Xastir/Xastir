@@ -85,9 +85,9 @@ matrix:
       env:
          - CFLAGS="${CFLAGS} -Wall -O2 -Wformat-truncation=2 -Wstringop-truncation -Wextra"
       before_install:
-        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        - sudo apt update
-        - sudo apt install gcc-9
+        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        - sudo apt-get update -q
+        - sudo apt-get install gcc-9 -y
       before_script:
         - export CC="gcc-9"
         - echo ${CC}
