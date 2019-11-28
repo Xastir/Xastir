@@ -42,8 +42,7 @@ dist_scripts_DATA = \
     update_langfile.pl \
     waypoint-get.pl \
     wms.pl \
-    wxnowsrv.pl \
-    Xastir_tigerpoly.py
+    wxnowsrv.pl
 
 install-data-hook:
 	cd $(DESTDIR)$(scriptsdir) && \
