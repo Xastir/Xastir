@@ -91,9 +91,6 @@ Xastir scripts
    Some of the programs in the scripts directory are provided under other
    open source licenses, and the licensing information will be present
    in script comments, which should be consulted for details:
-      Xastir_tigerpoly.py --- An open source license by Frank Warmerdam
-                              requiring only that attribution and copyright
-                              notice be included
       inf2geo.pl, mapfgd.pl, overlay.pl, ozi2geo.pl, permutations.pl,
       ridge_radar.pl, split_gnis.bash
           --- These are stated to be "Released into the Public Domain" by
