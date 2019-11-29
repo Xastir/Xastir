@@ -8121,14 +8121,14 @@ void output_my_aprs_data(void)
                strlen(data_txt)) != (int)strlen(data_txt))
     {
       fprintf(stderr,
-              "my_aprs_data: Writen error: %d\n",
+              "my_aprs_data: Written error: %d\n",
               errno);
     }
     // Terminate it with a linefeed
     if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1)
     {
       fprintf(stderr,
-              "my_aprs_data: Writen error: %d\n",
+              "my_aprs_data: Written error: %d\n",
               errno);
     }
   }
@@ -8762,14 +8762,14 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
                strlen(data_txt)) != (int)strlen(data_txt))
     {
       fprintf(stderr,
-              "output_my_data: Writen error: %d\n",
+              "output_my_data: Written error: %d\n",
               errno);
     }
     // Terminate it with a linefeed
     if (writen(pipe_xastir_to_tcp_server, "\n", 1) != 1)
     {
       fprintf(stderr,
-              "output_my_data: Writen error: %d\n",
+              "output_my_data: Written error: %d\n",
               errno);
     }
   }

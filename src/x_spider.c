@@ -346,7 +346,7 @@ void str_echo(int sockfd) {
         }
 
         if (writen(sockfd, line, n) != n) {
-            fprintf(stderr,"str_echo: Writen error\n");
+            fprintf(stderr,"str_echo: Written error\n");
         }
     }
 }
@@ -423,7 +423,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent)
       //            fprintf(stderr,"str_echo2: %s\n",line);
       if (writen(pipe_to_parent, line, n) != n)
       {
-        fprintf(stderr,"str_echo2: Writen error socket: %d\n",errno);
+        fprintf(stderr,"str_echo2: Written error socket: %d\n",errno);
         //close(sockfd);
         return;
       }
@@ -464,7 +464,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent)
 
       if (writen(sockfd, line, n) != n)
       {
-        fprintf(stderr,"str_echo2: Writen error pipe: %d\n",errno);
+        fprintf(stderr,"str_echo2: Written error pipe: %d\n",errno);
         //close(pipe_from_parent);
         return;
       }
@@ -729,7 +729,7 @@ int pipe_check(char *client_address)
         {
           if (writen(q->to_child[1], line, n) != n)
           {
-            fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
+            fprintf(stderr,"pipe_check: Written error1: %d\n",errno);
           }
         }
         q = q->next;
@@ -767,7 +767,7 @@ int pipe_check(char *client_address)
 
         if (writen(pipe_tcp_server_to_xastir, line, n) != n)
         {
-          fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
+          fprintf(stderr, "pipe_check: Written error2: %d\n", errno);
         }
       }
     }
@@ -876,7 +876,7 @@ int pipe_check(char *client_address)
 
       if (writen(q->to_child[1], line, n) != n)
       {
-        fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
+        fprintf(stderr,"pipe_check: Written error1: %d\n",errno);
       }
       q = q->next;
     }
@@ -1739,7 +1739,7 @@ void UDP_Server(int UNUSED(argc), char * UNUSED(argv[]), char * UNUSED(envp[]) )
     //fprintf(stderr,"Sending to Xastir itself\n");
     if (writen(pipe_udp_server_to_xastir, message2, n2) != n2)
     {
-      fprintf(stderr,"UDP_Server: Writen error1: %d\n", errno);
+      fprintf(stderr,"UDP_Server: Written error1: %d\n", errno);
     }
 
     // Send to the x_spider TCP server, so it can go to all
@@ -1747,7 +1747,7 @@ void UDP_Server(int UNUSED(argc), char * UNUSED(argv[]), char * UNUSED(envp[]) )
     //fprintf(stderr,"Sending to TCP clients\n");
     if (writen(pipe_xastir_to_tcp_server, message, n1) != n1)
     {
-      fprintf(stderr, "UDP_Server: Writen error2: %d\n", errno);
+      fprintf(stderr, "UDP_Server: Written error2: %d\n", errno);
     }
 
     // Send an ACK back to the xastir_udp_client program

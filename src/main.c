@@ -13625,7 +13625,7 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
                   if (errno != EPIPE)
                   {
                     fprintf(stderr,
-                            "UpdateTime: Writen error (Net send x_spider): %d\n",
+                            "UpdateTime: Written error (Net send x_spider): %d\n",
                             errno);
                   }
                 }
@@ -13696,7 +13696,7 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
                            data_length+1) != data_length+1)
                 {
                   fprintf(stderr,
-                          "UpdateTime: Writen error (TNC Send x_spider): %d\n",
+                          "UpdateTime: Written error (TNC Send x_spider): %d\n",
                           errno);
                 }
               }
@@ -13753,7 +13753,7 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
                              data_length+1) != data_length+1)
                   {
                     fprintf(stderr,
-                            "UpdateTime: Writen error(HSP data): %d\n",
+                            "UpdateTime: Written error(HSP data): %d\n",
                             errno);
                   }
                 }
@@ -13813,7 +13813,7 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
                              data_length+1) != data_length+1)
                   {
                     fprintf(stderr,
-                            "UpdateTime: Writen error(TNC/GPS data): %d\n",
+                            "UpdateTime: Written error(TNC/GPS data): %d\n",
                             errno);
                   }
                 }
