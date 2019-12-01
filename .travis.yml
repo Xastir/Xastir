@@ -244,16 +244,16 @@ matrix:
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
         - make
         - sudo make install
-        - cd Davis
-        - ./bootstrap.sh
-        - LDFLAGS="-L/usr/local/opt/openssl/lib" ./configure
-        - make
-        - sudo make install
-        - cd ../LaCrosse
-        - ./bootstrap.sh
-        - LDFLAGS="-L/usr/local/opt/openssl/lib" ./configure
-        - make
-        - sudo make install
+#        - cd Davis
+#        - ./bootstrap.sh
+#        - LDFLAGS="-L/usr/local/opt/openssl/lib" ./configure
+#        - make
+#        - sudo make install
+#        - cd ../LaCrosse
+#        - ./bootstrap.sh
+#        - LDFLAGS="-L/usr/local/opt/openssl/lib" ./configure
+#        - make
+#        - sudo make install
       addons:
         homebrew:
           packages:
@@ -265,7 +265,7 @@ matrix:
             - proj
             - shapelib
             - wget
-            - mysql
+#            - mysql
 
 
 
