@@ -38,7 +38,7 @@ unless($response->is_success) {
 my ($img_x, $img_y) = imgsize(\$response->content);
 
 my $response = LWP::UserAgent->new->request(
-  HTTP::Request->new( GET => 'http://radar.weather.gov/ridge/RadarImg/N0R/' . $station .  '_N0R_0.gfw' )
+  HTTP::Request->new( GET => 'https://radar.weather.gov/ridge/RadarImg/N0R/' . $station .  '_N0R_0.gfw' )
 );
 
 unless($response->is_success) {
