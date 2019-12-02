@@ -25,7 +25,7 @@ use Image::Size;
 
 my $station = uc($ARGV[0]);
 
-my $gif_url = 'http://radar.weather.gov/ridge/RadarImg/N0R/' .  $station . '_N0R_0.gif';
+my $gif_url = 'https://radar.weather.gov/ridge/RadarImg/N0R/' .  $station . '_N0R_0.gif';
 
 my $response = LWP::UserAgent->new->request(
   HTTP::Request->new( GET => $gif_url )
