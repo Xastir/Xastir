@@ -25,7 +25,7 @@
 #
 
 GNIS_SITE=https://geonames.usgs.gov/docs/stategaz
-SUFFIX=_Features_20180601
+SUFFIX=_Features
 
 prefix=@prefix@
 
@@ -45,19 +45,27 @@ do
 
     printf "Retrieving GNIS file for %s\n" ${MYSTATE}
 
-    rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
+    rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}_20*.txt
     if (wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.zip)
     then
-        unzip ${MYSTATE}${SUFFIX}.zip 
+        if ( [ -f ${MYSTATE}${SUFFIX}.zip ] )
+        then
+            unzip ${MYSTATE}${SUFFIX}.zip
+            GNIS_FILE=`ls -t ${MYSTATE}${SUFFIX}*.txt | head -1`
+        else
+            GNIS_FILE="badfiledownload"
+        fi
     else 
+        SUFFIX=_Features_20191101
         rm -f ${MYSTATE}${SUFFIX}.zip ${MYSTATE}${SUFFIX}.txt
         wget ${GNIS_SITE}/${MYSTATE}${SUFFIX}.txt
+        GNIS_FILE=${MYSTATE}${SUFFIX}.txt
     fi
 
-    if ( [ -f ${MYSTATE}${SUFFIX}.txt ] )
+    if ( [ -f ${GNIS_FILE} ] )
     then 
         printf "File successfully downloaded. Moving to ${prefix}/share/xastir/GNIS\n" 
-        sudo mv ${MYSTATE}${SUFFIX}.txt ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
+        sudo mv ${GNIS_FILE} ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
 	if [ ${MYSTATE} = "AK" -o ${MYSTATE} = "HI" ]; then
 		sudo recode utf16..utf8 ${prefix}/share/xastir/GNIS/${MYSTATE}.gnis
 	fi
