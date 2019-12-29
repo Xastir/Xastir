@@ -2235,7 +2235,7 @@ void alert_build_list(Message *fill)
           // Need to take ord(c) - 55 to get the number
           char temp_string[5];
           xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 55);
-          memcpy(temp, &temp_string[2], 2);
+          memcpy(temp, temp_string, 2);
           temp[2] = '\0'; // Terminate the string
         }
 
@@ -2245,7 +2245,7 @@ void alert_build_list(Message *fill)
           // Need to take ord(c) - 61 to get the number
           char temp_string[5];
           xastir_snprintf(temp_string, sizeof(temp_string), "%02d", (int)c - 61);
-          memcpy(temp, &temp_string[2], 2);
+          memcpy(temp, temp_string, 2);
           temp[2] = '\0'; // Terminate the string
         }
 
