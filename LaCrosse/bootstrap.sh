@@ -1,8 +1,29 @@
-#!/bin/sh
+#!/bin/sh -e
+#
 #
 # Copyright (C) 2000-2019 The Xastir Group
 #
 #
+# This simple routine will run autostuff in the appropriate
+# order to generate the needed configure/makefiles
+#
 
-../bootstrap.sh
+echo "    5) Removing autom4te.cache directory..."
+rm -rf autom4te.cache
+
+echo "    4) Running aclocal..."
+aclocal
+
+echo "    3) Running autoheader..."
+autoheader
+
+echo "    2) Running autoconf..."
+autoconf
+
+# Cygwin needs these parameters to be separate.
+echo "    1) Running automake..."
+automake -a -c
+
+echo "Bootstrap complete."
+
 
