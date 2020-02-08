@@ -185,6 +185,7 @@ extern void split_string( char *data, char *cptr[], int max, char search_char );
 // From database.h
 extern char my_callsign[];
 
+extern char *pname;
 
 typedef struct _pipe_object
 {

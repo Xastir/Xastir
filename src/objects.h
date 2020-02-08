@@ -95,7 +95,7 @@ if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (
 //
 // number_of_predefined_objects holds the actual number of predefined
 // objects available to display on the Create/Move popup menu.
-int number_of_predefined_objects;
+extern int number_of_predefined_objects;
 // File name of ~/.xastir/config file containing definitions for
 // a predefined object menu.
 extern char predefined_object_definition_filename[256];
