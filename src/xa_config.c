@@ -65,7 +65,7 @@
 
 #define MAX_VALUE 300
 
-//extern char xa_config_dir[];
+char xa_config_dir[1000];       /* cmdline option user config dir */
 
 
 

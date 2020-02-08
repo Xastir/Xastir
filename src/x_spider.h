@@ -31,7 +31,7 @@
 #define SERV_UDP_PORT       2023
 
 
-char *pname;
+extern char *pname;
 extern int pipe_xastir_to_tcp_server;
 extern int pipe_tcp_server_to_xastir;
 extern int pipe_xastir_to_udp_server;
