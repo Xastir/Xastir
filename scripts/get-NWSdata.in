@@ -42,9 +42,9 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="w_02oc18"    # GREEN: NWSM Library: County Warning Area Boundaries
+FILE1="w_03mr20"    # GREEN: NWSM Library: County Warning Area Boundaries
 
-FILE2="z_10oc19"    # GREEN: NWSM Library: Public Forecast Zone Boundaries
+FILE2="z_03mr20"    # GREEN: NWSM Library: Public Forecast Zone Boundaries
 
 FILE3="mz02ap19"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
@@ -52,7 +52,7 @@ FILE4="oz16ap19"   # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
 FILE5="hz30jn17"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 
-FILE6="fz10oc19"    # GREEN: NWSM Library: Fire Weather Zone Boundaries
+FILE6="fz03mr20"    # GREEN: NWSM Library: Fire Weather Zone Boundaries
 
 FILE7="c_02ap19"    # RED: Counties, States, Provinces: U.S. Counties
 
