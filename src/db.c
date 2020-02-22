@@ -5072,7 +5072,7 @@ void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer U
     XtManageChild(pane);
 
     XtPopup(change_tactical_dialog,XtGrabNone);
-    fix_dialog_size(change_tactical_dialog);
+    //fix_dialog_size(change_tactical_dialog);
 
     // Move focus to the Close button.  This appears to
     // highlight the

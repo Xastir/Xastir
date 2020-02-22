@@ -1819,7 +1819,7 @@ void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     end_critical_section(&wx_station_dialog_lock, "wx_gui.c:WX_station" );
 
     XtPopup(wx_station_dialog,XtGrabNone);
-    fix_dialog_size(wx_station_dialog);
+    //fix_dialog_size(wx_station_dialog);
     fill_wx_data();
   }
   else

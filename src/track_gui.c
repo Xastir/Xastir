@@ -408,7 +408,7 @@ void Track_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 
     XtPopup(track_station_dialog,XtGrabNone);
-    fix_dialog_size(track_station_dialog);
+    //fix_dialog_size(track_station_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -1052,7 +1052,7 @@ void Download_findu_trail( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoi
     end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail" );
 
     XtPopup(download_findu_dialog,XtGrabNone);
-    fix_dialog_size(download_findu_dialog);
+    //fix_dialog_size(download_findu_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

@@ -90,15 +90,7 @@ char *xastir_version=VERSION;
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #ifdef HAVE_MAGICK
-    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
-      #include <MagickCore/MagickCore.h>
-    #else
-      #ifdef HAVE_MAGICK_API_H
-        #include <magick/api.h>
-      #endif // HAVE_MAGICK_API_H
-    #endif //HAVE_MAGICKCORE_MAGICKCORE_H
-  #endif //HAVE_MAGICK
+  #include <magick/api.h>
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
@@ -1760,7 +1752,7 @@ void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
     XtManageChild(form);
     XtManageChild(pane);
     XtPopup(smart_beacon_dialog,XtGrabNone);
-    fix_dialog_size(smart_beacon_dialog);
+    //fix_dialog_size(smart_beacon_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -3201,7 +3193,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
     XtManageChild(form);
     XtManageChild(pane);
     XtPopup(coordinate_calc_dialog,XtGrabNone);
-    fix_dialog_size(coordinate_calc_dialog);
+    //fix_dialog_size(coordinate_calc_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -4548,7 +4540,7 @@ void Change_Debug_Level(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     XtManageChild(pane);
 
     XtPopup(change_debug_level_dialog,XtGrabNone);
-    fix_dialog_size(change_debug_level_dialog);
+    //fix_dialog_size(change_debug_level_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -4723,7 +4715,7 @@ void Gamma_adjust(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtManageChild(pane);
 
     XtPopup(gamma_adjust_dialog, XtGrabNone);
-    fix_dialog_size(gamma_adjust_dialog);
+    //fix_dialog_size(gamma_adjust_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -5203,7 +5195,7 @@ void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(c
     XtManageChild(pane);
 
     XtPopup(map_font_dialog, XtGrabNone);
-    fix_dialog_size(map_font_dialog);
+    //fix_dialog_size(map_font_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -14324,6 +14316,7 @@ void pos_dialog(Widget w)
 
 /*********************  fix dialog size *************************/
 
+/*
 void fix_dialog_size(Widget w)
 {
   Dimension wd, ht;
@@ -14343,6 +14336,7 @@ void fix_dialog_size(Widget w)
                   NULL);
   }
 }
+*/
 
 
 
@@ -14927,7 +14921,7 @@ void Custom_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtManageChild(pane);
 
     XtPopup(custom_zoom_dialog,XtGrabNone);
-    fix_dialog_size(custom_zoom_dialog);
+    //fix_dialog_size(custom_zoom_dialog);
 
     // Move focus to the Close button.  This appears to
     // highlight the
@@ -15667,7 +15661,7 @@ void Center_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer call
     XtManageChild(pane);
 
     XtPopup(center_zoom_dialog,XtGrabNone);
-    fix_dialog_size(center_zoom_dialog);
+    //fix_dialog_size(center_zoom_dialog);
 
     // Move focus to the Close button.  This appears to
     // highlight the
@@ -17314,7 +17308,7 @@ void GPS_transfer_select( void )
     XtManageChild(pane);
 
     XtPopup(GPS_operations_dialog,XtGrabNone);
-    fix_dialog_size(GPS_operations_dialog);
+    //fix_dialog_size(GPS_operations_dialog);
 
     // Move focus to the Select button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -19684,7 +19678,7 @@ void Help_About( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
 
   XtManageChild(d);
   pos_dialog(d);
-  fix_dialog_size(d);
+  //fix_dialog_size(d);
 }
 
 
@@ -20302,7 +20296,7 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
       XtManageChild(pane);
 
       XtPopup(help_view_dialog,XtGrabNone);
-      fix_dialog_size(help_view_dialog);
+      //fix_dialog_size(help_view_dialog);
       XmTextShowPosition(help_text,0);
     }
     XtFree(temp);   // Free up the space allocated
@@ -20463,7 +20457,7 @@ void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtManageChild(pane);
 
     XtPopup(help_index_dialog,XtGrabNone);
-    fix_dialog_size(help_index_dialog);
+    //fix_dialog_size(help_index_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -23758,7 +23752,7 @@ void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtManageChild(DRG_pane);
 
     XtPopup(configure_DRG_dialog,XtGrabNone);
-    fix_dialog_size(configure_DRG_dialog);
+    //fix_dialog_size(configure_DRG_dialog);
 
     XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
 
@@ -25341,7 +25335,7 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
     XtManageChild(pane);
 
     XtPopup(configure_defaults_dialog,XtGrabNone);
-    fix_dialog_size(configure_defaults_dialog);
+    //fix_dialog_size(configure_defaults_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -25932,7 +25926,7 @@ void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(pane);
 
     XtPopup(configure_timing_dialog,XtGrabNone);
-    fix_dialog_size(configure_timing_dialog);
+    //fix_dialog_size(configure_timing_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -26210,7 +26204,7 @@ void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
     XtManageChild(pane);
 
     XtPopup(configure_coordinates_dialog,XtGrabNone);
-    fix_dialog_size(configure_coordinates_dialog);
+    //fix_dialog_size(configure_coordinates_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -27028,7 +27022,7 @@ void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
     XtManageChild(pane);
 
     XtPopup(configure_audio_alarm_dialog,XtGrabNone);
-    fix_dialog_size(configure_audio_alarm_dialog);
+    //fix_dialog_size(configure_audio_alarm_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -27476,7 +27470,7 @@ void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(pane);
 
     XtPopup(configure_speech_dialog,XtGrabNone);
-    fix_dialog_size(configure_speech_dialog);
+    //fix_dialog_size(configure_speech_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -29558,7 +29552,7 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
 
     XtPopup(configure_station_dialog,XtGrabNone);
 
-    fix_dialog_size(configure_station_dialog);
+    //fix_dialog_size(configure_station_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -29830,12 +29824,8 @@ int main(int argc, char *argv[], char *envp[])
 #ifdef HAVE_IMAGEMAGICK
 #if (MagickLibVersion < 0x0538)
   MagickIncarnate(*argv);
-#else   // 0x0538 < MagickLibVersion < 0x0669
-  #if (MagickLibVersion < 0x0669)
-    InitializeMagick(*argv);
-  #else // > 0x669
-    MagickCoreGenesis(*argv, MagickTrue);
-  #endif
+#else   // MagickLibVersion < 0x0538
+  InitializeMagick(*argv);
 #endif  // MagickLibVersion < 0x0538
 #endif  // HAVE_IMAGEMAGICK
 #endif  //HAVE_GRAPHICSMAGICK

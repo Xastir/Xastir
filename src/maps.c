@@ -76,15 +76,12 @@
   #undef PACKAGE_TARNAME
   #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
   #undef PACKAGE_VERSION
-  #ifdef HAVE_MAGICK
-    #ifdef HAVE_MAGICKCORE_MAGICKCORE_H
-      #include <MagickCore/MagickCore.h>
-    #else
-      #ifdef HAVE_MAGICK_API_H
-        #include <magick/api.h>
-      #endif // HAVE_MAGICK_API_H
-    #endif //HAVE_MAGICKCORE_MAGICKCORE_H
-  #endif //HAVE_MAGICK
+  #ifdef HAVE_GRAPHICSMAGICK
+    /*#include <GraphicsMagick/magick/api.h>*/
+    #include <magick/api.h>
+  #else   // HAVE_GRAPHICSMAGICK
+    #include <magick/api.h>
+  #endif  // HAVE_GRAPHICSMAGICK
   #undef PACKAGE_BUGREPORT
   #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
   #undef XASTIR_PACKAGE_BUGREPORT
@@ -5479,7 +5476,7 @@ void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(
 
 
     XtPopup(print_properties_dialog,XtGrabNone);
-    fix_dialog_size(print_properties_dialog);
+    //fix_dialog_size(print_properties_dialog);
 
 
     // Move focus to the Cancel button.  This appears to highlight the
@@ -5672,7 +5669,7 @@ void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
 
 
     XtPopup(print_postscript_dialog,XtGrabNone);
-    fix_dialog_size(print_postscript_dialog);
+    //fix_dialog_size(print_postscript_dialog);
 
 
     // Move focus to the Cancel button.  This appears to highlight the
@@ -6303,7 +6300,9 @@ extern void draw_shapefile_map (Widget w,
                                 u_char alert_color,
                                 int destination_pixmap,
                                 map_draw_flags *draw_flags);
+#ifdef WITH_DBFAWK
   extern void clear_dbfawk_sigs(void);
+#endif /* WITH_DBFAWK */
 #endif /* HAVE_LIBSHP */
 #ifdef HAVE_LIBGEOTIFF
 extern void draw_geotiff_image_map(Widget w,
@@ -9004,8 +9003,10 @@ void map_indexer(int parameter)
   fprintf(stderr,"Indexing maps...\n");
 
 #ifdef HAVE_LIBSHP
+#ifdef WITH_DBFAWK
   // get rid of stored dbfawk signatures and force reload.
   clear_dbfawk_sigs();
+#endif
 #endif
 
   // Find the timestamp on the index file first.  Save it away so

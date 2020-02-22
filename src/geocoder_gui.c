@@ -574,7 +574,7 @@ void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     end_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place" );
 
     XtPopup(geocoder_place_dialog,XtGrabNone);
-    fix_dialog_size(geocoder_place_dialog);
+    //fix_dialog_size(geocoder_place_dialog);
 
     XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
 

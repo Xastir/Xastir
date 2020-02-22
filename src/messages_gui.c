@@ -2840,7 +2840,7 @@ void Auto_msg_set( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     XtManageChild(pane);
 
     XtPopup(auto_msg_dialog,XtGrabNone);
-    fix_dialog_size(auto_msg_dialog);
+    //fix_dialog_size(auto_msg_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

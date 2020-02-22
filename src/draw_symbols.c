@@ -3724,7 +3724,7 @@ void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(pane);
 
     XtPopup(select_symbol_dialog,XtGrabNone);
-    fix_dialog_size(select_symbol_dialog);
+    //fix_dialog_size(select_symbol_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
