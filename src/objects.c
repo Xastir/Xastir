@@ -8981,7 +8981,7 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
                           XmNcursorPositionVisible,   TRUE,
                           XmNsensitive,               TRUE,
                           XmNshadowThickness,         1,
-                          XmNcolumns,                 43,     // max 43 without Data Extension
+                          XmNcolumns,                 37,     // max 43 without Data Extension
                           XmNmaxLength,               43,
                           XmNtopOffset,               6,
                           XmNbackground,              colors[0x0f],
