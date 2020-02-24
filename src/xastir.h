@@ -117,7 +117,7 @@ extern void create_gc(Widget w);
 
 extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
 
-//extern void fix_dialog_size(Widget w);
+extern void fix_dialog_size(Widget w);
 extern void fix_dialog_vsize(Widget w);
 
 extern int debug_level;

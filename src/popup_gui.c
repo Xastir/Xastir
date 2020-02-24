@@ -151,6 +151,7 @@ void popup_time_out_check(int curr_sec)
 void popup_message_always(char *banner, char *message)
 {
   XmString msg_str;
+  Dimension width, height;
   int j,i;
   Atom delw;
 
@@ -198,7 +199,15 @@ void popup_message_always(char *banner, char *message)
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-      pw[i].form =  XtVaCreateWidget("popup_message form",xmFormWidgetClass, pw[i].pane,
+      pw[i].scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                                   xmScrolledWindowWidgetClass,
+                                                   pw[i].pane,
+                                                   XmNscrollingPolicy, XmAUTOMATIC,
+                                                   NULL);
+
+      pw[i].form =  XtVaCreateWidget("popup_message form",
+                                     xmFormWidgetClass,
+                                     pw[i].scrollwindow,
                                      XmNfractionBase, 5,
                                      XmNbackground, colors[0xff],
                                      XmNautoUnmanage, FALSE,
@@ -247,6 +256,20 @@ void popup_message_always(char *banner, char *message)
 
       XtManageChild(pw[i].form);
       XtManageChild(pw[i].pane);
+
+      // Resize dialog to exactly fit form w/o scrollbars
+      XtVaGetValues(pw[i].form,
+                    XmNwidth, &width,
+                    XmNheight, &height,
+                    NULL);
+      XtVaSetValues(pw[i].popup_message_dialog,
+                    XmNwidth, width+10,
+                    XmNheight, height+10,
+                    NULL);
+      if (debug_level & 1)
+      {
+        fprintf(stderr,"Popup message dialog size: X:%d\tY:%d\n", width, height);
+      }
 
       end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 

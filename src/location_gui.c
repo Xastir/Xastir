@@ -436,7 +436,8 @@ void location_add(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(callD
 /************************************************/
 void Jump_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane,form, button_ok, button_add, button_delete, button_cancel, locdata, location_name;
+  static Widget  pane, scrollwindow, form, button_ok, button_add, button_delete, button_cancel, locdata, location_name;
+  Dimension width, height;
   int n;
   Arg al[50];           /* Arg List */
   unsigned int ac = 0;           /* Arg Count */
@@ -467,9 +468,15 @@ void Jump_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     form =  XtVaCreateWidget("Jump_location form",
                              xmFormWidgetClass,
-                             pane,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNautoUnmanage, FALSE,
                              XmNshadowThickness, 1,
@@ -638,6 +645,20 @@ void Jump_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     XtManageChild(location_list);
     XtVaSetValues(location_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
+
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(location_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Location dialog size: X:%d\tY:%d\n", width, height);
+    }
 
     end_critical_section(&location_dialog_lock, "location_gui.c:location_destroy_shell" );
 

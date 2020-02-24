@@ -110,7 +110,8 @@ void wx_detailed_alert_destroy_shell( Widget UNUSED(widget), XtPointer clientDat
 //
 void wx_alert_finger_output( Widget UNUSED(widget), char *handle)
 {
-  static Widget pane, my_form, mess, button_cancel,wx_detailed_alert_list;
+  static Widget pane, scrollwindow, my_form, mess, button_cancel,wx_detailed_alert_list;
+  Dimension width, height;
   Atom delw;
   Arg al[50];             // Arg List
   unsigned int ac = 0;    // Arg Count
@@ -145,7 +146,15 @@ void wx_alert_finger_output( Widget UNUSED(widget), char *handle)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    my_form =  XtVaCreateWidget("wx_alert_double_click_action my_form", xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    my_form =  XtVaCreateWidget("wx_alert_double_click_action my_form",
+                                xmFormWidgetClass,
+                                scrollwindow,
                                 XmNtraversalOn, TRUE,
                                 XmNfractionBase, 5,
                                 XmNbackground, colors[0xff],
@@ -241,6 +250,20 @@ void wx_alert_finger_output( Widget UNUSED(widget), char *handle)
     XtManageChild(wx_detailed_alert_list);
     XtVaSetValues(wx_detailed_alert_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
+
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(wx_detailed_alert_shell,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"WX detailed alert dialog size: X:%d\tY:%d\n", width, height);
+    }
 
     XtPopup(wx_detailed_alert_shell, XtGrabNone);
 //        fix_dialog_vsize(wx_detailed_alert_shell);
@@ -663,7 +686,8 @@ void wx_alert_update_list(void)
 
 void Display_Wx_Alert( Widget UNUSED(wdgt), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, my_form, mess, button_cancel;
+  static Widget pane, scrollwindow, my_form, mess, button_cancel;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                    /* Arg List */
   unsigned int ac = 0;           /* Arg Count */
@@ -685,7 +709,15 @@ void Display_Wx_Alert( Widget UNUSED(wdgt), XtPointer UNUSED(clientData), XtPoin
                             XmNbackground, colors[0xff],
                             NULL);
 
-    my_form =  XtVaCreateWidget("Display_Wx_Alert my_form", xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    my_form =  XtVaCreateWidget("Display_Wx_Alert my_form",
+                                xmFormWidgetClass,
+                                scrollwindow,
                                 XmNtraversalOn, TRUE,
                                 XmNfractionBase, 5,
                                 XmNbackground, colors[0xff],
@@ -789,6 +821,20 @@ void Display_Wx_Alert( Widget UNUSED(wdgt), XtPointer UNUSED(clientData), XtPoin
     XtVaSetValues(wx_alert_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(wx_alert_shell,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"WX alert shell size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(wx_alert_shell, XtGrabNone);
 //        fix_dialog_vsize(wx_alert_shell);
 
@@ -890,14 +936,14 @@ void WX_station_change_data(Widget widget, XtPointer clientData, XtPointer callD
 //
 void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, form1, button_close, frame,
+  static Widget  pane, scrollwindow, my_form, form1, button_close, frame,
          WX_type, temp, wind_cse, wind_spd, wind_gst,
          my_rain, to_rain, rain_h, my_rain_24, baro,
          dew_point,
          high_wind, wind_chill,
          heat_index, three_hour_baro,
          hi_temp;
-
+  Dimension width, height;
   Atom delw;
 
   if(!wx_station_dialog)
@@ -916,7 +962,15 @@ void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
                             XmNbackground, colors[0xff],
                             NULL);
 
-    my_form =  XtVaCreateWidget("WX_station my_form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    my_form =  XtVaCreateWidget("WX_station my_form",
+                                xmFormWidgetClass,
+                                scrollwindow,
                                 XmNfractionBase,7,
                                 XmNbackground, colors[0xff],
                                 XmNautoUnmanage, FALSE,
@@ -1815,6 +1869,20 @@ void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtManageChild(my_form);
     XtManageChild(form1);
     XtManageChild(pane);
+
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(wx_station_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"WX station dialog size: X:%d\tY:%d\n", width, height);
+    }
 
     end_critical_section(&wx_station_dialog_lock, "wx_gui.c:WX_station" );
 
