@@ -5499,7 +5499,6 @@ void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(
 
 
     XtPopup(print_properties_dialog,XtGrabNone);
-    //fix_dialog_size(print_properties_dialog);
 
 
     // Move focus to the Cancel button.  This appears to highlight the
@@ -5711,8 +5710,6 @@ void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     }
 
     XtPopup(print_postscript_dialog,XtGrabNone);
-    //fix_dialog_size(print_postscript_dialog);
-
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -6342,9 +6339,7 @@ extern void draw_shapefile_map (Widget w,
                                 u_char alert_color,
                                 int destination_pixmap,
                                 map_draw_flags *draw_flags);
-#ifdef WITH_DBFAWK
   extern void clear_dbfawk_sigs(void);
-#endif /* WITH_DBFAWK */
 #endif /* HAVE_LIBSHP */
 #ifdef HAVE_LIBGEOTIFF
 extern void draw_geotiff_image_map(Widget w,
@@ -9045,10 +9040,8 @@ void map_indexer(int parameter)
   fprintf(stderr,"Indexing maps...\n");
 
 #ifdef HAVE_LIBSHP
-#ifdef WITH_DBFAWK
   // get rid of stored dbfawk signatures and force reload.
   clear_dbfawk_sigs();
-#endif
 #endif
 
   // Find the timestamp on the index file first.  Save it away so

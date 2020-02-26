@@ -275,11 +275,6 @@ void popup_message_always(char *banner, char *message)
 
       XtPopup(pw[i].popup_message_dialog,XtGrabNone);
 
-// An half-hearted attempt at fixing the problem where a popup
-// comes up extremely small.  Commenting out the below so we can
-// change the size if necessary to read the message.
-//            fix_dialog_size(pw[i].popup_message_dialog);
-
       pw[i].sec_opened=sec_now();
     }
   }

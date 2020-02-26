@@ -11598,9 +11598,8 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
     }
 
     XtPopup(object_dialog,XtGrabNone);
-    //fix_dialog_size(object_dialog);         // don't allow a resize
 
-    // Move focus to the Cancel button.  This appears to highlight t
+    // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
     // have that default function happen.  Note:  We _can_ hit the
     // <SPACE> key, and that activates the option.

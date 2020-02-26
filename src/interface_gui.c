@@ -2143,7 +2143,6 @@ void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
     }
 
     XtPopup(config_TNC_dialog,XtGrabNone);
-    //fix_dialog_size(config_TNC_dialog);
   }
   else
   {
@@ -2782,7 +2781,6 @@ void Config_GPS( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_GPS_dialog,XtGrabNone);
-    //fix_dialog_size(config_GPS_dialog);
   }
   else
   {
@@ -3534,7 +3532,6 @@ void Config_WX( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_WX_dialog,XtGrabNone);
-    //fix_dialog_size(config_WX_dialog);
   }
   else
   {
@@ -4120,7 +4117,6 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_NWX_dialog,XtGrabNone);
-    //fix_dialog_size(config_NWX_dialog);
   }
   else
   {
@@ -4589,7 +4585,6 @@ void Config_NGPS( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_NGPS_dialog,XtGrabNone);
-    //fix_dialog_size(config_NGPS_dialog);
   }
   else
   {
@@ -5343,7 +5338,6 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_AX25_dialog,XtGrabNone);
-    //fix_dialog_size(config_AX25_dialog);
   }
   else
   {
@@ -5908,7 +5902,6 @@ void Config_Inet( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_Inet_dialog,XtGrabNone);
-    //fix_dialog_size(config_Inet_dialog);
   }
   else
   {
@@ -6467,7 +6460,6 @@ void Config_Database( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_Database_dialog,XtGrabNone);
-    //fix_dialog_size(config_Database_dialog);
   }
   else
   {
@@ -7664,7 +7656,6 @@ void Config_sql_Database( Widget w, int config_type, int port)
     }
 
     XtPopup(config_Sql_Database_dialog,XtGrabNone);
-    //fix_dialog_size(config_Sql_Database_dialog);
   }
   else
   {
@@ -8581,7 +8572,6 @@ void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
     }
 
     XtPopup(config_AGWPE_dialog,XtGrabNone);
-    //fix_dialog_size(config_AGWPE_dialog);
   }
   else
   {
@@ -9354,7 +9344,6 @@ void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData
         }
 
         XtPopup(choose_interface_dialog,XtGrabNone);
-        //fix_dialog_size(choose_interface_dialog);
 
         // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
@@ -10025,7 +10014,6 @@ void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPoin
     end_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_interface" );
 
     XtPopup(control_interface_dialog,XtGrabNone);
-    //fix_dialog_size(control_interface_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

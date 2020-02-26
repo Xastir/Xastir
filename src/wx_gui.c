@@ -266,7 +266,6 @@ void wx_alert_finger_output( Widget UNUSED(widget), char *handle)
     }
 
     XtPopup(wx_detailed_alert_shell, XtGrabNone);
-//        fix_dialog_vsize(wx_detailed_alert_shell);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -836,7 +835,6 @@ void Display_Wx_Alert( Widget UNUSED(wdgt), XtPointer UNUSED(clientData), XtPoin
     }
 
     XtPopup(wx_alert_shell, XtGrabNone);
-//        fix_dialog_vsize(wx_alert_shell);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -1887,7 +1885,6 @@ void WX_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     end_critical_section(&wx_station_dialog_lock, "wx_gui.c:WX_station" );
 
     XtPopup(wx_station_dialog,XtGrabNone);
-    //fix_dialog_size(wx_station_dialog);
     fill_wx_data();
   }
   else

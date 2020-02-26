@@ -5093,7 +5093,6 @@ void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer U
     }
 
     XtPopup(change_tactical_dialog,XtGrabNone);
-    //fix_dialog_size(change_tactical_dialog);
 
     // Move focus to the Close button.  This appears to
     // highlight the
@@ -7131,10 +7130,9 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
 
       XtPopup(db_station_info,XtGrabNone);
 
-      //            fix_dialog_size(db_station_info);
       XmTextShowPosition(si_text,0);
 
-      // Move focus to the Cancel button.  This appears to highlight t
+      // Move focus to the Cancel button.  This appears to highlight the
       // button fine, but we're not able to hit the <Enter> key to
       // have that default function happen.  Note:  We _can_ hit the
       // <SPACE> key, and that activates the option.
@@ -7560,7 +7558,7 @@ void Station_info(Widget w, XtPointer clientData, XtPointer UNUSED(calldata) )
 
         XtPopup(db_station_popup,XtGrabNone);
 
-        // Move focus to the Cancel button.  This appears to highlight t
+        // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
         // have that default function happen.  Note:  We _can_ hit the
         // <SPACE> key, and that activates the option.

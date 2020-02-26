@@ -663,7 +663,6 @@ void Jump_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     end_critical_section(&location_dialog_lock, "location_gui.c:location_destroy_shell" );
 
     XtPopup(location_dialog,XtGrabNone);
-    //fix_dialog_size(location_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

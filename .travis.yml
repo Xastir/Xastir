@@ -266,6 +266,7 @@ matrix:
             - shapelib
             - wget
 #            - mysql
+          update: true
 
 
 

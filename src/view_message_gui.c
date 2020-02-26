@@ -830,7 +830,6 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
     XtPopup(All_messages_dialog,XtGrabNone);
-//        fix_dialog_vsize(All_messages_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

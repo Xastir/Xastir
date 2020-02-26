@@ -519,7 +519,6 @@ void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer ca
     end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" );
 
     XtPopup(locate_station_dialog,XtGrabNone);
-    //fix_dialog_size(locate_station_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -1298,7 +1297,6 @@ void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     end_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
 
     XtPopup(locate_place_dialog,XtGrabNone);
-    //fix_dialog_size(locate_place_dialog);
 
     // Move focus to the Locate Now! button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
