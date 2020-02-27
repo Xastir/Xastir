@@ -1344,11 +1344,11 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
 void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
 {
-  static Widget  pane, form, label1, label2, label3,
+  static Widget  pane, scrollwindow, form, label1, label2, label3,
          label4, label5, label6,
          button_ok, button_cancel;
 //  static Widget label7;
-
+  Dimension width, height;
   Atom delw;
   char temp_string[10];
   char temp_label_string[100];
@@ -1378,9 +1378,15 @@ void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     form =  XtVaCreateWidget("Smart_Beacon form",
                              xmFormWidgetClass,
-                             pane,
+                             scrollwindow,
                              XmNfractionBase, 2,
                              XmNautoUnmanage, FALSE,
                              XmNshadowThickness, 1,
@@ -1759,8 +1765,22 @@ void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
 
     XtManageChild(form);
     XtManageChild(pane);
+
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(smart_beacon_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Smart beacon dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(smart_beacon_dialog,XtGrabNone);
-    fix_dialog_size(smart_beacon_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -2875,9 +2895,10 @@ void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer 
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
 {
-  static Widget  pane, form, label1, label4,
+  static Widget  pane, scrollwindow, form, label1, label4,
          button_clear, button_calculate, button_cancel;
 //  static Widget label2, label3, label5, label6;
+  Dimension width, height;
   Atom delw;
   Arg args[50];                    // Arg List
   register unsigned int n = 0;    // Arg Count
@@ -2911,9 +2932,15 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     form =  XtVaCreateWidget("Coordinate_calc form",
                              xmFormWidgetClass,
-                             pane,
+                             scrollwindow,
                              XmNfractionBase, 4,
                              XmNautoUnmanage, FALSE,
                              XmNshadowThickness, 1,
@@ -3200,8 +3227,22 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
 
     XtManageChild(form);
     XtManageChild(pane);
+
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(coordinate_calc_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Coordinate calc dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(coordinate_calc_dialog,XtGrabNone);
-    fix_dialog_size(coordinate_calc_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -4966,8 +5007,9 @@ void Map_font_change_data(Widget UNUSED(widget), XtPointer clientData, XtPointer
 
 void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, fontname[FONT_MAX], button_ok,
+  static Widget  pane, scrollwindow, my_form, fontname[FONT_MAX], button_ok,
          button_cancel,button_xfontsel[FONT_MAX];
+  Dimension width, height;
   Atom delw;
   int i;
   Arg al[50];                 /* Arg List */
@@ -4989,8 +5031,15 @@ void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(c
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Map font my_form",
-                                xmFormWidgetClass,  pane,
+                                xmFormWidgetClass,
+                                scrollwindow,
                                 XmNfractionBase,    3,
                                 XmNautoUnmanage,    FALSE,
                                 XmNshadowThickness, 1,
@@ -5202,8 +5251,21 @@ void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(c
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(map_font_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"map_font_dialog dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(map_font_dialog, XtGrabNone);
-    fix_dialog_size(map_font_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -14346,27 +14408,6 @@ void fix_dialog_size(Widget w)
 
 
 
-/******************** fix dialog size vertically only *************/
-
-void fix_dialog_vsize(Widget w)
-{
-  Dimension ht;
-
-  if (XtIsRealized(w))
-  {
-    XtVaGetValues(w,
-                  XmNheight, &ht,
-                  NULL);
-
-    XtVaSetValues(w,
-                  XmNminHeight,ht,
-                  XmNmaxHeight,ht,
-                  NULL);
-  }
-}
-
-
-
 /**************************************** Button CallBacks *************************************/
 /***********************************************************************************************/
 
@@ -14799,7 +14840,7 @@ void Custom_Zoom_do_it( Widget UNUSED(widget), XtPointer UNUSED(clientData), XtP
 //
 void Custom_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(calldata) )
 {
-  static Widget  pane,form, button_ok, button_cancel, zoom_label;
+  static Widget  pane, form, button_ok, button_cancel, zoom_label;
 //    Arg al[50];           /* Arg List */
 //    unsigned int ac = 0;           /* Arg Count */
   Atom delw;
@@ -17034,11 +17075,12 @@ void  GPS_operations_color_toggle( Widget UNUSED(widget), XtPointer clientData, 
 //
 void GPS_transfer_select( void )
 {
-  static Widget pane, my_form, button_select, button_cancel,
+  static Widget pane, scrollwindow, my_form, button_select, button_cancel,
          frame,  type_box, ctyp0, ctyp1,
          ctyp2, ctyp3, ctyp4, ctyp5, ctyp6, ctyp7,
          gpsfilename_label;
 //  static Widget color_type;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                      // Arg List
   register unsigned int ac = 0;   // Arg Count
@@ -17072,10 +17114,16 @@ void GPS_transfer_select( void )
              MY_BACKGROUND_COLOR,
              NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget(
                  "GPS_transfer_select my_form",
                  xmFormWidgetClass,
-                 pane,
+                 scrollwindow,
                  XmNfractionBase, 5,
                  XmNautoUnmanage, FALSE,
                  XmNshadowThickness, 1,
@@ -17313,8 +17361,21 @@ void GPS_transfer_select( void )
     XtManageChild(type_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(GPS_operations_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"GPS_operations_dialog dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(GPS_operations_dialog,XtGrabNone);
-    fix_dialog_size(GPS_operations_dialog);
 
     // Move focus to the Select button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -19573,7 +19634,7 @@ void  Server_port_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer
 
 void Help_About( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  Widget d;
+  Widget about_dialog;
   Widget child;
   XmString xms, xa, xb;
   Arg al[400];
@@ -19674,17 +19735,16 @@ void Help_About( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
   ac++;
 
   // "About Xastir"
-  d = XmCreateInformationDialog(appshell, langcode("PULDNHEL05"), al, ac);
+  about_dialog = XmCreateInformationDialog(appshell, langcode("PULDNHEL05"), al, ac);
   XmStringFree(xms);
-  XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_CANCEL_BUTTON));
-  XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_HELP_BUTTON));
+  XtDestroyWidget(XmMessageBoxGetChild(about_dialog, (unsigned char)XmDIALOG_CANCEL_BUTTON));
+  XtDestroyWidget(XmMessageBoxGetChild(about_dialog, (unsigned char)XmDIALOG_HELP_BUTTON));
 
-  child = XmMessageBoxGetChild(d, XmDIALOG_MESSAGE_LABEL);
+  child = XmMessageBoxGetChild(about_dialog, XmDIALOG_MESSAGE_LABEL);
   XtVaSetValues(child, XmNfontList, fontlist1, NULL);
 
-  XtManageChild(d);
-  pos_dialog(d);
-  fix_dialog_size(d);
+  XtManageChild(about_dialog);
+  pos_dialog(about_dialog);
 }
 
 
@@ -19784,9 +19844,10 @@ void Display_packet_mine_only_toggle( Widget UNUSED(w), XtPointer UNUSED(clientD
 
 void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  Widget pane, my_form, button_close, option_box, tnc_data,
+  Widget pane, scrollwindow, my_form, button_close, option_box, tnc_data,
          net_data, tnc_net_data, capabilities_button,
          mine_only_button;
+  Dimension width, height;
   unsigned int n;
   Arg args[50];
   Atom delw;
@@ -19807,9 +19868,15 @@ void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Display_data my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -20051,10 +20118,22 @@ void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize my_form to exactly fit option_box w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(Display_data_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Display_data_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     redraw_on_new_packet_data=1;
     XtPopup(Display_data_dialog,XtGrabNone);
-
-//        fix_dialog_vsize(Display_data_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -20112,7 +20191,8 @@ void help_index_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPo
 
 void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  Widget pane, my_form, button_close,help_text;
+  Widget pane, scrollwindow, my_form, button_close,help_text;
+  Dimension width, height;
   int i;
   Position x, y;
   unsigned int n;
@@ -20174,9 +20254,15 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
                               MY_BACKGROUND_COLOR,
                               NULL);
 
+      scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
       my_form =  XtVaCreateWidget("help_view my_form",
                                   xmFormWidgetClass,
-                                  pane,
+                                  scrollwindow,
                                   XmNfractionBase, 5,
                                   XmNautoUnmanage, FALSE,
                                   XmNshadowThickness, 1,
@@ -20301,8 +20387,21 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
       XtVaSetValues(help_text, XmNbackground, colors[0x0f], NULL);
       XtManageChild(pane);
 
+      // Resize dialog to exactly fit form w/o scrollbars
+      XtVaGetValues(my_form,
+                    XmNwidth, &width,
+                    XmNheight, &height,
+                    NULL);
+      XtVaSetValues(help_view_dialog,
+                    XmNwidth, width+10,
+                    XmNheight, height+10,
+                    NULL);
+      if (debug_level & 1)
+      {
+        fprintf(stderr,"help_view_dialog size: X:%d\tY:%d\n", width, height);
+      }
+
       XtPopup(help_view_dialog,XtGrabNone);
-      fix_dialog_size(help_view_dialog);
       XmTextShowPosition(help_text,0);
     }
     XtFree(temp);   // Free up the space allocated
@@ -20316,7 +20415,8 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
 
 void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel;
+  static Widget pane, scrollwindow, my_form, button_ok, button_cancel;
+  Dimension width, height;
   int n;
   char temp[600];
   FILE *f;
@@ -20344,9 +20444,15 @@ void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Help_Index my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -20462,8 +20568,21 @@ void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtVaSetValues(help_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(help_index_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"help_index_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(help_index_dialog,XtGrabNone);
-    fix_dialog_size(help_index_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -23198,9 +23317,9 @@ void Configure_DRG_none(Widget UNUSED(widget), XtPointer UNUSED(clientData), XtP
 
 void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget DRG_pane, DRG_form, button_ok, button_cancel,
+  static Widget DRG_pane, scrollwindow, DRG_form, button_ok, button_cancel,
          DRG_label1, sep1, sep2, button_all, button_none;
-
+  Dimension width, height;
   Atom delw;
 
   if (!configure_DRG_dialog)
@@ -23220,9 +23339,15 @@ void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
                                 MY_BACKGROUND_COLOR,
                                 NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           DRG_pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     DRG_form =  XtVaCreateWidget("Configure_DRG DRG_form",
                                  xmFormWidgetClass,
-                                 DRG_pane,
+                                 scrollwindow,
                                  XmNfractionBase, 3,
                                  XmNautoUnmanage, FALSE,
                                  XmNshadowThickness, 1,
@@ -23757,8 +23882,21 @@ void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtManageChild(DRG_form);
     XtManageChild(DRG_pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(DRG_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_DRG_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_DRG_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_DRG_dialog,XtGrabNone);
-    fix_dialog_size(configure_DRG_dialog);
 
     XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
 
@@ -23802,10 +23940,11 @@ void Expand_Dirs_toggle( Widget w, XtPointer clientData, XtPointer callData)
 
 void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_clear, button_V,
+  static Widget pane, scrollwindow, my_form, button_clear, button_V,
          button_C, button_F, button_O,
          rowcol, expand_dirs_button, button_properties,
          maps_selected_label, button_apply;
+  Dimension width, height;
   Atom delw;
 //    int i;
   Arg al[50];                    /* Arg List */
@@ -23831,9 +23970,15 @@ void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Map_chooser my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 7,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -24102,10 +24247,21 @@ void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtVaSetValues(map_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
-    XtPopup(map_chooser_dialog,XtGrabNone);
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(map_chooser_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"map_chooser_dialog size: X:%d\tY:%d\n", width, height);
+    }
 
-    // Fix the dialog height only, allow the width to vary.
-//        fix_dialog_vsize(map_chooser_dialog);
+    XtPopup(map_chooser_dialog,XtGrabNone);
 
     // Move focus to the OK button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -24590,13 +24746,14 @@ void lpomff_menuCallback(Widget widget, XtPointer ptr, XtPointer callData)
 
 void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, my_form, button_ok, button_cancel,
          frame4, frame5,
          type_box,
          styp1, styp2, styp3, styp4, styp5, styp6,
          igate_box,
          igtyp0, igtyp1, igtyp2, altnet_label;
 //  static Widget station_type, igate_option;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                      /* Arg List */
   register unsigned int ac = 0;   /* Arg Count */
@@ -24644,9 +24801,15 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Configure_defaults my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -25340,8 +25503,21 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
     XtManageChild(igate_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_defaults_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_defaults_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_defaults_dialog,XtGrabNone);
-    fix_dialog_size(configure_defaults_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -25439,7 +25615,8 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 
 void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel;
+  static Widget  pane, scrollwindow, my_form, button_ok, button_cancel;
+  Dimension width, height;
   Atom delw;
   XmString x_str;
 
@@ -25460,9 +25637,15 @@ void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Configure_timing my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 2,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -25931,8 +26114,21 @@ void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(my_form);
     XtManageChild(pane);
 
+   // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_timing_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_timing_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_timing_dialog,XtGrabNone);
-    fix_dialog_size(configure_timing_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -25992,10 +26188,11 @@ void Configure_coordinates_destroy_shell( Widget UNUSED(widget), XtPointer clien
 
 void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel, frame,
+  static Widget pane, scrollwindow, my_form, button_ok, button_cancel, frame,
          coord_box, coord_0, coord_1, coord_2,
          coord_3, coord_4, coord_5;
 //  static Widget label;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -26016,9 +26213,15 @@ void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Configure_coordinates my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -26209,8 +26412,21 @@ void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
     XtManageChild(coord_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_coordinates_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_coordinates_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_coordinates_dialog,XtGrabNone);
-    fix_dialog_size(configure_coordinates_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -26394,12 +26610,13 @@ void Configure_audio_alarm_change_data(Widget widget, XtPointer clientData, XtPo
 
 void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel,
+  static Widget pane, scrollwindow, my_form, button_ok, button_cancel,
          audio_play, file1, file2,
          min1, max1,
          minb1, maxb2,
          sep;
 //  static Widget min2, max2, minb2, maxb1;
+  Dimension width, height;
   Atom delw;
 
   if (!configure_audio_alarm_dialog)
@@ -26418,9 +26635,15 @@ void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Configure_audio_alarms my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 3,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -27027,8 +27250,21 @@ void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_audio_alarm_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_audio_alarm_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_audio_alarm_dialog,XtGrabNone);
-    fix_dialog_size(configure_audio_alarm_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -27152,8 +27388,9 @@ void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer
 
 void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, my_form, button_ok, button_cancel, file1,
+  static Widget pane, scrollwindow, my_form, button_ok, button_cancel, file1,
          sep, button_test;
+  Dimension width, height;
   Atom delw;
 
   if (!configure_speech_dialog)
@@ -27172,9 +27409,15 @@ void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Configure_speech my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -27475,8 +27718,21 @@ void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_speech_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_speech_dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(configure_speech_dialog,XtGrabNone);
-    fix_dialog_size(configure_speech_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -28062,7 +28318,7 @@ void Configure_change_symbol(Widget widget, XtPointer clientData, XtPointer call
  */
 void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget  pane, cs_form, cs_form1, button_ok, button_cancel, call, frame, frame2,
+  static Widget pane, scrollwindow, cs_form, cs_form1, button_ok, button_cancel, call, frame, frame2,
          framephg, formphg,
          power_box,poption0,poption1,poption2,poption3,poption4,poption5,poption6,poption7,poption8,poption9,poption10,
          height_box,hoption1,hoption2,hoption3,hoption4,hoption5,hoption6,hoption7,hoption8,hoption9,hoption10,
@@ -28075,6 +28331,7 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
          option_box,
          sep, configure_button_symbol, compute_button;
 //  static Widget pg2, slat_ns, slong, sts, posamb;
+  Dimension width, height;
   char temp_data[40];
   Atom delw;
   Arg al[50];                    /* Arg List */
@@ -28097,9 +28354,15 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     cs_form =  XtVaCreateWidget("Configure_station cs_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase,            5,
                                 XmNautoUnmanage,            FALSE,
                                 XmNshadowThickness,         1,
@@ -29556,9 +29819,21 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
     XtManageChild(formphg);
     XtManageChild(pane);
 
-    XtPopup(configure_station_dialog,XtGrabNone);
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(cs_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(configure_station_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"configure_station_dialog size: X:%d\tY:%d\n", width, height);
+    }
 
-    fix_dialog_size(configure_station_dialog);
+    XtPopup(configure_station_dialog,XtGrabNone);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

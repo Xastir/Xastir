@@ -4932,7 +4932,8 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
 void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, my_form, button_ok, button_close, label;
+  static Widget pane, my_form, button_ok, button_close, label, scrollwindow;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                     // Arg List
   register unsigned int ac = 0;   // Arg Count
@@ -4955,9 +4956,15 @@ void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer U
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("Change Tactical scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Change Tactical my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 3,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -5071,8 +5078,21 @@ void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer U
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(change_tactical_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Change_tactical dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(change_tactical_dialog,XtGrabNone);
-    fix_dialog_size(change_tactical_dialog);
 
     // Move focus to the Close button.  This appears to
     // highlight the
@@ -6389,7 +6409,8 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
          button_direct, button_version, station_icon, station_call,
          station_type, station_data_auto_update_w,
          button_tactical, button_change_trail_color,
-         button_track_station,button_clear_df;
+         button_track_station,button_clear_df,scrollwindow;
+  Dimension width, height;
   Arg args[50];
   Pixmap icon;
   Position x,y;    // For saving current dialog position
@@ -6505,8 +6526,15 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
                             XmNbackground, colors[0xff],
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("State Data scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     form =  XtVaCreateWidget("Station Data form",
-                             xmFormWidgetClass, pane,
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 4,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -7077,6 +7105,20 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
     XtVaSetValues(si_text, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
+   // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(db_station_info,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Station Info dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     if (station_data_auto_update)
     {
       XmToggleButtonSetState(station_data_auto_update_w,TRUE,FALSE);
@@ -7088,10 +7130,9 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
 
       XtPopup(db_station_info,XtGrabNone);
 
-      //            fix_dialog_size(db_station_info);
       XmTextShowPosition(si_text,0);
 
-      // Move focus to the Cancel button.  This appears to highlight t
+      // Move focus to the Cancel button.  This appears to highlight the
       // button fine, but we're not able to hit the <Enter> key to
       // have that default function happen.  Note:  We _can_ hit the
       // <SPACE> key, and that activates the option.
@@ -7517,7 +7558,7 @@ void Station_info(Widget w, XtPointer clientData, XtPointer UNUSED(calldata) )
 
         XtPopup(db_station_popup,XtGrabNone);
 
-        // Move focus to the Cancel button.  This appears to highlight t
+        // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
         // have that default function happen.  Note:  We _can_ hit the
         // <SPACE> key, and that activates the option.

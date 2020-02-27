@@ -308,8 +308,9 @@ void Locate_station_now(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
 //
 void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer callData)
 {
-  static Widget pane, form, button_locate, button_cancel, call,
+  static Widget pane, scrollwindow, form, button_locate, button_cancel, call,
          button_lookup, sep;
+  Dimension width, height;
   Atom delw;
   int emergency_flag = XTPOINTER_TO_INT(callData);
 
@@ -344,7 +345,15 @@ void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer ca
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Locate_station form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Locate_station form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 3,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -493,10 +502,23 @@ void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer ca
     XtManageChild(form);
     XtManageChild(pane);
 
+   // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(locate_station_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Location station dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" );
 
     XtPopup(locate_station_dialog,XtGrabNone);
-    fix_dialog_size(locate_station_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
@@ -916,8 +938,9 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData)
 
 void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, form, button_ok, button_cancel, sep,
+  static Widget pane, scrollwindow, form, button_ok, button_cancel, sep,
          place, state, county, quad, place_type, gnis_file;
+  Dimension width, height;
   Atom delw;
 
   if (!locate_place_dialog)
@@ -936,7 +959,15 @@ void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Locate_place form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Locate_place form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 2,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -1249,10 +1280,23 @@ void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(locate_place_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Locate place dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     end_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
 
     XtPopup(locate_place_dialog,XtGrabNone);
-    fix_dialog_size(locate_place_dialog);
 
     // Move focus to the Locate Now! button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

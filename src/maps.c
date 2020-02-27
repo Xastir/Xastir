@@ -5034,11 +5034,12 @@ static void  Invert( Widget UNUSED(widget), XtPointer clientData, XtPointer call
 //
 void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, form, button_ok, button_cancel,
+  static Widget pane, scrollwindow, form, button_ok, button_cancel,
          sep, auto_scale,
 //            paper_size, paper_size_data, scale, scale_data, blank_background,
 //            res_label1, res_label2, res_x, res_y,
          monochrome, invert;
+  Dimension width, height;
   Atom delw;
 
   // Get rid of the Print dialog
@@ -5069,19 +5070,24 @@ void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(
                               XmNfontList, fontlist1,
                               NULL);
 
-
     pane = XtVaCreateWidget("Print_properties pane",xmPanedWindowWidgetClass, print_properties_dialog,
                             XmNbackground, colors[0xff],
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
 
-    form =  XtVaCreateWidget("Print_properties form",xmFormWidgetClass, pane,
+    form =  XtVaCreateWidget("Print_properties form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 2,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
                              XmNshadowThickness, 1,
                              NULL);
-
 
     /*
             paper_size = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
@@ -5477,9 +5483,22 @@ void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(print_properties_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Print properties dialog size: X:%d\tY:%d\n", width, height);
+    }
+
 
     XtPopup(print_properties_dialog,XtGrabNone);
-    fix_dialog_size(print_properties_dialog);
 
 
     // Move focus to the Cancel button.  This appears to highlight the
@@ -5509,8 +5528,9 @@ void Print_properties( Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(
 //
 void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, form, button_print, button_cancel,
+  static Widget pane, scrollwindow, form, button_print, button_cancel,
          sep, button_preview;
+  Dimension width, height;
   Atom delw;
 
   if (!print_postscript_dialog)
@@ -5527,19 +5547,24 @@ void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
                               XmNfontList, fontlist1,
                               NULL);
 
-
     pane = XtVaCreateWidget("Print_postscript pane",xmPanedWindowWidgetClass, print_postscript_dialog,
                             XmNbackground, colors[0xff],
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
 
-    form =  XtVaCreateWidget("Print_postscript form",xmFormWidgetClass, pane,
+    form =  XtVaCreateWidget("Print_postscript form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 3,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
                              XmNshadowThickness, 1,
                              NULL);
-
 
     // "Direct to:"
     button_print = XtVaCreateManagedWidget(langcode("PRINT1001"),xmPushButtonGadgetClass, form,
@@ -5670,10 +5695,21 @@ void Print_Postscript( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(print_postscript_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Print postscript dialog size: X:%d\tY:%d\n", width, height);
+    }
 
     XtPopup(print_postscript_dialog,XtGrabNone);
-    fix_dialog_size(print_postscript_dialog);
-
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

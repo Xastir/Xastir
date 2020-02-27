@@ -8092,10 +8092,11 @@ void Create_SAR_Object(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(
 void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
 {
   Dimension width, height;
+  Dimension wd, ht;
   long lat,lon;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
-  static Widget ob_pane, ob_form,
+  static Widget ob_pane, ob_scrollwindow, ob_form,
          ob_name,ob_latlon_frame,ob_latlon_form,
          ob_lat, ob_lat_deg, ob_lat_min,
          ob_lon, ob_lon_deg, ob_lon_min, ob_lon_ew,
@@ -8301,9 +8302,15 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
                                XmNfontList, fontlist1,
                                NULL);
 
+    ob_scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                              xmScrolledWindowWidgetClass,
+                                              ob_pane,
+                                              XmNscrollingPolicy, XmAUTOMATIC,
+                                              NULL);
+
     ob_form =  XtVaCreateWidget("Set_Del_Object ob_form",
                                 xmFormWidgetClass,
-                                ob_pane,
+                                ob_scrollwindow,
                                 XmNfractionBase,            3,
                                 XmNautoUnmanage,            FALSE,
                                 XmNshadowThickness,         1,
@@ -8974,7 +8981,7 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
                           XmNcursorPositionVisible,   TRUE,
                           XmNsensitive,               TRUE,
                           XmNshadowThickness,         1,
-                          XmNcolumns,                 43,     // max 43 without Data Extension
+                          XmNcolumns,                 37,     // max 43 without Data Extension
                           XmNmaxLength,               43,
                           XmNtopOffset,               6,
                           XmNbackground,              colors[0x0f],
@@ -11576,10 +11583,23 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
     XtManageChild(ob_form);
     XtManageChild(ob_pane);
 
-    XtPopup(object_dialog,XtGrabNone);
-    fix_dialog_size(object_dialog);         // don't allow a resize
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(ob_form,
+                  XmNwidth, &wd,
+                  XmNheight, &ht,
+                  NULL);
+    XtVaSetValues(object_dialog,
+                  XmNwidth, wd+10,
+                  XmNheight, ht+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Object dialog size: X:%d\tY:%d\n", width, height);
+    }
 
-    // Move focus to the Cancel button.  This appears to highlight t
+    XtPopup(object_dialog,XtGrabNone);
+
+    // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
     // have that default function happen.  Note:  We _can_ hit the
     // <SPACE> key, and that activates the option.

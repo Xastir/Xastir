@@ -3519,7 +3519,8 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
 void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget  pane, my_form, my_form2, my_form3, button_cancel,
-         frame, frame2, b1;
+         frame, frame2, b1, scrollwindow;
+  Dimension width, height;
   int i;
   Atom delw;
 
@@ -3545,9 +3546,15 @@ void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("Select_symbol scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("Select_symbol my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -3723,8 +3730,21 @@ void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(my_form);
     XtManageChild(pane);
 
+   // Resize dialog to exactly fit my_form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(select_symbol_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Select_symbol dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(select_symbol_dialog,XtGrabNone);
-    fix_dialog_size(select_symbol_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

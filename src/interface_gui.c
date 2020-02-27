@@ -687,13 +687,14 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
 {
-  static Widget  pane, form, form2, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, form2, button_ok, button_cancel,
          frame, frame2, frame3, frame4,
          setup1, setup3, setup4,
          device, converse, comment, speed_box,
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget setup, setup2, speed;
+  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -762,7 +763,15 @@ void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_TNC form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_TNC form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -2119,8 +2128,21 @@ void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
     XtManageChild(igate_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_TNC_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config TNC dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_TNC_dialog,XtGrabNone);
-    fix_dialog_size(config_TNC_dialog);
   }
   else
   {
@@ -2261,12 +2283,13 @@ void Config_GPS_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 void Config_GPS( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          frame, frame2,
          device, comment, speed_box,
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget speed;
+  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -2292,7 +2315,15 @@ void Config_GPS( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_GPS form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_GPS form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -2735,8 +2766,21 @@ void Config_GPS( Widget UNUSED(w), int config_type, int port)
     XtManageChild(style_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_GPS_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config GPS dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_GPS_dialog,XtGrabNone);
-    fix_dialog_size(config_GPS_dialog);
   }
   else
   {
@@ -2875,12 +2919,13 @@ void Config_WX_change_data(Widget widget, XtPointer clientData, XtPointer callDa
 
 void Config_WX( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          frame, frame2, frame3, frame4, WX_none,
          device, comment, speed_box,
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget speed;
+  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -2910,7 +2955,15 @@ void Config_WX( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_WX form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_WX form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -3464,8 +3517,21 @@ void Config_WX( Widget UNUSED(w), int config_type, int port)
     XtManageChild(gauge_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_WX_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config WX dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_WX_dialog,XtGrabNone);
-    fix_dialog_size(config_WX_dialog);
   }
   else
   {
@@ -3613,7 +3679,7 @@ void Config_NWX_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 void Config_NWX( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, frame3, frame4, WX_none,
+  static Widget  pane, scrollwindow, form, frame3, frame4, WX_none,
          button_ok, button_cancel,
          hostn, portn, comment,
          data_box,
@@ -3621,6 +3687,7 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
          gauge_box,
          sep;
 //  static Widget data_type, gauge_type;
+  Dimension width, height;
   char temp[20];
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -3640,7 +3707,15 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_NWX form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_NWX form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -4027,8 +4102,21 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
     XtManageChild(gauge_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_NWX_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config Networked Weather dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_NWX_dialog,XtGrabNone);
-    fix_dialog_size(config_NWX_dialog);
   }
   else
   {
@@ -4185,9 +4273,10 @@ void Config_NGPS_change_data(Widget widget, XtPointer clientData, XtPointer call
 
 void Config_NGPS( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          hostn, portn, comment,
          sep;
+  Dimension width, height;
   char temp[20];
   Atom delw;
 
@@ -4205,7 +4294,15 @@ void Config_NGPS( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_NGPS form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_NGPS form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -4473,8 +4570,21 @@ void Config_NGPS( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_NGPS_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config Networked GPS dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_NGPS_dialog,XtGrabNone);
-    fix_dialog_size(config_NGPS_dialog);
   }
   else
   {
@@ -4697,7 +4807,7 @@ void Config_AX25_change_data(Widget widget, XtPointer clientData, XtPointer call
 
 void Config_AX25( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel, frame,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel, frame,
          devn, comment,
          proto, proto1, proto2, proto3,
          igate_box,
@@ -4705,6 +4815,7 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
          igate_label,
          sep;
 //  static Widget igate;
+  Dimension width, height;
 
   char temp[50];
   Atom delw;
@@ -4725,7 +4836,15 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_AX25 form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_AX25 form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -5204,8 +5323,21 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
     XtManageChild(igate_box);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_AX25_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config AX25 dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_AX25_dialog,XtGrabNone);
-    fix_dialog_size(config_AX25_dialog);
   }
   else
   {
@@ -5382,10 +5514,11 @@ void Inet_change_data(Widget widget, XtPointer clientData, XtPointer callData)
 
 void Config_Inet( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          ihost, iport, password,
          filter, comment, sep;
 //  static Widget password_fl;
+  Dimension width, height;
 
   Atom delw;
   char temp[40];
@@ -5404,7 +5537,15 @@ void Config_Inet( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_Inet form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_Inet form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -5746,8 +5887,21 @@ void Config_Inet( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_Inet_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config INET dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_Inet_dialog,XtGrabNone);
-    fix_dialog_size(config_Inet_dialog);
   }
   else
   {
@@ -5924,10 +6078,11 @@ void Database_change_data(Widget widget, XtPointer clientData, XtPointer callDat
 
 void Config_Database( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          ihost, iport, password,
          filter, sep, comment;
 //  static Widget password_fl;
+  Dimension width, height;
 
   Atom delw;
   char temp[40];
@@ -5946,7 +6101,15 @@ void Config_Database( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_Database form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_Database form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -6282,8 +6445,21 @@ void Config_Database( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_Database_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config database dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_Database_dialog,XtGrabNone);
-    fix_dialog_size(config_Database_dialog);
   }
   else
   {
@@ -6675,11 +6851,12 @@ void sddd_menuCallback(Widget widget, XtPointer ptr, XtPointer callData)
  */
 void Config_sql_Database( Widget w, int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel, label_dbms, label_schema_type,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel, label_dbms, label_schema_type,
          ihost, iport, password, unix_socket, error_message,
          sep, comment, username, schema_name;
   static Widget button_mysql_defaults;    // set form values to defaults for mysql
   static Widget button_postgis_defaults;  // set form values to deaults for postgresql/postgis
+  Dimension width, height;
   int defaults_set;  // Have defaults been set on form for new interface?
   // Used to make only a single set defaults call when
   // support for multiple types of dbms are available.
@@ -6735,7 +6912,15 @@ void Config_sql_Database( Widget w, int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_Database form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_Database form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase,    13,
                              XmNbackground,      colors[0xff],
                              XmNautoUnmanage,    FALSE,
@@ -7456,8 +7641,21 @@ void Config_sql_Database( Widget w, int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_Sql_Database_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config SQL database dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_Sql_Database_dialog,XtGrabNone);
-    fix_dialog_size(config_Sql_Database_dialog);
   }
   else
   {
@@ -7707,12 +7905,13 @@ void AGWPE_change_data(Widget widget, XtPointer clientData, XtPointer callData)
 
 void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
 {
-  static Widget  pane, form, button_ok, button_cancel,
+  static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          ihost, iport, password, sep,
          igate_box, igate_o_0, igate_o_1, igate_o_2,
          igate_label, frame, proto, proto1, proto2, proto3,
          radioport_label, comment;
 //  static Widget igate, password_fl;
+  Dimension width, height;
   Atom delw;
   char temp[40];
   Arg al[50];                      // Arg list
@@ -7732,7 +7931,15 @@ void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Config_AGWPE form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Config_AGWPE form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 5,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -8350,8 +8557,21 @@ void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(config_AGWPE_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Config AGWPE dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     XtPopup(config_AGWPE_dialog,XtGrabNone);
-    fix_dialog_size(config_AGWPE_dialog);
   }
   else
   {
@@ -8962,7 +9182,8 @@ void interface_setup(Widget w, XtPointer clientData,  XtPointer UNUSED(callData)
 //
 void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData) )
 {
-  Widget pane, form, label, button_add, button_cancel;
+  Widget pane, scrollwindow, form, label, button_add, button_cancel;
+  Dimension width, height;
   char *what = (char *)clientData;
   int i,x,n,do_w;
   char *temp;
@@ -8997,7 +9218,15 @@ void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-        form =  XtVaCreateWidget("interface_option form",xmFormWidgetClass, pane,
+        scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                               xmScrolledWindowWidgetClass,
+                                               pane,
+                                               XmNscrollingPolicy, XmAUTOMATIC,
+                                               NULL);
+
+        form =  XtVaCreateWidget("interface_option form",
+                                 xmFormWidgetClass,
+                                 scrollwindow,
                                  XmNfractionBase, 5,
                                  XmNbackground, colors[0xff],
                                  XmNautoUnmanage, FALSE,
@@ -9100,8 +9329,21 @@ void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData
         XtVaSetValues(interface_type_list, XmNbackground, colors[0x0f], NULL);
         XtManageChild(pane);
 
+        // Resize dialog to exactly fit form w/o scrollbars
+        XtVaGetValues(form,
+                      XmNwidth, &width,
+                      XmNheight, &height,
+                      NULL);
+        XtVaSetValues(choose_interface_dialog,
+                      XmNwidth, width+10,
+                      XmNheight, height+10,
+                      NULL);
+        if (debug_level & 1)
+        {
+          fprintf(stderr,"Choose interface dialog size: X:%d\tY:%d\n", width, height);
+        }
+
         XtPopup(choose_interface_dialog,XtGrabNone);
-        fix_dialog_size(choose_interface_dialog);
 
         // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
@@ -9532,8 +9774,9 @@ void Control_interface_destroy_shell( Widget UNUSED(widget), XtPointer clientDat
 
 void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPointer UNUSED(callData) )
 {
-  static Widget rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
+  static Widget scrollwindow, rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
   static Widget button_add, button_delete, button_properties;
+  Dimension width, height;
   Atom delw;
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -9552,7 +9795,15 @@ void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPoin
                                XmNfontList, fontlist1,
                                NULL);
 
-    rowcol =  XtVaCreateWidget("control_interface rowcol",xmRowColumnWidgetClass, control_interface_dialog,
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           control_interface_dialog,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    rowcol =  XtVaCreateWidget("control_interface rowcol",
+                               xmRowColumnWidgetClass,
+                               scrollwindow,
                                XmNorientation, XmVERTICAL,
                                XmNnumColumns, 1,
                                XmNpacking, XmPACK_TIGHT,
@@ -9746,10 +9997,23 @@ void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPoin
     XtManageChild(form);
     XtManageChild(rowcol);
 
+   // Resize dialog to exactly fit rowcol w/o scrollbars
+    XtVaGetValues(rowcol,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(control_interface_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Interface dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     end_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_interface" );
 
     XtPopup(control_interface_dialog,XtGrabNone);
-    fix_dialog_size(control_interface_dialog);
 
     // Move focus to the Cancel button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to

@@ -277,8 +277,9 @@ void  Show_dest_toggle( Widget UNUSED(widget), XtPointer clientData, XtPointer c
 
 void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  static Widget pane, form, button_ok, button_cancel, sep,
+  static Widget pane, scrollwindow, form, button_ok, button_cancel, sep,
          zip, state, locality, address, map_file, show_dest_toggle;
+  Dimension width, height;
   Atom delw;
 
   if (!geocoder_place_dialog)
@@ -298,7 +299,15 @@ void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
                             XmNbackground, colors[0xff],
                             NULL);
 
-    form =  XtVaCreateWidget("Geocoder_place form",xmFormWidgetClass, pane,
+    scrollwindow = XtVaCreateManagedWidget("Geocoder_place scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
+    form =  XtVaCreateWidget("Geocoder_place form",
+                             xmFormWidgetClass,
+                             scrollwindow,
                              XmNfractionBase, 2,
                              XmNbackground, colors[0xff],
                              XmNautoUnmanage, FALSE,
@@ -571,10 +580,23 @@ void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(geocoder_place_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"Change_tactical dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     end_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place" );
 
     XtPopup(geocoder_place_dialog,XtGrabNone);
-    fix_dialog_size(geocoder_place_dialog);
 
     XmProcessTraversal(button_ok, XmTRAVERSE_CURRENT);
 

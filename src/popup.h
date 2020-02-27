@@ -32,7 +32,7 @@ typedef struct
   char name[10];
   Widget popup_message_dialog;
   Widget popup_message_data;
-  Widget pane, form, button_close;
+  Widget pane, scrollwindow, form, button_close;
   time_t sec_opened;
 
 } Popup_Window;

@@ -493,9 +493,10 @@ void  Read_messages_mine_only_toggle( Widget UNUSED(widget), XtPointer clientDat
 
 void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
-  Widget pane, my_form, button_close, dist, dist_units;
+  Widget pane, scrollwindow, my_form, button_close, dist, dist_units;
   Widget option_box, tnc_data, net_data, tnc_net_data,
          read_mine_only_button;
+  Dimension width, height;
   unsigned int n;
 #define NCNT 50
 #define IncN(n) if (n< NCNT) n++; else fprintf(stderr, "Oops, too many arguments for array!\a")
@@ -522,9 +523,15 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
                             MY_BACKGROUND_COLOR,
                             NULL);
 
+    scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                           xmScrolledWindowWidgetClass,
+                                           pane,
+                                           XmNscrollingPolicy, XmAUTOMATIC,
+                                           NULL);
+
     my_form =  XtVaCreateWidget("view_all_messages my_form",
                                 xmFormWidgetClass,
-                                pane,
+                                scrollwindow,
                                 XmNfractionBase, 5,
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
@@ -801,6 +808,20 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     XtManageChild(my_form);
     XtManageChild(pane);
 
+    // Resize dialog to exactly fit form w/o scrollbars
+    XtVaGetValues(my_form,
+                  XmNwidth, &width,
+                  XmNheight, &height,
+                  NULL);
+    XtVaSetValues(All_messages_dialog,
+                  XmNwidth, width+10,
+                  XmNheight, height+10,
+                  NULL);
+    if (debug_level & 1)
+    {
+      fprintf(stderr,"All messages dialog size: X:%d\tY:%d\n", width, height);
+    }
+
     redraw_on_new_packet_data=1;
 
     // Dump all currently active messages to the new window
@@ -809,7 +830,6 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
     XtPopup(All_messages_dialog,XtGrabNone);
-//        fix_dialog_vsize(All_messages_dialog);
 
     // Move focus to the Close button.  This appears to highlight the
     // button fine, but we're not able to hit the <Enter> key to
