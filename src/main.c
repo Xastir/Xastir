@@ -14384,6 +14384,130 @@ void pos_dialog(Widget w)
 
 
 
+
+
+/*********************  resize_dialog *************************/
+//
+// Resize dialog to fit screen size or form, whichever is smaller.
+// If screen size is smaller, also position dialog at 0,0.
+//
+// Don't forget window decorations! Setting a dialog to 320x240 ends
+// up with a total dialog of 326x267 on one Linux w/xfwm4 window
+// manager and certain selected fonts. This is 6 more in the X and 27
+// more in the Y direction. We need to either add in the size of the
+// window decorations or activate the full-screen button on the
+// dialog.
+//
+// Found this which talks about getting sizes from parent and
+// grandparent of window to compute decoration sizes:
+//   https://ubuntuforums.org/showthread.php?t=2048596
+// Tried the above, plus several other methods: Couldn't come up with
+// a general method for calculating the size of the title bar portion
+// of the decorations. In particular the parent numbers return full
+// screen size and can't get the grandparent window.
+//
+// NOTE: 6, 27, and 10 numbers below were determined experimentally
+// on one system. Your mileage may vary based on window manager and
+// fonts selected.
+//
+void resize_dialog( Widget form, Widget dialog)
+{
+  Dimension form_width, form_height;
+  Dimension final_width, final_height;
+  Dimension screen_width, screen_height;
+  int set_to_origin = 0;
+
+  // Fetch form size. Note that this will NOT include
+  // the sizes of window decorations and title bar.
+  XtVaGetValues(form,
+                XmNwidth, &form_width,
+                XmNheight, &form_height,
+                NULL);
+
+  // Fetch screen size
+  screen_height = DisplayHeight(XtDisplay(appshell), DefaultScreen(display));
+  screen_width = DisplayWidth(XtDisplay(appshell), DefaultScreen(display));
+
+  // Simulate a small screen for testing:
+  //screen_width  = 320;
+  //screen_height = 240;
+
+  // NOTE: 27 and 6 numbers below were discovered by capturing a
+  // known window size with XV, then examining the image with (any
+  // of) "xv" / "gimp" / "identify" to determine final size with
+  // decorations. On one system it was 3 pixels each side plus 21
+  // more for the titlebar, adding up to +6 left/right and +27
+  // top/bottom. This will vary per window manager, WM settings,
+  // and fonts selected.
+
+  // Find smaller of the two heights:
+  // If dialog height is larger than screen, make smaller which
+  // also activates the scrollbars.
+  if ( (form_height+27) > screen_height) {
+    // Set form height to screen height minus decorations and move
+    // to origin
+    final_height = screen_height-27;
+    set_to_origin++;
+  }
+  else {  // Dialog fits within the screen.
+    final_height = form_height+10;
+  }
+
+  // Find smaller of the two widths:
+  // If dialog width is larger than screen, make smaller which
+  // also activates the scrollbars.
+  if ( (form_width+6) > screen_width) {
+    // Set form width to screen width minus decorations
+    // and move to origin
+    final_width = screen_width-6;
+    set_to_origin++;
+  }
+  else {  // Dialog fits within the screen.
+    final_width = form_width+10;
+  }
+
+  if (set_to_origin) {
+    // Set dialog's origin to 0,0.
+    // Set width/height to the smaller of the two sizes.
+    // Set max width/height to size of original form.
+    // 10 was determined experimentally.
+    XtVaSetValues(dialog,
+                  XmNx, 0,
+                  XmNy, 0,
+                  XmNwidth, final_width,
+                  XmNheight, final_height,
+                  XmNmaxWidth,form_width+10,
+                  XmNmaxHeight,form_height+10,
+                  NULL);
+  }
+  else {
+    // Set width/height to the smaller of the two sizes.
+    // Set max width/height to size of original form.
+    // 10 was determined experimentally.
+    XtVaSetValues(dialog,
+                  XmNwidth, final_width,
+                  XmNheight, final_height,
+                  XmNmaxWidth,form_width+10,
+                  XmNmaxHeight,form_height+10,
+                  NULL);
+  }
+
+  if (debug_level & 1)
+  {
+    fprintf(stderr,"Form size: X:%d\tY:%d\n", form_width, form_height);
+    fprintf(stderr,"Screen size: X:%i, Y:%i\n", screen_width, screen_height);
+    fprintf(stderr,"Setting dialog to width:%i, height:%i\n", final_width, final_height);
+
+    if (set_to_origin) {
+      fprintf(stderr,"Setting dialog to position 0,0\n");
+    }
+  }
+}
+
+
+
+
+
 /*********************  fix dialog size *************************/
 
 void fix_dialog_size(Widget w)
