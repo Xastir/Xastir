@@ -694,7 +694,6 @@ void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget setup, setup2, speed;
-  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -2128,19 +2127,7 @@ void Config_TNC( Widget UNUSED(w), int device_type, int config_type, int port)
     XtManageChild(igate_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_TNC_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config TNC dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_TNC_dialog);
 
     XtPopup(config_TNC_dialog,XtGrabNone);
   }
@@ -2289,7 +2276,6 @@ void Config_GPS( Widget UNUSED(w), int config_type, int port)
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget speed;
-  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -2766,19 +2752,7 @@ void Config_GPS( Widget UNUSED(w), int config_type, int port)
     XtManageChild(style_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_GPS_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config GPS dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_GPS_dialog);
 
     XtPopup(config_GPS_dialog,XtGrabNone);
   }
@@ -2925,7 +2899,6 @@ void Config_WX( Widget UNUSED(w), int config_type, int port)
          speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
          speed_19200, speed_38400;
 //  static Widget speed;
-  Dimension width, height;
 #ifndef __LSB__
   static Widget speed_57600, speed_115200, speed_230400;
 #endif  // __LSB__
@@ -3517,19 +3490,7 @@ void Config_WX( Widget UNUSED(w), int config_type, int port)
     XtManageChild(gauge_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_WX_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config WX dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_WX_dialog);
 
     XtPopup(config_WX_dialog,XtGrabNone);
   }
@@ -3687,7 +3648,6 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
          gauge_box,
          sep;
 //  static Widget data_type, gauge_type;
-  Dimension width, height;
   char temp[20];
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -4102,19 +4062,7 @@ void Config_NWX( Widget UNUSED(w), int config_type, int port)
     XtManageChild(gauge_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_NWX_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config Networked Weather dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_NWX_dialog);
 
     XtPopup(config_NWX_dialog,XtGrabNone);
   }
@@ -4276,7 +4224,6 @@ void Config_NGPS( Widget UNUSED(w), int config_type, int port)
   static Widget  pane, scrollwindow, form, button_ok, button_cancel,
          hostn, portn, comment,
          sep;
-  Dimension width, height;
   char temp[20];
   Atom delw;
 
@@ -4570,19 +4517,7 @@ void Config_NGPS( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_NGPS_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config Networked GPS dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_NGPS_dialog);
 
     XtPopup(config_NGPS_dialog,XtGrabNone);
   }
@@ -4815,7 +4750,6 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
          igate_label,
          sep;
 //  static Widget igate;
-  Dimension width, height;
 
   char temp[50];
   Atom delw;
@@ -5323,19 +5257,7 @@ void Config_AX25( Widget UNUSED(w), int config_type, int port)
     XtManageChild(igate_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_AX25_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config AX25 dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_AX25_dialog);
 
     XtPopup(config_AX25_dialog,XtGrabNone);
   }
@@ -5518,7 +5440,6 @@ void Config_Inet( Widget UNUSED(w), int config_type, int port)
          ihost, iport, password,
          filter, comment, sep;
 //  static Widget password_fl;
-  Dimension width, height;
 
   Atom delw;
   char temp[40];
@@ -5887,19 +5808,7 @@ void Config_Inet( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_Inet_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config INET dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_Inet_dialog);
 
     XtPopup(config_Inet_dialog,XtGrabNone);
   }
@@ -6082,7 +5991,6 @@ void Config_Database( Widget UNUSED(w), int config_type, int port)
          ihost, iport, password,
          filter, sep, comment;
 //  static Widget password_fl;
-  Dimension width, height;
 
   Atom delw;
   char temp[40];
@@ -6445,19 +6353,7 @@ void Config_Database( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_Database_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config database dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_Database_dialog);
 
     XtPopup(config_Database_dialog,XtGrabNone);
   }
@@ -7641,19 +7537,7 @@ void Config_sql_Database( Widget w, int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_Sql_Database_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config SQL database dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_Sql_Database_dialog);
 
     XtPopup(config_Sql_Database_dialog,XtGrabNone);
   }
@@ -7911,7 +7795,6 @@ void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
          igate_label, frame, proto, proto1, proto2, proto3,
          radioport_label, comment;
 //  static Widget igate, password_fl;
-  Dimension width, height;
   Atom delw;
   char temp[40];
   Arg al[50];                      // Arg list
@@ -8557,19 +8440,7 @@ void Config_AGWPE( Widget UNUSED(w), int config_type, int port)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(config_AGWPE_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Config AGWPE dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, config_AGWPE_dialog);
 
     XtPopup(config_AGWPE_dialog,XtGrabNone);
   }
@@ -9183,7 +9054,6 @@ void interface_setup(Widget w, XtPointer clientData,  XtPointer UNUSED(callData)
 void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData) )
 {
   Widget pane, scrollwindow, form, label, button_add, button_cancel;
-  Dimension width, height;
   char *what = (char *)clientData;
   int i,x,n,do_w;
   char *temp;
@@ -9329,19 +9199,7 @@ void interface_option(Widget w, XtPointer clientData,  XtPointer UNUSED(callData
         XtVaSetValues(interface_type_list, XmNbackground, colors[0x0f], NULL);
         XtManageChild(pane);
 
-        // Resize dialog to exactly fit form w/o scrollbars
-        XtVaGetValues(form,
-                      XmNwidth, &width,
-                      XmNheight, &height,
-                      NULL);
-        XtVaSetValues(choose_interface_dialog,
-                      XmNwidth, width+10,
-                      XmNheight, height+10,
-                      NULL);
-        if (debug_level & 1)
-        {
-          fprintf(stderr,"Choose interface dialog size: X:%d\tY:%d\n", width, height);
-        }
+        resize_dialog(form, choose_interface_dialog);
 
         XtPopup(choose_interface_dialog,XtGrabNone);
 
@@ -9776,7 +9634,6 @@ void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPoin
 {
   static Widget scrollwindow, rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
   static Widget button_add, button_delete, button_properties;
-  Dimension width, height;
   Atom delw;
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -9997,19 +9854,7 @@ void control_interface( Widget UNUSED(w),  XtPointer UNUSED(clientData),  XtPoin
     XtManageChild(form);
     XtManageChild(rowcol);
 
-   // Resize dialog to exactly fit rowcol w/o scrollbars
-    XtVaGetValues(rowcol,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(control_interface_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Interface dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(rowcol, control_interface_dialog);
 
     end_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_interface" );
 

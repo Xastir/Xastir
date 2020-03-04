@@ -2718,7 +2718,6 @@ void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData)
 void Auto_msg_set( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget  pane, scrollwindow, my_form, button_ok, button_cancel, reply;
-  Dimension width, height;
   Atom delw;
 
   begin_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_set" );
@@ -2846,19 +2845,7 @@ void Auto_msg_set( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(auto_msg_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Auto msg dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, auto_msg_dialog);
 
     XtPopup(auto_msg_dialog,XtGrabNone);
 

@@ -119,6 +119,8 @@ extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
 
 extern void fix_dialog_size(Widget w);
 
+void resize_dialog( Widget form, Widget dialog);
+
 extern int debug_level;
 extern GC gc;
 extern Pixel colors[];

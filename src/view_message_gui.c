@@ -496,7 +496,6 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
   Widget pane, scrollwindow, my_form, button_close, dist, dist_units;
   Widget option_box, tnc_data, net_data, tnc_net_data,
          read_mine_only_button;
-  Dimension width, height;
   unsigned int n;
 #define NCNT 50
 #define IncN(n) if (n< NCNT) n++; else fprintf(stderr, "Oops, too many arguments for array!\a")
@@ -808,19 +807,7 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(All_messages_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"All messages dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, All_messages_dialog);
 
     redraw_on_new_packet_data=1;
 

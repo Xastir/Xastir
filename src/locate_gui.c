@@ -310,7 +310,6 @@ void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer ca
 {
   static Widget pane, scrollwindow, form, button_locate, button_cancel, call,
          button_lookup, sep;
-  Dimension width, height;
   Atom delw;
   int emergency_flag = XTPOINTER_TO_INT(callData);
 
@@ -502,19 +501,7 @@ void Locate_station(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer ca
     XtManageChild(form);
     XtManageChild(pane);
 
-   // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(locate_station_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Location station dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, locate_station_dialog);
 
     end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" );
 
@@ -940,7 +927,6 @@ void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
 {
   static Widget pane, scrollwindow, form, button_ok, button_cancel, sep,
          place, state, county, quad, place_type, gnis_file;
-  Dimension width, height;
   Atom delw;
 
   if (!locate_place_dialog)
@@ -1280,19 +1266,7 @@ void Locate_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(locate_place_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Locate place dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, locate_place_dialog);
 
     end_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place" );
 

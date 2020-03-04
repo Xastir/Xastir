@@ -279,7 +279,6 @@ void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
 {
   static Widget pane, scrollwindow, form, button_ok, button_cancel, sep,
          zip, state, locality, address, map_file, show_dest_toggle;
-  Dimension width, height;
   Atom delw;
 
   if (!geocoder_place_dialog)
@@ -580,19 +579,7 @@ void Geocoder_place(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(geocoder_place_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Change_tactical dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, geocoder_place_dialog);
 
     end_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place" );
 

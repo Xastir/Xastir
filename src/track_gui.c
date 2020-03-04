@@ -210,7 +210,6 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData)
 void Track_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget pane, scrollwindow, my_form, button_ok, button_close, button_clear, call, sep;
-  Dimension width, height;
   Atom delw;
 
   if (!track_station_dialog)
@@ -412,19 +411,7 @@ void Track_station( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(track_station_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Track station dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, track_station_dialog);
 
     end_critical_section(&track_station_dialog_lock, "track_gui.c:Track_station" );
 
@@ -858,7 +845,6 @@ void Reset_posit_length_max(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
 void Download_findu_trail( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget pane, scrollwindow, my_form, button_ok, button_cancel, call, sep;
-  Dimension width, height;
   Atom delw;
   XmString x_str;
 
@@ -1076,19 +1062,7 @@ void Download_findu_trail( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoi
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(download_findu_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Download findu dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, download_findu_dialog);
 
     end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail" );
 
