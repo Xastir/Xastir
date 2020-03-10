@@ -8092,7 +8092,6 @@ void Create_SAR_Object(Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED(
 void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
 {
   Dimension width, height;
-  Dimension wd, ht;
   long lat,lon;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
@@ -11583,19 +11582,7 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
     XtManageChild(ob_form);
     XtManageChild(ob_pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(ob_form,
-                  XmNwidth, &wd,
-                  XmNheight, &ht,
-                  NULL);
-    XtVaSetValues(object_dialog,
-                  XmNwidth, wd+10,
-                  XmNheight, ht+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Object dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(ob_form, object_dialog);
 
     XtPopup(object_dialog,XtGrabNone);
 

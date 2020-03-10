@@ -4933,7 +4933,6 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget pane, my_form, button_ok, button_close, label, scrollwindow;
-  Dimension width, height;
   Atom delw;
   Arg al[50];                     // Arg List
   register unsigned int ac = 0;   // Arg Count
@@ -5078,19 +5077,7 @@ void Change_tactical(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer U
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(change_tactical_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Change_tactical dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, change_tactical_dialog);
 
     XtPopup(change_tactical_dialog,XtGrabNone);
 
@@ -6410,7 +6397,6 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
          station_type, station_data_auto_update_w,
          button_tactical, button_change_trail_color,
          button_track_station,button_clear_df,scrollwindow;
-  Dimension width, height;
   Arg args[50];
   Pixmap icon;
   Position x,y;    // For saving current dialog position
@@ -7105,19 +7091,7 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
     XtVaSetValues(si_text, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
-   // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(db_station_info,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Station Info dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, db_station_info);
 
     if (station_data_auto_update)
     {

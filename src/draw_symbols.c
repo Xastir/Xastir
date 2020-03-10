@@ -3520,7 +3520,6 @@ void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
 {
   static Widget  pane, my_form, my_form2, my_form3, button_cancel,
          frame, frame2, b1, scrollwindow;
-  Dimension width, height;
   int i;
   Atom delw;
 
@@ -3730,19 +3729,7 @@ void Select_symbol( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
     XtManageChild(my_form);
     XtManageChild(pane);
 
-   // Resize dialog to exactly fit my_form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(select_symbol_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Select_symbol dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, select_symbol_dialog);
 
     XtPopup(select_symbol_dialog,XtGrabNone);
 

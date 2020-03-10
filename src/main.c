@@ -1348,7 +1348,6 @@ void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
          label4, label5, label6,
          button_ok, button_cancel;
 //  static Widget label7;
-  Dimension width, height;
   Atom delw;
   char temp_string[10];
   char temp_label_string[100];
@@ -1766,19 +1765,7 @@ void Smart_Beacon(Widget w, XtPointer UNUSED(clientData), XtPointer callData)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(smart_beacon_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Smart beacon dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, smart_beacon_dialog);
 
     XtPopup(smart_beacon_dialog,XtGrabNone);
 
@@ -2898,7 +2885,6 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
   static Widget  pane, scrollwindow, form, label1, label4,
          button_clear, button_calculate, button_cancel;
 //  static Widget label2, label3, label5, label6;
-  Dimension width, height;
   Atom delw;
   Arg args[50];                    // Arg List
   register unsigned int n = 0;    // Arg Count
@@ -3228,19 +3214,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData)
     XtManageChild(form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(coordinate_calc_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Coordinate calc dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(form, coordinate_calc_dialog);
 
     XtPopup(coordinate_calc_dialog,XtGrabNone);
 
@@ -5009,7 +4983,6 @@ void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(c
 {
   static Widget  pane, scrollwindow, my_form, fontname[FONT_MAX], button_ok,
          button_cancel,button_xfontsel[FONT_MAX];
-  Dimension width, height;
   Atom delw;
   int i;
   Arg al[50];                 /* Arg List */
@@ -5251,19 +5224,7 @@ void Map_font(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(c
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(map_font_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"map_font_dialog dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, map_font_dialog);
 
     XtPopup(map_font_dialog, XtGrabNone);
 
@@ -14384,6 +14345,130 @@ void pos_dialog(Widget w)
 
 
 
+
+
+/*********************  resize_dialog *************************/
+//
+// Resize dialog to fit screen size or form, whichever is smaller.
+// If screen size is smaller, also position dialog at 0,0.
+//
+// Don't forget window decorations! Setting a dialog to 320x240 ends
+// up with a total dialog of 326x267 on one Linux w/xfwm4 window
+// manager and certain selected fonts. This is 6 more in the X and 27
+// more in the Y direction. We need to either add in the size of the
+// window decorations or activate the full-screen button on the
+// dialog.
+//
+// Found this which talks about getting sizes from parent and
+// grandparent of window to compute decoration sizes:
+//   https://ubuntuforums.org/showthread.php?t=2048596
+// Tried the above, plus several other methods: Couldn't come up with
+// a general method for calculating the size of the title bar portion
+// of the decorations. In particular the parent numbers return full
+// screen size and can't get the grandparent window.
+//
+// NOTE: 6, 27, and 10 numbers below were determined experimentally
+// on one system. Your mileage may vary based on window manager and
+// fonts selected.
+//
+void resize_dialog( Widget form, Widget dialog)
+{
+  Dimension form_width, form_height;
+  Dimension final_width, final_height;
+  Dimension screen_width, screen_height;
+  int set_to_origin = 0;
+
+  // Fetch form size. Note that this will NOT include
+  // the sizes of window decorations and title bar.
+  XtVaGetValues(form,
+                XmNwidth, &form_width,
+                XmNheight, &form_height,
+                NULL);
+
+  // Fetch screen size
+  screen_height = DisplayHeight(XtDisplay(appshell), DefaultScreen(display));
+  screen_width = DisplayWidth(XtDisplay(appshell), DefaultScreen(display));
+
+  // Simulate a small screen for testing:
+  //screen_width  = 320;
+  //screen_height = 240;
+
+  // NOTE: 27 and 6 numbers below were discovered by capturing a
+  // known window size with XV, then examining the image with (any
+  // of) "xv" / "gimp" / "identify" to determine final size with
+  // decorations. On one system it was 3 pixels each side plus 21
+  // more for the titlebar, adding up to +6 left/right and +27
+  // top/bottom. This will vary per window manager, WM settings,
+  // and fonts selected.
+
+  // Find smaller of the two heights:
+  // If dialog height is larger than screen, make smaller which
+  // also activates the scrollbars.
+  if ( (form_height+27) > screen_height) {
+    // Set form height to screen height minus decorations and move
+    // to origin
+    final_height = screen_height-27;
+    set_to_origin++;
+  }
+  else {  // Dialog fits within the screen.
+    final_height = form_height+10;
+  }
+
+  // Find smaller of the two widths:
+  // If dialog width is larger than screen, make smaller which
+  // also activates the scrollbars.
+  if ( (form_width+6) > screen_width) {
+    // Set form width to screen width minus decorations
+    // and move to origin
+    final_width = screen_width-6;
+    set_to_origin++;
+  }
+  else {  // Dialog fits within the screen.
+    final_width = form_width+10;
+  }
+
+  if (set_to_origin) {
+    // Set dialog's origin to 0,0.
+    // Set width/height to the smaller of the two sizes.
+    // Set max width/height to size of original form.
+    // 10 was determined experimentally.
+    XtVaSetValues(dialog,
+                  XmNx, 0,
+                  XmNy, 0,
+                  XmNwidth, final_width,
+                  XmNheight, final_height,
+                  XmNmaxWidth,form_width+10,
+                  XmNmaxHeight,form_height+10,
+                  NULL);
+  }
+  else {
+    // Set width/height to the smaller of the two sizes.
+    // Set max width/height to size of original form.
+    // 10 was determined experimentally.
+    XtVaSetValues(dialog,
+                  XmNwidth, final_width,
+                  XmNheight, final_height,
+                  XmNmaxWidth,form_width+10,
+                  XmNmaxHeight,form_height+10,
+                  NULL);
+  }
+
+  if (debug_level & 1)
+  {
+    fprintf(stderr,"Form size: X:%d\tY:%d\n", form_width, form_height);
+    fprintf(stderr,"Screen size: X:%i, Y:%i\n", screen_width, screen_height);
+    fprintf(stderr,"Setting dialog to width:%i, height:%i\n", final_width, final_height);
+
+    if (set_to_origin) {
+      fprintf(stderr,"Setting dialog to position 0,0\n");
+    }
+  }
+}
+
+
+
+
+
 /*********************  fix dialog size *************************/
 
 void fix_dialog_size(Widget w)
@@ -17080,7 +17165,6 @@ void GPS_transfer_select( void )
          ctyp2, ctyp3, ctyp4, ctyp5, ctyp6, ctyp7,
          gpsfilename_label;
 //  static Widget color_type;
-  Dimension width, height;
   Atom delw;
   Arg al[50];                      // Arg List
   register unsigned int ac = 0;   // Arg Count
@@ -17361,19 +17445,7 @@ void GPS_transfer_select( void )
     XtManageChild(type_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(GPS_operations_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"GPS_operations_dialog dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, GPS_operations_dialog);
 
     XtPopup(GPS_operations_dialog,XtGrabNone);
 
@@ -19847,7 +19919,6 @@ void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
   Widget pane, scrollwindow, my_form, button_close, option_box, tnc_data,
          net_data, tnc_net_data, capabilities_button,
          mine_only_button;
-  Dimension width, height;
   unsigned int n;
   Arg args[50];
   Atom delw;
@@ -20118,19 +20189,7 @@ void Display_data( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNU
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize my_form to exactly fit option_box w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(Display_data_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"Display_data_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, Display_data_dialog);
 
     redraw_on_new_packet_data=1;
     XtPopup(Display_data_dialog,XtGrabNone);
@@ -20192,7 +20251,6 @@ void help_index_destroy_shell( Widget UNUSED(widget), XtPointer clientData, XtPo
 void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   Widget pane, scrollwindow, my_form, button_close,help_text;
-  Dimension width, height;
   int i;
   Position x, y;
   unsigned int n;
@@ -20387,19 +20445,7 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
       XtVaSetValues(help_text, XmNbackground, colors[0x0f], NULL);
       XtManageChild(pane);
 
-      // Resize dialog to exactly fit form w/o scrollbars
-      XtVaGetValues(my_form,
-                    XmNwidth, &width,
-                    XmNheight, &height,
-                    NULL);
-      XtVaSetValues(help_view_dialog,
-                    XmNwidth, width+10,
-                    XmNheight, height+10,
-                    NULL);
-      if (debug_level & 1)
-      {
-        fprintf(stderr,"help_view_dialog size: X:%d\tY:%d\n", width, height);
-      }
+      resize_dialog(my_form, help_view_dialog);
 
       XtPopup(help_view_dialog,XtGrabNone);
       XmTextShowPosition(help_text,0);
@@ -20416,7 +20462,6 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
 void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget pane, scrollwindow, my_form, button_ok, button_cancel;
-  Dimension width, height;
   int n;
   char temp[600];
   FILE *f;
@@ -20568,19 +20613,7 @@ void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtVaSetValues(help_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(help_index_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"help_index_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, help_index_dialog);
 
     XtPopup(help_index_dialog,XtGrabNone);
 
@@ -23319,7 +23352,6 @@ void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
 {
   static Widget DRG_pane, scrollwindow, DRG_form, button_ok, button_cancel,
          DRG_label1, sep1, sep2, button_all, button_none;
-  Dimension width, height;
   Atom delw;
 
   if (!configure_DRG_dialog)
@@ -23882,19 +23914,7 @@ void Config_DRG( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
     XtManageChild(DRG_form);
     XtManageChild(DRG_pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(DRG_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_DRG_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_DRG_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(DRG_form, configure_DRG_dialog);
 
     XtPopup(configure_DRG_dialog,XtGrabNone);
 
@@ -23944,7 +23964,6 @@ void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
          button_C, button_F, button_O,
          rowcol, expand_dirs_button, button_properties,
          maps_selected_label, button_apply;
-  Dimension width, height;
   Atom delw;
 //    int i;
   Arg al[50];                    /* Arg List */
@@ -24247,19 +24266,7 @@ void Map_chooser( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUS
     XtVaSetValues(map_list, XmNbackground, colors[0x0f], NULL);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(map_chooser_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"map_chooser_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, map_chooser_dialog);
 
     XtPopup(map_chooser_dialog,XtGrabNone);
 
@@ -24753,7 +24760,6 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
          igate_box,
          igtyp0, igtyp1, igtyp2, altnet_label;
 //  static Widget station_type, igate_option;
-  Dimension width, height;
   Atom delw;
   Arg al[50];                      /* Arg List */
   register unsigned int ac = 0;   /* Arg Count */
@@ -25503,19 +25509,7 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
     XtManageChild(igate_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_defaults_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_defaults_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, configure_defaults_dialog);
 
     XtPopup(configure_defaults_dialog,XtGrabNone);
 
@@ -25616,7 +25610,6 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {
   static Widget  pane, scrollwindow, my_form, button_ok, button_cancel;
-  Dimension width, height;
   Atom delw;
   XmString x_str;
 
@@ -26114,19 +26107,7 @@ void Configure_timing( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(my_form);
     XtManageChild(pane);
 
-   // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_timing_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_timing_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, configure_timing_dialog);
 
     XtPopup(configure_timing_dialog,XtGrabNone);
 
@@ -26192,7 +26173,6 @@ void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
          coord_box, coord_0, coord_1, coord_2,
          coord_3, coord_4, coord_5;
 //  static Widget label;
-  Dimension width, height;
   Atom delw;
   Arg al[50];                    /* Arg List */
   register unsigned int ac = 0;           /* Arg Count */
@@ -26412,19 +26392,7 @@ void Configure_coordinates( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
     XtManageChild(coord_box);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_coordinates_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_coordinates_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, configure_coordinates_dialog);
 
     XtPopup(configure_coordinates_dialog,XtGrabNone);
 
@@ -26616,7 +26584,6 @@ void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
          minb1, maxb2,
          sep;
 //  static Widget min2, max2, minb2, maxb1;
-  Dimension width, height;
   Atom delw;
 
   if (!configure_audio_alarm_dialog)
@@ -27250,19 +27217,7 @@ void Configure_audio_alarms( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_audio_alarm_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_audio_alarm_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, configure_audio_alarm_dialog);
 
     XtPopup(configure_audio_alarm_dialog,XtGrabNone);
 
@@ -27390,7 +27345,6 @@ void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
 {
   static Widget pane, scrollwindow, my_form, button_ok, button_cancel, file1,
          sep, button_test;
-  Dimension width, height;
   Atom delw;
 
   if (!configure_speech_dialog)
@@ -27718,19 +27672,7 @@ void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer
     XtManageChild(my_form);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(my_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_speech_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_speech_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(my_form, configure_speech_dialog);
 
     XtPopup(configure_speech_dialog,XtGrabNone);
 
@@ -28331,7 +28273,6 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
          option_box,
          sep, configure_button_symbol, compute_button;
 //  static Widget pg2, slat_ns, slong, sts, posamb;
-  Dimension width, height;
   char temp_data[40];
   Atom delw;
   Arg al[50];                    /* Arg List */
@@ -29819,19 +29760,7 @@ void Configure_station( Widget UNUSED(ww), XtPointer UNUSED(clientData), XtPoint
     XtManageChild(formphg);
     XtManageChild(pane);
 
-    // Resize dialog to exactly fit form w/o scrollbars
-    XtVaGetValues(cs_form,
-                  XmNwidth, &width,
-                  XmNheight, &height,
-                  NULL);
-    XtVaSetValues(configure_station_dialog,
-                  XmNwidth, width+10,
-                  XmNheight, height+10,
-                  NULL);
-    if (debug_level & 1)
-    {
-      fprintf(stderr,"configure_station_dialog size: X:%d\tY:%d\n", width, height);
-    }
+    resize_dialog(cs_form, configure_station_dialog);
 
     XtPopup(configure_station_dialog,XtGrabNone);
 
