@@ -3052,7 +3052,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill)
 
       memset(weather->wx_course,0,4);    // Keep out fradulent data...
       memset(weather->wx_speed,0,4);
-      memset(weather->wx_gust,0,4);
       memset(weather->wx_temp,0,5);
       memset(weather->wx_rain,0,10);
       memset(weather->wx_prec_00,0,10);
@@ -3090,23 +3089,30 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill)
 
       if ((temp_conv=strchr((char *)data,'g')))   // Wind Gust in MPH
       {
-        xastir_snprintf(weather->wx_gust,
-                        sizeof(weather->wx_gust),
-                        "%s",
-                        temp_conv+1);
-        weather->wx_gust[3] = '\0';
-
-        // compute high wind
-        if(wx_high_wind[0] == '\0' ||   // first time
-            (get_hours() == 0 && get_minutes() == 0) || // midnite
-            (atol(weather->wx_gust) > atol(wx_high_wind)))   // gust
+        // Don't read if data is "..." (missing gust data)
+        // If we aren't getting gust data from the station, don't clobber
+        // the gust data we're computing!
+        if (strncmp(temp_conv+1,"...",3) != 0)
         {
-          xastir_snprintf(wx_high_wind,
-                          sizeof(wx_high_wind),
+          memset(weather->wx_gust,0,4); // keep out fraudulent data
+          xastir_snprintf(weather->wx_gust,
+                          sizeof(weather->wx_gust),
                           "%s",
-                          weather->wx_gust);
+                          temp_conv+1);
+          weather->wx_gust[3] = '\0';
+
+          // compute high wind
+          if(wx_high_wind[0] == '\0' ||   // first time
+             (get_hours() == 0 && get_minutes() == 0) || // midnite
+             (atol(weather->wx_gust) > atol(wx_high_wind)))   // gust
+          {
+            xastir_snprintf(wx_high_wind,
+                            sizeof(wx_high_wind),
+                            "%s",
+                            weather->wx_gust);
+          }
+          wx_high_wind_on=1;
         }
-        wx_high_wind_on=1;
       }
 
       if ((temp_conv=strchr((char *)data,'t')))   // Temperature in Degrees F
