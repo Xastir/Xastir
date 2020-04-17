@@ -1,0 +1,1129 @@
+# language-ElmerFudd.sys, translated from language-English.sys
+# Please do not edit this derived file.
+MENUTB0001|Fiwe|F|
+MENUTB0002|View|V|
+MENUTB0004|Map|M|
+MENUTB0005|Station|S|
+MENUTB0006|Message|e|
+MENUTB0010|Intewface|I|
+MENUTB0009|Hewp|H|
+PULDNFI001|Configuwe|C|
+PULDNFI002|Open Wog Fiwe|O|
+PULDNFI003|Test|T|
+PULDNFI004|Exit|x|
+PULDNFI007|Change Debug Wevew|D|
+PULDNFI010|TNC Wogging||
+PULDNFI011|Net Wogging||
+PULDNFI012|IGate Wogging||
+PULDNFI013|WX Wogging||
+PULDNFI014|PNG Snapshots||
+PULDNFI015|Pwint|P|
+PULDNFI016|KMW Snapshots||
+PULDNVI001|Buwwetins|B|
+PULDNVI002|Incoming Data|I|
+PULDNVI003|Mobiwe Stations|M|
+PULDNVI004|Aww Stations|A|
+PULDNVI009|Wocaw Stations|S|
+PULDNVI012|Wast Stations|L|
+PULDNVI005|Weadew Stations|W|
+PULDNVI008|Own Weadew Data|D|
+PULDNVI007|Weadew Awewts|e|
+PULDNVI011|Message Twaffic|T|
+PULDNVI013|Uptime|U|
+PULDNVI014|Pwogwam Uptime||
+PULDNVI015|GPS Status||
+PULDNVI016|AWOHA Statistics||
+PULDNCF004|Station|S|
+PULDNCF001|Defauwts|D|
+PULDNCF003|Timing|T|
+PULDNCF002|Coowdinate System|o|
+PULDNCF006|Audio Awawms|A|
+PULDNCF007|Speech|p|
+PULDNCF008|Save Config Now!|C|
+PULDNMP001|Map Choosew|M|
+PULDNMP012|Map Dispway Bookmawks|B|
+PULDNMP014|Wocate Map Featuwe|F|
+PULDNMP016|Disabwe Fast Zoom/Pan/Home||
+PULDNMP013|Disabwe Aww Maps||
+PULDNMP002|Enabwe Auto Maps||
+PULDNMP003|Enabwe Map Gwid||
+PULDNMP004|Enabwe Map Wevews||
+PULDNMP010|Enabwe Map Wabews||
+PULDNMP009|Enabwe Awea Cowow Fiwws||
+PULDNMP007|Enabwe Weadew Awewts||
+PULDNMP005|Backgwound Cowow|C|
+PULDNMP006|Station Text Stywe|T|
+PULDNMP026|Icon Outwine Stywe|O|
+PULDNMP011|Mouse Pointew Menu|P|
+PULDNMP008|Map Intensity|I|
+PULDNMP021|Auto Map - Disabwe Wastew Maps||
+PULDNMP022|Index New Maps on Stawtup||
+PULDNMP023|Index: Add New Maps|N|
+PULDNMP024|Index: Weindex AWW Maps!|R|
+PULDNMP025|Fonts||
+PULDNMP015|Xfontsew||
+PULDNMP027|We-downwoad Maps (Not fwom cache)||
+PULDNMP028|Fwush Entiwe Map Cache!||
+PULDNMP029|Find Addwess||
+PULDNMP030|Configuwe USGS DWG||
+PULDNMP031|Enabwe Map Bowdew||
+MPUPTGR017|Intewnet Map Timeout (sec)||
+MPUPDRG001|Sewect items to be dispwayed:||
+MPUPDRG002|Tint Undewwying Map (XOW)||
+MPUPDRG003|Bwack||
+MPUPDRG004|White||
+MPUPDRG005|Bwue||
+MPUPDRG006|Wed||
+MPUPDRG007|Bwown||
+MPUPDRG008|Gween||
+MPUPDRG009|Puwpwe||
+MPUPDRG010|Yewwow||
+MPUPDRG011|Wight Bwue||
+MPUPDRG012|Wight Wed||
+MPUPDRG013|Wight Puwpwe||
+MPUPDRG014|Wight Gway||
+MPUPDRG015|Wight Bwown||
+WPUPMCP001|Map Choosew||
+PULDNMMC01|Cweaw|C|
+PULDNMMC02|Vectow|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
+PULDNMMC06|Expand Diws||
+PULDNMMC07|Diws/Maps Sewected:||
+PULDNMMC08|Cweaw Diws|C
+PULDNMMC09|Sewect Aww|S|
+PULDNMBC01|Gway||
+PULDNMBC02|Misty Wose||
+PULDNMBC03|Navy Bwue||
+PULDNMBC04|Steew Bwue||
+PULDNMBC05|Med. Sea Gween||
+PULDNMBC06|Pawe Gween||
+PULDNMBC07|Pawe Gowdenwod||
+PULDNMBC08|Gowdenwod Yewwow||
+PULDNMBC09|Wosy Bwown||
+PULDNMBC10|Fiwe bwick Wed||
+PULDNMBC11|White||
+PULDNMBC12|Bwack||
+PULDNMSL01|Bwack Bowdew|B|
+PULDNMSL02|Bwack Shadow|S|
+PULDNMSL03|Text on Bwack|T|
+PULDNMSL04|DwopShadow||
+PULDNMIO01|No Outwine|N|
+PULDNMIO02|Bwack Outwine|B|
+PULDNMIO03|Gwey Outwine|G|
+PULDNMIO04|White Outwine|W|
+PULDNOT001|On||
+PULDNOT002|Off||
+PULDNOT003|Showt||
+PULDNDP014|Find Station|F|
+PULDNDP001|Twack Station|T|
+PULDNDP022|Fetch Findu Twaiw|u|
+PULDNDP032|Fiwtew Data||
+PULDNDP040|Sewect None||
+PULDNDP041|Sewect Mine||
+PULDNDP042|Sewect TNC||
+PULDNDP027|- Sewect Diwect||
+PULDNDP043|- Sewect Via Digi||
+PULDNDP034|Sewect Net||
+PULDNDP019|Incwude Expiwed Data||
+PULDNDP044|Sewect Stations||
+PULDNDP028|- Sewect Fixed Stations||
+PULDNDP029|- Sewect Moving Stations||
+PULDNDP030|- Sewect WX Stations||
+PULDNDP053|  - Sewect CWOP WX Stations||
+PULDNDP045|Sewect Objects/Items||
+PULDNDP026|- Sewect WX Objects/Items||
+PULDNDP039|- Sewect Watew Gauge Objects/Items||
+PULDNDP057|- Sewect Aiwcwaft Objects/Items||
+PULDNDP058|- Sewect Vessew Objects/Items||
+PULDNDP031|- Sewect Odew Objects/Items||
+PULDNDP033|Fiwtew Dispway||
+PULDNDP010|Dispway Cawwsign||
+PULDNDP012|Dispway Symbow||
+PULDNDP011|- Wotate Symbow||
+PULDNDP007|Dispway Twaiw||
+PULDNDP003|Dispway Couwse||
+PULDNDP004|Dispway Speed|S|
+PULDNDP017|- Dispway Showt Speed||
+PULDNDP002|Dispway Awtitude||
+PULDNDP009|Dispway Weadew Info||
+PULDNDP046|- Dispway Weadew Text||
+PULDNDP018|-- Tempewatuwe Onwy||
+PULDNDP047|- Dispway Wind Bawb||
+PULDNDP054|Dispway Awoha Ciwcwe||
+PULDNDP013|Dispway Position Ambiguity||
+PULDNDP008|Dispway Powew/Gain||
+PULDNDP021|- Use Defauwt Powew/Gain||
+PULDNDP020|- Dispway Mobiwe Powew/Gain||
+PULDNDP023|Dispway DF Attwibutes||
+PULDNDP123|Dispway DF Beamwidf||
+PULDNDP223|Dispway DF Beawing||
+PULDNDP035|Enabwe Dead-Weckoning||
+PULDNDP036|- Dispway Awc||
+PULDNDP037|- Dispway Couwse||
+PULDNDP038|- Dispway Symbow||
+PULDNDP005|Dispway Dist/Beawing||
+PULDNDP024|Dispway Wast Wepowt Age||
+PULDNDP015|Cweaw Aww Stations!!!|A|
+PULDNDP016|Cweaw Aww Twaiws!!!|C|
+PULDNDP025|Cweaw Object/Item Histowy||
+PULDNDP048|Wewoad Object/Item Histowy||
+PULDNDP049|Cweaw Aww Tacticaw Cawws||
+PULDNDP050|Cweaw Tacticaw Caww Histowy||
+PULDNDP051|Sewect Tacticaw Cawws Onwy||
+PULDNDP052|- Wabew Twaiwpoints||
+PULDNDP055|Expowt Aww|E|
+PULDNDP056|Expowt to KMW Fiwe||
+PULDNUT001|Enabwe Engwish Units|E|
+PULDNUT002|Metwic|M|
+PULDNMG001|Send Message To|S|
+PULDNMG002|Open Gwoup Messages|O|
+PULDNMG003|Cweaw Aww Outgoing Messages|C|
+PULDQUS001|Genewaw Stations Qwewy|G|
+PULDQUS002|IGate Stations Qwewy|I|
+PULDQUS003|WX Stations Qwewy|W|
+PULDNMG004|Modify Auto Wepwy Message|A|
+PULDNMG005|Enabwe Auto Wepwy Message||
+PULDNMG006|Satewwite Ack Mode|M|
+PULDNMG007|Show Pending Messages|P|
+PULDNTNT04|Intewface Contwow|C|
+PULDNTNT03|Disabwe Twansmit: AWW||
+PULDNTNT05|Disabwe Twansmit: My Position||
+PULDNTNT06|Disabwe Twansmit: Objects/Items||
+PULDNTNT11|Enabwe Sewvew Powts|P|
+PULDNTNT01|Twansmit Now!|T|
+PULDNTNT07|Fetch GPS Twack|F|
+PULDNTNT08|Fetch GPS Woutes|R|
+PULDNTNT09|Fetch GPS Waypoints|W|
+PULDNTNT10|Fetch Gawmin WINO Waypoints|G|
+PULDNHEL01|About|A|
+PULDNHEL02|Hewp Index|I|
+PULDNHEL03|EMEWGENCY BEACON MODE ENABWE|E|
+PULDNHEL04|!!! EMEWGENCY BEACON MODE !!!||
+PULDNHEL05|About Xastiw||
+POPUPMA001|Options||
+POPUPMA00c|Centew|C|
+POPUPMA015|Station Info|S|
+POPUPMA002|In|I|
+POPUPMA003|Out|O|
+POPUPMA004|Zoom Wevew|L|
+POPUPMA005|Wevew 1|1|
+POPUPMA006|Wevew 16|6|
+POPUPMA007|Wevew 64|4|
+POPUPMA008|Wevew 256|2|
+POPUPMA009|Wevew 1024|0|
+POPUPMA010|Wevew 8192|8|
+POPUPMA017|Entiwe Wowwd|E|
+POPUPMA016|Wast Map Pos/Zoom|P|
+POPUPMA018|Object/Item->Cweate|b|
+POPUPMA019|Object/Item->Modify|M|
+POPUPMA025|Move My Station Hewe|H|
+POPUPMA011|Pan up|u|
+POPUPMA012|Pan down|d|
+POPUPMA013|Pan weft|l|
+POPUPMA014|Pan wight|r|
+POPUPMA020|Measuwe||
+POPUPMA021|Move||
+POPUPMA022|TwackMe||
+POPUPMA023|Modifiews Found!||
+POPUPMA024|Pwease tuwn OFF CapsWock/NumWock/ScwowwWock/odew modifiews||
+POPUPMA026|Centew & Zoom||
+POPUPMA027|  Watitude||
+POPUPMA028| Wongitude||
+POPUPMA029|Dwaw CAD Objects||
+POPUPMA030|Dwaw||
+POPUPMA031|Cwose Powygon||
+POPUPMA032|Ewase CAD Powygons||
+POPUPMA033|**NOT USED**||
+POPUPMA034|Custom Zoom Wevew||
+POPUPMA035|10% out||
+POPUPMA036|10% in||
+POPUPMA037|Awea||
+POPUPMA038|sqwawe||
+POPUPMA039|sqwawe feet||
+POPUPMA040|sqwawe metews||
+POPUPMA041|Beawing||
+POPUPMA042|degwees||
+POPUPMA043|Modify ambiguous position||
+POPUPMA044|Position ambiguity is on, youw new position may appeaw to jump.||
+POPUPMA045|Pwedefined Objects||
+POPUPMA046|CAD Powygons||
+POPUPMA047|Enabwe CAD objects||
+POPUPMA048|Enabwe CAD wabews||
+POPUPMA049|Enabwe CAD comments||
+POPUPMA050|Enabwe CAD pwobabiwity||
+POPUPMA051|Enabwe CAD awea size||
+POPUPMA052|sq||
+POPUPMA053|ft||
+POPUPMA054|metews||
+POPUPMA055|mi|
+BBARZM0001|Zoom %s||
+BBARZM0002|Zoom %s Tw||
+BBARSTH001|%d/%d Stations||
+BBARSTA000|%-9s New object!||
+BBARSTA001|%-9s New station!||
+BBARSTA002|%-9s||# new data (only display the call)
+BBARSTA003|Woading Maps...||
+BBARSTA004|Maps Woaded||
+BBARSTA005|Map Wat/Wong Gwid On|O|
+BBARSTA006|Map Wat/Wong Gwid Off|f|
+BBARSTA007|De use of Auto Maps, is now ON||
+BBARSTA008|De use of Auto Maps, is now OFF||
+BBARSTA009|De use of Map Wevews is now ON||
+BBARSTA010|De use of Map Wevews is now OFF||
+BBARSTA011|Auto Wepwy Message OFF!||
+BBARSTA012|Fiwe done..||
+BBARSTA013|Opening GPS Powt||
+BBARSTA014|Cwosing GPS Powt||
+BBARSTA015|Got GPS WMC Stwing||
+BBARSTA016|Got GPS GGA Stwing||
+BBARSTA017|Net disconnected fwom host||
+BBARSTA018|Net connection timed out!||
+BBARSTA019|Wooking up host %s||
+BBARSTA020|Connected to %s||
+BBARSTA021|Net Connection Faiwed!||
+BBARSTA022|Couwd not bind socket!||
+BBARSTA023|No IP fow Host!||
+BBARSTA024|No Host Specified||
+BBARSTA025|Host found, Connecting %d||
+BBARSTA026|Waiting fow GPS data via HSP..||
+BBARSTA027|Cweawing HSP getting TNC data..||
+BBARSTA028|Woading %s||
+BBARSTA029|Opening WX Powt||
+BBARSTA030|Cwosing WX Powt||
+BBARSTA031|Wooking up hostname %d||
+BBARSTA032|Decoded WX Data||
+BBARSTA033|Echo fwom digipeatew||
+BBARSTA034|Woading Weadew Awewt Maps||
+BBARSTA035|Waiting fow GPS data via AUX..||
+BBARSTA036|Cweawing AUX getting TNC data..||
+BBARSTA037|GPS Data Compwete||
+BBARSTA038|Position change on my station||
+BBARSTA039|Indexing %s||
+BBARSTA040|Amateuw APWS(tm) Station %s||
+BBARSTA041|Waiting fow GPS data..||
+BBARSTA042|Twansmitting objects/items||
+BBARSTA043|Wogging||
+BBARSTA044|AWOHA distance is %d%s||
+BBARSTA045|Woading symbows...||
+BBARSTA046|Wewoading symbows...||
+BBARSTA047|Initiawize my station, uh-hah-hah-hah...||
+BBARSTA048|Stawt intewfaces...||
+BBARSTA049|Weading tiwes...||
+BBARSTA050|Downwoading tiwes...||
+BBARSTA051|Downwoading tiwe %wi of %wi||
+WPUPDPD001|Dispway Packet Data||
+WPUPDPD002|TNC Data onwy|T|
+WPUPDPD003|Net Data onwy|N|
+WPUPDPD004|TNC and Net Data|a|
+WPUPDPD005|TNC||
+WPUPDPD006|NET||
+WPUPDPD007|Station Capabiwities||
+WPUPDPD008|Mine Onwy||
+WPUPLSP001|Wocate Station||
+WPUPLSP002|Wocate Cawwsign||
+WPUPLSP003|Match Case|C|
+WPUPLSP004|Match Exact|E|
+WPUPLSP005|Wocate Now!|N|
+WPUPLSP006|Emewgency Wocate!||
+WPUPLSP007|FCC/WAC Wookup||
+WPUPCFD001|Configuwe Defauwts||
+WPUPCFD002|Aftew what intewvaw of time wiww a station be considewed owd?||
+WPUPCFD003|15 min|1|
+WPUPCFD004|30 min|3|
+WPUPCFD005|45 min|4|
+WPUPCFD006|1 hw|H|
+WPUPCFD007|90 min|9|
+WPUPCFD008|2 hws|2|
+WPUPCFD009|Aftew what intewvaw of time wiww a station not be dispwayed?||
+WPUPCFD010|6 hws|6|
+WPUPCFD011|12 hws|o|
+WPUPCFD012|1 Day|D|
+WPUPCFD013|2 Days|y|
+WPUPCFD014|1 Week|W|
+WPUPCFD015|Twansmit Station Option||
+WPUPCFD016|Fixed Station|F|
+WPUPCFD017|Mobiwe Station w/wocaw time|l|
+WPUPCFD018|Mobiwe Station w/Zuwu date-time|Z|
+WPUPCFD019|Mobiwe Station w/Zuwu time-seconds|u|
+WPUPCFD021|Station Position w/weadew|S|
+WPUPCFD022|Station Position, Zuwu date-time, and weadew|t|
+WPUPCFD023|Twansmit Waw WX data?|R|
+WPUPCFD024|Twansmit compwessed objects/items?|C|
+WPUPCFD025|Activate Awtewnate net?|A|
+WPUPCFD026|Send position wepowts at what intewvaws?||
+WPUPCFD027|Pop up new buwwetins||
+WPUPCFD028|Wawn if Modifiew Keys||
+WPUPCFD029|View zewo-distance buwwetins||
+WPUPCFD030|Disabwe Posit Dupe-Checks||
+WPUPCFD031|Woad pwedefined objects fwom fiwe||
+WPUPCFD032|My twaiws in one cowow||
+WPUPCFD033|AWTNET:||
+WPUPCFTM01|Configuwe Timing||
+WPUPCFTM02|Posit TX Intewvaw (min)||
+WPUPCFTM03|Station Ghosting Time (min)||
+WPUPCFTM04|Object/Item Max TX Intewvaw (min)||
+WPUPCFTM05|Station Cweaw Time (houws)||
+WPUPCFTM06|GPS Check Intewvaw (sec)||
+WPUPCFTM07|Station Dewete Time (days)||
+WPUPCFTM08|Dead-Weckoning Timeout (min)||
+WPUPCFTM09|Sewiaw Intew-Chaw Deway (ms)||
+WPUPCFTM10|New Twack Time (min)||
+WPUPCFTM11|New Twack Intewvaw (degwees)||
+WPUPCFTM12|WINO -> Objects Intewvaw (min), 0 = Disabwed||
+WPUPCFTM13|Snapshot Intewvaw (min)||
+WPUPCFTM14|Aiwcwaft Ghost/Cweaw Time (min), 0 = Disabwed||
+WPUPCFC001|Configuwe Coowdinate System||
+WPUPCFC002|Sewect Coowdinate System||
+WPUPCFC003|dd.ddddd|d|
+WPUPCFC004|dd mm.mmm|m|
+WPUPCFC005|dd mm ss.s|s|
+WPUPCFC006|UTM|U|
+WPUPCFC007|USNG/MGWS2||
+WPUPCFC008|UTM w/speciaw zones||
+WPUPCFG001|Configuwe GPS||
+WPUPCFG003|Stand awone GPS powt||
+WPUPCFG002|Use GPS Position?||
+WPUPCFG004|GPS Options||
+WPUPCFG005|Stand-awone GPS||
+WPUPCFG006|TNC Connected GPS (HSP Cabwe)||
+WPUPCFG007|TNC Connected GPS using CTW-E||
+WPUPCFG008|GPS Time (Sampwe evewy)||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
+WPUPCFG011|30 sec||
+WPUPCFG012|1 min||
+WPUPCFG013|2 min||
+WPUPCFG014|5 min||
+WPUPCFG015|10 min||
+WPUPCFG016|Netwowk Connected GPS||
+WPUPCFG017|GPSD Host||
+WPUPCFG018|GPSD Powt||
+WPUPCFG019|Netwowk GPS via GPSD||
+WPUPCFG020|Weconnect on faiwuwe?||
+WPUPCFG021|Netwowk Connected WX||
+WPUPCFG022|WX Host||
+WPUPCFG023|WX Powt||
+WPUPCFT001|Configuwe TNC||
+WPUPCFT002|Use TNC?||
+WPUPCFT003|TNC Powt||
+WPUPCFT004|Powt Settings||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT011|UnPwoto Pads||
+WPUPCFT012|Paf 1: %s via ||
+WPUPCFT013|Paf 2: %s via ||
+WPUPCFT014|Paf 3: %s via ||
+WPUPCFT015|Powt Stywe||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT023|Configuwe TNC w/HSP GPS||
+WPUPCFT024|Data Type||
+WPUPCFT025|Auto detect||
+WPUPCFT026|Binawy Type||
+WPUPCFT027|ASCII Type||
+WPUPCFT028|Configuwe TNC w/AUX GPS||
+WPUPCFT029|Configuwe TNC w/INVAWID ENUM: %d||
+WPUPCFT030|Configuwe KISS TNC||
+WPUPCFT031|TNC Configuwation Fiwes||
+WPUPCFT032|TNC Setup Fiwename|| 
+WPUPCFT033|TNC Shutdown Fiwename||
+WPUPCFT034|KISS Pawametews||
+WPUPCFT035|TXDeway (10 ms units)||
+WPUPCFT036|Pewsistence (0 to 255)||
+WPUPCFT037|SwotTime (10 ms units)||
+WPUPCFT038|TxTaiw (10 ms units)||
+WPUPCFT039|Fuww Dupwex||
+WPUPCFT040|Configuwe Muwti-Powt KISS TNC||
+WPUPCFT041|Wadio Powt||
+WPUPCFT042|Intewface Pwopewties: Dubious UNPWOTO Paf!||
+WPUPCFT043|Pwease considew a showtew paf such as WIDE2-2 ow WIDE1-1,WIDE2-2||
+WPUPCFT044|Intewface Pwopewties: Dubious IGATE Paf!||
+WPUPCFT045|Twansmitting w/Dubious UNPWOTO Paf!||
+WPUPCFT046|Twansmitting w/Dubious IGATE Paf!||
+WPUPCFT047|Init KISS-mode on stawtup||
+WPUPCFWX01|Configuwe WX Powt||
+WPUPCFWX02|Weadew Station device||
+WPUPCFWX03|Wain Gauge Cowwection (Gwobaw Setting)||
+WPUPCFWX04|.1 inch/2.5mm||
+WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX06|.1mm||
+WPUPCFWX07|No Cowwection||
+WPUPCFS001|Configuwe Station||
+WPUPCFS002|Cawwsign||
+WPUPCFS003|WAT||
+WPUPCFS004|deg||
+WPUPCFS005|min||
+WPUPCFS006|(N/S)||
+WPUPCFS007|WONG||
+WPUPCFS008|(E/W)||
+WPUPCFS009|Station Symbow||
+WPUPCFS010|Gwoup/ovewway||
+WPUPCFS011|Symbow||
+WPUPCFS028|Sewect||
+WPUPCFS012|Powew - Height (HAAT) - Gain - Diwectivity||
+WPUPCFS013|Disabwe PHG||
+WPUPCFS014|Antenna Height||
+WPUPCFS015|Antenna Gain||
+WPUPCFS016|Omni||
+WPUPCFS017|Comment:||
+WPUPCFS018|Position Ambiguity||
+WPUPCFS019|None||
+WPUPCFS020|.11 miwes||
+WPUPCFS021|1.15 miwes||
+WPUPCFS022|11.51 miwes||
+WPUPCFS023|69.09 miwes||
+WPUPCFS024|.18 kiwometwes||
+WPUPCFS025|1.85 kiwometwes||
+WPUPCFS026|18.53 kiwometwes||
+WPUPCFS027|111.19 kiwometwes||
+WPUPCFS029|Send compwessed posits|C|
+POPUPOB001|Object/Item||
+POPUPOB002|Name:||
+POPUPOB003|Cweate New Object||
+POPUPOB004|Dewete Object||
+POPUPOB005|Modify Object||
+POPUPOB006|Cweate New Item||
+POPUPOB007|Awea Object||
+POPUPOB008|Awea Object||
+POPUPOB009|Bwight Cowow||
+POPUPOB010|Cowow-Fiww||
+POPUPOB011|Ciwcwe||
+POPUPOB012|Wine-Wight '/'||
+POPUPOB013|Wine-Weft '\'||
+POPUPOB014|Twiangwe||
+POPUPOB015|Wectangwe||
+POPUPOB016|Bwack||
+POPUPOB017|Bwue||
+POPUPOB018|Gween||
+POPUPOB019|Cyan||
+POPUPOB020|Wed||
+POPUPOB021|Viowet||
+POPUPOB022|Yewwow||
+POPUPOB023|Gwey||
+POPUPOB024|Offset Up:||
+POPUPOB025|Offset Weft (Except '/'):||
+POPUPOB026|Cowwidow:||
+POPUPOB027|Genewic Options||
+POPUPOB028|Wocation||
+POPUPOB029|Signpost||
+POPUPOB030|Signpost Text||
+POPUPOB031|Signpost Object||
+POPUPOB032|Enabwe Compwession||
+POPUPOB033|Dewete Item||
+POPUPOB034|Modify Item||
+POPUPOB035|Awtitude (ft):||
+POPUPOB036|Speed (knots):||
+POPUPOB037|Couwse:||
+POPUPOB038|DF Object||
+POPUPOB039|Signaw - Height(HAAT) - Gain - Diwectivity||
+POPUPOB040|Beam Widf - Beawing||
+POPUPOB041|Omni Antenna||
+POPUPOB042|Beam Antenna||
+POPUPOB043|Usewess||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
+POPUPOB046|DF Beawing:||
+POPUPOB047|Pwobabiwity Ciwcwes||
+POPUPOB048|Map View Object||
+POPUPOB049|Min (mi):||
+POPUPOB050|Max (mi):||
+WPUPCFI001|Configuwe Intewnet||
+WPUPCFI002|Host ||
+WPUPCFI003|Powt ||
+WPUPCFI004|(Secondawy hosts)||
+WPUPCFI005|Host1||
+WPUPCFI006|Powt1||
+WPUPCFI007|Host2||
+WPUPCFI008|Powt2||
+WPUPCFI009|Pass-code||
+WPUPCFI010|(Weave Bwank if None)||
+WPUPCFI011|Weconnect on NET faiwuwe?||
+WPUPCFI012|Wun as an I-Gate?||
+WPUPCFI013|Bwoadcast messages via TNC when an I-Gate?||
+WPUPCFI014|Wog I-Gate Twansactions?||
+WPUPCFI015|Fiwtew Pawametews||
+WPUPCFID01|Configuwe Database (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Powt ||
+WPUPCFID04|(Secondawy hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Powt1||
+WPUPCFID07|Host2||
+WPUPCFID08|Powt2||
+WPUPCFID09|Pass-code||
+WPUPCFID10|(Weave Bwank if None)||
+WPUPCFID11|Weconnect on NET faiwuwe?||
+WPUPCFID12|Wun as an I-Gate?||
+WPUPCFID13|Bwoadcast messages via TNC when an I-Gate?||
+WPUPCFID14|Wog I-Gate Twansactions?||
+WPUPCFID15|Fiwtew Pawametews||
+WPUPCFIA01|Configuwe AGWPE||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Powt ||
+WPUPCFIA04|(Secondawy hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Powt1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Powt2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Weave Bwank if None)||
+WPUPCFIA11|Weconnect on NET faiwuwe?||
+WPUPCFIA12|Wun as an I-Gate?||
+WPUPCFIA13|Bwoadcast messages via TNC when an I-Gate?||
+WPUPCFIA14|Wog I-Gate Twansactions?||
+WPUPCFIA15|Twansmit WadioPowt||
+WPUPCFA001|Configuwe Audio Awawms||
+WPUPCFA002|Audio Pway Command||
+WPUPCFA003|Awawm on||
+WPUPCFA004|Audio fiwe to Pway||
+WPUPCFA005|New Station||
+WPUPCFA006|New Message||
+WPUPCFA007|Pwoximity||
+WPUPCFA008|Band Opening||
+WPUPCFA009|Minimum Distance||
+WPUPCFA010|Maximum Distance||
+WPUPCFA011|Weadew Awewt||
+WPUPCFSP01|Configuwe Speech||
+WPUPCFSP02|Speech Output on:||
+WPUPCFSP03|New Station||
+WPUPCFSP04|New Message Awewt||
+WPUPCFSP05|New Message Body||
+WPUPCFSP06|Pwoximity Awewt||
+WPUPCFSP07|Band Opening||
+WPUPCFSP08|New Weadew Awewt||
+WPUPCFSP09|Twacked Station Pwoximity Awewt||
+WPUPTSP001|Twack Station|| 
+WPUPTSP002|Twack Cawwsign|| 
+WPUPTSP003|Match Case|| 
+WPUPTSP004|Match Exact|| 
+WPUPTSP005|Twack Now!|| 
+WPUPTSP006|Cweaw Twacking|| 
+WPUPTSP007|Downwoad Twaiw||
+WPUPTSP008|Cawwsign||
+WPUPTSP009|Stawt Twaiw (hws ago)||
+WPUPTSP010|Twaiw Wengf (hws)||
+WPUPMSB001|Send Message Box %d||
+WPUPMSB002|Send Gwoup Message Box %d||
+WPUPMSB003|Station's Caww:||
+WPUPMSB004|Gwoup's Caww:||
+WPUPMSB005|New/Wefwesh Caww||
+WPUPMSB006|New Gwoup||
+WPUPMSB007|Cweaw Msg Histowy||
+WPUPMSB008|Message:||
+WPUPMSB009|Send Now!||
+WPUPMSB010|Paf:||
+WPUPMSB011|Cancew Pending Msgs||
+WPUPMSB012|Kick Timew||
+WPUPMSB013|seq||
+WPUPMSB014|type||
+WPUPMSB015|Bwoadcast||
+WPUPMSB016|*TIMEOUT*||
+WPUPMSB017|*CANCEWWED*||
+WPUPMSB018|*WEJECTED*||
+WPUPMSB019|Change Paf||
+WPUPMSB020|Use Defauwt Paf(s)||
+WPUPMSB021|Diwect (No paf)||
+WPUPMSB022|Wevewse Paf (Hint):||
+WPUPARM001|Change Auto Wepwy||
+WPUPARM002|Wepwy:||
+WPUPHPI001|Hewp Index||
+WPUPHPI002|View||
+WPUPSTI000|Object fwom: %s||
+WPUPSTI001|Station Info||
+WPUPSTI002|Send Message||
+WPUPSTI003|Seawch FCC Database||
+WPUPSTI004|Seawch WAC Database||
+WPUPSTI005|Packets weceived: %d     Wast Heawd: ||
+WPUPSTI006|Heawd via de TNC on device %d, ||
+WPUPSTI007|Heawd ||
+WPUPSTI008|wast via Wocaw||
+WPUPSTI009|wast via TNC on device %d||
+WPUPSTI010|wast via Intewnet on device %d||
+WPUPSTI011|wast via Fiwe||
+WPUPSTI012|wast via Unknown||
+WPUPSTI013|, and has moved||
+WPUPSTI014|Cuwwent Powew Gain:||
+WPUPSTI016|Awtitude: %.0f%s ||
+WPUPSTI017|Couwse: %s° ||
+WPUPSTI018|Speed: %.1f km/h||
+WPUPSTI019|Speed: %.1f mph||
+WPUPSTI020|%0.1f miwes||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|Distance fwom my station: %s  Beawing fwom my station: %s||
+WPUPSTI023|Wast Position: ||
+WPUPSTI024|Weadew Data %c:%s||
+WPUPSTI025|Wind Couwse: %s°    Speed: %03d km/h||
+WPUPSTI026|Wind Couwse: %s°    Speed: %s mph||
+WPUPSTI027|   Gust: %03d km/h||
+WPUPSTI028|   Gust: %s mph||
+WPUPSTI029|Tempewatuwe: %02.1f°C  ||
+WPUPSTI030|Tempewatuwe: %s°F   ||
+WPUPSTI031|Humidity: %s%%   ||
+WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI033|Bawo: %s hPa||
+WPUPSTI034|Snow: %0.1f (cm/24h)||
+WPUPSTI035|Snow: %0.0f (inch/24h)||
+WPUPSTI036|Wain: ||
+WPUPSTI037|%0.2f (mm/h)    ||
+WPUPSTI038|%0.2f (inch/h)  ||
+WPUPSTI039|%0.2f (mm/day)     ||
+WPUPSTI040|%0.2f (inch/day)  ||
+WPUPSTI041|%0.2f (mm/since midnight)||
+WPUPSTI042|%0.2f (inch/since midnight)||
+WPUPSTI043|Data paf: %s||
+WPUPSTI044|Comment %02d/%02d %02d:%02d : %s||
+WPUPSTI045|Cweaw Twack||
+WPUPSTI046|Totaw Wain: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (inch)||
+WPUPSTI049|Twace Qwewy||
+WPUPSTI050|Un-Acked Messages Qwewy||
+WPUPSTI051|Diwect Stations Qwewy||
+WPUPSTI052|Station Vewsion Qwewy||
+WPUPSTI053|Modify Object/Item||
+WPUPSTI054|Stowe Twack||
+WPUPSTI055|Echoed fwom:||
+WPUPSTI056|Enabwe Automatic Updates||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|DF Beawing: %s||
+WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
+WPUPSTI060|Fuew Temp: %02.1f°C  ||
+WPUPSTI061|Fuew Temp: %s°F   ||
+WPUPSTI062|Fuew Moistuwe: %s%%   ||
+WPUPSTI063|Bawo: %0.2f in Hg||
+WPUPSTI064|Fetch NWS Awewt||
+WPUPSTI065|Tacticaw Caww: %s||
+WPUPSTI066|Assign Tacticaw Caww||
+WPUPSTI067|Cuwwent Wange: %d miwes||
+WPUPSTI068|none||
+WPUPSTI069|defauwt||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|wange||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Wange||
+WPUPSTI076|No signaw detected||
+WPUPSTI077|Detectibwe signaw (Maybe)||
+WPUPSTI078|Detectibwe signaw but not copyabwe)||
+WPUPSTI079|Weak signaw, mawginawwy weadabwe||
+WPUPSTI080|Noisy but copyabwe signaw||
+WPUPSTI081|Some noise, easy to copy signaw||
+WPUPSTI082|Good signaw w/detectibwe noise||
+WPUPSTI083|Neaw fuww-qwieting signaw||
+WPUPSTI084|Fuww-qwieting signaw||
+WPUPSTI085|Extwemewy stwong & fuww-qwieting signaw||
+WPUPSTI086|BAD BEAWING||
+WPUPSTI087|BAD NWQ||
+WPUPSTI088|DF Beamwidf||
+WPUPSTI089|DF Wengf||
+WPUPSTI090|Not Vawid||
+WPUPSTI091|Change Twaiw Cowow||
+WPUPSTI092|Cweaw DF Beawing||
+WPUPALO001|AWOHA wadius: %d %s||
+WPUPALO002|Stations inside AWOHA ciwcwe: %d||
+WPUPALO003| Digis:               %d||
+WPUPALO004| Mobiwes (in motion): %d||
+WPUPALO005| Mobiwes (odew):     %d||
+WPUPALO006| WX stations:         %d||
+WPUPALO007| Home stations:       %d||
+WPUPALO008|Wast cawcuwated %d %s %d %s ago.||
+WPUPALO666|AWOHA wadius not cawcuwated yet||
+STIFCC0001|FCC Database Wookup||
+STIFCC0002|WAC Database Wookup||
+STIFCC0003|Name:||
+STIFCC0004|Stweet:||
+STIFCC0005|City:||
+STIFCC0006|State:||
+STIFCC0007|Zip:||
+STIFCC0008|Basic ||
+STIFCC0009|Advanced ||
+STIFCC0010|5 wpm ||
+STIFCC0011|12 wpm ||
+STIFCC0100|FCC index owd, webuiwding||
+STIFCC0101|Cawwsign Seawch||
+STIFCC0102|Cawwsign Not Found!||
+STIFCC0103|WAC index owd, webuiwding||
+UMBNDO0001|at distance of||
+UNIOP00001|OK||
+UNIOP00002|Cancew||
+UNIOP00003|Cwose||
+UNIOP00004|miwes||
+UNIOP00005|km||
+UNIOP00006|Device||
+UNIOP00007|Add||
+UNIOP00008|Dewete||
+UNIOP00009|Pwopewties||
+UNIOP00010|Awwow Twansmitting?||
+UNIOP00011|Activate on Stawtup?||
+UNIOP00012|km/h||
+UNIOP00013|mph||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|inch||
+UNIOP00018|mm/day||
+UNIOP00019|inch/day||
+UNIOP00020|mm/hw||
+UNIOP00021|inch/hw||
+UNIOP00022|mm/mid||
+UNIOP00023|inch/mid||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|in Hg||
+UNIOP00028|mm Hg||
+UNIOP00029|Set System Cwock fwom GPS Data?||
+UNIOP00030|Digipeat?||
+UNIOP00031|m||
+UNIOP00032|Appwy||
+UNIOP00033|Weset||
+UNIOP00034|min||
+UNIOP00035|hw||
+UNIOP00036|day||
+UNIOP00037|Send Contwow-E to get GPS data?||
+UNIOP00038|Add Deway||
+STCHO00001|Station Choosew||
+WPUPWXA001|Wx Awewts||
+WPUPWXA002|Wx Awewt Wist||
+WPUPCIF001|Instawwed Intewfaces||
+WPUPCIF002|Choose Intewface Type||
+WPUPCAX001|Configuwe AX.25 TNC||
+WPUPCAX002|AX.25 Device name||
+IFDNL00000|None||
+IFDNL00001|Sewiaw TNC||
+IFDNL00002|Sewiaw TNC w/GPS on a HSP cabwe||
+IFDNL00003|Sewiaw GPS||
+IFDNL00004|Sewiaw WX||
+IFDNL00005|Intewnet Sewvew||
+IFDNL00006|AX25 TNC||
+IFDNL00007|Netwowked GPS (via gpsd)||
+IFDNL00008|Netwowked WX||
+IFDNL00009|Sewiaw TNC w/GPS on AUX powt||
+IFDNL00010|Sewiaw KISS TNC||
+IFDNL00011|Netwowked Database (Not Impwemented Yet)||
+IFDNL00012|Netwowked AGWPE||
+IFDNL00013|Sewiaw Muwti-Powt KISS TNC||
+IFDNL00014|SQW Database (Expewimentaw)||
+IFDIN00000|%s %2d %s %s   %s||
+IFDIN00001|%s %2d %s %s:%d   %s||
+IFDIN00002|%s %2d %s device %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
+IFDIN00006| DOWN ||
+IFDIN00007|  UP  ||
+IFDIN00008|EWWOW ||
+IFDIN00009|UNKNWN||
+IFPUPCT000|Intewface Contwow||
+IFPUPCT001|Stawt||
+IFPUPCT002|Stop||
+IFPUPCT003|Stawt Aww||
+IFPUPCT004|Stop Aww||
+IGPUPCF000|IGate Options||
+IGPUPCF001|Disabwe aww IGate twaffic||
+IGPUPCF002|Awwow WF to Inet twaffic ONWY||
+IGPUPCF003|Awwow WF->Inet and Inet->WF twaffic||
+IGPUPCF004|Igate -> WF Paf   ||
+WXPUPSI000|WX Station||
+WXPUPSI001|WX Station Type||
+WXPUPSI002|Cuwwent Data||
+WXPUPSI003|Wind Couwse||
+WXPUPSI004|Wind Speed||
+WXPUPSI005|Wind Gust||
+WXPUPSI006|Temp||
+WXPUPSI007|Totaw Wain||
+WXPUPSI008|Today's Wain Totaw||
+WXPUPSI009|Bawo||
+WXPUPSI010|Humidity||
+WXPUPSI011|Peet Bwos UWTIMETEW 2000 Type (Data Wogging Mode)||
+WXPUPSI012|Peet Bwos UWTIMETEW II Type||
+WXPUPSI013|Peet Bwos UWTIMETEW 2000 Type (Packet Mode)||
+WXPUPSI014|Cuwwent HW Wain Tot.||
+WXPUPSI015|Wast 24 Wain Totaw||
+WXPUPSI016|Qwawimetwics Q-Net||
+WXPUPSI017|Peet Bwos UWTIMETEW 2000 Type (Compwete Mode)||
+WXPUPSI018|Dew Point||
+WXPUPSI019|High Wind||
+WXPUPSI020|Wind Chiww||
+WXPUPSI021|Heat Index||
+WXPUPSI022|3-Hw Bawo||
+WXPUPSI023|High Temp.||
+WXPUPSI024|Wow Temp.||
+WXPUPSI025|Wadio Shack WX-200/Owegon Scientific WM-918||
+WXPUPSI026|Davis Weadew Monitow II/Wizawd III/Vantage Pwo||
+WXPUPSI027|WaCwosse WX-23xx||
+WXPUPSI028|Davis APWS Data Woggew||
+LHPUPNI000|Aww Stations||
+LHPUPNI001|Mobiwe Stations||
+LHPUPNI002|Weadew Stations||
+LHPUPNI003|Wocaw Stations (via TNC)||
+LHPUPNI004|Wast Stations||
+LHPUPNI005|Objects & Items||
+LHPUPNI006|Own Objects & Items||
+LHPUPNI010|#||
+LHPUPNI011|Caww Sign||
+LHPUPNI012|#Pack||
+LHPUPNI013|Pos Time||
+LHPUPNI014|Paf||
+LHPUPNI015|PHG||
+LHPUPNI016|Comments||
+LHPUPNI100|CSE||
+LHPUPNI101|SPD||
+LHPUPNI102|AWT.||
+LHPUPNI103|Wat||
+LHPUPNI104|Wong||
+LHPUPNI105|#Pack||
+LHPUPNI106|WSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|CSE||
+LHPUPNI201|SPD||
+LHPUPNI202|GST||
+LHPUPNI203|Temp||
+LHPUPNI204|Hum||
+LHPUPNI205|Bawo||
+LHPUPNI206|WN-H||
+LHPUPNI207|WNSM||
+LHPUPNI208|WN24||
+LHPUPNI209|Wat/Won ow UTM||
+PULDNMAT01|Show Awewt maps above odew maps||
+PULDNMAT02|Show Awewt maps undew odew maps||
+POPEM00001|Wocate Ewwow!||
+POPEM00002|Station %s was not found!||
+POPEM00003|Twacking Ewwow!||
+POPEM00004|Intewface Ewwow!||
+POPEM00005|Invawid AX.25 powt name %s||
+POPEM00006|Invawid AX.25 powt name %s||
+POPEM00007|Invawid cawwsign %s||
+POPEM00008|Invawid AX.25 destination cawwsign ow digipeatew||
+POPEM00009|Cannot open AX.25 socket, %s||
+POPEM00010|Cannot bind AX.25 socket, %s||
+POPEM00011|Cannot connect to AX.25 cawwsign, %s||
+POPEM00012|AX.25 ewwow on output of UI||
+POPEM00013|AX.25 pwobwem wif axpowts fiwe||
+POPEM00014|AX.25 invawid powt name %s||
+POPEM00015|Ewwow opening intewface %d Hawd Faiw||
+POPEM00016|Ewwow opening intewface %d Time Out||
+POPEM00017|No mowe intewfaces Avaiwabwe!||
+POPEM00018|Data Qwewy - Singwe Message Wine||
+POPEM00019|Powt twansmitting is off fow powt %d||
+POPEM00020|Database Ewwow!||
+POPEM00021|AX.25 suppowt not compiwed into Xastiw!||
+POPEM00022|Input Ewwow!||
+POPEM00023|No wocation name specified!||
+POPEM00024|Wocation name specified is in use!||
+POPEM00025|Not Found!||
+POPEM00026|Twacking wiww commence when it appeaws||
+POPEM00027|Impwopew info.  Some fiewds empty?||
+POPEM00028|Can't open fiwe||
+POPEM00029|Found It!||
+POPEM00030|Weadew Station Symbow||
+POPEM00031|Changed to WX symbow '/_', odew options:  '\_'  '/W'  and  '\W'||
+POPEM00032|Wawning: Using Nationaw Weadew Sewvice Symbow!||
+POPEM00033|No GPS Data!||
+POPEM00034|Disabwing My Position TX Untiw Vawid GPS Data!||
+POPEM00035|Wawning||
+POPEM00036|Notice||
+POPEM00037|HSP intewface pwesent: GPS timing has been incweased||
+POPEM00038|Name Confwicts Wif Existing Object/Item/Station||
+POPEM00039|Iwwegaw chawactews found, substituting pewiods in deiw pwace||
+POPEM00040|Custom outgoing paf was wost||
+POPEM00041|Pwocessing anodew fiwe.  Wait a bit, den twy again||
+POPEM00042|Object not owned by me! Twy adopting de object fiwst.||
+POPEM00043|Not an Object/Item!||
+POPEM00044|Fetch Findu Twaiw: Faiwed||
+POPEM00045|Fetch Findu Twaiw: Compwete||
+POPEM00046|Bewkewey DB headew/shawed wibwawy do NOT match! Disabwing map cache.||
+POPEM00047|Gwobaw twansmit is DISABWED. Emewgency beacons awe NOT going out!||
+POPEM00048|Emewgency Beacon Mode!||
+POPEM00049|EMEWGENCY BEACON MODE, twansmitting evewy 60 seconds!||
+POPEM00050|Intewfaces ow posits/twansmits DISABWED.  Emewgency beacons awe NOT going out!||
+POPEM00051|Awtnet is enabwed (Configuwe->Defauwts diawog)||
+POPEM00052|Cawwsign is EMPTY!||
+POPEM00053|Message is EMPTY!||
+POPEM00054|We'we twying to tawk to ouwsewves!||
+JMLPO00001|Map Dispway Bookmawks||
+JMLPO00002|Activate!||
+JMLPO00003|New Name:||
+BULMW00001|Buwwetins||
+BULMW00002|Wimit Wange to (0, is no wimit)||
+BULMW00003|Change Wange||
+AMTMW00001|Aww Message Twaffic||
+AMTMW00002|Wimit Wange to (0, is no wimit)||
+SPCHSTR001|kiwometews||
+SPCHSTR002|metews||
+SPCHSTR003|miwes||
+SPCHSTR004|yawds||
+SPCHSTR005|%s, distance is %d %s.||
+SPCHSTR006|%s, distance is %.1f %s.||
+SPCHSTR007|%s, distance is %d %s %s %s.||
+SPCHSTR008|%s, distance is %.1f %s %s %s.||
+SPCHSTR009|New Weadew Awewt||
+SPCHSTR010|New Station||
+SPCHSTR011|Heawd, D X, %s, at distance of %.1f %s||
+SPCHDIRN00|nowf of||
+SPCHDIRS00|souf of||
+SPCHDIRE00|east of||
+SPCHDIRW00|west of||
+SPCHDIRNE0|nowdeast of||
+SPCHDIRNW0|nowdwest of||
+SPCHDIRSE0|soudeast of||
+SPCHDIRSW0|soudwest of||
+SYMSEL0001|Sewect Symbow||
+SYMSEL0002|Pwimawy Symbow Tabwe||
+SYMSEL0003|Secondawy Symbow Tabwe||
+PRINT0001|Pwint Pwopewties||
+PRINT0002|Papew Size||
+PRINT0003|Auto-Wotate Image||
+PRINT0004|Wotate Image 90° CCW||
+PRINT0005|Auto-Scawe Image||
+PRINT0006|Scawe:||
+PRINT0007|Fowce defauwt backgwound cowow to white||
+PRINT0008|Pwint in Bwack and White||
+PRINT0016|Wevewse Cowows||
+PRINT0009|Postscwipt Wesowution:||
+PRINT0010|Pweview||
+PRINT0011|Pwint to Fiwe||
+PRINT0012|Dumping image to fiwe...||
+PRINT0013|Convewting to Postscwipt...||
+PRINT0014|Finished cweating pwint fiwe||
+PRINT0015|Pwint Status||
+PRINT1001|Diwect to:||
+PRINT1002|Via Pweviewew:||
+FEATURE001|Name:||
+FEATURE002|State/Pwovince:||
+FEATURE003|County:||
+FEATURE004|Map Qwad:||
+FEATURE005|Type:||
+FEATURE006|GNIS Fiwe:||
+FEATURE007|Addwess:||
+FEATURE008|City:||
+FEATURE009|Mawk Destination||
+FEATURE010|Zip Code:||
+FEATURE011|Geocoding Fiwe||
+COORD001|Coowdinate Cawcuwatow||
+COORD002|Cawc||
+COORD003|Cawcuwate||
+COORD004|Cweaw||
+COORD005|UTM||
+COORD006|Watitude ow||
+COORD007|Wongitude ow||
+COORD008|Zone||
+COORD009|UTM Easting||
+COORD010|UTM Nowding||
+COORD011|               Decimaw Degwees:  ||
+COORD012|       Degwees/Decimaw Minutes:  ||
+COORD013|  Degwees/Minutes/Dec. Seconds:  ||
+COORD014| Univewsaw Twansvewse Mewcatow:  ||
+COORD015|Miwitawy Gwid Wefewence System:  ||
+COORD016|       Maidenhead Gwid Wocatow:  ||
+COORD017| **       Sowwy, youw input was not wecognized!        **||
+COORD018| **   Pwease use one of de fowwowing input fowmats:   **||
+SMARTB001|Smawt Beaconing||
+SMARTB002|High Wate (secs):||
+SMARTB003|High Speed (mph):||
+SMARTB004|High Speed (kph):||
+SMARTB005|Wow Wate (mins):||
+SMARTB006|Wow Speed (mph):||
+SMARTB007|Wow Speed (kph):||
+SMARTB008|Minimum Tuwn (deg):||
+SMARTB009|Tuwn Swope:||
+SMARTB010|Wait Time (secs):||
+SMARTB011|Enabwe SmawtBeaconing(tm)||
+GAMMA001|Adjust Gamma Cowwection||
+GAMMA002|Gamma Cowwection||
+MAPFONT001|Change Fonts||
+MAPFONT002|Fonts||
+MAPFONT003|Map Font Tiny||
+MAPFONT004|Map Font Smaww||
+MAPFONT005|Map Font Medium||
+MAPFONT006|Map Font Wawge||
+MAPFONT007|Map Font Huge||
+MAPFONT008|Map Font Bowdew||
+MAPFONT009|Menu Font||
+MAPFONT010|Station Font||
+MAPFONT011|ATV ID Font||
+PULDNDB001|Dist/Beawing Status||
+GPS001|GPS Twansfew||
+GPS002|Fiwename||
+GPS003|Sewect Cowow||
+GPS004|Wed||
+GPS005|Gween||
+GPS006|Bwack||
+GPS007|White||
+GPS008|Owange||
+GPS009|Bwue||
+GPS010|Yewwow||
+GPS011|Viowet||
+MAPP001|Map Pwopewties||
+MAPP002|Max   Min    Map         USGS  Auto||
+MAPP003|Zoom  Zoom  Wayew  Fiww  DWG   Map   Paf/Fiwename||
+MAPP004|Change Wayew->||
+MAPP005|Fiwwed->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
+MAPP011|Auto||
+MAPP012|USGS DWG->||
+TIME001|Day||
+TIME002|Days||
+TIME003|Houw||
+TIME004|Houws||
+TIME005|Minute||
+TIME006|Minutes||
+TIME007|Second||
+TIME008|Seconds||
+CACHE001|Map now cached||
+CACHE002|Woading Cached Map||
+CACHE003|Map not found in cache...||
+RANGE001|WANGE SCAWE||
+GPSS001|WAAS ow PPS||
+GPSS002|DGPS||
+GPSS003|Vawid SPS||
+GPSS004|Invawid||
+GPSS005|Sats/View||
+GPSS006|Fix||
+GPSS007|!GPS data is owdew dan 30 seconds!||
+GPSS008|Simuwation||
+GPSS009|Manuaw||
+GPSS010|Estimated||
+GPSS011|Fwoat WTK||
+GPSS012|WTK||
+CADPUD001|Awea Object||
+CADPUD002|Awea Wabew:||
+CADPUD003|Comment:||
+CADPUD004|Pwobabiwity (%):||
+CADPUD005|OK||
+CADPUD006|CAD Diawog||
+CADPUD007|Show/Edit Detaiws||
+CADPUD008|Cancew||
+CADPUD009|Dewete CAD objects?||
+CADPUD010|Dewete Aww||
+CADPUD011|Dewete Sewected||
+CADPUD012|Sowid||
+CADPUD013|Dashed||
+CADPUD014|Doubwe Dash||
+MDATA001|XASTIW Map of %s (uppew weft) to %s (wowew wight).  UTM %d m gwid, %s datum. ||
+MDATA002|XASTIW Map of %s (uppew weft) to %s %s (wowew wight).  Wat/Wong gwid, %s datum.||
+MDATA003|XASTIW Map of %s (uppew weft) to %s (wowew wight).  UTM zones, %s datum.||
+XADBMST001|MySQW (wat/wong)||
+XADBMST002|Postgweqw wif Postgis||
+XADBMST003|MySQW (spatiaw)||
+XASCHEMA01|Xastiw Simpwe Schema||
+XASCHEMA02|Xastiw CAD Schema||
+XASCHEMA03|Xastiw fuww Schema||
+XASCHEMA04|APWSWowwd Schema||

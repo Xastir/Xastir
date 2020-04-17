@@ -1,0 +1,1129 @@
+# language-PirateEnglish.sys, translated from language-English.sys
+# Please do not edit this derived file.
+MENUTB0001|Scroll|F|
+MENUTB0002|Gander|V|
+MENUTB0004|Treasure Map|M|
+MENUTB0005|Ship|S|
+MENUTB0006|Dispatch|e|
+MENUTB0010|Grapple|I|
+MENUTB0009|Aid|H|
+PULDNFI001|Provision me' ship|C|
+PULDNFI002|Open Scribble Scroll|O|
+PULDNFI003|Test|T|
+PULDNFI004|Run Away!|x|
+PULDNFI007|Change Debug Level|D|
+PULDNFI010|TNC Scribblin'||
+PULDNFI011|Net Scribblin'||
+PULDNFI012|IGate Scribblin'||
+PULDNFI013|WX Scribblin'||
+PULDNFI014|PNG Etchin's||
+PULDNFI015|Affix t' parchment|P|
+PULDNFI016|KML Etchin's||
+PULDNVI001|Bulletins|B|
+PULDNVI002|Incomin' Data|I|
+PULDNVI003|Mobile Ships|M|
+PULDNVI004|All Ships|A|
+PULDNVI009|Local Ships|S|
+PULDNVI012|Last Ships|L|
+PULDNVI005|Weather Ships|W|
+PULDNVI008|Own Weather Data|D|
+PULDNVI007|Weather Alerts|e|
+PULDNVI011|Dispatch Traffic|T|
+PULDNVI013|Uptime|U|
+PULDNVI014|Program Uptime||
+PULDNVI015|GPS Status||
+PULDNVI016|ALOHA Statistics||
+PULDNCF004|Ship|S|
+PULDNCF001|Defaults|D|
+PULDNCF003|Timin'|T|
+PULDNCF002|Coordinate System|o|
+PULDNCF006|Racket Alarms|A|
+PULDNCF007|Parley|p|
+PULDNCF008|Save Config Now!|C|
+PULDNMP001|Treasure Map Chooser|M|
+PULDNMP012|Treasure Map Display Bookmarks|B|
+PULDNMP014|Locate Treasure Map Feature|F|
+PULDNMP016|Disable Fast Zoom/Pan/Haven||
+PULDNMP013|Disable All Treasure Map||
+PULDNMP002|Enable Auto Treasure Map||
+PULDNMP003|Enable Treasure Map Grid||
+PULDNMP004|Enable Treasure Map Levels||
+PULDNMP010|Enable Treasure Map Labels||
+PULDNMP009|Enable Area Color Fills||
+PULDNMP007|Enable Weather Alerts||
+PULDNMP005|Background Color|C|
+PULDNMP006|Ship Text Style|T|
+PULDNMP026|Icon Outline Style|O|
+PULDNMP011|Mouse Pointer Menu|P|
+PULDNMP008|Treasure Map Intensity|I|
+PULDNMP021|Auto Treasure Map - Disable Raster Treasure Map||
+PULDNMP022|Index New Treasure Map on Startup||
+PULDNMP023|Index: Add New Treasure Map|N|
+PULDNMP024|Index: Reindex ALL Treasure Map!|R|
+PULDNMP025|Scribbles||
+PULDNMP015|Xfontsel||
+PULDNMP027|Re-plunder Treasure Map (Not from cache)||
+PULDNMP028|Flush Entire Treasure Map Cache!||
+PULDNMP029|Find Address||
+PULDNMP030|Provision me' ship USGS DRG||
+PULDNMP031|Enable Treasure Map Border||
+MPUPTGR017|Seven Seas Treasure Map Timeout (sec)||
+MPUPDRG001|Choose 'yer Weapon! items t' be displayed:||
+MPUPDRG002|Tint Underlyin' Treasure Map (XOR)||
+MPUPDRG003|Black||
+MPUPDRG004|White||
+MPUPDRG005|Blue||
+MPUPDRG006|Red||
+MPUPDRG007|Brown||
+MPUPDRG008|Green||
+MPUPDRG009|Purple||
+MPUPDRG010|Yellow||
+MPUPDRG011|Light Blue||
+MPUPDRG012|Light Red||
+MPUPDRG013|Light Purple||
+MPUPDRG014|Light Gray||
+MPUPDRG015|Light Brown||
+WPUPMCP001|Treasure Map Chooser||
+PULDNMMC01|Clear|C|
+PULDNMMC02|Vector|V|
+PULDNMMC03|250k Topo|2|
+PULDNMMC04|100k Topo|1|
+PULDNMMC05|24k Topo|4|
+PULDNMMC06|Expand Dirs||
+PULDNMMC07|Dirs/Treasure Map Choose 'yer Weapon!ed:||
+PULDNMMC08|Clear Dirs|C
+PULDNMMC09|Choose 'yer Weapon! All|S|
+PULDNMBC01|Gray||
+PULDNMBC02|Misty Rose||
+PULDNMBC03|Navy Blue||
+PULDNMBC04|Steel Blue||
+PULDNMBC05|Med. Sea Green||
+PULDNMBC06|Pale Green||
+PULDNMBC07|Pale Goldenrod||
+PULDNMBC08|Goldenrod Yellow||
+PULDNMBC09|Rosy Brown||
+PULDNMBC10|Fire brick Red||
+PULDNMBC11|White||
+PULDNMBC12|Black||
+PULDNMSL01|Black Border|B|
+PULDNMSL02|Black Shadow|S|
+PULDNMSL03|Text on Black|T|
+PULDNMSL04|DropShadow||
+PULDNMIO01|Nay Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
+PULDNOT001|On||
+PULDNOT002|Off||
+PULDNOT003|Short||
+PULDNDP014|Find Ship|F|
+PULDNDP001|Track Ship|T|
+PULDNDP022|Fetch Findu Trail|u|
+PULDNDP032|Filter Data||
+PULDNDP040|Choose 'yer Weapon! None||
+PULDNDP041|Choose 'yer Weapon! Mine||
+PULDNDP042|Choose 'yer Weapon! TNC||
+PULDNDP027|- Choose 'yer Weapon! Direct||
+PULDNDP043|- Choose 'yer Weapon! Via Digi||
+PULDNDP034|Choose 'yer Weapon! Net||
+PULDNDP019|Include Expired Data||
+PULDNDP044|Choose 'yer Weapon! Ships||
+PULDNDP028|- Choose 'yer Weapon! Fixed Ships||
+PULDNDP029|- Choose 'yer Weapon! Movin' Ships||
+PULDNDP030|- Choose 'yer Weapon! WX Ships||
+PULDNDP053|  - Choose 'yer Weapon! CWOP WX Ships||
+PULDNDP045|Choose 'yer Weapon! Objects/Items||
+PULDNDP026|- Choose 'yer Weapon! WX Objects/Items||
+PULDNDP039|- Choose 'yer Weapon! Water Gauge Objects/Items||
+PULDNDP057|- Choose 'yer Weapon! Aircraft Objects/Items||
+PULDNDP058|- Choose 'yer Weapon! Vessel Objects/Items||
+PULDNDP031|- Choose 'yer Weapon! Other Objects/Items||
+PULDNDP033|Filter Display||
+PULDNDP010|Display Callsign||
+PULDNDP012|Display Symbol||
+PULDNDP011|- Rotate Symbol||
+PULDNDP007|Display Trail||
+PULDNDP003|Display Course||
+PULDNDP004|Display Speed|S|
+PULDNDP017|- Display Short Speed||
+PULDNDP002|Display Altitude||
+PULDNDP009|Display Weather Info||
+PULDNDP046|- Display Weather Text||
+PULDNDP018|-- Temperature Only||
+PULDNDP047|- Display Wind Barb||
+PULDNDP054|Display Aloha Circle||
+PULDNDP013|Display Positin' Ambiguity||
+PULDNDP008|Display Power/Gain||
+PULDNDP021|- Use Default Power/Gain||
+PULDNDP020|- Display Mobile Power/Gain||
+PULDNDP023|Display DF Attributes||
+PULDNDP123|Display DF Beamwidth||
+PULDNDP223|Display DF Bearin'||
+PULDNDP035|Enable Dead-Reckonin'||
+PULDNDP036|- Display Arc||
+PULDNDP037|- Display Course||
+PULDNDP038|- Display Symbol||
+PULDNDP005|Display Dist/Bearin'||
+PULDNDP024|Display Last Report Age||
+PULDNDP015|Clear All Ships!!!|A|
+PULDNDP016|Clear All Trails!!!|C|
+PULDNDP025|Clear Object/Item History||
+PULDNDP048|Reload Object/Item History||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Choose 'yer Weapon! Tactical Calls Only||
+PULDNDP052|- Label Trailpoints||
+PULDNDP055|Export All|E|
+PULDNDP056|Export t' KML Scroll||
+PULDNUT001|Enable English Units|E|
+PULDNUT002|Metric|M|
+PULDNMG001|Send Dispatch To|S|
+PULDNMG002|Open Group Dispatchs|O|
+PULDNMG003|Clear All Outgoin' Dispatchs|C|
+PULDQUS001|General Ships Query|G|
+PULDQUS002|IGate Ships Query|I|
+PULDQUS003|WX Ships Query|W|
+PULDNMG004|Modify Auto Reply Dispatch|A|
+PULDNMG005|Enable Auto Reply Dispatch||
+PULDNMG006|Heavenly Body Ack Mode|M|
+PULDNMG007|Show Pendin' Dispatchs|P|
+PULDNTNT04|Grapple Control|C|
+PULDNTNT03|Disable Transmit: ALL||
+PULDNTNT05|Disable Transmit: My Positin'||
+PULDNTNT06|Disable Transmit: Objects/Items||
+PULDNTNT11|Enable Server Ports|P|
+PULDNTNT01|Transmit Now!|T|
+PULDNTNT07|Fetch GPS Track|F|
+PULDNTNT08|Fetch GPS Routes|R|
+PULDNTNT09|Fetch GPS Waypoints|W|
+PULDNTNT10|Fetch Garmin RINO Waypoints|G|
+PULDNHEL01|'bout|A|
+PULDNHEL02|Aid Index|I|
+PULDNHEL03|EMERGENCY BEACON MODE ENABLE|E|
+PULDNHEL04|!!! EMERGENCY BEACON MODE !!!||
+PULDNHEL05|'bout HMS Xastir||
+POPUPMA001|Optin's||
+POPUPMA00c|Center|C|
+POPUPMA015|Ship Info|S|
+POPUPMA002|In|I|
+POPUPMA003|Out|O|
+POPUPMA004|Zoom Level|L|
+POPUPMA005|Level 1|1|
+POPUPMA006|Level 16|6|
+POPUPMA007|Level 64|4|
+POPUPMA008|Level 256|2|
+POPUPMA009|Level 1024|0|
+POPUPMA010|Level 8192|8|
+POPUPMA017|Entire World|E|
+POPUPMA016|Last Treasure Map Pos/Zoom|P|
+POPUPMA018|Object/Item->Create|b|
+POPUPMA019|Object/Item->Modify|M|
+POPUPMA025|Move My Ship Here|H|
+POPUPMA011|Pan up|u|
+POPUPMA012|Pan down|d|
+POPUPMA013|Pan left|l|
+POPUPMA014|Pan right|r|
+POPUPMA020|Measure||
+POPUPMA021|Move||
+POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Found!||
+POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
+POPUPMA026|Center & Zoom||
+POPUPMA027|  Latitude||
+POPUPMA028| Longitude||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Draw||
+POPUPMA031|Nay Polygon||
+POPUPMA032|Erase CAD Polygons||
+POPUPMA033|**NOT USED**||
+POPUPMA034|Custom Zoom Level||
+POPUPMA035|10% out||
+POPUPMA036|10% 'n||
+POPUPMA037|Area||
+POPUPMA038|square||
+POPUPMA039|square feet||
+POPUPMA040|square meters||
+POPUPMA041|Bearin'||
+POPUPMA042|degrees||
+POPUPMA043|Modify ambiguous positin'||
+POPUPMA044|Positin' ambiguity be on, yer new positin' may appear t' jump.||
+POPUPMA045|Predefined Objects||
+POPUPMA046|CAD Polygons||
+POPUPMA047|Enable CAD objects||
+POPUPMA048|Enable CAD labels||
+POPUPMA049|Enable CAD comments||
+POPUPMA050|Enable CAD probability||
+POPUPMA051|Enable CAD area size||
+POPUPMA052|sq||
+POPUPMA053|ft||
+POPUPMA054|meters||
+POPUPMA055|mi|
+BBARZM0001|Zoom %s||
+BBARZM0002|Zoom %s Tr||
+BBARSTH001|%d/%d Ships||
+BBARSTA000|%-9s New object!||
+BBARSTA001|%-9s New ship!||
+BBARSTA002|%-9s||# new data (only display the call)
+BBARSTA003|Loadin' Treasure Map...||
+BBARSTA004|Treasure Map Loaded||
+BBARSTA005|Treasure Map Lat/Long Grid On|O|
+BBARSTA006|Treasure Map Lat/Long Grid Off|f|
+BBARSTA007|The use o' Auto Treasure Map, be now ON||
+BBARSTA008|The use o' Auto Treasure Map, be now OFF||
+BBARSTA009|The use o' Treasure Map Levels be now ON||
+BBARSTA010|The use o' Treasure Map Levels be now OFF||
+BBARSTA011|Auto Reply Dispatch OFF!||
+BBARSTA012|Scroll done..||
+BBARSTA013|Openin' GPS Port||
+BBARSTA014|Closin' GPS Port||
+BBARSTA015|Got GPS RMC Strin'||
+BBARSTA016|Got GPS GGA Strin'||
+BBARSTA017|Net disconnected from host||
+BBARSTA018|Net connectin' timed out!||
+BBARSTA019|Lookin' up host %s||
+BBARSTA020|Connected t' %s||
+BBARSTA021|Net Connectin' Failed!||
+BBARSTA022|Could not bind socket!||
+BBARSTA023|Nay IP fer Host!||
+BBARSTA024|Nay Host Specified||
+BBARSTA025|Host found, Connectin' %d||
+BBARSTA026|Waitin' fer GPS data via HSP..||
+BBARSTA027|Clearin' HSP gettin' TNC data..||
+BBARSTA028|Loadin' %s||
+BBARSTA029|Openin' WX Port||
+BBARSTA030|Closin' WX Port||
+BBARSTA031|Lookin' up hostname %d||
+BBARSTA032|Decoded WX Data||
+BBARSTA033|Echo from digipeater||
+BBARSTA034|Loadin' Weather Alert Treasure Map||
+BBARSTA035|Waitin' fer GPS data via AUX..||
+BBARSTA036|Clearin' AUX gettin' TNC data..||
+BBARSTA037|GPS Data Complete||
+BBARSTA038|Positin' change on me ship||
+BBARSTA039|Indexin' %s||
+BBARSTA040|Amateur APRS(tm) Ship %s||
+BBARSTA041|Waitin' fer GPS data..||
+BBARSTA042|Transmittin' objects/items||
+BBARSTA043|Scribblin'||
+BBARSTA044|ALOHA distance be %d%s||
+BBARSTA045|Loadin' symbols...||
+BBARSTA046|Reloadin' symbols...||
+BBARSTA047|Initialize me ship...||
+BBARSTA048|Start grapples...||
+BBARSTA049|Readin' tiles...||
+BBARSTA050|Downloadin' tiles...||
+BBARSTA051|Downloadin' tile %li o' %li||
+WPUPDPD001|Display Packet Data||
+WPUPDPD002|TNC Data only|T|
+WPUPDPD003|Net Data only|N|
+WPUPDPD004|TNC an' Net Data|a|
+WPUPDPD005|TNC||
+WPUPDPD006|NET||
+WPUPDPD007|Ship Capabilities||
+WPUPDPD008|Mine Only||
+WPUPLSP001|Locate Ship||
+WPUPLSP002|Locate Callsign||
+WPUPLSP003|Match Case|C|
+WPUPLSP004|Match Exact|E|
+WPUPLSP005|Locate Now!|N|
+WPUPLSP006|Emergency Locate!||
+WPUPLSP007|FCC/RAC Lookup||
+WPUPCFD001|Provision me' ship Defaults||
+WPUPCFD002|After what interval o' time will a ship be considered auld?||
+WPUPCFD003|15 min|1|
+WPUPCFD004|30 min|3|
+WPUPCFD005|45 min|4|
+WPUPCFD006|1 hr|H|
+WPUPCFD007|90 min|9|
+WPUPCFD008|2 hrs|2|
+WPUPCFD009|After what interval o' time will a ship not be displayed?||
+WPUPCFD010|6 hrs|6|
+WPUPCFD011|12 hrs|o|
+WPUPCFD012|1 Day|D|
+WPUPCFD013|2 Days|y|
+WPUPCFD014|1 Week|W|
+WPUPCFD015|Transmit Ship Optin'||
+WPUPCFD016|Fixed Ship|F|
+WPUPCFD017|Mobile Ship w/local time|l|
+WPUPCFD018|Mobile Ship w/Zulu date-time|Z|
+WPUPCFD019|Mobile Ship w/Zulu time-seconds|u|
+WPUPCFD021|Ship Positin' w/weather|S|
+WPUPCFD022|Ship Positin', Zulu date-time, an' weather|t|
+WPUPCFD023|Transmit Raw WX data?|R|
+WPUPCFD024|Transmit scrawny objects/items?|C|
+WPUPCFD025|Activate Alternate net?|A|
+WPUPCFD026|Send positin' reports at what intervals?||
+WPUPCFD027|Pop up new bulletins||
+WPUPCFD028|Warn if Modifier Keys||
+WPUPCFD029|Gander zero-distance bulletins||
+WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD031|Load predefined objects from scroll||
+WPUPCFD032|My trails 'n one color||
+WPUPCFD033|ALTNET:||
+WPUPCFTM01|Provision me' ship Timin'||
+WPUPCFTM02|Posit TX Interval (min)||
+WPUPCFTM03|Ship Ghostin' Time (min)||
+WPUPCFTM04|Object/Item Max TX Interval (min)||
+WPUPCFTM05|Ship Clear Time (hours)||
+WPUPCFTM06|GPS Check Interval (sec)||
+WPUPCFTM07|Ship Delete Time (days)||
+WPUPCFTM08|Dead-Reckonin' Timeout (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM10|New Track Time (min)||
+WPUPCFTM11|New Track Interval (degrees)||
+WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM13|Etchin' Interval (min)||
+WPUPCFTM14|Aircraft Ghost/Clear Time (min), 0 = Disabled||
+WPUPCFC001|Provision me' ship Coordinate System||
+WPUPCFC002|Choose 'yer Weapon! Coordinate System||
+WPUPCFC003|dd.ddddd|d|
+WPUPCFC004|dd mm.mmm|m|
+WPUPCFC005|dd mm ss.s|s|
+WPUPCFC006|UTM|U|
+WPUPCFC007|USNG/MGRS2||
+WPUPCFC008|UTM w/special zones||
+WPUPCFG001|Provision me' ship GPS||
+WPUPCFG003|Stand alone GPS port||
+WPUPCFG002|Use GPS Positin'?||
+WPUPCFG004|GPS Optin's||
+WPUPCFG005|Stand-alone GPS||
+WPUPCFG006|TNC Connected GPS (HSP Cable)||
+WPUPCFG007|TNC Connected GPS usin' CTL-E||
+WPUPCFG008|GPS Time (Sample every)||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
+WPUPCFG011|30 sec||
+WPUPCFG012|1 min||
+WPUPCFG013|2 min||
+WPUPCFG014|5 min||
+WPUPCFG015|10 min||
+WPUPCFG016|Network Connected GPS||
+WPUPCFG017|GPSD Host||
+WPUPCFG018|GPSD Port||
+WPUPCFG019|Network GPS via GPSD||
+WPUPCFG020|Reconnect on failure?||
+WPUPCFG021|Network Connected WX||
+WPUPCFG022|WX Host||
+WPUPCFG023|WX Port||
+WPUPCFT001|Provision me' ship TNC||
+WPUPCFT002|Use TNC?||
+WPUPCFT003|TNC Port||
+WPUPCFT004|Port Settin's||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT011|UnProto Paths||
+WPUPCFT012|Path 1: %s via ||
+WPUPCFT013|Path 2: %s via ||
+WPUPCFT014|Path 3: %s via ||
+WPUPCFT015|Port Style||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT023|Provision me' ship TNC w/HSP GPS||
+WPUPCFT024|Data Type||
+WPUPCFT025|Auto detect||
+WPUPCFT026|Binary Type||
+WPUPCFT027|ASCII Type||
+WPUPCFT028|Provision me' ship TNC w/AUX GPS||
+WPUPCFT029|Provision me' ship TNC w/INVALID ENUM: %d||
+WPUPCFT030|Provision me' ship KISS TNC||
+WPUPCFT031|TNC Configuratin' Scrolls||
+WPUPCFT032|TNC Setup Scrollname|| 
+WPUPCFT033|TNC Shutdown Scrollname||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 t' 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
+WPUPCFT040|Provision me' ship Multi-Port KISS TNC||
+WPUPCFT041|Radio Port||
+WPUPCFT042|Grapple Properties: Dubious UNPROTO Path!||
+WPUPCFT043|Please consider a shorter path such as WIDE2-2 or WIDE1-1,WIDE2-2||
+WPUPCFT044|Grapple Properties: Dubious IGATE Path!||
+WPUPCFT045|Transmittin' w/Dubious UNPROTO Path!||
+WPUPCFT046|Transmittin' w/Dubious IGATE Path!||
+WPUPCFT047|Init KISS-mode on startup||
+WPUPCFWX01|Provision me' ship WX Port||
+WPUPCFWX02|Weather Ship device||
+WPUPCFWX03|Rain Gauge Correctin' (Global Settin')||
+WPUPCFWX04|.1 inch/2.5mm||
+WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX06|.1mm||
+WPUPCFWX07|Nay Correctin'||
+WPUPCFS001|Provision me' ship Ship||
+WPUPCFS002|Callsign||
+WPUPCFS003|LAT||
+WPUPCFS004|deg||
+WPUPCFS005|min||
+WPUPCFS006|(N/S)||
+WPUPCFS007|LONG||
+WPUPCFS008|(E/W)||
+WPUPCFS009|Ship Symbol||
+WPUPCFS010|Group/overlay||
+WPUPCFS011|Symbol||
+WPUPCFS028|Choose 'yer Weapon!||
+WPUPCFS012|Power - Height (HAAT) - Gain - Directivity||
+WPUPCFS013|Disable PHG||
+WPUPCFS014|Antenna Height||
+WPUPCFS015|Antenna Gain||
+WPUPCFS016|Omni||
+WPUPCFS017|Comment:||
+WPUPCFS018|Positin' Ambiguity||
+WPUPCFS019|None||
+WPUPCFS020|.11 miles||
+WPUPCFS021|1.15 miles||
+WPUPCFS022|11.51 miles||
+WPUPCFS023|69.09 miles||
+WPUPCFS024|.18 kilometres||
+WPUPCFS025|1.85 kilometres||
+WPUPCFS026|18.53 kilometres||
+WPUPCFS027|111.19 kilometres||
+WPUPCFS029|Send scrawny posits|C|
+POPUPOB001|Object/Item||
+POPUPOB002|Name:||
+POPUPOB003|Create New Object||
+POPUPOB004|Delete Object||
+POPUPOB005|Modify Object||
+POPUPOB006|Create New Item||
+POPUPOB007|Area Object||
+POPUPOB008|Area Object||
+POPUPOB009|Bright Color||
+POPUPOB010|Color-Fill||
+POPUPOB011|Circle||
+POPUPOB012|Line-Right '/'||
+POPUPOB013|Line-Left '\'||
+POPUPOB014|Triangle||
+POPUPOB015|Rectangle||
+POPUPOB016|Black||
+POPUPOB017|Blue||
+POPUPOB018|Green||
+POPUPOB019|Cyan||
+POPUPOB020|Red||
+POPUPOB021|Violet||
+POPUPOB022|Yellow||
+POPUPOB023|Grey||
+POPUPOB024|Offset Up:||
+POPUPOB025|Offset Left (Except '/'):||
+POPUPOB026|Corridor:||
+POPUPOB027|Generic Optin's||
+POPUPOB028|Locatin'||
+POPUPOB029|Signpost||
+POPUPOB030|Signpost Text||
+POPUPOB031|Signpost Object||
+POPUPOB032|Enable Compression||
+POPUPOB033|Delete Item||
+POPUPOB034|Modify Item||
+POPUPOB035|Altitude (ft):||
+POPUPOB036|Speed (knots):||
+POPUPOB037|Course:||
+POPUPOB038|DF Object||
+POPUPOB039|Signal - Height(HAAT) - Gain - Directivity||
+POPUPOB040|Beam Width - Bearin'||
+POPUPOB041|Omni Antenna||
+POPUPOB042|Beam Antenna||
+POPUPOB043|Useless||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
+POPUPOB046|DF Bearin':||
+POPUPOB047|Probability Circles||
+POPUPOB048|Treasure Map Gander Object||
+POPUPOB049|Min (mi):||
+POPUPOB050|Max (mi):||
+WPUPCFI001|Provision me' ship Seven Seas||
+WPUPCFI002|Host ||
+WPUPCFI003|Port ||
+WPUPCFI004|(Secondary hosts)||
+WPUPCFI005|Host1||
+WPUPCFI006|Port1||
+WPUPCFI007|Host2||
+WPUPCFI008|Port2||
+WPUPCFI009|Pass-code||
+WPUPCFI010|(Leave Blank if None)||
+WPUPCFI011|Reconnect on NET failure?||
+WPUPCFI012|Run as an I-Gate?||
+WPUPCFI013|Broadcast dispatchs via TNC when an I-Gate?||
+WPUPCFI014|Scribble I-Gate Transactin's?||
+WPUPCFI015|Filter Parameters||
+WPUPCFID01|Provision me' ship Database (TBD)||
+WPUPCFID02|Host ||
+WPUPCFID03|Port ||
+WPUPCFID04|(Secondary hosts)||
+WPUPCFID05|Host1||
+WPUPCFID06|Port1||
+WPUPCFID07|Host2||
+WPUPCFID08|Port2||
+WPUPCFID09|Pass-code||
+WPUPCFID10|(Leave Blank if None)||
+WPUPCFID11|Reconnect on NET failure?||
+WPUPCFID12|Run as an I-Gate?||
+WPUPCFID13|Broadcast dispatchs via TNC when an I-Gate?||
+WPUPCFID14|Scribble I-Gate Transactin's?||
+WPUPCFID15|Filter Parameters||
+WPUPCFIA01|Provision me' ship AGWPE||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Leave Blank if None)||
+WPUPCFIA11|Reconnect on NET failure?||
+WPUPCFIA12|Run as an I-Gate?||
+WPUPCFIA13|Broadcast dispatchs via TNC when an I-Gate?||
+WPUPCFIA14|Scribble I-Gate Transactin's?||
+WPUPCFIA15|Transmit RadioPort||
+WPUPCFA001|Provision me' ship Racket Alarms||
+WPUPCFA002|Racket Play Command||
+WPUPCFA003|Alarm on||
+WPUPCFA004|Racket scroll t' Play||
+WPUPCFA005|New Ship||
+WPUPCFA006|New Dispatch||
+WPUPCFA007|Proximity||
+WPUPCFA008|Band Openin'||
+WPUPCFA009|Minimum Distance||
+WPUPCFA010|Maximum Distance||
+WPUPCFA011|Weather Alert||
+WPUPCFSP01|Provision me' ship Parley||
+WPUPCFSP02|Parley Output on:||
+WPUPCFSP03|New Ship||
+WPUPCFSP04|New Dispatch Alert||
+WPUPCFSP05|New Dispatch Body||
+WPUPCFSP06|Proximity Alert||
+WPUPCFSP07|Band Openin'||
+WPUPCFSP08|New Weather Alert||
+WPUPCFSP09|Tracked Ship Proximity Alert||
+WPUPTSP001|Track Ship|| 
+WPUPTSP002|Track Callsign|| 
+WPUPTSP003|Match Case|| 
+WPUPTSP004|Match Exact|| 
+WPUPTSP005|Track Now!|| 
+WPUPTSP006|Clear Trackin'|| 
+WPUPTSP007|Plunder Trail||
+WPUPTSP008|Callsign||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
+WPUPMSB001|Send Dispatch Box %d||
+WPUPMSB002|Send Group Dispatch Box %d||
+WPUPMSB003|Ship's Call:||
+WPUPMSB004|Group's Call:||
+WPUPMSB005|New/Refresh Call||
+WPUPMSB006|New Group||
+WPUPMSB007|Clear Msg History||
+WPUPMSB008|Dispatch:||
+WPUPMSB009|Send Now!||
+WPUPMSB010|Path:||
+WPUPMSB011|Nay Pendin' Msgs||
+WPUPMSB012|Kick Timer||
+WPUPMSB013|seq||
+WPUPMSB014|type||
+WPUPMSB015|Broadcast||
+WPUPMSB016|*TIMEOUT*||
+WPUPMSB017|*CANCELLED*||
+WPUPMSB018|*REJECTED*||
+WPUPMSB019|Change Path||
+WPUPMSB020|Use Default Path(s)||
+WPUPMSB021|Direct (Nay path)||
+WPUPMSB022|Reverse Path (Hint):||
+WPUPARM001|Change Auto Reply||
+WPUPARM002|Reply:||
+WPUPHPI001|Aid Index||
+WPUPHPI002|Gander||
+WPUPSTI000|Object from: %s||
+WPUPSTI001|Ship Info||
+WPUPSTI002|Send Dispatch||
+WPUPSTI003|Scour FCC Database||
+WPUPSTI004|Scour RAC Database||
+WPUPSTI005|Packets received: %d     Last Heard: ||
+WPUPSTI006|Heard via th' TNC on device %d, ||
+WPUPSTI007|Heard ||
+WPUPSTI008|last via Local||
+WPUPSTI009|last via TNC on device %d||
+WPUPSTI010|last via Seven Seas on device %d||
+WPUPSTI011|last via Scroll||
+WPUPSTI012|last via Unknown||
+WPUPSTI013|, an' has moved||
+WPUPSTI014|Current Power Gain:||
+WPUPSTI016|Altitude: %.0f%s ||
+WPUPSTI017|Course: %s° ||
+WPUPSTI018|Speed: %.1f km/h||
+WPUPSTI019|Speed: %.1f mph||
+WPUPSTI020|%0.1f miles||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|Distance from me ship: %s  Bearin' from me ship: %s||
+WPUPSTI023|Last Positin': ||
+WPUPSTI024|Weather Data %c:%s||
+WPUPSTI025|Wind Course: %s°    Speed: %03d km/h||
+WPUPSTI026|Wind Course: %s°    Speed: %s mph||
+WPUPSTI027|   Gust: %03d km/h||
+WPUPSTI028|   Gust: %s mph||
+WPUPSTI029|Temperature: %02.1f°C  ||
+WPUPSTI030|Temperature: %s°F   ||
+WPUPSTI031|Humidity: %s%%   ||
+WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI033|Baro: %s hPa||
+WPUPSTI034|Snow: %0.1f (cm/24h)||
+WPUPSTI035|Snow: %0.0f (inch/24h)||
+WPUPSTI036|Rain: ||
+WPUPSTI037|%0.2f (mm/h)    ||
+WPUPSTI038|%0.2f (inch/h)  ||
+WPUPSTI039|%0.2f (mm/day)     ||
+WPUPSTI040|%0.2f (inch/day)  ||
+WPUPSTI041|%0.2f (mm/since midnight)||
+WPUPSTI042|%0.2f (inch/since midnight)||
+WPUPSTI043|Data path: %s||
+WPUPSTI044|Comment %02d/%02d %02d:%02d : %s||
+WPUPSTI045|Clear Track||
+WPUPSTI046|Total Rain: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (inch)||
+WPUPSTI049|Trace Query||
+WPUPSTI050|Un-Acked Dispatchs Query||
+WPUPSTI051|Direct Ships Query||
+WPUPSTI052|Ship Version Query||
+WPUPSTI053|Modify Object/Item||
+WPUPSTI054|Store Track||
+WPUPSTI055|Echoed from:||
+WPUPSTI056|Enable Automatic Updates||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|DF Bearin': %s||
+WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
+WPUPSTI060|Fuel Temp: %02.1f°C  ||
+WPUPSTI061|Fuel Temp: %s°F   ||
+WPUPSTI062|Fuel Moisture: %s%%   ||
+WPUPSTI063|Baro: %0.2f 'n Hg||
+WPUPSTI064|Fetch NWS Alert||
+WPUPSTI065|Tactical Call: %s||
+WPUPSTI066|Assign Tactical Call||
+WPUPSTI067|Current Range: %d miles||
+WPUPSTI068|none||
+WPUPSTI069|default||
+WPUPSTI070|HAAT||
+WPUPSTI071|omni||
+WPUPSTI072|range||
+WPUPSTI073|BAD PHG||
+WPUPSTI074|BAD SHG||
+WPUPSTI075|DF Range||
+WPUPSTI076|Nay signal detected||
+WPUPSTI077|Detectible signal (Maybe)||
+WPUPSTI078|Detectible signal but not copyable)||
+WPUPSTI079|Weak signal, marginally readable||
+WPUPSTI080|Noisy but copyable signal||
+WPUPSTI081|Some noise, easy t' copy signal||
+WPUPSTI082|Good signal w/detectible noise||
+WPUPSTI083|Near full-quietin' signal||
+WPUPSTI084|Full-quietin' signal||
+WPUPSTI085|Extremely strong & full-quietin' signal||
+WPUPSTI086|BAD BEARING||
+WPUPSTI087|BAD NRQ||
+WPUPSTI088|DF Beamwidth||
+WPUPSTI089|DF Length||
+WPUPSTI090|Not Valid||
+WPUPSTI091|Change Trail Color||
+WPUPSTI092|Clear DF Bearin'||
+WPUPALO001|ALOHA radius: %d %s||
+WPUPALO002|Ships inside ALOHA circle: %d||
+WPUPALO003| Digis:               %d||
+WPUPALO004| Mobiles ('n motin'): %d||
+WPUPALO005| Mobiles (other):     %d||
+WPUPALO006| WX ships:         %d||
+WPUPALO007| Haven ships:       %d||
+WPUPALO008|Last calculated %d %s %d %s ago.||
+WPUPALO666|ALOHA radius not calculated yet||
+STIFCC0001|FCC Database Lookup||
+STIFCC0002|RAC Database Lookup||
+STIFCC0003|Name:||
+STIFCC0004|Street:||
+STIFCC0005|City:||
+STIFCC0006|State:||
+STIFCC0007|Zip:||
+STIFCC0008|Basic ||
+STIFCC0009|Advanced ||
+STIFCC0010|5 wpm ||
+STIFCC0011|12 wpm ||
+STIFCC0100|FCC index auld, rebuildin'||
+STIFCC0101|Callsign Scour||
+STIFCC0102|Callsign Not Found!||
+STIFCC0103|RAC index auld, rebuildin'||
+UMBNDO0001|at distance o'||
+UNIOP00001|Aye||
+UNIOP00002|Nay||
+UNIOP00003|Nay||
+UNIOP00004|miles||
+UNIOP00005|km||
+UNIOP00006|Device||
+UNIOP00007|Add||
+UNIOP00008|Delete||
+UNIOP00009|Properties||
+UNIOP00010|Allow Transmittin'?||
+UNIOP00011|Activate on Startup?||
+UNIOP00012|km/h||
+UNIOP00013|mph||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|inch||
+UNIOP00018|mm/day||
+UNIOP00019|inch/day||
+UNIOP00020|mm/hr||
+UNIOP00021|inch/hr||
+UNIOP00022|mm/mid||
+UNIOP00023|inch/mid||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|'n Hg||
+UNIOP00028|mm Hg||
+UNIOP00029|Set System Clock from GPS Data?||
+UNIOP00030|Digipeat?||
+UNIOP00031|m||
+UNIOP00032|Apply||
+UNIOP00033|Reset||
+UNIOP00034|min||
+UNIOP00035|hr||
+UNIOP00036|day||
+UNIOP00037|Send Control-E t' get GPS data?||
+UNIOP00038|Add Delay||
+STCHO00001|Ship Chooser||
+WPUPWXA001|Wx Alerts||
+WPUPWXA002|Wx Alert List||
+WPUPCIF001|Installed Grapples||
+WPUPCIF002|Choose Grapple Type||
+WPUPCAX001|Provision me' ship AX.25 TNC||
+WPUPCAX002|AX.25 Device name||
+IFDNL00000|None||
+IFDNL00001|Serial TNC||
+IFDNL00002|Serial TNC w/GPS on a HSP cable||
+IFDNL00003|Serial GPS||
+IFDNL00004|Serial WX||
+IFDNL00005|Seven Seas Server||
+IFDNL00006|AX25 TNC||
+IFDNL00007|Networked GPS (via gpsd)||
+IFDNL00008|Networked WX||
+IFDNL00009|Serial TNC w/GPS on AUX port||
+IFDNL00010|Serial KISS TNC||
+IFDNL00011|Networked Database (Not Implemented Yet)||
+IFDNL00012|Networked AGWPE||
+IFDNL00013|Serial Multi-Port KISS TNC||
+IFDNL00014|SQL Database (Experimental)||
+IFDIN00000|%s %2d %s %s   %s||
+IFDIN00001|%s %2d %s %s:%d   %s||
+IFDIN00002|%s %2d %s device %s   %s||
+IFDIN00003|%s %2d  %s  %s %s   %s||
+IFDIN00004|%s %2d  %s  %s %s:%d   %s||
+IFDIN00005|%s %2d  %s  %s %s   %s||
+IFDIN00006| DOWN ||
+IFDIN00007|  UP  ||
+IFDIN00008|ERROR ||
+IFDIN00009|UNKNWN||
+IFPUPCT000|Grapple Control||
+IFPUPCT001|Start||
+IFPUPCT002|Stop||
+IFPUPCT003|Start All||
+IFPUPCT004|Stop All||
+IGPUPCF000|IGate Optin's||
+IGPUPCF001|Disable all IGate traffic||
+IGPUPCF002|Allow RF t' Inet traffic ONLY||
+IGPUPCF003|Allow RF->Inet an' Inet->RF traffic||
+IGPUPCF004|Igate -> RF Path   ||
+WXPUPSI000|WX Ship||
+WXPUPSI001|WX Ship Type||
+WXPUPSI002|Current Data||
+WXPUPSI003|Wind Course||
+WXPUPSI004|Wind Speed||
+WXPUPSI005|Wind Gust||
+WXPUPSI006|Temp||
+WXPUPSI007|Total Rain||
+WXPUPSI008|Today's Rain Total||
+WXPUPSI009|Baro||
+WXPUPSI010|Humidity||
+WXPUPSI011|Peet Bros ULTIMETER 2000 Type (Data Scribblin' Mode)||
+WXPUPSI012|Peet Bros ULTIMETER II Type||
+WXPUPSI013|Peet Bros ULTIMETER 2000 Type (Packet Mode)||
+WXPUPSI014|Current HR Rain Tot.||
+WXPUPSI015|Last 24 Rain Total||
+WXPUPSI016|Qualimetrics Q-Net||
+WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Mode)||
+WXPUPSI018|Dew Point||
+WXPUPSI019|High Wind||
+WXPUPSI020|Wind Chill||
+WXPUPSI021|Heat Index||
+WXPUPSI022|3-Hr Baro||
+WXPUPSI023|High Temp.||
+WXPUPSI024|Low Temp.||
+WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
+WXPUPSI027|LaCrosse WX-23xx||
+WXPUPSI028|Davis APRS Data Scribbleger||
+LHPUPNI000|All Ships||
+LHPUPNI001|Mobile Ships||
+LHPUPNI002|Weather Ships||
+LHPUPNI003|Local Ships (via TNC)||
+LHPUPNI004|Last Ships||
+LHPUPNI005|Objects & Items||
+LHPUPNI006|Own Objects & Items||
+LHPUPNI010|#||
+LHPUPNI011|Call Sign||
+LHPUPNI012|#Pack||
+LHPUPNI013|Pos Time||
+LHPUPNI014|Path||
+LHPUPNI015|PHG||
+LHPUPNI016|Comments||
+LHPUPNI100|CSE||
+LHPUPNI101|SPD||
+LHPUPNI102|ALT.||
+LHPUPNI103|Lat||
+LHPUPNI104|Long||
+LHPUPNI105|#Pack||
+LHPUPNI106|LSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|CSE||
+LHPUPNI201|SPD||
+LHPUPNI202|GST||
+LHPUPNI203|Temp||
+LHPUPNI204|Hum||
+LHPUPNI205|Baro||
+LHPUPNI206|RN-H||
+LHPUPNI207|RNSM||
+LHPUPNI208|RN24||
+LHPUPNI209|Lat/Lon or UTM||
+PULDNMAT01|Show Alert Treasure Map above other Treasure Map||
+PULDNMAT02|Show Alert Treasure Map under other Treasure Map||
+POPEM00001|Locate Error!||
+POPEM00002|Ship %s were bein' not found!||
+POPEM00003|Trackin' Error!||
+POPEM00004|Grapple Error!||
+POPEM00005|Invalid AX.25 port name %s||
+POPEM00006|Invalid AX.25 port name %s||
+POPEM00007|Invalid callsign %s||
+POPEM00008|Invalid AX.25 destinatin' callsign or digipeater||
+POPEM00009|Cannot open AX.25 socket, %s||
+POPEM00010|Cannot bind AX.25 socket, %s||
+POPEM00011|Cannot connect t' AX.25 callsign, %s||
+POPEM00012|AX.25 error on output o' UI||
+POPEM00013|AX.25 problem with axports scroll||
+POPEM00014|AX.25 invalid port name %s||
+POPEM00015|Error openin' grapple %d Hard Fail||
+POPEM00016|Error openin' grapple %d Time Out||
+POPEM00017|Nay more grapples Available!||
+POPEM00018|Data Query - Single Dispatch Line||
+POPEM00019|Port transmittin' be off fer port %d||
+POPEM00020|Database Error!||
+POPEM00021|AX.25 support not compiled into HMS Xastir!||
+POPEM00022|Input Error!||
+POPEM00023|Nay locatin' name specified!||
+POPEM00024|Locatin' name specified be 'n use!||
+POPEM00025|Not Found!||
+POPEM00026|Trackin' will commence when it appears||
+POPEM00027|Improper info.  Some fields empty?||
+POPEM00028|Can't open scroll||
+POPEM00029|Found It!||
+POPEM00030|Weather Ship Symbol||
+POPEM00031|Changed t' WX symbol '/_', other optin's:  '\_'  '/W'  an'  '\W'||
+POPEM00032|Warnin': Usin' National Weather Service Symbol!||
+POPEM00033|Nay GPS Data!||
+POPEM00034|Disablin' My Positin' TX Until Valid GPS Data!||
+POPEM00035|Warnin'||
+POPEM00036|Notice||
+POPEM00037|HSP grapple present: GPS timin' has been increased||
+POPEM00038|Name Conflicts With Existin' Object/Item/Ship||
+POPEM00039|Illegal characters found, substitutin' periods 'n their place||
+POPEM00040|Custom outgoin' path were bein' lost||
+POPEM00041|Processin' another scroll.  Wait a bit, then try again||
+POPEM00042|Object not owned by me! Try adoptin' th' object first.||
+POPEM00043|Not an Object/Item!||
+POPEM00044|Fetch Findu Trail: Failed||
+POPEM00045|Fetch Findu Trail: Complete||
+POPEM00046|Berkeley DB header/shared library do NOT match! Disablin' Treasure Map cache.||
+POPEM00047|Global transmit be DISABLED. Emergency beacons be NOT goin' out!||
+POPEM00048|Emergency Beacon Mode!||
+POPEM00049|EMERGENCY BEACON MODE, transmittin' every 60 seconds!||
+POPEM00050|Grapples or posits/transmits DISABLED.  Emergency beacons be NOT goin' out!||
+POPEM00051|Altnet be enabled (Provision me' ship->Defaults dialog)||
+POPEM00052|Callsign be EMPTY!||
+POPEM00053|Dispatch be EMPTY!||
+POPEM00054|We're tryin' t' talk t' ourselves!||
+JMLPO00001|Treasure Map Display Bookmarks||
+JMLPO00002|Activate!||
+JMLPO00003|New Name:||
+BULMW00001|Bulletins||
+BULMW00002|Limit Range t' (0, be nay limit)||
+BULMW00003|Change Range||
+AMTMW00001|All Dispatch Traffic||
+AMTMW00002|Limit Range t' (0, be nay limit)||
+SPCHSTR001|kilometers||
+SPCHSTR002|meters||
+SPCHSTR003|miles||
+SPCHSTR004|yards||
+SPCHSTR005|%s, distance be %d %s.||
+SPCHSTR006|%s, distance be %.1f %s.||
+SPCHSTR007|%s, distance be %d %s %s %s.||
+SPCHSTR008|%s, distance be %.1f %s %s %s.||
+SPCHSTR009|New Weather Alert||
+SPCHSTR010|New Ship||
+SPCHSTR011|Heard, D X, %s, at distance o' %.1f %s||
+SPCHDIRN00|north o'||
+SPCHDIRS00|south o'||
+SPCHDIRE00|east o'||
+SPCHDIRW00|west o'||
+SPCHDIRNE0|northeast o'||
+SPCHDIRNW0|northwest o'||
+SPCHDIRSE0|southeast o'||
+SPCHDIRSW0|southwest o'||
+SYMSEL0001|Choose 'yer Weapon! Symbol||
+SYMSEL0002|Primary Symbol Table||
+SYMSEL0003|Secondary Symbol Table||
+PRINT0001|Affix t' parchment Properties||
+PRINT0002|Paper Size||
+PRINT0003|Auto-Rotate Image||
+PRINT0004|Rotate Image 90° CCW||
+PRINT0005|Auto-Scale Image||
+PRINT0006|Scale:||
+PRINT0007|Force default background color t' white||
+PRINT0008|Affix t' parchment 'n Black an' White||
+PRINT0016|Reverse Colors||
+PRINT0009|Postscript Resolutin':||
+PRINT0010|Preview||
+PRINT0011|Affix t' parchment t' Scroll||
+PRINT0012|Dumpin' image t' scroll...||
+PRINT0013|Convertin' t' Postscript...||
+PRINT0014|Finished creatin' affix t' parchment scroll||
+PRINT0015|Affix t' parchment Status||
+PRINT1001|Direct t':||
+PRINT1002|Via Previewer:||
+FEATURE001|Name:||
+FEATURE002|State/Province:||
+FEATURE003|County:||
+FEATURE004|Treasure Map Quad:||
+FEATURE005|Type:||
+FEATURE006|GNIS Scroll:||
+FEATURE007|Address:||
+FEATURE008|City:||
+FEATURE009|Mark Destinatin'||
+FEATURE010|Zip Code:||
+FEATURE011|Geocodin' Scroll||
+COORD001|Coordinate Calculator||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
+COORD005|UTM||
+COORD006|Latitude or||
+COORD007|Longitude or||
+COORD008|Zone||
+COORD009|UTM Eastin'||
+COORD010|UTM Northin'||
+COORD011|               Decimal Degrees:  ||
+COORD012|       Degrees/Decimal Minutes:  ||
+COORD013|  Degrees/Minutes/Dec. Seconds:  ||
+COORD014| Universal Transverse Mercator:  ||
+COORD015|Military Grid Reference System:  ||
+COORD016|       Maidenhead Grid Locator:  ||
+COORD017| **       Sorry, yer input were bein' not recognized!        **||
+COORD018| **   Please use one o' th' followin' input formats:   **||
+SMARTB001|Smart Beaconin'||
+SMARTB002|High Rate (secs):||
+SMARTB003|High Speed (mph):||
+SMARTB004|High Speed (kph):||
+SMARTB005|Low Rate (mins):||
+SMARTB006|Low Speed (mph):||
+SMARTB007|Low Speed (kph):||
+SMARTB008|Minimum Turn (deg):||
+SMARTB009|Turn Slope:||
+SMARTB010|Wait Time (secs):||
+SMARTB011|Enable SmartBeaconin'(tm)||
+GAMMA001|Adjust Gamma Correctin'||
+GAMMA002|Gamma Correctin'||
+MAPFONT001|Change Scribbles||
+MAPFONT002|Scribbles||
+MAPFONT003|Treasure Map Scribble Tiny||
+MAPFONT004|Treasure Map Scribble Small||
+MAPFONT005|Treasure Map Scribble Medium||
+MAPFONT006|Treasure Map Scribble Large||
+MAPFONT007|Treasure Map Scribble Huge||
+MAPFONT008|Treasure Map Scribble Border||
+MAPFONT009|Menu Scribble||
+MAPFONT010|Ship Scribble||
+MAPFONT011|ATV ID Scribble||
+PULDNDB001|Dist/Bearin' Status||
+GPS001|GPS Transfer||
+GPS002|Scrollname||
+GPS003|Choose 'yer Weapon! Color||
+GPS004|Red||
+GPS005|Green||
+GPS006|Black||
+GPS007|White||
+GPS008|Orange||
+GPS009|Blue||
+GPS010|Yellow||
+GPS011|Violet||
+MAPP001|Treasure Map Properties||
+MAPP002|Max   Min    Treasure Map         USGS  Auto||
+MAPP003|Zoom  Zoom  Layer  Fill  DRG   Treasure Map   Path/Scrollname||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Aye||
+MAPP007|Nay||
+MAPP008|Automaps->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
+MAPP011|Auto||
+MAPP012|USGS DRG->||
+TIME001|Day||
+TIME002|Days||
+TIME003|Hour||
+TIME004|Hours||
+TIME005|Minute||
+TIME006|Minutes||
+TIME007|Second||
+TIME008|Seconds||
+CACHE001|Treasure Map now cached||
+CACHE002|Loadin' Cached Treasure Map||
+CACHE003|Treasure Map not found 'n cache...||
+RANGE001|RANGE SCALE||
+GPSS001|WAAS or PPS||
+GPSS002|DGPS||
+GPSS003|Valid SPS||
+GPSS004|Invalid||
+GPSS005|Sats/Gander||
+GPSS006|Fix||
+GPSS007|!GPS data be older than 30 seconds!||
+GPSS008|Simulatin'||
+GPSS009|Manual||
+GPSS010|Estimated||
+GPSS011|Float RTK||
+GPSS012|RTK||
+CADPUD001|Area Object||
+CADPUD002|Area Label:||
+CADPUD003|Comment:||
+CADPUD004|Probability (%):||
+CADPUD005|Aye||
+CADPUD006|CAD Dialog||
+CADPUD007|Show/Edit Details||
+CADPUD008|Nay||
+CADPUD009|Delete CAD objects?||
+CADPUD010|Delete All||
+CADPUD011|Delete Choose 'yer Weapon!ed||
+CADPUD012|Solid||
+CADPUD013|Dashed||
+CADPUD014|Double Dash||
+MDATA001|HMS XASTIR Treasure Map o' %s (upper left) t' %s (lower right).  UTM %d m grid, %s datum. ||
+MDATA002|HMS XASTIR Treasure Map o' %s (upper left) t' %s %s (lower right).  Lat/Long grid, %s datum.||
+MDATA003|HMS XASTIR Treasure Map o' %s (upper left) t' %s (lower right).  UTM zones, %s datum.||
+XADBMST001|MySQL (lat/long)||
+XADBMST002|Postgreql with Postgis||
+XADBMST003|MySQL (spatial)||
+XASCHEMA01|HMS Xastir Simple Schema||
+XASCHEMA02|HMS Xastir CAD Schema||
+XASCHEMA03|HMS Xastir full Schema||
+XASCHEMA04|APRSWorld Schema||
