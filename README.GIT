@@ -87,6 +87,22 @@ USERS:
         ./update-xastir
 
 
+   PLEASE NOTE: Bootstrap.sh is used by both methods above, even
+   "update-xastir", which is simply a script that performs all the
+   steps listed explicitly earlier.
+
+   The bootstrap.sh script is what creates the configure script.
+   Running bootstrap.sh requires having autoconf and automake
+   installed, and it will fail if these are not installed.  If
+   bootstrap.sh fails, configure won't exist.  If bootstrap.sh fails,
+   stop, fix the problem and try again.  There is no point continuing
+   if bootstrap.sh gives you error messages about programs not being
+   found (aclocal, autoconf, automake).
+
+   This is a common problem reported to the Xastir team, and its solution
+   is always the same:  install all prerequisite tools before trying to
+   build Xastir.
+
 DEVELOPERS:
 -----------
 
