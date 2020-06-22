@@ -198,6 +198,7 @@ typedef struct _pipe_object
 } pipe_object;
 
 
+pid_t parent_pid;
 pipe_object *pipe_head = NULL;
 //int master_fd = -1; // Start with an invalid value
 
@@ -1538,11 +1539,22 @@ void UDP_Server(int UNUSED(argc), char * UNUSED(argv[]), char * UNUSED(envp[]) )
 
   while (1)
   {
-    rc = poll(polls, nsock, -1); // Wait for data
+    rc = poll(polls, nsock, 5000); // Wait for data
     if(rc == -1)
     {
       fprintf(stderr, "x_spider: UDP poll() returned error %d: %s.\n",
               errno, strerror(errno));
+      continue;
+    }
+    else if (rc == 0)
+    {
+      // Timeout, check if parent is still alive
+      rc = kill(parent_pid, 0);
+      if(rc == -1 && errno == ESRCH)
+      {
+        // Parent died, exit
+        return;
+      }
       continue;
     }
 
@@ -1948,6 +1960,8 @@ int Fork_UDP_server(int argc, char *argv[], char *envp[])
     // restart() on SIGHUP
     (void) signal(SIGHUP,SIG_DFL);
 
+    // Store parent pid
+    parent_pid = getppid();
 
     // Change the name of the new child process.  So far this
     // only works for "ps" listings, not for "top".  This code
