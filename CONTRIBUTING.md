@@ -125,14 +125,18 @@ In a (rather large) nutshell this process goes like this:
       cd Xastir
 
   The result of this step is that you will have a primary remote
-  named "origin" that points at your forked repository.
+  named "origin" that points at your forked repository.  It will also have
+  checked out the default branch, which in the case of the Xastir repo
+  is just the "master" branch.
 
 * Add the official repo as a second remote called "upstream":
 
       git remote add upstream https://github.com/Xastir/Xastir.git
 
   Now your local repo knows about two remote repos -- yours, and the official
-  project repo.
+  project repo.  Now make git sync to this remote, too:
+
+      git fetch upstream
 
 * Create a topic branch to work on:
 
