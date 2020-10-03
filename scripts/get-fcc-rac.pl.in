@@ -78,7 +78,7 @@ my $file2 = "EN.dat";
 print STDERR "*********************************\n";
 print STDERR "*** Fetching the FCC database ***\n";
 print STDERR "*********************************\n";
-`wget -c http://wireless.fcc.gov/uls/data/complete/$file`;
+`wget -c ftp://wirelessftp.fcc.gov/pub/uls/complete/$file`;
 
 if (-e $file && -r $file && -f $file) {
 
