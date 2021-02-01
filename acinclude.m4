@@ -845,7 +845,11 @@ AC_PREPROC_IFELSE(
   # Don't add to $LIBS permanently.
   ac_save_LIBS="$LIBS"
   LIBS="-l$xm_direct_test_library $LIBS"
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[${xm_direct_test_function}()]])],
+AC_LINK_IFELSE([AC_LANG_PROGRAM([
+  [#include <$xm_direct_test_include>
+   #include <X11/Xlib.h>
+     ]],
+  [[Display *foobar; ${xm_direct_test_function}(foobar)]])],
  [
   LIBS="$ac_save_LIBS"
   # We can link Motif programs with no special library path.
