@@ -171,9 +171,7 @@ matrix:
             - shapelib
             - wget
 #            - mysql
-# This update:true can help when homebrew is really outdated, but it can
-# dramatically increase build time!
-#          update: true
+          update: true
 
 
 
