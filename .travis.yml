@@ -143,7 +143,7 @@ matrix:
 
     - os: osx
       name: "OSX semi-light w/GraphicsMagick"
-      osx_image: xcode10.2
+      osx_image: xcode12.2
       script:
         - ./bootstrap.sh
         - ./configure CPPFLAGS="-I/usr/include/geotiff"
@@ -171,7 +171,7 @@ matrix:
             - shapelib
             - wget
 #            - mysql
-          update: true
+#          update: true
 
 
 
