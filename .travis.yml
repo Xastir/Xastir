@@ -80,6 +80,51 @@ matrix:
 
 
     - os: linux
+      dist: focal
+      name: "Ubuntu-20.04LTS gcc full-featured w/GraphicsMagick"
+      env:
+         - CFLAGS="${CFLAGS} -Wall -O2 -Wformat-truncation=2 -Wstringop-truncation -Wextra"
+      before_script:
+        - export CC="gcc"
+        - echo ${CC}
+        - ${CC} --version
+      script:
+        - ./bootstrap.sh
+        - ./configure CPPFLAGS="-I/usr/include/geotiff"
+        - make
+        - sudo make install
+        - cd Davis
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+        - cd ../LaCrosse
+        - ./bootstrap.sh
+        - ./configure
+        - make
+        - sudo make install
+      addons:
+        apt:
+          packages:
+            - graphicsmagick
+            - libmotif-dev
+            - libcurl4-openssl-dev
+            - libpcre3-dev
+            - libproj-dev
+            - libdb5.3-dev
+            - libax25-dev
+            - shapelib
+            - libshp-dev
+            - festival
+            - festival-dev
+            - libgeotiff-dev
+            - libgraphicsmagick1-dev
+            - gpsman
+            - gpsmanshp
+            - libwebp-dev
+            - libxpm-dev
+
+    - os: linux
       dist: bionic
       name: "Ubuntu-18.04LTS gcc-9 full-featured w/GraphicsMagick"
       env:
