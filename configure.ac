@@ -353,14 +353,18 @@ AC_CHECK_FUNCS([strndup])
 #this is also a recent extension that should not be counted on
 AC_CHECK_FUNCS([roundf])
  
-# Check for libproj (need to do this before test for shapelib, because
-# the shapelib test asks about "use_proj"
+# Check for libproj (need to do this before test for geotiff, which is the
+# only thing we have that uses proj
+
 use_proj=yes
 AC_ARG_WITH(libproj,[  --without-libproj         Disable libproj features.],use_proj=$withval)
 if test "${use_proj}" = "yes"; then
   use_proj=no
-  AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
-    AC_DEFINE(HAVE_PROJ, 1, Define to 1 if you have the `libproj' library (-lproj). )
+  AC_CHECK_LIB([proj], [proj_create_crs_to_crs], [use_proj=yes LIBS="$LIBS -lproj"
+    AC_DEFINE(HAVE_PROJ, 1, Define to 1 if you have the `libproj' library (-lproj). )],
+    [  AC_CHECK_LIB([proj], [pj_init], [use_proj=yes LIBS="$LIBS -lproj"
+    AC_DEFINE(HAVE_PROJ, 1, Define to 1 if you have the `libproj' library (-lproj). )])]
+
   )
 fi
 
@@ -368,9 +372,6 @@ fi
 # Check for Shapelib
 use_shapelib=yes
 shapelib_desired=yes
-# This symbol will be blank if the proj library hasn't been found, and will
-# have the three programs that need proj if it has
-CONTSHP=""
 AC_ARG_WITH(shapelib,[  --without-shapelib        Disable shapelib features.],shapelib_desired=$withval)
 if test "${shapelib_desired}" = "no"; then
   use_shapelib=no
