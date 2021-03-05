@@ -21133,20 +21133,6 @@ void relay_digipeat(char *call, char *path, char *info, int port)
                       (unsigned char *)info,
                       strlen(info));
   }
-
-
-  //WE7U
-  sprintf(small_string,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
-          port, call, destination, new_path, info);
-  strncat(big_string,
-          small_string,
-          sizeof(big_string) - 1 - strlen(big_string));
-  //fprintf(stderr,"%s",big_string);
-
-
-  // Example packet:
-  //K7FZO>APW251,SEATAC*,WIDE4-1:=4728.00N/12140.83W;PHG3030/Middle Fork Snoqualmie River -251-<630>
-
 }
 
 
