@@ -20804,11 +20804,6 @@ void relay_digipeat(char *call, char *path, char *info, int port)
 
   char temp_string[MAX_LINE_SIZE+1];
 
-  // These strings are debugging tools
-  char small_string[200];
-  char big_string[2000];
-
-
   // Check whether transmits are disabled globally
   if (transmit_disable)
   {
@@ -20839,10 +20834,6 @@ void relay_digipeat(char *call, char *path, char *info, int port)
   {
     return;
   }
-
-
-  sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %s\n\tinfo: %s\n",
-          port, call, path, info);
 
 
   // Check to see if this is my own transmitted packet (in some
