@@ -98,6 +98,7 @@ int try_exchange(struct addrinfo *addr, char *buffer, int UNUSED(buflen) )
   }
 
   // Response should be waiting, get it.
+  length = sizeof(from);
   n = recvfrom(sockfd, buffer, 256, 0, (struct sockaddr *)&from, &length);
   if (n < 0)
   {
