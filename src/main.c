@@ -1,4 +1,4 @@
-/*
+//*
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
@@ -13439,7 +13439,6 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
             // Set appropriate flags and remove the prefixes if found.
             if (strncmp(line, "TO_INET,", 8) == 0)
             {
-              fprintf(stderr,"Xastir received UDP packet with \"TO_INET,\" string\n");
               line_offset += 8;
 //
 // "TO_INET," found.
@@ -13464,7 +13463,6 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
               char *path0 = NULL;
               char *info0 = NULL;
 
-              fprintf(stderr,"Xastir received UDP packet without \"TO_INET,\" string\n");
 
               path0 = strtok(line,":");   // Pointer to start of path
               info0 = strtok(NULL,"");    // Pointer to information field
