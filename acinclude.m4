@@ -94,8 +94,11 @@ done
 AC_MSG_CHECKING([whether compiler accepts -Wno-unused-parameter])
 save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS -Wno-unused-parameter"
-AC_TRY_COMPILE([] ,[int i;],[AC_MSG_RESULT([yes])] ,
-[AC_MSG_RESULT([no, using -Wno-unused]); CFLAGS="$save_CFLAGS -Wno-unused"])
+AC_COMPILE_IFELSE(
+ [AC_LANG_PROGRAM([[]],
+                  [[int i;]])],
+ [AC_MSG_RESULT([yes])],
+ [AC_MSG_RESULT([no, using -Wno-unused]); CFLAGS="$save_CFLAGS -Wno-unused"])
 
 # end gcc-specific checks
 fi
@@ -567,8 +570,7 @@ dnl http://www.gnu.org/software/ac-archive/htmldoc/acx_pthread.html
 dnl
 AC_DEFUN([ACX_PTHREAD], [
 AC_REQUIRE([AC_CANONICAL_HOST])
-AC_LANG_SAVE
-AC_LANG_C
+AC_LANG_PUSH([C])
 acx_pthread_ok=no
 
 # We used to check for pthread.h first, but this fails if pthread.h
@@ -671,11 +673,13 @@ for flag in $acx_pthread_flags; do
         # pthread_cleanup_push because it is one of the few pthread
         # functions on Solaris that doesn't have a non-functional libc stub.
         # We try pthread_create on general principles.
-        AC_TRY_LINK([#include <pthread.h>],
-                    [pthread_t th; pthread_join(th, 0);
-                     pthread_attr_init(0); pthread_cleanup_push(0, 0);
-                     pthread_create(0,0,0,0); pthread_cleanup_pop(0); ],
-                    [acx_pthread_ok=yes])
+        AC_LINK_IFELSE(
+          [AC_LANG_PROGRAM([[#include <pthread.h>]],
+             [[pthread_t th; pthread_join(th, 0);
+               pthread_attr_init(0); pthread_cleanup_push(0, 0);
+               pthread_create(0,0,0,0); pthread_cleanup_pop(0);]])],
+          [acx_pthread_ok=yes],
+          [acx_pthread_ok=no])
 
         LIBS="$save_LIBS"
         CFLAGS="$save_CFLAGS"
@@ -700,13 +704,17 @@ if test "x$acx_pthread_ok" = xyes; then
         # Detect AIX lossage: threads are created detached by default
         # and the JOINABLE attribute has a nonstandard name (UNDETACHED).
         AC_MSG_CHECKING([for joinable pthread attribute])
-        AC_TRY_LINK([#include <pthread.h>],
-                    [int attr=PTHREAD_CREATE_JOINABLE;],
-                    ok=PTHREAD_CREATE_JOINABLE, ok=unknown)
+        AC_LINK_IFELSE(
+          [AC_LANG_PROGRAM([[#include <pthread.h>]],
+             [[int attr=PTHREAD_CREATE_JOINABLE;]])],
+          [ok=PTHREAD_CREATE_JOINABLE],
+          [ok=unknown])
         if test x"$ok" = xunknown; then
-                AC_TRY_LINK([#include <pthread.h>],
-                            [int attr=PTHREAD_CREATE_UNDETACHED;],
-                            ok=PTHREAD_CREATE_UNDETACHED, ok=unknown)
+                AC_LINK_IFELSE(
+                  [AC_LANG_PROGRAM([[#include <pthread.h>]],
+                     [[int attr=PTHREAD_CREATE_UNDETACHED;]])],
+                  [ok=PTHREAD_CREATE_UNDETACHED],
+                  [ok=unknown])
         fi
         if test x"$ok" != xPTHREAD_CREATE_JOINABLE; then
                 AC_DEFINE(PTHREAD_CREATE_JOINABLE, $ok,
@@ -750,7 +758,7 @@ else
         acx_pthread_ok=no
         $2
 fi
-AC_LANG_RESTORE
+AC_LANG_POP([C])
 ])dnl ACX_PTHREAD
 
 
@@ -988,12 +996,12 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
         for dbname in db-5.3 db5.3 db53 db-5.2 db5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
-	    AC_TRY_LINK(
-            [#include <db.h>],
-	    [db_create(NULL, NULL, 0);],
-	    [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM([[#include <db.h>]],
+           [[db_create(NULL, NULL, 0);]])],
+        [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
                 BDB_LIB_FOUND="-l$dbname"],
-            dblib="no")
+        [dblib="no"])
 #         STOP if we find one.  Otherwise we'll keep stepping through the 
 #         list and resetting dblib to "no" over and over.
           if test $dblib = "berkeley" ; then
@@ -1002,16 +1010,6 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
           done
         AC_MSG_RESULT([$BDB_LIB_FOUND])
 
-# Commented out because the map_cache code is not actually set up to use
-# db_open instead of db_create.  Probing in this way could actually be 
-# dangerous.
-#        if test "$dblib" = "no"; then
-#	    LIBS="$saved_LIBS -ldb"
-#	    AC_TRY_LINK([#include <db.h>],
-#	    [db_open(NULL, 0, 0, 0, NULL, NULL, NULL);],
-#	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
-#            dblib="no")
-#        fi
 	LIBS=$saved_LIBS
 
 	LDFLAGS=$BDB_SAVE_LDFLAGS

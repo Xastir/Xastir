@@ -27,7 +27,7 @@ AM_INIT_AUTOMAKE
 #########################################################################
 
 
-AC_PREREQ(2.53)
+AC_PREREQ(2.60)
 
 AC_CONFIG_SRCDIR([src/xastir.h])
 #AM_CONFIG_HEADER(config.h)
@@ -47,7 +47,11 @@ AC_CANONICAL_HOST
 
 # Define _GNU_SOURCE if appropriate
 # doesn't work with older (heh) autoconfs
-AC_GNU_SOURCE
+#  This macro is now obsolete as of autoconf 2.60 and should no longer
+#  be used: AC_GNU_SOURCE
+# autoconf 2.60 was released in 2006, so it should be safe to assume all
+# users have at least this version by now.
+AC_USE_SYSTEM_EXTENSIONS(_GNU_SOURCE)
 
 # Checks for programs.
 AC_PROG_CC
@@ -642,11 +646,13 @@ fi
 # Henk de Groot)
 save_LDFLAGS="$LDFLAGS"
 LDFLAGS="-Wl,--no-keep-memory $LDFLAGS"
-AC_TRY_LINK([#include <sys/types.h>],
-  [/* Stupid useless test for linker flags */
-   exit(0);],
-  xa_cv_no_keep_memory=yes,
-  xa_cv_no_keep_memory=no)
+AC_LINK_IFELSE(
+ [AC_LANG_PROGRAM([[#include <sys/types.h>]],
+                  [[/* Stupid useless test for linker flags */
+                     exit(0);]])],
+ [xa_cv_no_keep_memory=yes],
+ [xa_cv_no_keep_memory=no])
+
 if test "${xa_cv_no_keep_memory}" = "no"; then 
   LDFLAGS="$save_LDFLAGS"
 fi
