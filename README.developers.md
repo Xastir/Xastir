@@ -115,7 +115,7 @@ script (and to have automake and autoconf installed).
       cd ~/src
       tar xzf Xastir-Release-X.Y.Z.tar.gz
       cd Xastir-Release-X.Y.Z
-      ./bootstrap
+      ./bootstrap.sh
       mkdir build
       cd build
       ../configure [options]
