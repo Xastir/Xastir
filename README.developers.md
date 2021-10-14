@@ -35,7 +35,6 @@ script (and to have automake and autoconf installed).
 ### Stable release process in a nutshell
 
 - Get master ready for a release.
-- Create a release branch and switch to it.
 - Update version number.
 - Test everything.
 - Tag the repo.
@@ -104,8 +103,8 @@ script (and to have automake and autoconf installed).
 
 - At this point, you are almost done, but all of your changes are only
   in your local repository clone.  Double check that it really works
-  by creating a tar file of your branch, then try to build it
-  somewhere other than in your git checkout directory:
+  by creating a tar file of your code from the tagged state, then try
+  to build it somewhere other than in your git checkout directory:
 
 
       git archive --format=tar.gz --prefix=Xastir-Release-X.Y.Z/ Release-X.Y.Z > ~/src/Xastir-Release-X.Y.Z.tar.gz
