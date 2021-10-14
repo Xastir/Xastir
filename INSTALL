@@ -20,8 +20,15 @@ you to easily keep up to date with the developers.
 
   cd Xastir
 
-If you used Git to fetch the sources, you need one more step here
-before you run the following steps:  "./bootstrap.sh"
+  The first time you do this you need to create the "configure"
+  script.  To do this run:
+
+  ./bootstrap.sh
+
+  Note that bootstrap requires that you have GNU Autoconf and Automake
+  installed on your system.  Any error messages from bootstrap mean
+  that something is missing and you will be unable to proceed, so fix
+  those problems first.
 
 Then create a build directory, configure and build the code:
 
@@ -31,7 +38,7 @@ Then create a build directory, configure and build the code:
   make
   su (become the root user)
   make install (make install-strip can be used after the first time)
-  chmod 4555 /usr/local/bin/xastir (only if you use kernel ax.25, see below) 
+  chmod 4555 /usr/local/bin/xastir (only if you use kernel ax.25, see below)
   exit (from root)
 
 3) Xastir should be installed in /usr/local/bin (the default on most
