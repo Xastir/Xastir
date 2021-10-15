@@ -55,8 +55,9 @@ script (and to have automake and autoconf installed).
 - By our long-standing convention, stable releases are always even
   numbers in the last field of the release number, and odd numbers
   mean "this is a development version."  So whatever version number
-  appears in configure.ac on the master branch is going to odd at the
-  moment, and you're going to pick X.Y.Z so that the new Z is even.
+  appears in configure.ac on the master branch is going to be odd at
+  the moment, and you're going to pick X.Y.Z so that the new Z is
+  even.
 
 - Change the version number in configure.ac to X.Y.Z.  Grep around the
   code and remember to fix any other places where the old version
