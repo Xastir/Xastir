@@ -11,7 +11,7 @@ SHASTRING=""
 cd $SRCDIR
 if [ -e .git ]
 then
-    GITSHA=`git log --pretty=format:%h -1`
+    GITSHA=`git describe --dirty`
     SHASTRING=" (${GITSHA})"
 fi
 echo $SHASTRING
