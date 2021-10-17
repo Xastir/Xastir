@@ -187,14 +187,14 @@ reside.  I usually do this:
     tar xzvf filename       # Un-archive the sources
 
 That last step will create a directory called
-Xastir-Xastir-Release-<release number> underneath the first one, so
+Xastir-Release-<release number> underneath the first one, so
 your full path might be something like (starting at your home
-directory): ~/src/xastir/Xastir-Xastir-Release-2.1.0
+directory): ~/src/xastir/astir-Release-2.1.0
 
 The path just listed is where you'll go in order to run the
 configure and make commands listed below.
 
-    cd  ~/src/xastir/Xastir-Xastir-Release-2.1.0
+    cd  ~/src/xastir/Xastir-Release-2.1.0
 
 from an xterm window should take you there.
 
@@ -217,6 +217,8 @@ list of a few items you'll need to have installed.  Look for them in
 the development tools sections on your Linux distribution:
 
 
+    autoconf
+    automake
     bash
     binutils
     gcc
@@ -248,8 +250,6 @@ be needed later, install these as well:
     patch
     diffutils
     perl
-    autoconf
-    automake
     less
     bzip2
     curl
@@ -292,20 +292,27 @@ to list some of it's dependencies (ImageMagick is known for that).
 In that case you may have to rely on the compiler to tell you what
 is missing, then go back and re-install a package or two.
 
+Now it is necessary to create the "configure" script that will be needed
+to configure Xastir for your system.  In versions prior to release 2.1.8,
+this script was included in the Xastir tarballs, but it is no longer included.
+
+   cd ~/src/xastir/Xastir-Release-2.1.0/
+   ./bootstrap.sh
+
 You will then create a "build" directory in which to run the
 compilation of Xastir, and run Xastir's configure script in that
 directory.  In the instructions below we describe making this build
 directory inside the Xastir source tree, so it would be
 
-    mkdir -p ~/src/xastir/Xastir-Xastir-Release-2.1.0/build
-    cd  ~/src/xastir/Xastir-Xastir-Release-2.1.0/build
+    mkdir -p ~/src/xastir/Xastir-Release-2.1.0/build
+    cd  ~/src/xastir/Xastir-Release-2.1.0/build
     ../configure
 
 If you do this, then the simplest path to Xastir's configure script is
 just "../configure".  You could create this build directory anywhere,
 though, so long as you remember to replace "../configure" with the
 full path to Xastir's script, e.g,
-~/src/xastir/Xastir-Xastir-Release-2.1.0/configure.
+~/src/xastir/Xastir-Release-2.1.0/configure.
 
 When you run the "../configure" step from the "build" directory, the
 script will attempt to figure out what facilities are available that
