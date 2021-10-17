@@ -27,10 +27,9 @@ because most package management systems require that a stable version
 of the code be downloadable, and don't support pulling
 versions-of-the-day out of source code management systems.
 
-It is also necessary that the tarballs associated with a release be
-complete and ready to build, which means they must contain the files
-that "bootstrap.sh" creates and not require the user to run this
-script (and to have automake and autoconf installed).
+Beginning with release 2.1.8 we stopped providing "configure" scripts
+and all the droppings from "bootstrap.sh" in release tarballs, and all
+users must now use "bootstrap.sh" as a first step in building Xastir.
 
 ### Stable release process in a nutshell
 
