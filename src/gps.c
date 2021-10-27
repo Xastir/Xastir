@@ -986,16 +986,17 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign)
   //fprintf(stderr,"%s\n",out_string2);
 }
 
-// Test if this is a GGA string, irrespective of what constellation it
-// might be for.  This should allow us to support GPS, GLONASS, Gallileo,
-// Beidou, or GNSS receivers, and multi-constellation receivers.
+// Test if this is a GGA string, irrespective of what talker produced
+// it.  This should allow us to support GPS, GLONASS, Gallileo,
+// Beidou, or GNSS receivers, and multi-constellation receivers ($GP,
+// $GN, etc.), but also other talkers like Integrated Instrumentation
+// ($II).
 int isGGA(char *gps_line_data)
 {
   int retval;
   retval = (strncmp(gps_line_data,"$",1)==0);
   retval = retval && ((strlen(gps_line_data)>7)
                       && strncmp(&(gps_line_data[3]),"GGA,",4)==0);
-  retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
   return (retval);
 }
 
@@ -1006,6 +1007,5 @@ int isRMC(char *gps_line_data)
   retval = (strncmp(gps_line_data,"$",1)==0);
   retval = retval && ((strlen(gps_line_data)>7)
                       && strncmp(&(gps_line_data[3]),"RMC,",4)==0);
-  retval = retval && (strchr("PNALB",gps_line_data[2])!=0);
   return (retval);
 }
