@@ -3455,6 +3455,7 @@ int net_init(int port)
   ok = -1;
 
 
+  memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = 0;
