@@ -201,10 +201,10 @@ if test "$gv" != "no"; then
   # Test gv version
   AC_MSG_CHECKING([gv version])
   gv_new="no";
-  gv_version=`gv --version 2>&1`
+  gv_version=`gv --version`
   gv_test=`echo $gv_version | cut -d ' ' -f 1`
   if test "$gv_test" != "gv"; then
-    gv_version=`gv -v 2>&1`
+    gv_version=`gv -v`
   fi
   gv_test=`echo $gv_version | cut -d ' ' -f 1`
   if test "$gv_test" != "gv"; then
