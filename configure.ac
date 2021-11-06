@@ -805,7 +805,7 @@ echo "$ILIBS" >summary.log
 
 
 # 
-# Remove extraneous spaces from output variables (asthetic) 
+# Remove extraneous spaces from output variables (aesthetic) 
 # 
 ILIBS=`echo $ILIBS | sed -e 's/  */ /g'` 
 X_CFLAGS=`echo $X_CFLAGS | sed -e 's/  */ /g'` 

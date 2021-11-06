@@ -678,7 +678,7 @@ void Station_List_fill(int type, int new_offset)
     {
       // if database changed, adjust first entry accordingly
       to_move = new_offset - cur_offset;
-      while (to_move > 0)                                 // move down, if neccessary
+      while (to_move > 0)                                 // move down, if necessary
       {
         if (p_station != 0)
         {
@@ -686,7 +686,7 @@ void Station_List_fill(int type, int new_offset)
         }
         to_move--;
       }
-      while (to_move < 0)                                 // move up, if neccessary
+      while (to_move < 0)                                 // move up, if necessary
       {
         if (p_station != 0)
         {

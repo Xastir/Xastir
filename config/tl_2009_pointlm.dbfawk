@@ -122,7 +122,7 @@ display_level=l_county; symbol="\s@"; next}
 display_level=l_town; symbol="/K"; next}
 /^MTFCC=K2561/ { # golf course; redundant w/ arealm
 display_level=0; next; }
-/^MTFCC=K2582/ { # cemetaries
+/^MTFCC=K2582/ { # cemeteries
 display_level=0; next}
 /^MTFCC=K3544/ { # religious
 display_level=0; next}

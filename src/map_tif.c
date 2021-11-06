@@ -100,7 +100,7 @@ extern int mag;
  * get_alt_fgd_path()
  *
  * Used to search for .fgd in ../metadata subdir, as it is
- * layed out on a USGS CDROM.
+ * laid out on a USGS CDROM.
  **********************************************************/
 void get_alt_fgd_path(char *fullpath, int fullpath_length)
 {

@@ -37,7 +37,7 @@ extern void map_cache_init(void);
 // Saves file and puts entries into cache db
 extern int map_cache_put( char * map_cache_url, char * map_cache_file );
 
-// Retrieves entry from cache db - checks existance of file
+// Retrieves entry from cache db - checks existence of file
 extern int map_cache_get( char * map_cache_url, char * map_cache_file );
 
 // Deletes cached map file and the entry from cache

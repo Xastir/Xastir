@@ -79,7 +79,7 @@
 // with hundreds of counties across many states.  I have a prototye of a
 // polygon generator - but that is a whole other can of worms
 //
-// WARN - warning - Severe or dangerous weather is occuring or is about to
+// WARN - warning - Severe or dangerous weather is occurring or is about to
 // occur in a geographical area.  This we do a pretty good job on output.
 //
 // ADVIS - advisory - this can be trivial all the way to a tornado report.
@@ -419,7 +419,7 @@ int wx_alert_keys_equal(void *key1, void *key2)
   // and what the results were of the match.  If different
   // unique_string's hash to the same value, we run through this
   // compare once for each already-inserted record that also has
-  // the same hash vaue.
+  // the same hash value.
   //    fprintf(stderr,"Comparing %s to %s\t",(char *)key1,(char *)key2);
 
   if (strlen((char *)t1->unique_string) == strlen((char *)t2->unique_string)

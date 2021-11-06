@@ -64,7 +64,7 @@ libdb (4.0 or newer)            Optional  Internet map caching (fast!)
 libpq                           Experimental Persistent data with Postgis
 libmysqlclient                  Experimental Persistent data with MySQL
 
-Library/Option Heirarchy:
+Library/Option Hierarchy:
 -------------------------
 
     ImageMagick (Usually requires additional libraries)
@@ -932,7 +932,7 @@ First Time Install:
 
       You can configure the database interface to read station from the 
       database on startup and to save stations as they are heard to the
-      database.  This provides persistance of station data between
+      database.  This provides persistence of station data between
       xastir sessions.
 
       MySQL:
@@ -953,7 +953,7 @@ First Time Install:
 
       You can configure the database interface to read station from the 
       database on startup and to save stations as they are heard to the
-      database.  This provides persistance of station data between
+      database.  This provides persistence of station data between
       xastir sessions.
 
       If you have one or more spatial database interfaces set to activate on 
@@ -961,7 +961,7 @@ First Time Install:
       normally [e.g. Station data with unusual characters could concevable 
       cause xastir to segfault when retrieved from the database, and 
       interactions between multiple databases that are both writing are 
-      reading station data at the same time from each other could potentally 
+      reading station data at the same time from each other could potentially 
       be unstable], you should be able to start xastir by editing the 
       device configuration in ~/.xastir/config/xastir.cnf
       Look for DEVICEn_TYPE:14 lines (where n is the interface number, between 0

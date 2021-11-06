@@ -98,7 +98,7 @@ https://github.com/Xastir/Xastir, and the wiki is still at http://xastir.org.
 
 HELP-INDEX>What's new in Xastir 2.0.1
 (Changes between 1.7 and 2.0.0 were never recorded here,this block
-describes a few of the changes from 1.9.8 to 2.0.0 that occured right
+describes a few of the changes from 1.9.8 to 2.0.0 that occurred right
 before release of 2.0.0, but otherwise documents only changes from 2.0.0 
 to 2.0.1)
 
@@ -569,7 +569,7 @@ character sent to an attached TNC.
 
 New Track Interval (degrees) specifies distance in lat/long degrees at which
 a new track segment is started.   Caution: setting new track interval to 0
-degreees will turn off the display of all tracks.
+degrees will turn off the display of all tracks.
 
 Snapshot Interval (minutes) specifies how often snapshot files will be
 written if either File->PNG Snapshots or File->KML Snapshots are selected.
@@ -853,7 +853,7 @@ the first time you select Staging from the Predefined objects menu, an
 object named Staging will be created.  If you then create an additional 
 Staging object from the Predefined objects menu, it will be named Staging2. 
 Heli- (and user defined objects ending in a "-") will be created as Heli-1,
-Heli-2, Heli-3, etc.  If you have recieved one of these standard objects that 
+Heli-2, Heli-3, etc.  If you have received one of these standard objects that 
 was transmitted by another station, your first object will be named with an 
 appended number.  You may wish to assign a tactical call to your object in 
 this situation (for example, replacing ICP2 with a tactical call).  
@@ -984,7 +984,7 @@ This will change the cursor to a pencil.  Begin drawing a polygon by
 clicking with the middle mouse button (or both buttons on a two button mouse,
 for which you will need to have three button mouse emulation enabled).  This 
 places a point on the map.  Now move the cursor somewhere else (the normal
-left click/right click navigation and zoom functions still work normaly) and
+left click/right click navigation and zoom functions still work normally) and
 click the middle mouse button again.  This draws a line between the two points
 you have selected.  Middle click again to draw another line segment and keep 
 repeating until you have drawn all except for the closing line segment of your
@@ -2321,7 +2321,7 @@ Gpsd for further information on the configuration of these devices.
 This checkbox controls whether Xastir sends a Control-E to the TNC every time
 it needs GPS data.
 
-Some TNCs that support a GPS on an auxilliary port require that Xastir
+Some TNCs that support a GPS on an auxiliary port require that Xastir
 send a Control-E to the TNC in order to get the GPS data each time it
 is needed.  Devices in this class include the Kantronics KPC-3+.
 

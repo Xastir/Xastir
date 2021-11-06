@@ -49,7 +49,7 @@ if (length($a) > 0 && $a =~ m/-split/) {
   $do_split = 1;
 }
 
-# Add these two l ines to show that we translated the file.
+# Add these two lines to show that we translated the file.
 print "# language-ElmerFudd.sys, translated from language-English.sys\n";
 print "# Please do not edit this derived file.\n";
 

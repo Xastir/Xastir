@@ -98,7 +98,7 @@ sub process_rte{
 	}
 	my $aref=$xml->{rte};
 	return unless defined $aref;
-	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+	die "Unexpected reference $aref\n" unless ref($aref) eq  "ARRAY";
 	
 
 	init_shape('rte');
@@ -117,7 +117,7 @@ sub process_rte{
 
 sub do_route{
 	my $rtept_ref=shift;
-	die "do_route Unepected reference $rtept_ref\n" unless ref($rtept_ref) eq "ARRAY";
+	die "do_route Unexpected reference $rtept_ref\n" unless ref($rtept_ref) eq "ARRAY";
 	foreach my $rtept ( @$rtept_ref ){
 		#print "\t\t$rtept->{lon}  $rtept->{lat}  $rtept->{name}->[0] $rtept->{sym}->[0]\n";
 		my $snell=get_snell($rtept);
@@ -138,7 +138,7 @@ sub process_trk{
 	my $aref=$xml->{trk};
 	
 	my $aref=$xml->{trk};
-	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+	die "Unexpected reference $aref\n" unless ref($aref) eq  "ARRAY";
 
 	init_shape('trk');
 	foreach my $tref( @$aref ){
@@ -163,7 +163,7 @@ sub process_trk{
 
 sub do_trk{
 	my $trk_aref=shift;
-	die "Unepected reference $trk_aref\n" unless ref($trk_aref) eq  "ARRAY";
+	die "Unexpected reference $trk_aref\n" unless ref($trk_aref) eq  "ARRAY";
 }
 #################################################################
 ##################### WAYPOINT PROCESSING #######################
@@ -175,7 +175,7 @@ sub process_wpt{
 		return;
 	}
 	my $aref=$xml->{wpt};
-	die "Unepected reference $aref\n" unless ref($aref) eq  "ARRAY";
+	die "Unexpected reference $aref\n" unless ref($aref) eq  "ARRAY";
 	init_shape('wpt');
 	foreach my $wref ( @$aref ){
 		my $snell=get_snell($wref);

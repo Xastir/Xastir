@@ -91,7 +91,7 @@ display_level=128; label_level=64; filled=1; color=115 fill_color=115; fill_styl
 display_level=64; label_level=48; filled=1; fill_color=103; fill_style=2; font_size=0; next; }
 /^MTFCC=K2561/ { # Golf course
 display_level=64; label_level=48; filled=1; color=114 fill_color=100; fill_style=2; label_color=10; font_size=1; next; }
-/^MTFCC=K2582/ { # Cemetary (don't display - overlap w/ pointlm database)
+/^MTFCC=K2582/ { # Cemetery (don't display - overlap w/ pointlm database)
 display_level=0; next; }
 /^MTFCC=K3544/ { # Place of worship (don't display - overlap w/ pointlm database)
 display_level=0; next; }

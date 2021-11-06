@@ -116,7 +116,7 @@ int try_exchange(struct addrinfo *addr, char *buffer, int UNUSED(buflen) )
 #endif
 
 // Loop through the possible addresses for hostname (probably IPv6 and IPv4)
-// Tries until we are successful (get a reponse) or we run out of addresses
+// Tries until we are successful (get a response) or we run out of addresses
 int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
 {
   struct addrinfo hints, *res, *r;

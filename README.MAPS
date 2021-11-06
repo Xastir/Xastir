@@ -194,7 +194,7 @@ Getting Maps and other Data Files for Xastir:
       There are many methods for organizing many maps. Create a map
       hierarchy using something that makes sense to you. The old method of
       creating transparent/filled or raster/vector directories has been
-      superceded by the new map layering features in the Map
+      superseded by the new map layering features in the Map
       Chooser->Properties dialog. It's now suggested that the map layering
       be done there, and the directory layout designed to make it easiest
       for the user to select maps. Perhaps a good start would be:
@@ -280,7 +280,7 @@ Getting Maps and other Data Files for Xastir:
       For Canada there is a country wide set of topographic map images available 
       from the "Department of Natural Resources Geomatics Canada". Running 
       /scripts/toporama250k.pl will pull down 430mb of 1:250k map images 
-      from that departments site. If thats not enough data, running
+      from that departments site. If that's not enough data, running
       /scripts/toporama50k.pl will pull down around 10gigs
 
 **** Note that recent changes at the "Department of Natural Resources Geomatics 
@@ -814,7 +814,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       mrsiddecode can produce GeoTIFF output with the right command line
       options.  There is a Linux version of mrsiddecode, but one user
       has observed that the Windows version running under Wine is a little 
-      more robust.  Your milage may vary.
+      more robust.  Your mileage may vary.
 
       Be warned that MrSID is a very effective compression algorithm, and
       compressed MrSID files of size 5MB could easily decompress into 50MB
@@ -939,7 +939,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       The command 
             rgb2pct.py old.tif new.tif
       can create a single band palette based geotiff from a three band rgb 
-      tif by dithering the colors down to a small pallette.  This last
+      tif by dithering the colors down to a small palette.  This last
       tool requires gdal built with Python support.  See the gdal 
       documentation for these tools for further information.
 

@@ -98,7 +98,7 @@
 // pipe-delimited.
 // These files were originally from geonames.usgs.gov but the format changed
 // on that site from population to elevation and the display of populated sites
-// was severly broken by the new format. The population information should be
+// was severely broken by the new format. The population information should be
 // gathered from census.gov or other locations concerned with population mapping.
 //
 void draw_pop_map (Widget w,

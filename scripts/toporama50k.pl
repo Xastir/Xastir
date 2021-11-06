@@ -35,7 +35,7 @@ use warnings;
 #
 # - "/usr/local/lib/xastir/toporama50k.pl"
 #
-# - The script will create/populate this directory heirarchy:
+# - The script will create/populate this directory hierarchy:
 #   .../maps/toporama/images/
 #   .../maps/toporama/images/b50k/
 #

@@ -3956,7 +3956,7 @@ time_t wx_tx_data1(char *st, int st_size)
 //sprintf(weather->wx_course,"359");          // degrees
 //sprintf(weather->wx_speed,"001");           // mph
 //sprintf(weather->wx_gust,"010");            // mph
-//sprintf(weather->wx_temp,"069");            // Farenheit
+//sprintf(weather->wx_temp,"069");            // Fahrenheit
 
 //if ( strlen(weather->wx_rain_total) == 0)
 //    sprintf(weather->wx_rain_total,"1900.40");

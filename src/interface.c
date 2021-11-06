@@ -2208,7 +2208,7 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int
 
   strncat(buffer, ">", buffer_size - 1 - strlen(buffer));
 
-  /* destination is at the begining of the chain, because it is  */
+  /* destination is at the beginning of the chain, because it is  */
   /* needed so MIC-E packets can be decoded correctly. */
   /* this may be changed in the future but for now leave it here -FG */
   strncat(buffer, (char *)dest, buffer_size - 1 - strlen(buffer));
@@ -7055,7 +7055,7 @@ static char unproto_path_txt[MAX_LINE_SIZE+5];
 // unproto path, we use the unproto path: "WIDE2-2".
 //
 // Input:  Port number
-// Ouput:  String pointer containing unproto path
+// Output:  String pointer containing unproto path
 //
 // WE7U:  Should we check to make sure that there are printable
 // characters in the path?

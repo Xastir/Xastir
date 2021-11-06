@@ -92,7 +92,7 @@
 #define MESSAGE_REMOVE_CYCLE 600    /* check message remove in seconds (every 10 minutes) */
 #define IN_VIEW_MIN         600l    /* margin for off-screen stations, with possible trails on screen, in minutes */
 #define TRAIL_POINT_MARGIN   30l    /* margin for off-screen trails points, for segment to be drawn, in minutes */
-#define TRAIL_MAX_SPEED      900    /* max. acceptible speed for drawing trails, in mph */
+#define TRAIL_MAX_SPEED      900    /* max. acceptable speed for drawing trails, in mph */
 #define MY_TRAIL_COLOR      0x16    /* trail color index reserved for my station */
 #define TRAIL_ECHO_TIME       30    /* check for delayed echos during last 30 minutes */
 /* MY_TRAIL_DIFF_COLOR changed to user configurable my_trail_diff_color  */
@@ -398,7 +398,7 @@ int is_my_object_item(DataRow *p_station)
 
 
 /*
- *  Change map position if neccessary while tracking a station
+ *  Change map position if necessary while tracking a station
  *      we call it with defined station call and position
  */
 int is_tracked_station(char *call_sign)
@@ -2966,7 +2966,7 @@ int ok_to_draw_station(DataRow *p_station)
 
       // Check whether it is a citizen's weather station.
       // Note that a "CW" prefix is Uruguay and "DW" prefix is
-      // Phillipines, so let's be careful how we filter here.
+      // Philippines, so let's be careful how we filter here.
       // All Cititzen's weather stations seen to date have had
       // CW or DW and then four digits.
       if ( (strncasecmp(p_station->call_sign,"CW",2) == 0)
@@ -5970,7 +5970,7 @@ void station_data_fill_in ( Widget w, XtPointer clientData, XtPointer calldata )
                                         p_station->coord_lon,temp1_my_course,sizeof(temp1_my_course));
 
     // n7tap: This is a quick hack to get some more useful values for
-    //        distance to near ojects.
+    //        distance to near objects.
     if (english_units)
     {
       if (value*1.15078 < 0.99)
@@ -6743,7 +6743,7 @@ void Station_data(Widget w, XtPointer clientData, XtPointer calldata)
                                            XmNfontList, fontlist1,
                                            NULL);
 
-      // We need to contruct the "special" finger address.
+      // We need to construct the "special" finger address.
       // We'll use the FROM callsign and the first three chars
       // of the curly-brace portion of the comment field.
       // Callsign in this case is from the "origin" field.
@@ -9432,7 +9432,7 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
     case EXPORT_KML_TRACK:
       // kml format is longitude,latitude,altitude triplets with
       // a comma and no spaces separating elements of the triplet
-      // and a single space seperating sets of triplets in a
+      // and a single space separating sets of triplets in a
       // coordinates element.  Latitude and longitude are
       // both in decimal degrees.
       deg = (float)(lon - 64800000l) / 360000.0;
@@ -9541,7 +9541,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format)
       {
         fprintf(f,"<name>%s</name>\n<description>Object from %s. \n",p_station->call_sign,p_station->origin);
       }
-      // packets recieved %d last heard %s
+      // packets received %d last heard %s
       fprintf(f,langcode("WPUPSTI005"),p_station->num_packets, timestring);
       if (p_station->tactical_call_sign && p_station->tactical_call_sign[0] != '\0')
       {
@@ -9591,7 +9591,7 @@ void exp_trailstation(FILE *f, DataRow *p_station, int export_format)
 
         fprintf(f,"</Placemark>\n");
 
-        // folow with a set of timestamped placemarks for each point on trail
+        // follow with a set of timestamped placemarks for each point on trail
         while (current != NULL)
         {
           lon0   = current->trail_long_pos;                   // Trail segment start
@@ -10536,7 +10536,7 @@ void delete_station_memory(DataRow *p_del)
 /* function add_simple_station()
  * adds an xastir DataRow using station and additional data from a simpleStation
  * record in a SQL database.
- * @param p_new_station Pointer to a DataRow for the new station, probably initalized as DataRow p_new_station = NULL
+ * @param p_new_station Pointer to a DataRow for the new station, probably initialized as DataRow p_new_station = NULL
  * @param station  String pointer for the callsign or object name
  * @param origin   String pointer for the callsign for an object
  * @param symbol   String pointer to an aprs symbol, will take the first character
@@ -10557,7 +10557,7 @@ int add_simple_station(DataRow *p_new_station,char *station, char *origin, char 
 {
   int returnvalue = 0;
   unsigned long x;  // xastir coordinate for longitude
-  unsigned long y;  // xastir coordinate for latitide
+  unsigned long y;  // xastir coordinate for latitude
   float lat;  // latitude converted from retrieved string
   float lon;  // longitude converted from retrieved string
   DataRow *p_time;  // pointer to new station record
@@ -13931,7 +13931,7 @@ void add_comment(DataRow *p_station, char *comment_string)
   (void)remove_trailing_spaces(comment_string);
   //fprintf(stderr,"2Comment: (%s)\n",comment_string);
 
-  ///////TVR DEBUGING RESULTS 28 March 2007:
+  ///////TVR DEBUGGING RESULTS 28 March 2007:
   //NO! DON'T DO THIS --- it breaks multipoint objects!
   //    (void)remove_leading_spaces(comment_string);
   ///////////////////////////////////////////
@@ -15995,7 +15995,7 @@ int data_add(int type,
         }
         if (&connections[ii] != NULL)
         {
-          // Note < 4 is an artificial upper limit that may catch cases where the memmory
+          // Note < 4 is an artificial upper limit that may catch cases where the memory
           // for the connection has been overwritten.
           if (connections[ii].type > 0 && connections[ii].type < 4)
           {
@@ -19307,7 +19307,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
       }
     }
 
-    // Could be response to a query.  Popup a messsage.
+    // Could be response to a query.  Popup a message.
 
     // Check addr for my_call and !third_party, then check later in the
     // packet for my_call if it is a third_party message?  Depends on
@@ -20782,7 +20782,7 @@ int decode_ax25_header(unsigned char *data_string, int *length)
 // digi, and we won't relay the packet.  This probably won't happen
 // much in the real world.
 //
-// We could also do premptive digipeating here and skip over
+// We could also do preemptive digipeating here and skip over
 // callsigns that haven't been digipeated yet.  Should we set the
 // digipeated bits on everything before it?  Probably.  Either that
 // or remove the callsigns ahead of it in the list that weren't
@@ -21036,7 +21036,7 @@ void relay_digipeat(char *call, char *path, char *info, int port)
   // transmit routine so that it'll set the digipeated bit for
   // each callsign that has an asterisk.
 
-  // Contruct the new digi call, with the trailing asterisk
+  // Construct the new digi call, with the trailing asterisk
   xastir_snprintf(new_digi,
                   sizeof(new_digi),
                   "%s*",
@@ -21769,7 +21769,7 @@ int locate_station(Widget w, char *call, int follow_case, int get_match, int cen
     if (position_defined(p_station->coord_lat,p_station->coord_lon,0))
     {
       if (center_map || !position_on_inner_screen(p_station->coord_lat,p_station->coord_lon))
-        // only change map if really neccessary
+        // only change map if really necessary
       {
         set_map_position(w, p_station->coord_lat, p_station->coord_lon);
       }
@@ -21902,7 +21902,7 @@ void search_tracked_station(DataRow **p_tracked)
 
 
 /*
- *  Change map position if neccessary while tracking a station
+ *  Change map position if necessary while tracking a station
  *      we call it with defined station call and position
  */
 void track_station(Widget w, char * UNUSED(call_tracked), DataRow *p_station)

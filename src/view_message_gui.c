@@ -649,7 +649,7 @@ void view_all_messages( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
     n++;
 
     option_box = XmCreateRadioBox(my_form,
-                                  "Vew Messages option box",
+                                  "View Messages option box",
                                   args,
                                   n);
 

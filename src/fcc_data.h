@@ -39,7 +39,7 @@ type_purpose - Indicates the reason why the application was
     G  Add record (internal)
     H  Duplicate license request
     I  Change Issue/Expiration Date
-    J  Supercede
+    J  Supersede
     K  Internal correction code
     L  Delete
     N  Renewal on form 610R

@@ -2,7 +2,7 @@
 News - Updated 29 April 2001
   ------------------------------------------------------------------------
 
-Whats new, first read the following documents:
+What's new, first read the following documents:
 
      INSTALL
      README
@@ -12,11 +12,11 @@ All of these documents combined will fill you in on the latest changes to
 xastir in version 0.4.x.
 
 A lot of things have changed in this version so at a minimum read the
-ChangeLog text file. ChangeLog shows whats been added and fixed along the
+ChangeLog text file. ChangeLog shows what's been added and fixed along the
 way.
 
 This version includes a "first try" at using the GNU Autotools for
-configuration.  These scripts have not been throughly tested on all
+configuration.  These scripts have not been thoroughly tested on all
 platforms.  Any feedback is actively solicited.
 
 This version also includes several additional directories added in

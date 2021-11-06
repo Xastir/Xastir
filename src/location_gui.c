@@ -62,7 +62,7 @@ void location_gui_init(void)
 
 
 /************************************************/
-/* button fuction for last location             */
+/* button function for last location             */
 /************************************************/
 void Last_location(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )
 {

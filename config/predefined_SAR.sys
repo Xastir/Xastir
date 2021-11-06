@@ -15,7 +15,7 @@
 # objects menu, use the Load SAR objects menu options in the Configure
 # defaults dialog (File/Configure/Defaults).
 # 
-# Lines begining with # are comments and will be ignored.
+# Lines beginning with # are comments and will be ignored.
 #
 # Each line contains a tab separated variable and value pair.
 # Each set of lines defines an object as specified on the prepared
