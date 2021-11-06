@@ -68,7 +68,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # A32 - " in tunnel
 # A33 - " underpassing
 # A34 - " with rail line in center
-# A35 - secondary and connection road, state highways, seperated
+# A35 - secondary and connection road, state highways, separated
 # A36 - " in tunnel
 # A37 - " underpassing
 # A38 - " with rail line in center
@@ -205,7 +205,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # F14 - superseded boundary
 # F15 - superseded boundary, corrected
 # F20 - data base topology
-# F21 - automated feature extension to lenghten physical feature
+# F21 - automated feature extension to lengthen physical feature
 # F22 - irregular feature extension, determined manually
 # F23 - closure extension
 # F24 - separation line

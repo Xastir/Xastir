@@ -56,7 +56,7 @@ CREATE TABLE simpleStation (
 );
 
 
--- Example query to retieve symbol as aprsworld icon filename.
+-- Example query to retrieve symbol as aprsworld icon filename.
 -- select count(*), concat(lpad(ascii(aprstype),3,'0'), '_', lpad(ascii(symbol),3,'0'), '.png') from simpleStationSpatial group by aprstype,symbol;
 
 -- *** Permissions ***

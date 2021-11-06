@@ -39,7 +39,7 @@ Copyright (C) 2000-2019 The Xastir Group
     is a major disadvantage to static maps: even slight changes in map
     position requires a new map download.
 
-    Most online maps, includng OSM, use map tiles that follow the "Web
+    Most online maps, including OSM, use map tiles that follow the "Web
     Mercator" projection and tiling scheme. The Web Mercator
     projection was first popularized by Google Maps. It is a modified
     Mercator projection, using a hybrid spheroid/ellipsoid model that

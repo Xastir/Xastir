@@ -261,7 +261,7 @@ int festivalOpen(void)
 
   info->server_fd = festival_socket_open(info->server_host, info->server_port);
 
-  if (info->server_fd == -1)      // Error occured opening socket
+  if (info->server_fd == -1)      // Error occurred opening socket
   {
     //fprintf(stderr,"festivalOpen: Error opening socket\n");
     (void)festivalClose();      // Close, free struct

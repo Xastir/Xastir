@@ -85,7 +85,7 @@ extern float xastirWKTPointToLongitude(char *wkt);
 #define XASTIR_SCHEMA_SIMPLE 1     // simple station table only
 #define XASTIR_SCHEMA_CAD 2        // simple station table and cad objects
 #define XASTIR_SCHEMA_COMPLEX 3    // full aprs concept support
-#define XASTIR_SCHEMA_APRSWORLD 4  // aprs world implementaiton
+#define XASTIR_SCHEMA_APRSWORLD 4  // aprs world implementation
 
 #define MAX_XASTIR_SCHEMA 4  // largest value for xastir_schema_ 
 // used in load_data_or_default
@@ -120,7 +120,7 @@ typedef struct {
 typedef struct
 {
   int type;          // type of dbms (postgresql, mysql, etc, redundant from descriptor->type)
-  ioparam *descriptor;  // connection parameters used to establish this connnection
+  ioparam *descriptor;  // connection parameters used to establish this connection
   // stored in ioparam struct defined in interface.h
 #ifdef HAVE_MYSQL
   MYSQL mhandle;   // mysql connection

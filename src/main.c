@@ -244,7 +244,7 @@ char *xastir_version=VERSION;
 // where this constant was hard coded, making it difficult to change the
 // map properties line format without breaking something.  Now it can live
 // in one place that needs to be updated when the properties line is changed.
-// At the time of writing, the properties line had the followign format:
+// At the time of writing, the properties line had the following format:
 // min max lyr fil drg amap name
 // %5d %5d %5d %5c %5c %5c  %s
 // placing the name at offset 37
@@ -3981,7 +3981,7 @@ static void TrackMouse( Widget UNUSED(w), XtPointer clientData, XEvent *event, B
                                         temp1_my_course,sizeof(temp1_my_course));
 
     // n7tap: This is a quick hack to get some more useful values for
-    //        distance to near ojects.
+    //        distance to near objects.
     // (copied from db.c:station_data_fill_in)
     if (english_units)
     {
@@ -4764,7 +4764,7 @@ void Load_station_font(void)
   // Assign a font (or a different font) to the GC
 
   // Free any old font first.  If we fail to assign a new font in
-  // the code here, can we get in a sitation where we are trying
+  // the code here, can we get in a situation where we are trying
   // to draw without a font?
   if (station_font != NULL)
   {
@@ -11143,9 +11143,9 @@ void create_gc(Widget w)
 
 // This routine just copies an area from pixmap_final to the
 // display, so we won't go through all the trouble of making this
-// interruptable.  Just get on with it, perform the operation, and
+// interruptible.  Just get on with it, perform the operation, and
 // return to X.  If it did any map drawing, we'd make it
-// interruptable.
+// interruptible.
 //
 void da_expose(Widget w, XtPointer UNUSED(client_data), XtPointer call_data)
 {
@@ -11191,7 +11191,7 @@ void da_expose(Widget w, XtPointer UNUSED(client_data), XtPointer call_data)
 // The work function for resizing.  This one will be called by
 // UpdateTime if certain flags have been set my da_resize.  This
 // function and the functions it calls that are CPU intensive should
-// be made interruptable:  They should check interrupt_drawing_now
+// be made interruptible:  They should check interrupt_drawing_now
 // flag periodically and exit nicely if it is set.
 //
 void da_resize_execute(Widget w)
@@ -11286,7 +11286,7 @@ void da_resize_execute(Widget w)
 
 // We got a resize callback.  Set flags.  UpdateTime will come
 // along in a bit and perform the resize.  With this method, the
-// resize can be made interruptable.  We merely need to check for
+// resize can be made interruptible.  We merely need to check for
 // the interrupt_drawing_now flag periodically while doing the
 // resize drawing.
 //
@@ -11307,7 +11307,7 @@ void da_resize(Widget UNUSED(w), XtPointer UNUSED(client_data), XtPointer UNUSED
 
 // We got a mouse or keyboard callback.  Set flags.  UpdateTime
 // will come along in a bit and perform the screen redraw.  With
-// this method, the redraw can be made interruptable.  We merely
+// this method, the redraw can be made interruptible.  We merely
 // need to check for the interrupt_drawing_now flag periodically
 // while doing the redraw.
 //
@@ -14639,7 +14639,7 @@ void new_image(Widget da)
 
 
 /*
- *  Keep map in real world space, readjust center and scaling if neccessary
+ *  Keep map in real world space, readjust center and scaling if necessary
  */
 void check_range(void)
 {
@@ -15824,11 +15824,11 @@ void SetMyPosition( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UN
   //if ( (output_station_type == 0) || (output_station_type > 3)) {
   //  popup_message( "Modify fixed position", "Are you sure you want to modify your position?");
   //}
-  // check for position abiguity
+  // check for position ambiguity
   if ( position_amb_chars > 0 )   // popup warning that ambiguity is on
   {
     popup_message_always(langcode("POPUPMA043"), // "Modify ambiguous position"
-                         langcode("POPUPMA044") );   // "Position abiguity is on, your new position may appear to jump."
+                         langcode("POPUPMA044") );   // "Position ambiguity is on, your new position may appear to jump."
   }
 
   if(display_up)
@@ -23110,7 +23110,7 @@ void map_chooser_fill_in (void)
                       current->XmStringPtr,
                       n);
 
-        // If a selected map, hilight it in the list
+        // If a selected map, highlight it in the list
         if (current->selected)
         {
           XmListSelectPos(map_list,i,TRUE);
@@ -27336,7 +27336,7 @@ void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer
 
 
 //Make it helpful - Gray the config selections, but add a choice
-//that basicly pops up a box that says where to get Festival, have
+//that basically pops up a box that says where to get Festival, have
 //it be ungrayed if Festival isn't installed.
 
 void Configure_speech( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData) )

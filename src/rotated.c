@@ -1330,7 +1330,7 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
   else
   {
     // not a 90 degree rotation, use sin/cos transform
-    /* loop through all relevent bits in rotated image */
+    /* loop through all relevant bits in rotated image */
     for(j=0; j<item->rows_out; j++)
     {
       float dj_sin, dj_cos;

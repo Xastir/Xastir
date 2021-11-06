@@ -6751,7 +6751,7 @@ void Config_sql_Database( Widget w, int config_type, int port)
          ihost, iport, password, unix_socket, error_message,
          sep, comment, username, schema_name;
   static Widget button_mysql_defaults;    // set form values to defaults for mysql
-  static Widget button_postgis_defaults;  // set form values to deaults for postgresql/postgis
+  static Widget button_postgis_defaults;  // set form values to defaults for postgresql/postgis
   Dimension width, height;
   int defaults_set;  // Have defaults been set on form for new interface?
   // Used to make only a single set defaults call when
@@ -6896,7 +6896,7 @@ void Config_sql_Database( Widget w, int config_type, int port)
     //
     // create widgets and populate menu
     // sddd_ abbreviates name of single control that is being replaced: Sql_Database_dbms_data
-    // sddd_value  // numberic value for the database dbms type
+    // sddd_value  // numeric value for the database dbms type
     // sddd_button  // picklist item
     // sddd_menu  // menu that acts as the picklist of dbms types
     x = 0;
@@ -7053,7 +7053,7 @@ void Config_sql_Database( Widget w, int config_type, int port)
                                           XmNfontList, fontlist1,
                                           NULL);
 
-    // put retieve now button here.
+    // put retrieve now button here.
 
     // hostname
     ihost = XtVaCreateManagedWidget(langcode("WPUPCFID02"),xmLabelWidgetClass, form,

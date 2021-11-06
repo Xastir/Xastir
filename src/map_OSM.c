@@ -436,7 +436,7 @@ static long xastirLat2pixelLat(
 
   // xastir latitude values can exceed +/- 90.0 degrees because
   // the latitude is the extent of the display window. Limit the
-  // OSM latitute to less than +/- 90.0 degrees so that the projection
+  // OSM latitude to less than +/- 90.0 degrees so that the projection
   // calculation does not blow up or return unreasonable values.
   if (lat > ((89.0/180.0) * M_PI))
   {
@@ -687,7 +687,7 @@ static void draw_image(
 
     scr_y = image_row + offsety;
 
-    // loop over image pixel colums
+    // loop over image pixel columns
     for (image_col = 0; image_col < image->columns; image_col++)
     {
       scr_x = image_col + offsetx;
@@ -1076,7 +1076,7 @@ static void draw_OSM_image(
               XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
             }
             // write the pixel from the map image to the
-            // screen. Strech to a rectangle as needed
+            // screen. Stretch to a rectangle as needed
             // specified by scr_dx and scr_dy.
             (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
           } // check map boundaries in y direction
@@ -1463,7 +1463,7 @@ void draw_OSM_tiles (Widget w,
     draw_OSM_image(w, canvas, &exception, &NWcorner, &SEcorner, osm_zl);
 
     // Display the OpenStreetMap attribution
-    // Just resuse the tile structure rather than creating another.
+    // Just reuse the tile structure rather than creating another.
     xastir_snprintf(tmpString, sizeof(tmpString),
                     "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
     strncpy(tile_info->filename, tmpString, MaxTextExtent);
@@ -1517,7 +1517,7 @@ void draw_OSM_tiles (Widget w,
 
 
 /**********************************************************
- * draw_OSM_map() - retreive an image that is the size of the display
+ * draw_OSM_map() - retrieve an image that is the size of the display
  **********************************************************/
 void draw_OSM_map (Widget w,
                    char *filenm,

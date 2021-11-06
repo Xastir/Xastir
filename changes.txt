@@ -10,7 +10,7 @@ Changes.txt
     See ChangeLog for software changes...
 
 11/13/2000
-    codebase verion changed to 0.4.0, starting next development release
+    codebase version changed to 0.4.0, starting next development release
 
 11/08/2000 0.3.6-2 -- cb
  modified color.c to behave with gcc 2.96
