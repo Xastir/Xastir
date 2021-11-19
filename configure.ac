@@ -291,7 +291,7 @@ AC_FUNC_ALLOCA
 AC_HEADER_DIRENT 
 AC_HEADER_STDC 
 AC_HEADER_SYS_WAIT 
-AC_CHECK_HEADERS([argz.h arpa/inet.h fcntl.h limits.h locale.h malloc.h math.h netdb.h]) 
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h locale.h malloc.h math.h netdb.h]) 
 AC_CHECK_HEADERS([netinet/in.h nl_types.h stdarg.h stddef.h stdlib.h string.h strings.h])
 AC_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h signal.h])
 AC_CHECK_HEADERS([termios.h unistd.h]) 
@@ -339,7 +339,6 @@ AC_FUNC_MMAP
 AC_FUNC_STAT 
 AC_FUNC_STRFTIME 
 AC_FUNC_STRTOD 
-AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify alarm dcgettext])
 AC_CHECK_FUNCS([getcwd getpgrp gethostbyname gethostname gettimeofday])
 AC_CHECK_FUNCS([getwd inet_ntoa memmove mempcpy memset mkdir munmap pow])
 AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal sigignore])
