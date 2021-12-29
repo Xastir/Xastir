@@ -31,6 +31,7 @@ The Questions
 
     3.1  Why do I get error messages when running "bootstrap.sh"?
     3.1a  Why do I get strange warnings when I run bootstrap.sh?
+    3.1b  Why are you even using a "bootstrap.sh" script when autoreconf exists?
     3.2 Why won't Xastir compile with my system's cc?
     3.3 I'm using gcc and I get some compilation errors, what is wrong?
     3.4 The linking stage is failing because it isn't linking in the
