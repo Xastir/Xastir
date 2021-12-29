@@ -70,7 +70,7 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
   release version number").  Follow our commit log message guidance in
   CONTRIBUTING.md
 
-- Run bootstrap.sh
+- Run bootstrap.sh or "autoreconf -i"
 
 - Make sure the program builds:
 
@@ -115,7 +115,7 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
       cd ~/src
       tar xzf Xastir-Release-X.Y.Z.tar.gz
       cd Xastir-Release-X.Y.Z
-      ./bootstrap.sh
+      ./bootstrap.sh          # You could also use "autoreconf -i"
       mkdir build
       cd build
       ../configure [options]

@@ -25,10 +25,14 @@ you to easily keep up to date with the developers.
 
   ./bootstrap.sh
 
-  Note that bootstrap requires that you have GNU Autoconf and Automake
-  installed on your system.  Any error messages from bootstrap mean
-  that something is missing and you will be unable to proceed, so fix
-  those problems first.
+  or
+
+  autoreconf -i
+
+  Note that bootstrap (or autoreconf) requires that you have GNU
+  Autoconf and Automake installed on your system.  Any error messages
+  from bootstrap mean that something is missing and you will be unable
+  to proceed, so fix those problems first.
 
 Then create a build directory, configure and build the code:
 
@@ -889,10 +893,10 @@ First Time Install:
 
       Install MySQL and Meteo. 
 
-        "cd Davis"
-        "./bootstrap.sh"
-        "./configure"
-        "make"
+        cd Davis
+        ./bootstrap.sh     # OR "autoreconf -i"
+        ./configure
+        make
 
       This should build db2APRS in the "src" directory.  Start up db2APRS.
       Xastir should be able to connect to the db2APRS server in order to get

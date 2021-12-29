@@ -282,6 +282,20 @@ The Answers
     result in warning messages because the tools aren't strictly backward 
     compatible.  Most of these warnings are harmless.
 
+    3.1b  Why are you even using a "bootstrap.sh" script when autoreconf exists?
+
+    Xastir dates back to the mid- to late-1990s, when autoconf did not
+    have "autoreconf" and developers were expected to provide a
+    bootstrap script.  Since then, non-autoconf stuff like generation of
+    "pirate english" and "pig latin" language files got stuffed into
+    bootstrap and was maintained there for years.  So bootstrap.sh was still
+    required and did more than "autoreconf" did.
+
+    The non-autoconf stuff has since been removed from bootstrap.sh
+    and moved into the build step where it belonged, and now
+    bootstrap.sh and "autoreconf -i" do basically the same thing and
+    either is acceptable.
+
     3.2. Why won't Xastir compile with my system's cc?
 
     If Xastir won't compile on your system, it is probably due to

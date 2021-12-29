@@ -67,7 +67,7 @@ USERS:
 
     cd Xastir
     git pull           # Update your local repo (May be dangerous for developers)
-    ./bootstrap.sh
+    ./bootstrap.sh     # "autoreconf -i" also works
     mkdir -p build     # Build in a separate directory
     cd build
     ../configure
@@ -86,6 +86,12 @@ USERS:
         cd Xastir
         ./update-xastir
 
+
+   NOTE: "autoreconf", a part of the autoconf package, does the same
+   thing that bootstrap.sh does, in a more modern approach.  The
+   bootstrap.sh approach is very old and was the approach advocated by
+   this document for many years, but invoking "autoreconf -i" does the
+   same thing.
 
    PLEASE NOTE: Bootstrap.sh is used by both methods above, even
    "update-xastir", which is simply a script that performs all the
