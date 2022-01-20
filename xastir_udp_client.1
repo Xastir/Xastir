@@ -29,7 +29,17 @@ xastir server by using the \-identify flag:
  xastir_udp_client localhost 2023 <callsign> <passcode> \-identify
 
 .SH NOTES
-This is a very simple utility that provides no validation of message content.
+This is a very simple utility that provides no validation of message
+content.  The text passed as the last argument is directly injected
+into Xastir's incoming data stream and processed exactly as if it had
+come out of a TNC.
+
+As such, the text passed to it as "APRS Packet" must be a complete
+APRS packet, including FROM and TO call signs, not simply the payload.
+Thus to have it work properly, you should pass
+"MYCALL-0>APX219:payload goes here" as the string, not "payload goes
+here" (where obviously you should replace "MYCALL-0" with your own
+callsign and SSID).
 
 .SH SEE ALSO
 xastir help file
