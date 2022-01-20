@@ -41,6 +41,27 @@ Thus to have it work properly, you should pass
 here" (where obviously you should replace "MYCALL-0" with your own
 callsign and SSID).
 
+If the APRS payload provided is an object or item, and the call sign
+and SSID provided in the packet header match Xastir's exactly, then
+Xastir will "adopt" the object or item and treat it in the same manner
+as one that had been created in its own GUI --- that is, the object
+will be retransmitted with decaying intervals until deleted.  This can
+be useful if one wishes to create objects external to Xastir and have
+it take control over them, but can be a bit surprising if you weren't
+expecting it.  If you want the objects treated as Xastir's own, use
+the same callsign and ssid for the object as the callsign/SSID that
+Xastir is using, and if you DON'T want that, use a different SSID.
+
+If Xastir's callsign is "MYCALL-0" then this invocation will create an
+object that will be adopted and retransmitted:
+
+  xastir_udp_client localhost 2023 MYCALL-0 <passcode> "MYCALL-0>APX219,WIDE2-1:;foobar   *202111z3501.53N/10619.04W/"
+
+while this invocation will create an object that will only be
+transmitted once and not adopted:
+
+  xastir_udp_client localhost 2023 MYCALL-0 <passcode> "MYCALL-1>APX219,WIDE2-1:;foobar   *202111z3501.53N/10619.04W/"
+
 .SH SEE ALSO
 xastir help file
 .br
