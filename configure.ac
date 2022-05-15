@@ -60,6 +60,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 AC_PROG_RANLIB
+# Used later on in our configure.ac for a nice summary
+AC_PROG_EGREP
 #AC_PROG_YACC
 
 AM_PROG_CC_C_O
@@ -885,7 +887,7 @@ AC_OUTPUT
 
 # Write a short summary of the configure tests/results to
 # "summary.log"
-egrep -e "checking |result:|gcc version" config.log >> summary.log
+$EGREP -e "checking |result:|gcc version" config.log >> summary.log
 
 
 echo ===========================================
