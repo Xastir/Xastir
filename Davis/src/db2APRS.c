@@ -1372,7 +1372,7 @@ int main(int argc, char **argv)
   }
   /* <dirkx@covalent.net> / April 2001 Minor change to allow quick
    * (re)start of daemon or client while there are pending
-   * conncections during the quit. To avoid address/port in use
+   * connections during the quit. To avoid address/port in use
    * error.  */
   i = 1;
   if (setsockopt(ss, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)) == -1)
