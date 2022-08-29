@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 
     if (!dbf)
     {
-      die("DBFopen");
+      die("DBFopen: could not open dbf file");
     }
 
     nf = dbfawk_sig(dbf,sig,sizeof(sig));
