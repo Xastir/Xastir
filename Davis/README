@@ -184,8 +184,8 @@ $ make
 $ su -c 'make install'
 
 
-ACKNOWLEGEMENTS & AUTHORS
--------------------------
+ACKNOWLEDGEMENTS & AUTHORS
+--------------------------
 
 db2APRS is the product of Bruce Bennett, callsign KB8ROP 
 <bruts@adelphia.net> It is freely available at no charge 

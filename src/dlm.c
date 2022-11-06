@@ -67,7 +67,7 @@
 
    We could have used the curl_multi list as the queue, but that would end up
    with us either waiting until the last few tiles were downloading before returning,
-   or just adding all the tiles and letting curl go fot it - which could end up
+   or just adding all the tiles and letting curl go for it - which could end up
    with hundreds of simultaneous transfers, although curl is supposed to have a
    limiter of some kind, it delivers no control over what order to process the queue.
 

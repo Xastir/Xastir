@@ -30,7 +30,7 @@
         Output is to the ip hostname:port required in the
         command line.
 
-    ACKNOWLEGEMENTS:
+    ACKNOWLEDGEMENTS:
 
         Elements of this software are taken from wx200d ver 1.2
         by Tim Witham <twitham@quiknet.com>, and it is modeled
