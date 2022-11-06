@@ -87,7 +87,7 @@ SETTINGS & STARTUP
 
 
 open2300db2APRS RUN OPTIONS
--------------------
+---------------------------
 
 The open2300db2APRS utility takes standard short & long command line 
 options, which can be displayed by "open2300db2APRS -?". Here's the list:
@@ -164,7 +164,7 @@ transmitting.
 
 
 BUILD open2300db2APRS
--------------
+---------------------
 
 It's the usual:
 
@@ -175,8 +175,8 @@ $ make
 $ su -c 'make install'
 
 
-ACKNOWLEGEMENTS & AUTHORS
--------------------------
+ACKNOWLEDGEMENTS & AUTHORS
+--------------------------
 
 A large portion of this work taken from db2APRS (thanks Bruce!!)
 

@@ -17152,7 +17152,7 @@ void  GPS_operations_color_toggle( Widget UNUSED(widget), XtPointer clientData, 
 
 // This routine should be called while the transfer is progressing,
 // or perhaps just after it ends.  If we can do it while the
-// transfer is ocurring we can save time overall.  Here we'll select
+// transfer is occurring we can save time overall.  Here we'll select
 // the color and name for the resulting file, then cause it to be
 // selected and displayed on the map screen.
 //
@@ -22374,7 +22374,7 @@ void map_index_update_temp_select(char *filename, map_index_record **current)
       // Found a match.  Update the field.
       (*current)->temp_select = 1;
     }
-    else if (result > 0)    // We passsed the relevant area.
+    else if (result > 0)    // We passed the relevant area.
     {
       // All done for now.
       return;
