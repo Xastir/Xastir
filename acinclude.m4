@@ -561,8 +561,14 @@ fi
 # this is from Squeak-3.2-4's acinclude.m4
 AC_DEFUN([AC_CHECK_GMTOFF],
 [AC_CACHE_CHECK([for gmtoff in struct tm], ac_cv_tm_gmtoff,
-  AC_TRY_COMPILE([#include <time.h>],[struct tm tm; tm.tm_gmtoff;],
-    ac_cv_tm_gmtoff="yes", ac_cv_tm_gmtoff="no"))
+  [AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+       [
+        #include <time.h>
+       ],
+       [struct tm tm; tm.tm_gmtoff;])],
+  ac_cv_tm_gmtoff="yes",
+  ac_cv_tm_gmtoff="no")])
 test "$ac_cv_tm_gmtoff" != "no" && AC_DEFINE(HAVE_TM_GMTOFF,,X)])
 
 dnl Available from the GNU Autoconf Macro Archive at:
@@ -1055,13 +1061,24 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
 # path will actually pass the test we do in map_cache.c.  Don't even bother
 # looking for a library if not.  
         AC_MSG_CHECKING([if db.h is exists and is usable])
-        AC_TRY_COMPILE([#include <db.h>],
-                       [#if (DB_VERSION_MAJOR < 4 )
-                        #error DB_VERSION_MAJOR < 4
-                        #endif],
-                        [AC_MSG_RESULT([yes])
-                        XASTIR_BERKELEY_DB_CHK_LIB()],
-                        [AC_MSG_RESULT([no]); dblib="no"])
+        AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM(
+            [
+            #include <db.h>
+            ],
+            [
+              #if (DB_VERSION_MAJOR < 4 )
+                 #error DB_VERSION_MAJOR < 4
+              #endif
+            ])],
+         [
+           AC_MSG_RESULT([yes])
+           XASTIR_BERKELEY_DB_CHK_LIB()
+         ],
+         [
+           AC_MSG_RESULT([no]);
+           dblib="no"
+         ])
 	CPPFLAGS=$xastir_save_CPPFLAGS
 
     use_map_cache="no"
