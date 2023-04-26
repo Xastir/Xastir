@@ -647,7 +647,7 @@ LDFLAGS="-Wl,--no-keep-memory $LDFLAGS"
 AC_LINK_IFELSE(
  [AC_LANG_PROGRAM([[#include <sys/types.h>]],
                   [[/* Stupid useless test for linker flags */
-                     exit(0);]])],
+                     return(0);]])],
  [xa_cv_no_keep_memory=yes],
  [xa_cv_no_keep_memory=no])
 
