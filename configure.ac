@@ -642,17 +642,20 @@ fi
 
 # Add a special option that makes Cygwin link much faster (from
 # Henk de Groot)
+AC_MSG_CHECKING([if linker supports --no-keep-memory])
 save_LDFLAGS="$LDFLAGS"
 LDFLAGS="-Wl,--no-keep-memory $LDFLAGS"
 AC_LINK_IFELSE(
- [AC_LANG_PROGRAM([[#include <sys/types.h>]],
-                  [[/* Stupid useless test for linker flags */
-                     return(0);]])],
+ [AC_LANG_PROGRAM([],
+                  [[return(0);]])],
  [xa_cv_no_keep_memory=yes],
  [xa_cv_no_keep_memory=no])
 
 if test "${xa_cv_no_keep_memory}" = "no"; then 
   LDFLAGS="$save_LDFLAGS"
+  AC_MSG_RESULT([no])
+else
+  AC_MSG_RESULT([yes])
 fi
 
 # 
