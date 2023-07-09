@@ -2280,9 +2280,6 @@ int ax25_init(int port)
     fprintf(stderr,"port_data_lock, Port = %d\n", port);
   }
 
-  /* clear port_channel */
-  //    port_data[port].channel = -1;
-
   /* clear port active */
   port_data[port].active = DEVICE_NOT_IN_USE;
 
@@ -2332,7 +2329,6 @@ int ax25_init(int port)
   /* COMMENT: tested this AF_INET is CORRECT -FG */
   // Commented out sections below.  We keep the old socket number
   // around now, so have to start a new socket in all cases to make it work.
-  //    if (port_data[port].channel == -1) {
 
   ENABLE_SETUID_PRIVILEGE;
 #if __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
@@ -7434,14 +7430,7 @@ void output_my_aprs_data(void)
         }
 
 
-        // Set converse mode.  We don't need to do this for
-        // KISS TNC interfaces.  One european TNC (tnc2-ui)
-        // doesn't accept "conv" but does accept the 'k'
-        // command.  A Kantronics KPC-2 v2.71 TNC accepts
-        // the "conv" command but not the 'k' command.
-        // Figures!  The  choice of whether to send "k" or "conv"
-        // is made by the user in the Serial TNC interface properties
-        // dialog.  Older versions of Xastir had this hardcoded here.
+        // Set converse mode according to device's configuration setting.
         //
         xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', devices[port].device_converse_string);
 
@@ -8460,15 +8449,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
             usleep(10000);  // 10ms
           }
 
-          // Set converse mode.  One european TNC
-          // (tnc2-ui) doesn't accept "conv" but does
-          // accept the 'k' command.  A Kantronics  KPC-2
-          // v2.71 TNC accepts the "conv" command but not
-          // the 'k' command.  Figures!
-          //
-          //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
-          //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "k");
-          //                    xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', CONVERSE_MODE);
+          // Set converse mode using approprate string from configuration.
           xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', devices[port].device_converse_string);
 
 
