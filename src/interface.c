@@ -2327,7 +2327,7 @@ int ax25_init(int port)
   }
 
   /* COMMENT: tested this AF_INET is CORRECT -FG */
-  // Commented out sections below.  We keep the old socket number
+  // We keep the old socket number
   // around now, so have to start a new socket in all cases to make it work.
 
   ENABLE_SETUID_PRIVILEGE;
@@ -2348,11 +2348,6 @@ int ax25_init(int port)
 
     return -1;
   }
-
-  //    }
-  //    else {
-  // Use socket number that is already defined
-  //    }
 
   /* port active */
   port_data[port].active = DEVICE_IN_USE;
