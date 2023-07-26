@@ -301,6 +301,7 @@ int main(int argc, char *argv[])
     awk_free_program(rs);
   }
   awk_free_symtab(symtbl);
+  free(symtbl);
   exit(0);
 }
 #else /* HAVE_LIBSHP */
