@@ -396,9 +396,10 @@ use_pcre=no
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "yes"; then
   AC_CHECK_HEADERS([pcre.h pcre/pcre.h],
                    [AC_CHECK_LIB([pcre], [pcre_compile],
-                                 [use_pcre=yes
+                                 [use_pcre="yes(legacy)"
                                   LIBS="$LIBS -lpcre"
                                   AC_DEFINE(HAVE_LIBPCRE, 1, Define to 1 if you have the `pcre' library (-lpcre). )
+                                  AC_DEFINE(XASTIR_LEGACY_PCRE, 1, Define to 1 if you have the legacy `pcre' library (-lpcre). )
                                   ])
                     break
                     ])
@@ -760,7 +761,7 @@ if test "${use_shapelib}" = "yes"; then
 else
   ILIBS="$ILIBS         "
 fi
-if test "${use_pcre}" = "yes"; then
+if test "${use_pcre}" != "no"; then
   ILIBS="$ILIBS PCRE"
 else
   ILIBS="$ILIBS     "

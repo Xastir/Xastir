@@ -807,16 +807,22 @@ void awk_free_rule(awk_rule *r)
       }
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#endif
       }
       if (r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free(r->re);
+#endif
       }
+#ifdef XASTIR_LEGACY_PCRE
       if (r->pe)
       {
         pcre_free(r->pe);
       }
+#endif
     }
     if (r->code)
     {
@@ -1135,9 +1141,11 @@ loop:
  */
 int awk_compile_program(awk_symtab *symtab, awk_program *rs)
 {
-  const char *error;
   awk_rule *r;
+#ifdef XASTIR_LEGACY_PCRE
+  const char *error;
   int erroffset;
+#endif
 
   if (!rs)
   {
@@ -1151,16 +1159,22 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
     {
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#endif
       }
+#ifdef XASTIR_LEGACY_PCRE
       r->tables = pcre_maketables(); /* NLS locale parse tables */
+#endif
       if (!r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         r->re = pcre_compile(r->pattern, /* the pattern */
                              0, /* default options */
                              &error, /* for error message */
                              &erroffset, /* for error offset */
                              r->tables); /* NLS locale character tables */
+#endif
       }
       if (!r->re)
       {
@@ -1175,10 +1189,12 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
         fprintf(stderr,"^\n");
         return -1;
       }
+#ifdef XASTIR_LEGACY_PCRE
       if (!r->pe)
       {
         r->pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
       }
+#endif
     }
     else if (r->ruletype == BEGIN)
     {
@@ -1228,19 +1244,25 @@ void awk_uncompile_program(awk_program *p)
     {
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#endif
       }
       r->tables = NULL;
       if (r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free(r->re);
+#endif
       }
       r->re = NULL;
+#ifdef XASTIR_LEGACY_PCRE
       if (r->pe)
       {
         pcre_free(r->pe);
       }
       r->pe = NULL;
+#endif
     }
     if (r->code)
     {
@@ -1261,8 +1283,10 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 {
   int i,rc,done = 0;
   awk_rule *r;
+#ifdef XASTIR_LEGACY_PCRE
   int ovector[3*MAXSUBS];
 #define OVECLEN (sizeof(ovector)/sizeof(ovector[0]))
+#endif
 
   if (!this || !buf || len <= 0)
   {
@@ -1273,7 +1297,9 @@ int awk_exec_program(awk_program *this, char *buf, int len)
   {
     if (r->ruletype == REGEXP)
     {
+#ifdef XASTIR_LEGACY_PCRE
       rc = pcre_exec(r->re,r->pe,buf,len,0,0,ovector,OVECLEN);
+#endif
       /* assign values to as many of $0 thru $9 as were set */
       /* XXX - avoid calling awk_find_sym for these known values */
       for (i = 0; rc > 0 && i < rc && i < MAXSUBS ; i++)

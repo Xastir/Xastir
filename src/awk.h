@@ -22,11 +22,13 @@
  */
 #ifndef AWK_H
 #define AWK_H
-#ifdef HAVE_PCRE_H
-  #include <pcre.h>
-#endif
-#ifdef HAVE_PCRE_PCRE_H
-  #include <pcre/pcre.h>
+#ifdef XASTIR_LEGACY_PCRE
+  #ifdef HAVE_PCRE_H
+    #include <pcre.h>
+  #endif
+  #ifdef HAVE_PCRE_PCRE_H
+    #include <pcre/pcre.h>
+  #endif
 #endif
 
 enum awk_symtype
@@ -74,8 +76,10 @@ typedef struct awk_rule_
   enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
   const char *pattern;        /* pcre pattern string */
   const u_char *tables;       /* pcre NLS tables */
-  pcre *re;                   /* pcre compiled pattern */
-  pcre_extra *pe;             /* pcre optimized pattern */
+  #ifdef XASTIR_LEGACY_PCRE
+    pcre *re;                   /* pcre compiled pattern */
+    pcre_extra *pe;             /* pcre optimized pattern */
+  #endif
   const char *act;            /* the program string */
   awk_action *code;           /* compiled program */
   int flags;                  /* some flags */
