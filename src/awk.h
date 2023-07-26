@@ -29,6 +29,9 @@
   #ifdef HAVE_PCRE_PCRE_H
     #include <pcre/pcre.h>
   #endif
+#else
+  #define PCRE2_CODE_UNIT_WIDTH 8
+  #include <pcre2.h>
 #endif
 
 enum awk_symtype
@@ -75,10 +78,14 @@ typedef struct awk_rule_
   struct awk_rule_ *next_rule;    /* linked list */
   enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
   const char *pattern;        /* pcre pattern string */
-  const u_char *tables;       /* pcre NLS tables */
   #ifdef XASTIR_LEGACY_PCRE
+    const u_char *tables;       /* pcre NLS tables */
     pcre *re;                   /* pcre compiled pattern */
     pcre_extra *pe;             /* pcre optimized pattern */
+  #else
+    const uint8_t *tables;       /* pcre2 NLS tables */
+    pcre2_code *re;             /* pcre2 compiled pattern */
+    void *pe;                   /* pcre2 doesn't use separate optimization */
   #endif
   const char *act;            /* the program string */
   awk_action *code;           /* compiled program */

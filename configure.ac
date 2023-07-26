@@ -394,15 +394,31 @@ fi
 # Shapelib requires pcre now
 use_pcre=no
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "yes"; then
-  AC_CHECK_HEADERS([pcre.h pcre/pcre.h],
-                   [AC_CHECK_LIB([pcre], [pcre_compile],
-                                 [use_pcre="yes(legacy)"
-                                  LIBS="$LIBS -lpcre"
-                                  AC_DEFINE(HAVE_LIBPCRE, 1, Define to 1 if you have the `pcre' library (-lpcre). )
-                                  AC_DEFINE(XASTIR_LEGACY_PCRE, 1, Define to 1 if you have the legacy `pcre' library (-lpcre). )
-                                  ])
-                    break
-                    ])
+  AC_CHECK_HEADERS([pcre2.h],
+                   [AC_CHECK_LIB([pcre2-8],[pcre2_compile_8],
+                                 [use_pcre="yes(PCRE2)"
+                                  LIBS="$LIBS -lpcre2-8"
+                                  ],
+                                 [use_pcre=no
+                                  AC_MSG_WARN([Found pcre2 headers but not libraries])
+                                 ])
+                   ],
+                   [use_pcre=no],
+                   [
+                     #define PCRE2_CODE_UNIT_WIDTH 8
+                   ])
+   if test "${use_pcre}" = "no"
+   then
+     AC_MSG_WARN([Modern PCRE2 not found, checking for legacy version])
+     AC_CHECK_HEADERS([pcre.h pcre/pcre.h],
+                      [AC_CHECK_LIB([pcre], [pcre_compile],
+                                    [use_pcre="yes(legacy)"
+                                     LIBS="$LIBS -lpcre"
+                                     AC_DEFINE(XASTIR_LEGACY_PCRE, 1, Define to 1 if you have the legacy `pcre' library (-lpcre). )
+                                                   ])
+                       break
+                       ])
+    fi
  if test "${use_pcre}" = "no"
  then
     AC_MSG_ERROR([Shapelib support requires PCRE, and we could not find PCRE.  Either disable shapelib by specifying "--without-shapelib" or install PCRE libraries and headers])
@@ -762,7 +778,12 @@ else
   ILIBS="$ILIBS         "
 fi
 if test "${use_pcre}" != "no"; then
-  ILIBS="$ILIBS PCRE"
+  if test "${use_pcre}" = "yes(legacy)"
+  then
+    ILIBS="$ILIBS PCRE"
+  else
+    ILIBS="$ILIBS PCRE2"
+  fi
 else
   ILIBS="$ILIBS     "
 fi
