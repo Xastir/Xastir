@@ -51,7 +51,7 @@
   #include "config.h"
 #endif  // HAVE_CONFIG_H
 
-#if defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
+#ifdef HAVE_LIBSHP
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -497,6 +497,6 @@ void dbfawk_parse_record(awk_program *rs,
   }
   awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
-#endif /* HAVE_LIBSHP && HAVE_LIBPCRE */
+#endif /* HAVE_LIBSHP */
 
 

@@ -64,7 +64,7 @@
   #include "config.h"
 #endif  // HAVE_CONFIG_H
 
-#ifdef HAVE_LIBPCRE
+#ifdef HAVE_LIBSHP
 #include <stdio.h>
 #include <string.h>
 
@@ -1384,6 +1384,6 @@ int awk_exec_end(awk_program *this)
 }
 
 
-#endif /* HAVE_LIBPCRE */
+#endif /* HAVE_LIBSHP */
 
 

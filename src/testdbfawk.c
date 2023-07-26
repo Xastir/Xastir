@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#if defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
+#ifdef HAVE_LIBSHP 
 
 #ifdef HAVE_SHAPEFIL_H
   #include <shapefil.h>
@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
   awk_free_symtab(symtbl);
   exit(0);
 }
-#else /* defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE) */
+#else /* HAVE_LIBSHP */
 
 
 
@@ -314,6 +314,6 @@ int main(int argc, char *argv[])
   fprintf(stderr,"DBFAWK support not compiled.\n");
   exit(1);
 }
-#endif /* defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE) */
+#endif /* HAVE_LIBSHP */
 
 

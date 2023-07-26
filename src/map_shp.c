@@ -89,10 +89,8 @@
 #define CHECKREALLOC(m)  if (!m) { fprintf(stderr, "***** Realloc Failed *****\n"); exit(0); }
 
 #ifdef HAVE_LIBSHP
-#ifdef HAVE_LIBPCRE
   #include "awk.h"
   #include "dbfawk.h"
-#endif /* HAVE_LIBPCRE */
 #ifdef HAVE_SHAPEFIL_H
   #include <shapefil.h>
 #else   // HAVE_SHAPEFIL_H
