@@ -50,11 +50,6 @@
 #include <pwd.h>
 #include <errno.h>
 
-// Needed for Solaris
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif  // HAVE_STRINGS_H
-
 #include <dirent.h>
 #include <netinet/in.h>
 #include <Xm/XmAll.h>

@@ -105,14 +105,13 @@ static void host_time_out( int UNUSED(sig) )
 /* TIMEOUT for time exceeded                                             */
 /*************************************************************************/
 
+#define RETSIGTYPE void
+
 int forked_getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *hints, struct addrinfo **resout, int time)
 {
 
-#ifdef RETSIGTYPE
   RETSIGTYPE * previous_loc;
-#else
-#error RETSIGTYPE not defined
-#endif
+
 
   pid_t host_pid;
   int status;
@@ -190,11 +189,7 @@ int forked_getaddrinfo(const char *hostname, const char *servname, const struct 
         fprintf(stderr,"Set alarm \n");
       }
 
-#ifdef RETSIGTYPE
       previous_loc = (RETSIGTYPE *)signal(SIGALRM, host_time_out);
-#else
-      previous_loc = signal(SIGALRM, host_time_out);
-#endif
 
       // Set up to jump here if we time out on SIGALRM
       if (sigsetjmp(ret_place,-1)!=0)

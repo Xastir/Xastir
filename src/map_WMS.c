@@ -37,11 +37,6 @@
 #include <pwd.h>
 #include <errno.h>
 
-// Needed for Solaris
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif  // HAVE_STRINGS_H
-
 #include <dirent.h>
 #include <netinet/in.h>
 #include <Xm/XmAll.h>
@@ -78,17 +73,10 @@
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 #ifdef HAVE_MAGICK
-  #if TIME_WITH_SYS_TIME
+  #if HAVE_SYS_TIME_H
     #include <sys/time.h>
-    #include <time.h>
-  #else   // TIME_WITH_SYS_TIME
-    #if HAVE_SYS_TIME_H
-      #include <sys/time.h>
-    #else  // HAVE_SYS_TIME_H
-      #include <time.h>
-    #endif // HAVE_SYS_TIME_H
-  #endif  // TIME_WITH_SYS_TIME
-  #undef RETSIGTYPE
+  #endif // HAVE_SYS_TIME_H
+  #include <time.h>
   // TVR: "stupid ImageMagick"
   // The problem is that magick/api.h includes Magick's config.h file, and that
   // pulls in all the same autoconf-generated defines that we use.

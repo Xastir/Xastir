@@ -51,24 +51,13 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 #include <pwd.h>
 #include <locale.h>
 
-// Needed for Solaris
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif  // HAVE_STRINGS_H
-
 #include <sys/wait.h>
 #include <errno.h>
 
-#if TIME_WITH_SYS_TIME
+#if HAVE_SYS_TIME_H
   #include <sys/time.h>
-  #include <time.h>
-#else   // TIME_WITH_SYS_TIME
-  #if HAVE_SYS_TIME_H
-    #include <sys/time.h>
-  #else  // HAVE_SYS_TIME_H
-    #include <time.h>
-  #endif // HAVE_SYS_TIME_H
-#endif  // TIME_WITH_SYS_TIME
+#endif // HAVE_SYS_TIME_H
+#include <time.h>
 
 // TVR -- stupid, stupid ImageMagick
 char *xastir_package=PACKAGE;
@@ -78,7 +67,6 @@ char *xastir_version=VERSION;
 
 #ifdef HAVE_MAGICK
   #include <sys/types.h>
-  #undef RETSIGTYPE
   /* JMT - stupid ImageMagick */
   #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
   #undef PACKAGE_BUGREPORT
