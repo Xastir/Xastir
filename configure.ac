@@ -289,10 +289,10 @@ AC_SUBST(LIBS)
 #
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
-AC_HEADER_STDC 
 AC_HEADER_SYS_WAIT 
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h locale.h malloc.h math.h netdb.h]) 
-AC_CHECK_HEADERS([netinet/in.h nl_types.h stdarg.h stddef.h stdlib.h string.h strings.h])
+# We still check for stdarg.h even though it's standard, because a legacy
+# file (snprintf.c) still uses its symbol.
+AC_CHECK_HEADERS([stdarg.h])
 AC_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h signal.h])
 AC_CHECK_HEADERS([termios.h unistd.h]) 
 

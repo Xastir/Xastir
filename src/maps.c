@@ -39,11 +39,6 @@
 #include <pwd.h>
 #include <errno.h>
 
-// Needed for Solaris
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif  // HAVE_STRINGS_H
-
 #ifdef HAVE_MAGICK
   #if TIME_WITH_SYS_TIME
     #include <sys/time.h>

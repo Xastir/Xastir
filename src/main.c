@@ -51,11 +51,6 @@ static int DISPLAY_XASTIR_COORDINATES = 0;
 #include <pwd.h>
 #include <locale.h>
 
-// Needed for Solaris
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif  // HAVE_STRINGS_H
-
 #include <sys/wait.h>
 #include <errno.h>
 

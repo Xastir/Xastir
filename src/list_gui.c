@@ -32,9 +32,7 @@
 #include <assert.h>
 #include <ctype.h>
 
-#ifdef  HAVE_LOCALE_H
-  #include <locale.h>
-#endif  // HAVE_LOCALE_H
+#include <locale.h>
 
 #include <Xm/XmAll.h>
 

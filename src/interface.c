@@ -54,9 +54,7 @@
 #include <arpa/inet.h>
 #include <netinet/tcp.h>    // Needed for TCP_NODELAY setsockopt() (disabling Nagle algorithm)
 
-#ifdef HAVE_NETDB_H
-  #include <netdb.h>
-#endif  // HAVE_NETDB_H
+#include <netdb.h>
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -74,9 +72,7 @@
 
 #include <errno.h>
 
-#ifdef  HAVE_LOCALE_H
-  #include <locale.h>
-#endif  // HAVE_LOCALE_H
+#include <locale.h>
 
 #include <Xm/XmAll.h>
 

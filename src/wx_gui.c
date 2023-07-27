@@ -35,13 +35,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#ifdef  HAVE_LOCALE_H
-  #include <locale.h>
-#endif  // HAVE_LOCALE_H
+#include <locale.h>
 
-#ifdef HAVE_MATH_H
-  #include <math.h>
-#endif  // HAVE_MATH_H
+#include <math.h>
 
 #include "xastir.h"
 #include "wx.h"
