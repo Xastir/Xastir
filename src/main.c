@@ -73,7 +73,6 @@ char *xastir_version=VERSION;
 
 #ifdef HAVE_MAGICK
   #include <sys/types.h>
-  #undef RETSIGTYPE
   /* JMT - stupid ImageMagick */
   #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
   #undef PACKAGE_BUGREPORT

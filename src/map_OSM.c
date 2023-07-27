@@ -88,7 +88,6 @@
       #include <time.h>
     #endif // HAVE_SYS_TIME_H
   #endif  // TIME_WITH_SYS_TIME
-  #undef RETSIGTYPE
   // TVR: "stupid ImageMagick"
   // The problem is that magick/api.h includes Magick's config.h file, and that
   // pulls in all the same autoconf-generated defines that we use.

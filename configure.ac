@@ -296,16 +296,14 @@ AC_CHECK_HEADERS([stdarg.h])
 AC_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h signal.h])
 AC_CHECK_HEADERS([termios.h unistd.h]) 
 
-# Checks for typedefs, structures, and compiler characteristics. 
-# 
-AC_C_CONST 
-AC_TYPE_UID_T 
-AC_C_INLINE 
-AC_TYPE_PID_T 
-AC_TYPE_SIZE_T 
-AC_HEADER_TIME 
-#AC_STRUCT_TM 
-AC_TYPE_SIGNAL 
+# Checks for typedefs, structures, and compiler characteristics.
+#
+AC_C_CONST
+AC_TYPE_UID_T
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
 AC_STRUCT_TIMEZONE
 
 #Some (Mac?) systems don't define this where it should be, so we kludge
