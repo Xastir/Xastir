@@ -303,7 +303,6 @@ AC_TYPE_UID_T
 AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
 AC_STRUCT_TIMEZONE
 
 #Some (Mac?) systems don't define this where it should be, so we kludge

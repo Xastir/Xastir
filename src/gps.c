@@ -31,22 +31,10 @@
 #include <ctype.h>
 #include <Xm/XmAll.h>
 
-// The following files support setting the system time from the GPS
-#if TIME_WITH_SYS_TIME
-  // Define needed by some versions of Linux in order to define
-  // strptime()
-  #ifndef __USE_XOPEN
-    #define __USE_XOPEN
-  #endif
+#if HAVE_SYS_TIME_H
   #include <sys/time.h>
-  #include <time.h>
-#else   // TIME_WITH_SYS_TIME
-  #if HAVE_SYS_TIME_H
-    #include <sys/time.h>
-  #else  // HAVE_SYS_TIME_H
-    #include <time.h>
-  #endif // HAVE_SYS_TIME_H
-#endif  // TIME_WITH_SYS_TIME
+#endif // HAVE_SYS_TIME_H
+#include <time.h>
 
 #include <stdlib.h>
 #include <unistd.h>
