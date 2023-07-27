@@ -51,7 +51,7 @@
   #include "config.h"
 #endif  // HAVE_CONFIG_H
 
-#if defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
+#ifdef HAVE_LIBSHP
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -258,6 +258,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
       if (symtbl)
       {
         awk_free_symtab(symtbl);
+        free(symtbl);
+        symtbl=NULL;
       }
       fprintf(stderr,"failed to malloc in dbfawk.c!\n");
       closedir(d);
@@ -278,6 +280,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
           if (symtbl)
           {
             awk_free_symtab(symtbl);
+            free(symtbl);
+            symtbl=NULL;
           }
           closedir(d);
           return NULL;
@@ -294,6 +298,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
           if (symtbl)
           {
             awk_free_symtab(symtbl);
+            free(symtbl);
+            symtbl=NULL;
           }
           closedir(d);
           return head; // Return what we were able to gather.
@@ -332,6 +338,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
   if (symtbl)
   {
     awk_free_symtab(symtbl);
+    free(symtbl);
+    symtbl=NULL;
   }
 
   return head;
@@ -497,6 +505,6 @@ void dbfawk_parse_record(awk_program *rs,
   }
   awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
-#endif /* HAVE_LIBSHP && HAVE_LIBPCRE */
+#endif /* HAVE_LIBSHP */
 
 

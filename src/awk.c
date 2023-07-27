@@ -64,7 +64,7 @@
   #include "config.h"
 #endif  // HAVE_CONFIG_H
 
-#ifdef HAVE_LIBPCRE
+#ifdef HAVE_LIBSHP
 #include <stdio.h>
 #include <string.h>
 
@@ -807,16 +807,26 @@ void awk_free_rule(awk_rule *r)
       }
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#else
+        pcre2_maketables_free(NULL,r->tables);
+#endif
       }
       if (r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free(r->re);
+#else
+        pcre2_code_free(r->re);
+#endif
       }
+#ifdef XASTIR_LEGACY_PCRE
       if (r->pe)
       {
         pcre_free(r->pe);
       }
+#endif
     }
     if (r->code)
     {
@@ -1135,9 +1145,15 @@ loop:
  */
 int awk_compile_program(awk_symtab *symtab, awk_program *rs)
 {
-  const char *error;
   awk_rule *r;
+#ifdef XASTIR_LEGACY_PCRE
+  const char *error;
   int erroffset;
+#else
+  int errornumber;
+  PCRE2_SIZE erroffset;
+  pcre2_compile_context *theCompileContext;
+#endif
 
   if (!rs)
   {
@@ -1151,16 +1167,36 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
     {
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#else
+        pcre2_maketables_free(NULL,r->tables);
+#endif
       }
+#ifdef XASTIR_LEGACY_PCRE
       r->tables = pcre_maketables(); /* NLS locale parse tables */
+#else
+      theCompileContext=pcre2_compile_context_create(NULL);
+      r->tables = pcre2_maketables(NULL); /* NLS locale parse tables */
+      /* this always returns zero, so can ignore errornumber */
+      errornumber=pcre2_set_character_tables(theCompileContext,r->tables);
+#endif
       if (!r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         r->re = pcre_compile(r->pattern, /* the pattern */
                              0, /* default options */
                              &error, /* for error message */
                              &erroffset, /* for error offset */
                              r->tables); /* NLS locale character tables */
+#else
+        r->re = pcre2_compile((PCRE2_SPTR8)r->pattern, /* the pattern */
+                              PCRE2_ZERO_TERMINATED, /* no length needed */
+                              0,     /* default options */
+                              &errornumber, /* for error message */
+                              &erroffset, /* for error offset */
+                              theCompileContext);
+#endif
       }
       if (!r->re)
       {
@@ -1175,10 +1211,14 @@ int awk_compile_program(awk_symtab *symtab, awk_program *rs)
         fprintf(stderr,"^\n");
         return -1;
       }
+#ifdef XASTIR_LEGACY_PCRE
       if (!r->pe)
       {
         r->pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
       }
+#else
+      pcre2_compile_context_free(theCompileContext);
+#endif
     }
     else if (r->ruletype == BEGIN)
     {
@@ -1228,19 +1268,29 @@ void awk_uncompile_program(awk_program *p)
     {
       if (r->tables)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free((void *)r->tables);
+#else
+        pcre2_maketables_free(NULL,r->tables);
+#endif
       }
       r->tables = NULL;
       if (r->re)
       {
+#ifdef XASTIR_LEGACY_PCRE
         pcre_free(r->re);
+#else
+        pcre2_code_free(r->re);
+#endif
       }
       r->re = NULL;
+#ifdef XASTIR_LEGACY_PCRE
       if (r->pe)
       {
         pcre_free(r->pe);
       }
       r->pe = NULL;
+#endif
     }
     if (r->code)
     {
@@ -1261,8 +1311,12 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 {
   int i,rc,done = 0;
   awk_rule *r;
+#ifdef XASTIR_LEGACY_PCRE
   int ovector[3*MAXSUBS];
-#define OVECLEN (sizeof(ovector)/sizeof(ovector[0]))
+  #define OVECLEN (sizeof(ovector)/sizeof(ovector[0]))
+#else
+  PCRE2_SIZE *ovector;
+#endif
 
   if (!this || !buf || len <= 0)
   {
@@ -1273,7 +1327,15 @@ int awk_exec_program(awk_program *this, char *buf, int len)
   {
     if (r->ruletype == REGEXP)
     {
+#ifdef XASTIR_LEGACY_PCRE
       rc = pcre_exec(r->re,r->pe,buf,len,0,0,ovector,OVECLEN);
+#else
+      pcre2_match_data *match_data;
+      match_data=pcre2_match_data_create_from_pattern(r->re,NULL);
+      rc=pcre2_match(r->re,(PCRE2_SPTR8)buf,len,0,0,match_data,NULL);
+      if (rc >0 )
+        ovector=pcre2_get_ovector_pointer(match_data);
+#endif
       /* assign values to as many of $0 thru $9 as were set */
       /* XXX - avoid calling awk_find_sym for these known values */
       for (i = 0; rc > 0 && i < rc && i < MAXSUBS ; i++)
@@ -1302,6 +1364,9 @@ int awk_exec_program(awk_program *this, char *buf, int len)
       {
         done = awk_exec_action(this->symtbl,r->code);
       }
+#ifndef XASTIR_LEGACY_PCRE
+      pcre2_match_data_free(match_data);
+#endif
     }
   }
   return done;
@@ -1384,6 +1449,6 @@ int awk_exec_end(awk_program *this)
 }
 
 
-#endif /* HAVE_LIBPCRE */
+#endif /* HAVE_LIBSHP */
 
 
