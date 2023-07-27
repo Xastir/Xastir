@@ -49,6 +49,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <errno.h>
+#include <limits.h>
 
 #include <dirent.h>
 #include <netinet/in.h>
@@ -693,7 +694,7 @@ static awk_rule dbfawk_default_rules[] =
     NULL,
     0,
     0,
-    "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=65536; label_level=0",
+    "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=2147483647; label_level=0",
     0,
     0
   },
@@ -801,7 +802,7 @@ void draw_shapefile_map (Widget w,
   fill_color=13;
   fill_stipple=0;
   pattern=0;
-  display_level=8192;
+  display_level=INT_MAX;
   label_level=0;
   label_color=8;
   font_size=FONT_DEFAULT;
