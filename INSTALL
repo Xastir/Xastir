@@ -1,6 +1,17 @@
+NOTE:
+
+This file gives a general overview of how to build Xastir.  It is by
+necessity both extremely vague where it is general, and extremely
+dense when it tries to get specific.
+
+System-specific guidance for building Xastir can be found at
+http://xastir.org/index.php/Installation_Notes, and some of these
+build recipes may be more helpful than the general guidance in this
+file.
 
 General steps to configure/compile/install Xastir:
-(See detailed steps and library installation instructions below)
+(detailed steps and library installation instructions follow these
+ general steps)
 ----------------------------------------------------------------------
 
 1) Get one of the source releases from Github at
@@ -16,6 +27,19 @@ An alternative to the above steps is to use git to download the
 Xastir sources.  See README.GIT for those instructions. Git allows
 you to easily keep up to date with the developers.
 
+
+1a) Make sure your system has, at a minimum, these packages:
+
+   Motif or OpenMotif or LessTiff  Required  The GUI widget set
+   pthreads                        Required  Threading capability
+
+   There's no point going past this step if you can't get those installed.
+   They should be in your system's package management system, and you will need
+   both libraries and development headers for Xastir to build.
+
+   A build of Xastir with only these two will be fairly limited, and you will
+   almost certainly want to add libraries for additional features later.
+   
 2) Go into the xastir directory to build the executable:
 
   cd Xastir
@@ -41,24 +65,52 @@ Then create a build directory, configure and build the code:
   ../configure
   make
   su (become the root user)
-  make install (make install-strip can be used after the first time)
+  make install
   chmod 4555 /usr/local/bin/xastir (only if you use kernel ax.25, see below)
   exit (from root)
+
+Note that if there are ANY errors reported by configure and it aborts
+early, this is generally a sign that something critical has been
+missed, such as a missing Motif library or missing Motif headers.  If
+this happens, configure will not create a "Makefile" and the "make"
+step will report that no makefile has been found.  Go back and look at
+the configure output and figure out what it was complaining about, fix
+that problem, and then try it all again.
+
+If your run of configure does not end with  the text:
+
+  xastir X.Y.Z has been configured to use the following
+  options and external libraries:
+
+followed by a list of options and their status, and ending with:
+
+  xastir will be installed in /usr/local/bin.
+  Type 'make' to build Xastir (Use 'gmake' instead on some systems).
+
+then configure did NOT complete normally, and you need to figure out why.
 
 3) Xastir should be installed in /usr/local/bin (the default on most
 systems).  You can run it by typing this from a shell:
 
     xastir &
 
+Installing only the required libs gives you these capabilities:
 
-Short summary of libraries Xastir can use:
+    PocketAPRS maps
+    aprsDOS maps
+    WinAPRS maps
+    MacAPRS maps
+    GNIS labels
+    Address searching
+    serial port and Internet gateway connectivity.
+
+Short summary of additional libraries Xastir can use:
 -------------------------------------------------------------------------
-Motif or OpenMotif or LessTiff  Required  The GUI widget set
-pthreads                        Required  Threading capability
 Shapelib                        Recommended ESRI Shapefile maps and WX alerts
-pcre                            Recommended used with Shapefile maps
+pcre2 or pcre                     Required for Shapefile support
 Xpm                             Optional  XPM images + Snapshots + Printing
-ImageMagick                     Optional  MANY graphics images
+GraphicsMagick                  Optional  MANY graphics images
+  (you can also use ImageMagick 6, but GraphicsMagick is preferred)
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
@@ -68,6 +120,38 @@ libdb (4.0 or newer)            Optional  Internet map caching (fast!)
 libpq                           Experimental Persistent data with Postgis
 libmysqlclient                  Experimental Persistent data with MySQL
 
+It is our experience in 2023 that ALL of the libraries that Xastir
+needs or which can be added optionally are available in every
+operating system's package management system, so it should be very
+unusual to have to build any from source.  A lot of the information in
+the later parts of this file is very old, when that was NOT the case.
+
+Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
+the "gv" utility gives you printing capability.  Postscript or
+emulated postscript printing capability is required for this as well.
+
+Adding XPM or ImageMagick libs plus "convert" also give the
+capability to create automatic PNG images on disk from the map
+screen (useful for web pages!).
+
+Adding Shapelib support also gives you the capability to use Tiger
+2000 maps which were converted to Shapefile format by ESRI.  This
+allows you to use free detailed street maps for any point in the U.S.
+Shapelib support *requires* that you also install PCRE2 or PCRE
+libraries and development headers.
+
+Adding other libraries gives you the additional capabilities listed
+above.
+
+After you have a working version of Xastir you can always add
+additional features by installing the libraries required and then
+rerunning "configure" and rebuilding Xastir.
+
+
+------------------------------------------------------------------------------
+In the text below, we go into far more detail than most users need.  It may
+also be very, very obsolete.
+==============================================================================
 Library/Option Hierarchy:
 -------------------------
 
@@ -141,33 +225,6 @@ Library/Option Hierarchy:
     Postgis
 
 ---------------------------------
-
-
-Installing only the required libs gives you these capabilities:
-
-    PocketAPRS maps
-    aprsDOS maps
-    WinAPRS maps
-    MacAPRS maps
-    GNIS labels
-    Address searching
-    serial port and Internet gateway connectivity.
-
-Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
-the "gv" utility gives you printing capability.  Postscript or
-emulated postscript printing capability is required for this as well.
-
-Adding XPM or ImageMagick libs plus "convert" also give the
-capability to create automatic PNG images on disk from the map
-screen (useful for web pages!).
-
-Adding Shapelib support also gives you the capability to use Tiger
-2000 maps which were converted to Shapefile format by ESRI.  This
-allows you to use free detailed street maps for any point in the
-U.S.
-
-Adding other libraries gives you the additional capabilities listed
-above.
 
 For those who would like to see the full list of libraries Xastir
 might use (to decide what packages to install), here's the ldd
@@ -326,13 +383,10 @@ features, you can add any of the following flags to configure:
     --without-libproj
     --without-geotiff
     --without-shapelib
-    --without-pcre
-    --without-dbfawk
     --without-map-cache
     --with-errorpopups
     --with-libgc
     --with-profiling
-    --with-rtree
     --with-lsb
     --with-postgis
     --with-mysql
