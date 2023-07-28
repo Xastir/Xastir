@@ -72,21 +72,30 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
 
 - Run bootstrap.sh or "autoreconf -i"
 
-- Make sure the program builds:
+- Make sure the program builds, and do so in a fresh build directory,
+  just as a first-time user would have to do:
 
-      mkdir build
-      cd build
+      mkdir build-release-check
+      cd build-release-check
       ../configure [options]
       make
       cd ..
 
+  If the code builds you should be in good shape, and you should also
+  try querying the binary it produced to have it print its version:
+
+      build-release-check/src/xastir -V
+
+  Confirm that it is reporting the version you expect it to.  It will
+  have additional decorations indicating stuff about git, ignore those.
+
   For safety's sake, you should remove the build directory now, too.
 
-      rm -rf build
+      rm -rf build-release-check
 
-- You now have a working directory that should look
-  like what we want to distribute to users.  Check that there are no
-  uncommitted changes:
+- You now have a working directory that should look like what we want
+  to distribute to users.  Check that there are no uncommitted
+  changes:
 
       git status
 

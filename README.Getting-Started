@@ -254,16 +254,16 @@ be needed later, install these as well:
     bzip2
     curl
     curl development headers
-    cvs
     git
-    rcs
     tar
     liblcms
     liblcms development headers
     libtiff
     less
-    pcre
-    pcre development headers
+    pcre2
+    pcre2 development headers
+       (you can install the older PCRE library instead of PCRE2, but
+        that is past its end of life and PCRE2 is preferred)
     tcl
     tcl development headers
     tk
@@ -281,8 +281,10 @@ be needed later, install these as well:
     ghostscript-fonts
     ghostview
     gv
-    ImageMagick
-    ImageMagick development headers
+    GraphicsMagick
+    GraphicsMagick development headers
+      (ImageMagick 6 and ImageMagick6 development headers ONLY if you can't
+       install GraphicsMagick)
 
 
 Note that some packages may have dependencies on yet more packages.
@@ -292,11 +294,15 @@ to list some of it's dependencies (ImageMagick is known for that).
 In that case you may have to rely on the compiler to tell you what
 is missing, then go back and re-install a package or two.
 
-Now it is necessary to create the "configure" script that will be needed
-to configure Xastir for your system.  In versions prior to release 2.1.8,
-this script was included in the Xastir tarballs, but it is no longer included.
+Note that the AX25 packages are only available on Linux systems.
 
-   cd ~/src/xastir/Xastir-Release-2.1.0/
+Now it is necessary to create the "configure" script that will be
+needed to configure Xastir for your system.  In versions prior to
+release 2.1.8, this script was included in the Xastir tarballs, but it
+is no longer included.  We're using "Release-X.Y.Z" generically here,
+replace X.Y.Z with the actual version you're downloading.
+
+   cd ~/src/xastir/Xastir-Release-X.Y.Z/
    ./bootstrap.sh
 
 You will then create a "build" directory in which to run the
@@ -304,15 +310,15 @@ compilation of Xastir, and run Xastir's configure script in that
 directory.  In the instructions below we describe making this build
 directory inside the Xastir source tree, so it would be
 
-    mkdir -p ~/src/xastir/Xastir-Release-2.1.0/build
-    cd  ~/src/xastir/Xastir-Release-2.1.0/build
+    mkdir -p ~/src/xastir/Xastir-Release-X.Y.Z/build
+    cd  ~/src/xastir/Xastir-Release-X.Y.Z/build
     ../configure
 
 If you do this, then the simplest path to Xastir's configure script is
 just "../configure".  You could create this build directory anywhere,
 though, so long as you remember to replace "../configure" with the
 full path to Xastir's script, e.g,
-~/src/xastir/Xastir-Release-2.1.0/configure.
+~/src/xastir/Xastir-Release-X.Y.Z/configure.
 
 When you run the "../configure" step from the "build" directory, the
 script will attempt to figure out what facilities are available that
@@ -344,11 +350,9 @@ Other configure options are:
     --without-imagemagick
     --without-libproj
     --without-geotiff
-    --without-pcre
     --without-dbfawk
     --without-map-cache
     --with-errorpopups
-    --with-rtree
 
 
 That said, you probably won't have to use any of these!  Type
@@ -369,16 +373,22 @@ more things in there later.
 This is what you'd like to see at the end of the "../configure" run
 (minimum, there may be more "yes" answers):
 
-  AX25.......... : no
-  Festival...... : no
-  GPSMan........ : no
-  ImageMagick... : no
-  libproj....... : no
-  GeoTiff....... : no
-  ShapeLib...... : yes (internal)
-  pcre.......... : no
-  dbfawk........ : no
-  libgc (Debug). : no
+MINIMUM OPTIONS:
+  ShapeLib (Vector maps) .................... : no
+
+RECOMMENDED OPTIONS:
+  Xpm / Snapshots ........................... : no
+  GraphicsMagick/ImageMagick (Raster maps) .. : no
+  pcre (Shapefile customization) ............ : no
+  Berkeley DB map caching-Raster map speedups : no
+  internet map retrieval .................... : no
+
+FOR THE ADVENTUROUS:
+  AX25 (Linux Kernel I/O Drivers) ........... : no
+  libproj (USGS Topos & Aerial Photos) ...... : no
+  GeoTiff (USGS Topos & Aerial Photos) ...... : no
+  Festival (Text-to-speech) ................. : no
+  GPSMan/gpsmanshp (GPS downloads) .......... : no
 
 In other words, Xastir should build/compile with NO optional
 libraries installed!  This will still give you USGS GNIS maps,
@@ -452,34 +462,31 @@ This is what you'd like to see at the end of the "./configure" run
 
 
 -------------------------------------------------------------------
-  MINIMUM OPTIONS:
-    ShapeLib (Vector maps) ................. : yes
+MINIMUM OPTIONS:
+  ShapeLib (Vector maps) .................... : yes
 
-  RECOMMENDED OPTIONS:
-    GraphicsMagick/ImageMagick (Raster maps) : yes (GraphicsMagick)
-    pcre (Shapefile customization) ......... : yes
-    dbfawk (Shapefile customization) ....... : yes 
-    rtree indexing (Shapefile speedups) .... : no
-    map caching (Raster map speedups) ...... : no
-    internet map retrieval ................. : yes (libcurl)
+RECOMMENDED OPTIONS:
+  Xpm / Snapshots ........................... : yes
+  GraphicsMagick/ImageMagick (Raster maps) .. : yes (GraphicsMagick)
+  pcre (Shapefile customization) ............ : yes(PCRE2)
+  Berkeley DB map caching-Raster map speedups : no
+  internet map retrieval .................... : yes (libcurl)
 
-  FOR THE ADVENTUROUS:
-    AX25 (Linux Kernel I/O Drivers) ........ : no
-    libproj (USGS Topos & Aerial Photos) ... : no
-    GeoTiff (USGS Topos & Aerial Photos) ... : no
-    Festival (Text-to-speech) .............. : no
-    GPSMan/gpsmanshp (GPS downloads) ....... : no 
+FOR THE ADVENTUROUS:
+  AX25 (Linux Kernel I/O Drivers) ........... : no
+  libproj (USGS Topos & Aerial Photos) ...... : no
+  GeoTiff (USGS Topos & Aerial Photos) ...... : no
+  Festival (Text-to-speech) ................. : no
+  GPSMan/gpsmanshp (GPS downloads) .......... : no
+
 -------------------------------------------------------------------
 
 
 Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
 "wget" instead of "libcurl" for your installation of Xastir.  Those
-are alternative packages that give similar functionality.  You may
-also see "(internal)" at the end of the Shapelib line, which is fine
+are alternative packages that give similar functionality.
 also.
 
-
-TBD
 
 
 --------------------------------------------------------------------
@@ -500,31 +507,33 @@ This is what you'd like to see at the end of the "./configure" run:
 
 
 -------------------------------------------------------------------
-  MINIMUM OPTIONS:
-    ShapeLib (Vector maps) ................. : yes
+MINIMUM OPTIONS:
+  ShapeLib (Vector maps) .................... : yes
 
-  RECOMMENDED OPTIONS:
-    GraphicsMagick/ImageMagick (Raster maps) : yes (GraphicsMagick)
-    pcre (Shapefile customization) ......... : yes
-    dbfawk (Shapefile customization) ....... : yes
-    rtree indexing (Shapefile speedups) .... : yes
-    map caching (Raster map speedups) ...... : yes
-    internet map retrieval ................. : yes (libcurl)
+RECOMMENDED OPTIONS:
+  Xpm / Snapshots ........................... : yes
+  GraphicsMagick/ImageMagick (Raster maps) .. : yes (GraphicsMagick)
+  pcre (Shapefile customization) ............ : yes(PCRE2)
+  Berkeley DB map caching-Raster map speedups : yes
+  internet map retrieval .................... : yes (libcurl)
 
-  FOR THE ADVENTUROUS:
-    AX25 (Linux Kernel I/O Drivers) ........ : yes
-    libproj (USGS Topos & Aerial Photos) ... : yes
-    GeoTiff (USGS Topos & Aerial Photos) ... : yes
-    Festival (Text-to-speech) .............. : yes
-    GPSMan/gpsmanshp (GPS downloads) ....... : yes
+FOR THE ADVENTUROUS:
+  AX25 (Linux Kernel I/O Drivers) ........... : yes
+  libproj (USGS Topos & Aerial Photos) ...... : yes
+  GeoTiff (USGS Topos & Aerial Photos) ...... : yes
+  Festival (Text-to-speech) ................. : yes
+  GPSMan/gpsmanshp (GPS downloads) .......... : yes
+
 -------------------------------------------------------------------
 
 
-Note:  You may see "ImageMagick" instead of "GraphicsMagick" and/or
+Note: You may see "ImageMagick" instead of "GraphicsMagick" and/or
 "wget" instead of "libcurl" for your installation of Xastir.  Those
-are alternative packages that give similar functionality.  You may
-also see "(internal)" at the end of the Shapelib line, which is fine
-also.
+are alternative packages that give similar functionality.  You may see
+"(legacy)" after the "yes" for PCRE if you've installed the old,
+obsolete package "pcre" instead of "pcre2" (many Linux systems are
+starting to drop the old one, so the new one is preferred, but Xastir
+will work with either).
 
 
 TBD
