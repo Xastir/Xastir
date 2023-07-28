@@ -757,6 +757,27 @@ void Station_List_fill(int type, int new_offset)
           ghost = 0;          // Not an object
         }
 
+        // call (or object/item name)
+        // Do this first as it is used for callback data later
+        /* check to see if string changed and over write */
+        temp_ptr = XmTextFieldGetString(SL_call[type][row]);
+        xastir_snprintf(temp_call, sizeof(temp_call), "%s", temp_ptr);
+        XtFree(temp_ptr);
+
+        if (strcmp(temp_call, p_station->call_sign) != 0)
+        {
+          XmTextFieldSetString(SL_call[type][row], p_station->call_sign);
+          if (ghost)
+          {
+            XtSetSensitive(SL_call[type][row], FALSE);
+          }
+          else
+          {
+            XtSetSensitive(SL_call[type][row], TRUE);
+          }
+          XtManageChild(SL_call[type][row]);
+        }
+
         // Blank out the icon first
         XtVaSetValues(SL_da[type][row],XmNlabelPixmap, blank_icon,NULL);
         XtManageChild(SL_da[type][row]);
@@ -793,26 +814,6 @@ void Station_List_fill(int type, int new_offset)
         xastir_snprintf(temp, sizeof(temp), "%*d", strwid, (row+1+new_offset));
         XmTextFieldSetString(SL_list[type][row],temp);
         XtManageChild(SL_list[type][row]);
-
-        // call (or object/item name)
-        /* check to see if string changed and over write */
-        temp_ptr = XmTextFieldGetString(SL_call[type][row]);
-        xastir_snprintf(temp_call, sizeof(temp_call), "%s", temp_ptr);
-        XtFree(temp_ptr);
-
-        if (strcmp(temp_call,p_station->call_sign) !=0 )
-        {
-          XmTextFieldSetString(SL_call[type][row],p_station->call_sign);
-          if (ghost)
-          {
-            XtSetSensitive(SL_call[type][row],FALSE);
-          }
-          else
-          {
-            XtSetSensitive(SL_call[type][row],TRUE);
-          }
-          XtManageChild(SL_call[type][row]);
-        }
 
         switch (type)
         {
