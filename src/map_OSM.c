@@ -543,28 +543,18 @@ static void draw_image(
   // try to reduce the number of colors in an image.
   // This may take some time, so it would be best to do ahead of
   // time if it is a static image.
-#if (MagickLibVersion < 0x0540)
-  if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128)
-  {
-#else   // MagickLib >= 540
   if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, except_ptr) > 128)
   {
-#endif  // MagickLib Version
-
     if (image->storage_class == PseudoClass)
     {
-#if (MagickLibVersion < 0x0549)
-      CompressColormap(image); // Remove duplicate colors
-#else // MagickLib >= 0x0549
       CompressImageColormap(image); // Remove duplicate colors
-#endif  // MagickLibVersion < 0x0549
     }
 
     // Quantize down to 128 will go here...
   }
 
 
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
   pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
 #else
   pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
@@ -582,11 +572,7 @@ static void draw_image(
   index_pack = AccessMutableIndexes(image);
 #endif
 #else
-#if (MagickLibVersion < 0x0669)
-  index_pack = GetIndexes(image);
-#else
   index_pack = GetAuthenticIndexQueue(image);
-#endif
 #endif
   if (image->storage_class == PseudoClass && !index_pack)
   {
@@ -776,28 +762,18 @@ static void draw_OSM_image(
   // try to reduce the number of colors in an image.
   // This may take some time, so it would be best to do ahead of
   // time if it is a static image.
-#if (MagickLibVersion < 0x0540)
-  if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128)
-  {
-#else   // MagickLib >= 540
   if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, except_ptr) > 128)
   {
-#endif  // MagickLib Version
-
     if (image->storage_class == PseudoClass)
     {
-#if (MagickLibVersion < 0x0549)
-      CompressColormap(image); // Remove duplicate colors
-#else // MagickLib >= 0x0549
       CompressImageColormap(image); // Remove duplicate colors
-#endif  // MagickLibVersion < 0x0549
     }
 
     // Quantize down to 128 will go here...
   }
 
 
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x669)
+#if defined(HAVE_GRAPHICSMAGICK)
   pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
 #else
   pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows, except_ptr);
@@ -815,11 +791,7 @@ static void draw_OSM_image(
   index_pack = AccessMutableIndexes(image);
 #endif
 #else
-#if (MagickLibVersion < 0x0669)
-  index_pack = GetIndexes(image);
-#else
   index_pack = GetAuthenticIndexQueue(image);
-#endif
 #endif
   if (image->storage_class == PseudoClass && !index_pack)
   {
@@ -1360,7 +1332,7 @@ void draw_OSM_tiles (Widget w,
     canvas->background_color.green = MATTE_GREEN;
     canvas->background_color.blue = MATTE_BLUE;
     canvas->background_color.opacity = MATTE_OPACITY;
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
     SetImage(canvas, MATTE_OPACITY);
 #else
     SetImageBackgroundColor(canvas);
@@ -1397,7 +1369,7 @@ void draw_OSM_tiles (Widget w,
           if (exception.severity==FileOpenError)
           {
             //fprintf(stderr, "%s NOT available\n", tile_info->filename);
-#if !defined(HAVE_GRAPHICSMAGICK) && (MagickLibVersion > 0x0669)
+#if !defined(HAVE_GRAPHICSMAGICK)
             ClearMagickException(&exception);
 #endif
           }
@@ -1440,7 +1412,7 @@ void draw_OSM_tiles (Widget w,
 
     if (debug_level & 512)
     {
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
       DescribeImage(canvas, stderr, 0);
 #else
       IdentifyImage(canvas, stderr, 0);
@@ -1839,11 +1811,7 @@ void draw_OSM_map (Widget w,
   {
     fprintf(stderr,"Image: %s\n", file);
     fprintf(stderr,"Image size %d %d\n", map_image_width, map_image_height);
-#if (MagickLibVersion < 0x0540)
-    fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
-#else // MagickLib < 540
     fprintf(stderr,"Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
-#endif // MagickLib < 540
     fprintf(stderr,"image matte is %i\n", image->matte);
   } // debug_level & 512
 

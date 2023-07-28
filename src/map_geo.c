@@ -1164,7 +1164,6 @@ void draw_geo_image_map (Widget w,
       {
         imagemagick_options.normalize = 1;
       }
-#if (MagickLibVersion >= 0x0539)
       if (strncasecmp(line, "LEVEL", 5) == 0)
       {
         xastir_snprintf(imagemagick_options.level,
@@ -1172,7 +1171,6 @@ void draw_geo_image_map (Widget w,
                         "%s",
                         line+6);
       }
-#endif  // MagickLibVersion >= 0x0539
       if (strncasecmp(line, "MODULATE", 8) == 0)
       {
         xastir_snprintf(imagemagick_options.modulate,
@@ -2237,7 +2235,6 @@ void draw_geo_image_map (Widget w,
     return;
   }
 
-#if (MagickLibVersion >= 0x0539)
   if (imagemagick_options.level[0] != '\0')
   {
     if (debug_level & 16)
@@ -2246,7 +2243,6 @@ void draw_geo_image_map (Widget w,
     }
     LevelImage(image, imagemagick_options.level);
   }
-#endif  // MagickLibVersion >= 0x0539
 
   if (check_interrupt(image, image_info,
                       &exception, &da, &pixmap, &gc, screen_width, screen_height))
@@ -2300,7 +2296,7 @@ void draw_geo_image_map (Widget w,
     //        target=GetOnePixel(image,0,0);
     for (y=0; y < (long) image->rows; y++)
     {
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
       q=GetImagePixels(image,0,y,image->columns,1);
 #else
       q=GetAuthenticPixels(image,0,y,image->columns,1,&exception);
@@ -2318,7 +2314,7 @@ void draw_geo_image_map (Widget w,
         }
         q++;
       }
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
       if (!SyncImagePixels(image))
       {
         fprintf(stderr, "SyncImagePixels Failed....\n");
@@ -2336,21 +2332,12 @@ void draw_geo_image_map (Widget w,
   // try to reduce the number of colors in an image.
   // This may take some time, so it would be best to do ahead of
   // time if it is a static image.
-#if (MagickLibVersion < 0x0540)
-  if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128)
-  {
-#else   // MagickLib >= 540
   if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128)
   {
-#endif  // MagickLib Version
 
     if (image->storage_class == PseudoClass)
     {
-#if (MagickLibVersion < 0x0549)
-      CompressColormap(image); // Remove duplicate colors
-#else // MagickLib >= 0x0549
       CompressImageColormap(image); // Remove duplicate colors
-#endif  // MagickLibVersion < 0x0549
     }
 
     // Quantize down to 128 will go here...
@@ -2362,7 +2349,7 @@ void draw_geo_image_map (Widget w,
     return;
   }
 
-#if defined(HAVE_GRAPHICSMAGICK) || (MagickLibVersion < 0x0669)
+#if defined(HAVE_GRAPHICSMAGICK)
   pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
 #else
   pixel_pack = GetAuthenticPixels(image, 0, 0, image->columns, image->rows,&exception);
@@ -2395,11 +2382,7 @@ void draw_geo_image_map (Widget w,
     index_pack = AccessMutableIndexes(image);
   #endif
 #else
-  #if (MagickLibVersion < 0x0669)
-    index_pack = GetIndexes(image);
-  #else
     index_pack = GetAuthenticIndexQueue(image);
-  #endif
 #endif
   if (image->storage_class == PseudoClass && !index_pack)
   {
@@ -2541,25 +2524,14 @@ void draw_geo_image_map (Widget w,
   if (debug_level & 16)
   {
     fprintf(stderr,"Image size %d %d\n", width, height);
-#if (MagickLibVersion < 0x0540)
-    fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
-#else   // MagickLibVersion < 0x0540
     fprintf(stderr,"Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
-#endif  // MagickLibVersion < 0x0540
     fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
             map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
 
-#if (MagickLibVersion < 0x0540)
-    fprintf(stderr,"is Gray Image = %i\n", IsGrayImage(image));
-    fprintf(stderr,"is Monochrome Image = %i\n", IsMonochromeImage(image));
-    //fprintf(stderr,"is Opaque Image = %i\n", IsOpaqueImage(image));
-    //fprintf(stderr,"is PseudoClass = %i\n", image->storage_class == PseudoClass);
-#else    // MagickLibVersion < 0x0540
     fprintf(stderr,"is Gray Image = %i\n", IsGrayImage( image, &exception ));
     fprintf(stderr,"is Monochrome Image = %i\n", IsMonochromeImage( image, &exception ));
     //fprintf(stderr,"is Opaque Image = %i\n", IsOpaqueImage( image, &exception ));
     //fprintf(stderr,"is PseudoClass = %i\n", image->storage_class == PseudoClass);
-#endif   // MagickLibVersion < 0x0540
 
     fprintf(stderr,"image matte is %i\n", image->matte);
     fprintf(stderr,"Colorspace = %i\n", image->colorspace);

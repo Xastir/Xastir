@@ -30018,15 +30018,7 @@ int main(int argc, char *argv[], char *envp[])
   InitializeMagick(*argv);
 #else   // HAVE_GRAPHICSMAGICK
 #ifdef HAVE_IMAGEMAGICK
-#if (MagickLibVersion < 0x0538)
-  MagickIncarnate(*argv);
-#else   // 0x0538 < MagickLibVersion < 0x0669
-  #if (MagickLibVersion < 0x0669)
-    InitializeMagick(*argv);
-  #else // > 0x669
-    MagickCoreGenesis(*argv, MagickTrue);
-  #endif
-#endif  // MagickLibVersion < 0x0538
+  MagickCoreGenesis(*argv, MagickTrue);
 #endif  // HAVE_IMAGEMAGICK
 #endif  //HAVE_GRAPHICSMAGICK
 
