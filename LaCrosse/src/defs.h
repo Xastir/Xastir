@@ -1,7 +1,7 @@
 //
 //
 // Copyright (C) 2005 Jim Chandler <jim@n0vh.org>
-// Portions Copyright (C) 2000-2019 The Xastir Group
+// Portions Copyright (C) 2000-2023 The Xastir Group
 //
 //
 // Dummy info here for now...

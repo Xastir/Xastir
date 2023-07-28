@@ -1,5 +1,5 @@
 
-# Copyright (C) 2000-2019 The Xastir Group
+# Copyright (C) 2000-2023 The Xastir Group
 
 noinst_LIBRARIES=librtree.a
 

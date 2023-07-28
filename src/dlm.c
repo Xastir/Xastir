@@ -2,7 +2,7 @@
  *
  * $Id: dlm.c,v 1.10 2018/07/14 21:32:43 MikeNix Exp $
  *
- * Copyright (C) 2018 The Xastir Group
+ * Copyright (C) 2018-2023 The Xastir Group
  *
  * This file was contributed by Mike Nix.
  *

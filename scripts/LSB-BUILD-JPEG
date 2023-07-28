@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2000-2019 The Xastir Group
+# Copyright (C) 2000-2023 The Xastir Group
 # <http://www.ijg.org/>
 
 # Compile jpeg-6b under Linux Standard Base 3.0.  Install into
