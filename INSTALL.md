@@ -12,7 +12,7 @@ General build process:
 3. [Create a build directory and run configure in it with any necessary options](#create-a-build-directory-and-run-configure-in-it-with-any-necessary-options)
 4. [Build Xastir](#build-xastir)
 5. [Install the code](#install-the-code)
-6. [Profit](#profit)
+6. [Start using Xastir](#start-using-xastir)
 7. [Miscellaneous notes](#miscellaneous-notes)
 
 The procedure for building Xastir from source is fairly generic, and
@@ -338,7 +338,7 @@ kernel AX.25 ports:
 sudo chmod 4755 /usr/local/bin/xastir
 ```
 
-## Profit ##
+## Start using Xastir
 
 Xastir can now be run simply by typing its name at the command line.
 
@@ -397,10 +397,10 @@ There are some command-line switches that you can
 If you type "xastir -?", which is an invalid command-line option,
 you'll see this:
 
+```
   xastir: invalid option -- h
 
   Xastir Command line Options
-
   -c /path/dir       Xastir config dir
   -f callsign        Track callsign
   -i                 Install private Colormap
@@ -421,7 +421,8 @@ you'll see this:
   -p                 Disable popups
   -t                 Internal SIGSEGV handler enabled
   -v level           Set the debug level
-
+  -V                 Print version number and exit
+```
 
 Ignore those for now unless you need to change the Language.
 
@@ -465,26 +466,26 @@ the "hot" letter (underlined lettter) for each menu item.
 
 #### Global Operations:
 
-| Action  | Function
-|:--|
-|LeftClick|      Select Menu or GUI Item (when in menus or dialogs)
-|LeftDblClick|    FetchAlertText (when in View->Wx Alerts dialog)
-|RightClick |     OptionsMenu
-|Home|            Center the map on your home station
-|PageUp|          ZoomOut
-|PageDown|        ZoomIn
-|ArrowUp|         PanUp
-|ArrowDown|       PanDown
-|ArrowLeft|       PanLeft
-|ArrowRight|      PanRight
-|"="|             GridSize++
-|"+"|             GridSize++
-|"Num+"|          GridSize++
-|"-"|             GridSize--
-|"Num-"|          GridSize--
-|"Space"|         Activate current widget
-|"Tab"|           Rotate among widgets
-|"Back-Tab"|      Rotate among widgets backwards
+| Action  | Function |
+|:--|:--|
+|LeftClick|      Select Menu or GUI Item (when in menus or dialogs)|
+|LeftDblClick|    FetchAlertText (when in View->Wx Alerts dialog)|
+|RightClick |     OptionsMenu|
+|Home|            Center the map on your home station|
+|PageUp|          ZoomOut|
+|PageDown|        ZoomIn|
+|ArrowUp|         PanUp|
+|ArrowDown|       PanDown|
+|ArrowLeft|       PanLeft|
+|ArrowRight|      PanRight|
+|"="|             GridSize++|
+|"+"|             GridSize++|
+|"Num+"|          GridSize++|
+|"-"|             GridSize--|
+|"Num-"|          GridSize--|
+|"Space"|         Activate current widget|
+|"Tab"|           Rotate among widgets|
+|"Back-Tab"|      Rotate among widgets backwards|
 
 
 #### Other Possible External Stimuli:
