@@ -352,6 +352,8 @@ or an internet APRS server.
 
 * [Starting Xastir](#starting-xastir)
 * [Changing the language](#changing-the-language)
+* [Configuring Xastir](#configuring-xastir)
+* [Various ways to manipulate Xastir](#various-ways-to-manipulate-xastir)
 
 ### Starting Xastir:
 
@@ -439,70 +441,7 @@ script requires "wget" in order to work.  Run this script periodically
 up-to-date.  If you're not in the U.S. or one of it's possessions then
 you can safely ignore this download.
 
-
-### Various ways to manipulate Xastir
-
-
-#### Context-Dependent Operations:
-
-The top row of this table refers to the mode of operation.  The
-"Cursor" row describes what the cursor looks like when in that mode.
-Each following row describes what the operation on the left hand
-column performs.
-
-|       | Normal  | Draw-Cad  |  Measure    | Move  |
-|:-:|:-:|:-:|:-:|:-:|
-| Cursor| Arrow   | Pencil    | Crosshairs  | Crosshairs  |
-| LeftClick  |   |   |   | SelectObject  |
-| LeftDrag  | ZoomToArea  | ZoomToArea  | MeasureArea  | MoveObject  |
-| MiddleClick  | ZoomOut  | SetCADPoint  | ZoomOut  | ZoomOut  |
-
-Alt-F, Alt-V, etc to bring up main menus via the keyboard.  Use
-arrow keys to navigate menus and/or single letters corresponding to
-the "hot" letter (underlined lettter) for each menu item.
-
-"ESC" to back out of the menu system.
-
-
-#### Global Operations:
-
-| Action  | Function |
-|:--|:--|
-|LeftClick|      Select Menu or GUI Item (when in menus or dialogs)|
-|LeftDblClick|    FetchAlertText (when in View->Wx Alerts dialog)|
-|RightClick |     OptionsMenu|
-|Home|            Center the map on your home station|
-|PageUp|          ZoomOut|
-|PageDown|        ZoomIn|
-|ArrowUp|         PanUp|
-|ArrowDown|       PanDown|
-|ArrowLeft|       PanLeft|
-|ArrowRight|      PanRight|
-|"="|             GridSize++|
-|"+"|             GridSize++|
-|"Num+"|          GridSize++|
-|"-"|             GridSize--|
-|"Num-"|          GridSize--|
-|"Space"|         Activate current widget|
-|"Tab"|           Rotate among widgets|
-|"Back-Tab"|      Rotate among widgets backwards|
-
-
-#### Other Possible External Stimuli:
-
-If you send Xastir a signal (using "kill"), you can force it to
-perform some action based on which signal you send.
-
-* Send a SIGUSR1 to cause a snapshot to be taken.
-* Send a SIGHUP to cause Xastir to save/quit/restart.
-* Send a SIGINT, SIGQUIT, or SIGTERM to cause Xastir to quit.
-* Connect to TCP port 2023 if Server Port is enabled to send/receive packets.
-* Send to UDP port 2023 via the `xastir_udp_client` program to inject packets.
-
-
-
-
-#### Configuring Xastir:
+### Configuring Xastir:
 
 * Note that the menu's have a dashed line near the top.  If you
 click on that dashed line it acts like a cut-line for the menu and
@@ -568,6 +507,65 @@ AX.25 Kernel Networking ports.
 Some of the more esoteric types of interfaces may require some
 questions on the Xastir list.  Don't be afraid to ask them as we've
 all been there before.
+
+### Various ways to manipulate Xastir
+
+
+#### Context-Dependent Operations:
+
+The top row of this table refers to the mode of operation.  The
+"Cursor" row describes what the cursor looks like when in that mode.
+Each following row describes what the operation on the left hand
+column performs.
+
+|       | Normal  | Draw-Cad  |  Measure    | Move  |
+|:-:|:-:|:-:|:-:|:-:|
+| Cursor| Arrow   | Pencil    | Crosshairs  | Crosshairs  |
+| LeftClick  |   |   |   | SelectObject  |
+| LeftDrag  | ZoomToArea  | ZoomToArea  | MeasureArea  | MoveObject  |
+| MiddleClick  | ZoomOut  | SetCADPoint  | ZoomOut  | ZoomOut  |
+
+Alt-F, Alt-V, etc to bring up main menus via the keyboard.  Use
+arrow keys to navigate menus and/or single letters corresponding to
+the "hot" letter (underlined lettter) for each menu item.
+
+"ESC" to back out of the menu system.
+
+
+#### Global Operations:
+
+| Action  | Function |
+|:--|:--|
+|LeftClick|      Select Menu or GUI Item (when in menus or dialogs)|
+|LeftDblClick|    FetchAlertText (when in View->Wx Alerts dialog)|
+|RightClick |     OptionsMenu|
+|Home|            Center the map on your home station|
+|PageUp|          ZoomOut|
+|PageDown|        ZoomIn|
+|ArrowUp|         PanUp|
+|ArrowDown|       PanDown|
+|ArrowLeft|       PanLeft|
+|ArrowRight|      PanRight|
+|"="|             GridSize++|
+|"+"|             GridSize++|
+|"Num+"|          GridSize++|
+|"-"|             GridSize--|
+|"Num-"|          GridSize--|
+|"Space"|         Activate current widget|
+|"Tab"|           Rotate among widgets|
+|"Back-Tab"|      Rotate among widgets backwards|
+
+
+#### Other Possible External Stimuli:
+
+If you send Xastir a signal (using "kill"), you can force it to
+perform some action based on which signal you send.
+
+* Send a SIGUSR1 to cause a snapshot to be taken.
+* Send a SIGHUP to cause Xastir to save/quit/restart.
+* Send a SIGINT, SIGQUIT, or SIGTERM to cause Xastir to quit.
+* Connect to TCP port 2023 if Server Port is enabled to send/receive packets.
+* Send to UDP port 2023 via the `xastir_udp_client` program to inject packets.
 
 ## Miscellaneous notes
 
