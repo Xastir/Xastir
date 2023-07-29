@@ -30,14 +30,14 @@ before proceeding with the rest of this section.**
 
 The packages you absolutely must have in order to build Xastir are:
 
-    * autoconf
-    * automake
-    * gcc and all of its development headers
-    * glibc and its development headers
-    * openmotif or lesstiff and its development headers
-    * the X11 window system and X development headers
-    * make
-    * git
+* autoconf
+* automake
+* gcc and all of its development headers
+* glibc and its development headers
+* openmotif or lesstiff and its development headers
+* the X11 window system and X development headers
+* make
+* git
 
 If you don't have at least these, you won't be able to build Xastir at
 all, and if this is all you have you'll get the most limited version
@@ -63,28 +63,28 @@ Installing these optional packages enables additional features in
 Xastir.  You need both the library and development packages for any of
 these packages for which both are available.
 
-    * gv and ghostscript (Enables map printing)
-    * libXpm (enables creation of map snapshots for display and printing)
-    * GraphicsMagick (Enables access to many formats of map images)
-    * curl  (Enables access to the web to download maps or other data)
-    * shapelib (Enables display of vector maps in ESRI shapefile format)
-    * pcre2 (Perl Compatible Regexps, enables control of how shapefile maps are displayed)
-    * libgeotiff (Enables display of maps in Geotiff format,
-      such as older topographic maps provided by the US Geological
-      Survey)
-    * ax25-apps, ax25-doc, ax25-tools, libax25 (enables Linux kernel
-      mode AX.25 for sharing/access of KISS TNC devices)
-    * festival (enables text-to-speech options)
+* gv and ghostscript (Enables map printing)
+* libXpm (enables creation of map snapshots for display and printing)
+* GraphicsMagick (Enables access to many formats of map images)
+* curl  (Enables access to the web to download maps or other data)
+* shapelib (Enables display of vector maps in ESRI shapefile format)
+* pcre2 (Perl Compatible Regexps, enables control of how shapefile maps are displayed)
+* libgeotiff (Enables display of maps in Geotiff format,
+  such as older topographic maps provided by the US Geological
+  Survey)
+* ax25-apps, ax25-doc, ax25-tools, libax25 (enables Linux kernel
+  mode AX.25 for sharing/access of KISS TNC devices)
+* festival (enables text-to-speech options)
 
 In some cases, there are alternatives that can provide the same
 features:
 
-    * wget can be used instead of curl
-    * ImageMagick 6 (NOT ImageMagick 7) can be used instead of
-      GraphicsMagick, but GraphicsMagick is preferred
-    * The older PCRE library (sometimes called PCRE3, even though the
-      *current* version is PCRE2) can be used, but is long past its
-      end of life.  PCRE2 is preferred.
+* wget can be used instead of curl
+* ImageMagick 6 (NOT ImageMagick 7) can be used instead of
+  GraphicsMagick, but GraphicsMagick is preferred
+* The older PCRE library (sometimes called PCRE3, even though the
+  *current* version is PCRE2) can be used, but is long past its
+  end of life.  PCRE2 is preferred.
 
 Some of the packages listed above depend on other packages themselves,
 but the norm of modern package management systems is to install all
