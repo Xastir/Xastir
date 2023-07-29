@@ -12,7 +12,8 @@ General build process:
 3. [Create a build directory and run configure in it with any necessary options](#create-a-build-directory-and-run-configure-in-it-with-any-necessary-options)
 4. [Build Xastir](#build-xastir)
 5. [Install the code](#install-the-code)
-6. Profit
+6. [Profit](#profit)
+7. [Miscellaneous notes](#miscellaneous-notes)
 
 The procedure for building Xastir from source is fairly generic, and
 the most difficult part is assuring that you have all dependent
@@ -347,4 +348,343 @@ curl then there are many online map options available immediately in
 the map chooser.  I recommend `Online/OSM_tiled_mapnik.geo`.
 
 You will now have to get Xastir configured and connected to your TNC
-or an internet APRS server, but that's a matter for another file.
+or an internet APRS server.
+
+* [Starting Xastir](#starting-xastir)
+* [Changing the language](#changing-the-language)
+
+### Starting Xastir:
+
+NEVER RUN XASTIR AS THE ROOT USER!  You're risking the
+security of your system by attempting it.  Create another regular
+user on your system and use that user for all of your normal
+activity.  This goes for any other normal activity on the system as
+well.  Only use the "root" account for maintenance activities, not
+for regular user activities.  You'll thank me later!
+
+Assuming you want to start Xastir up in the English language, you
+can type (from an xterm window):
+
+    xastir
+
+which will start up the program without giving you back a
+command-prompt in your xterm window (until Xastir exits), or you can
+type (from an xterm window):
+
+     xastir &
+
+which will start Xastir in the background, giving you back your
+xterm for more commands.  The typical way to start it is with
+"xastir &".  Of course you can get fancier and attach it to your
+window manager's menus or create an icon on your desktop which
+starts it.  Those are operating system/window manager-specific, so
+we won't cover how to do that here.
+
+The first time you start Xastir it will show a default map of the
+world plus pop up the File->Configure->Station dialog.  Enter a
+callsign on that dialog and press the OK button.
+
+
+### Changing the Language:
+
+If you want to start Xastir using some other language, you do that
+with command-line switches when you start Xastir.  Once you use one
+of these switches, that language option becomes "sticky", meaning
+you won't have to enter that command-line switch again unless you
+wish to change languages.
+
+There are some command-line switches that you can 
+If you type "xastir -?", which is an invalid command-line option,
+you'll see this:
+
+  xastir: invalid option -- h
+
+  Xastir Command line Options
+
+  -c /path/dir       Xastir config dir
+  -f callsign        Track callsign
+  -i                 Install private Colormap
+  -geometry WxH+X+Y  Set Window Geometry
+  -l Dutch           Set the language to Dutch
+  -l English         Set the language to English
+  -l French          Set the language to French
+  -l German          Set the language to German
+  -l Italian         Set the language to Italian
+  -l Portuguese      Set the language to Portuguese
+  -l Spanish         Set the language to Spanish
+  -l ElmerFudd       Set the language to ElmerFudd
+  -l MuppetsChef     Set the language to MuppetsChef
+  -l OldeEnglish     Set the language to OldeEnglish
+  -l PigLatin        Set the language to PigLatin
+  -l PirateEnglish   Set the language to PirateEnglish
+  -m                 Deselect Maps
+  -p                 Disable popups
+  -t                 Internal SIGSEGV handler enabled
+  -v level           Set the debug level
+
+
+Ignore those for now unless you need to change the Language.
+
+OK, Xastir should show up on your screen at this point.  We're
+assuming that you're already running X-Windows graphical environment
+at this point.  If you're in command-line Linux/Unix only, Xastir
+won't run.
+
+If you've configured in ShapeLib capability, you'll need to run
+/usr/local/share/xastir/scripts/get-NWSdata as the root user in order
+to get the NOAA data files you'll need for the weather alerts.  The
+script requires "wget" in order to work.  Run this script periodically
+(once every six months perhaps?) to keep your weather alert maps
+up-to-date.  If you're not in the U.S. or one of it's possessions then
+you can safely ignore this download.
+
+
+### Various ways to manipulate Xastir
+
+
+#### Context-Dependent Operations:
+
+The top row of this table refers to the mode of operation.  The
+"Cursor" row describes what the cursor looks like when in that mode.
+Each following row describes what the operation on the left hand
+column performs.
+
+|       | Normal  | Draw-Cad  |  Measure    | Move  |
+|:-:|:-:|:-:|:-:|:-:|
+| Cursor| Arrow   | Pencil    | Crosshairs  | Crosshairs  |
+| LeftClick  |   |   |   | SelectObject  |
+| LeftDrag  | ZoomToArea  | ZoomToArea  | MeasureArea  | MoveObject  |
+| MiddleClick  | ZoomOut  | SetCADPoint  | ZoomOut  | ZoomOut  |
+
+Alt-F, Alt-V, etc to bring up main menus via the keyboard.  Use
+arrow keys to navigate menus and/or single letters corresponding to
+the "hot" letter (underlined lettter) for each menu item.
+
+"ESC" to back out of the menu system.
+
+
+#### Global Operations:
+
+| Action  | Function
+|:--|
+|LeftClick|      Select Menu or GUI Item (when in menus or dialogs)
+|LeftDblClick|    FetchAlertText (when in View->Wx Alerts dialog)
+|RightClick |     OptionsMenu
+|Home|            Center the map on your home station
+|PageUp|          ZoomOut
+|PageDown|        ZoomIn
+|ArrowUp|         PanUp
+|ArrowDown|       PanDown
+|ArrowLeft|       PanLeft
+|ArrowRight|      PanRight
+|"="|             GridSize++
+|"+"|             GridSize++
+|"Num+"|          GridSize++
+|"-"|             GridSize--
+|"Num-"|          GridSize--
+|"Space"|         Activate current widget
+|"Tab"|           Rotate among widgets
+|"Back-Tab"|      Rotate among widgets backwards
+
+
+#### Other Possible External Stimuli:
+
+If you send Xastir a signal (using "kill"), you can force it to
+perform some action based on which signal you send.
+
+* Send a SIGUSR1 to cause a snapshot to be taken.
+* Send a SIGHUP to cause Xastir to save/quit/restart.
+* Send a SIGINT, SIGQUIT, or SIGTERM to cause Xastir to quit.
+* Connect to TCP port 2023 if Server Port is enabled to send/receive packets.
+* Send to UDP port 2023 via the `xastir_udp_client` program to inject packets.
+
+
+
+
+#### Configuring Xastir:
+
+* Note that the menu's have a dashed line near the top.  If you
+click on that dashed line it acts like a cut-line for the menu and
+detaches that menu from the main menu.  You can then move that menu
+off to another area of your screen.  You might try that with the
+File->Configure menu at this time.
+
+* Go to File->Configure->Station and set your callsign.  Set up
+other parameters/comment fields on this dialog that may need
+setting.
+
+* Go to File->Configure->Defaults and set parameters there.
+
+You have the main parameters set now.  Next is to enable some
+interfaces so that you can see some packets come across.  Easiest
+might be the Internet interfaces, assuming the computer you're on
+has Internet access and is hooked up to it currently.
+
+* Run "callpass" in another Xterm window in order to generate your
+Pass-code number.  Save that number as you'll need it for each
+Interface dialog where you might need to authenticate your callsign.
+Of course you can always run callpass again if you forget it!
+
+* Go to Interface->Properties then click on "Add".  Click "Internet
+Server".  Another dialog will come up that allows you to enter the
+Host, and the Port.  Enter your Pass-code number here.  People often
+check the "Activate on Startup?" and the "Reconnect on NET failure?"
+options on this box.  You may also assign a comment to this
+interface which describes the interface better for you.  Click "OK"
+to create the interface.  If you checked "Activate on Startup?" then
+the interface will start as well and you'll be receiving packets.
+
+Browse "http://www.aprs2.net/" to find a reasonable set of servers
+to start with.  Another possibility is to use "rotate.aprs2.net"
+port 14580, which theoretically should rotate among the available
+second-tier servers.  See "http://www.aprs2.net" for more info.
+You'll need to put in a filter string, such as "r/35/-106/500" which
+shows you stations that are within 500km of 35dN/106dW (Thanks for
+that one Tom!).  For additional filter settings check out:
+
+    http://www.aprs-is.net/javaprssrvr/javaprsfilter.htm
+
+* Start that interface from the Interface->Start/Stop dialog if
+it's not started already.  You'll see icons in the lower right
+toggling and see callsigns in the lower left status box if packets
+are coming in.
+
+One thing about configuration:  Most things don't get written to
+Xastir's config file until you choose either "File->Configure->Save
+Config Now!" or you exit Xastir.  Map Selections however are
+immediate.
+
+* Creating/starting interfaces for other types of devices is
+similar.  If you're wanting to create AX.25 kernel networking ports
+you'll have to refer to the HAM HOWTO documents and perhaps the
+linux-hams mailing list for help.  For AGWPE connections refer to
+that AGWPE docs and mailing list.
+
+It's recommended that if you run a local TNC, you run it in KISS
+mode.  You can do that via the Serial KISS TNC interface, or via
+AX.25 Kernel Networking ports.
+
+Some of the more esoteric types of interfaces may require some
+questions on the Xastir list.  Don't be afraid to ask them as we've
+all been there before.
+
+## Miscellaneous notes
+
+### A Note About the Map Directory:
+
+The map directory (/usr/local/share/xastir/maps/) is free-form,
+meaning you can have links in there, subdirectories, etc.  Organize
+it in any way that makes sense to you.  From within the Map Chooser
+you can select a directory name, which will select every map
+underneath that directory, so keep that in mind while organizing
+your maps.
+
+
+### Enabling Weather Alerts:
+
+You must have Shapelib compiled into Xastir.  Xastir now comes with
+Shapelib support built-in.  PRCE/dbfawk are optional.  Install NOAA
+shapefile maps as specified in README.MAPS.  These files must be
+installed into the /usr/local/share/xastir/Counties/ directory.  You
+may use this script to download/install them for you:
+
+    "/usr/local/share/xastir/scripts/get-NWSdata"
+
+which must be run as the root user, and requires "wget" to work.
+
+A neat trick:  You can copy some of these maps into the
+/usr/local/share/xastir/maps directory somewhere (a new subdirectory
+under there is always fine), then you can select some of these maps
+as regular Xastir maps as well.
+
+
+### Enabling FCC/RAC Callsign Lookup:
+
+Run the /usr/local/share/xastir/scripts/get-fcc-rac.pl script as root,
+which will download and install the proper databases into the
+/usr/local/share/xastir/fcc/ directory.  At that point the callsign
+lookup features in the Station Info dialog and in the "Station->Find
+Station" menu option should be functional.
+
+
+### Enabling Audio Alarms:
+
+Download and install sample audio files from Xastir's GitHub
+download site:
+
+    git clone http://github.com/Xastir/xastir-sounds
+
+Copy the files to your Xastir sounds directory, for instance `/usr/local/share/xastir/sounds/`
+
+Install a command-line audio player.  Call out the path/name of that
+player in the File->Configure->Audio Alarms dialog.  Common ones are
+vplay and auplay, but there are many others.  Enable the types of
+alarms you desire in that same dialog.
+
+You should be able to test it manually from a shell by typing the
+command in something like this:  vplay filename
+
+Once you find a command that works, type it into Xastir's Audio
+Alarms dialog exactly the same except omit the filename.
+
+
+### Enabling Synthesized Speech:
+
+This is currently available only on  Linux/FreeBSD.
+
+* Install the Festival Speech Synthesizer.  Configure/compile support
+for it into Xastir.  Start up the Festival server before starting
+Xastir using `festival --server &`.  Xastir should start up and
+connect to the server.  Use the options in File->Configure->Speech to
+decide which things you'd like Xastir to speak to you about.
+
+Note that the Proximity Alert option in the File->Configure->Speech
+dialog uses the distances set in the File->Configure->Audio Alarms
+dialog.
+
+
+### Enabling GPS Waypoint/Track/Route Download Support:
+
+Install GPSMan and gpsmanshp.  Configure/compile support for it in
+Xastir.  Start up GPSMan separately and configure it for your GPS
+and serial port.  You'll see download options for each type on the
+Interface menu.
+
+Note that Xastir requires a version of gpsman at least as recent as 6.1.  Older
+versions of gpsman may not work.
+
+
+### Transmit Enable/Disable Options:
+
+Each interface has a separate transmit enable.  The Interface menu
+also has a few global transmit enables.  All of these must be
+enabled for a particular interface to transmit.  Also, for Internet
+servers, you typically need to authenticate with the server using
+your callsign/pass-code before you're allowed to inject packets into
+the Internet stream which may get gated out to RF.  If you just want
+to talk to other Internet users, you don't need a pass-code to
+authenticate to the servers.
+
+
+### Igating Options:
+
+There are igating options on each local TNC interface.  There are
+other global igating options on the File->Configure->Defaults
+dialog.  The global option sets restrictions on all igating.
+
+
+### Where stuff is kept:
+
+Per-user configurations are kept in each user's ~/.xastir directory, by
+default.  In particular the ~/.xastir/config/xastir.cnf file is where most
+of the configs are kept.  This directory can be optionally specified using
+the -c /path/dir command line option.  Make sure you specify a directory,
+not a file!  Xastir will create the directory and several subdirectories if
+they do not exist when you start up. 
+
+A few executables are installed in /usr/local/bin/.
+
+Scripts are installed in /usr/local/share/xastir/scripts.
+
+Maps are installed in /usr/local/share/xastir/maps/.  Lots of other
+directories are under /usr/local/share/xastir/.
