@@ -8,7 +8,7 @@ General build process:
 
 0. [Install all system packages required and any optional packages](#install-all-system-packages-required-and-any-optional-packages)
 1. [Get the Xastir source code](#get-the-xastir-source-code)
-2. [Bootstrap the Xastir source code to create the configure script](#bootstrap-the-Xastir-source-code-to-create-the-configure-script)
+2. [Bootstrap the Xastir source code to create the configure script](#bootstrap-the-xastir-source-code-to-create-the-configure-script)
 3. [Create a build directory and run configure in it with any necessary options](#create-a-build-directory-and-run-configure-in-it-with-any-necessary-options)
 4. [Build Xastir](#build-xastir)
 5. Install the code
