@@ -11,7 +11,7 @@ General build process:
 2. [Bootstrap the source code to create the configure script](#bootstrap-the-source-code-to-create-the-configure-script)
 3. [Create a build directory and run configure in it with any necessary options](#create-a-build-directory-and-run-configure-in-it-with-any-necessary-options)
 4. [Build Xastir](#build-xastir)
-5. Install the code
+5. [Install the code](#install-the-code)
 6. Profit
 
 The procedure for building Xastir from source is fairly generic, and
