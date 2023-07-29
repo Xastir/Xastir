@@ -76,6 +76,7 @@ these packages for which both are available.
 * ax25-apps, ax25-doc, ax25-tools, libax25 (enables Linux kernel
   mode AX.25 for sharing/access of KISS TNC devices)
 * festival (enables text-to-speech options)
+* Berkeley DB version 5 (enables caching of some online map imagery)
 
 In some cases, there are alternatives that can provide the same
 features:
