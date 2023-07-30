@@ -81,8 +81,8 @@
 
      Obtain the *very latest* version of Xastir under development by
      using Git. 
-          
-     See the file README.GIT for more details.
+
+     See the file [README.GIT](README.GIT) for more details.
 
    * Release version tarballs
 
@@ -94,17 +94,14 @@
 
 3. QUICK STARTUP
 
-   See [README.Getting-Started](README.Getting-Started) for a
+   See [INSTALL.md](INSTALL.md) for a
    relatively quick overview of how to build and use Xastir.
 
    Check the Xastir wiki (http://xastir.org) for OS-specific guidance
    for building Xastir on your system.
 
-   WINDOWS USERS:  Please refer to the "README.CYGWIN" file for
+   WINDOWS USERS:  Please refer to the [README.CYGWIN](README.CYGWIN) file for
    specific instructions.
-
-   See the 'INSTALL' file in the Xastir source tree for detailed
-   information about configure.
 
 4. UPGRADING
 
