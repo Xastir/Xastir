@@ -22,7 +22,7 @@
 # AC_INIT():
 # It should look something like this:  ([xastir], [2.0.8], [xastir@xastir.org])
 # The revision number must contain at least one '.' and two digits.
-AC_INIT([xastir], [2.1.9], [xastir@xastir.org])
+AC_INIT([xastir], [2.2.0], [xastir@xastir.org])
 #########################################################################
 
 
