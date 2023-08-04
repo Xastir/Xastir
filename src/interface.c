@@ -153,7 +153,14 @@ static int pop_count = 0;
 
 
 
+/* prototype for function that is only used in this file, need not be
+   in the associated header */
 
+void output_fixed_position(char *data_txt_save, size_t data_txt_save_size,
+                           char *my_pos, char * output_phg, char * output_alt,
+                           char *my_comment_tx,
+                           char *data_txt, size_t data_txt_size,
+                           char *output_net);
 
 // Fetch a record from the circular queue.
 // Returns 0 if no records available
@@ -7180,7 +7187,7 @@ void output_my_aprs_data(void)
   char output_phg[10];
   char output_cs[10];
   char output_alt[20];
-  char output_brk[3];
+
   int ok;
   int port;
   char my_comment_tx[MAX_COMMENT+1];
@@ -7451,7 +7458,6 @@ void output_my_aprs_data(void)
     output_cs[0] = '\0';
     output_phg[0] = '\0';
     output_alt[0] = '\0';
-    output_brk[0] = '\0';
 
 
     if (transmit_compressed_posit)
@@ -7484,7 +7490,7 @@ void output_my_aprs_data(void)
       /* get CSE/SPD, Always needed for output even if 0 */
       xastir_snprintf(output_cs,
                       sizeof(output_cs),
-                      "%03d/%03d/",
+                      "%03d/%03d",
                       my_last_course,
                       my_last_speed);    // Speed in knots
 
@@ -7492,7 +7498,7 @@ void output_my_aprs_data(void)
       if (my_last_altitude_time > 0)
         xastir_snprintf(output_alt,
                         sizeof(output_alt),
-                        "A=%06ld/",
+                        "/A=%06ld",
                         my_last_altitude);
     }
 
@@ -7503,25 +7509,16 @@ void output_my_aprs_data(void)
       case(1):
         /* APRS_MOBILE LOCAL TIME */
 
-        if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-            (strlen(output_alt) > 0))
-        {
-          xastir_snprintf(output_brk,
-                          sizeof(output_brk),
-                          "/");
-        }
-
         day_time = localtime(&sec);
 
         xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
-                        "@%02d%02d%02d/%s%s%s%s%s",
+                        "@%02d%02d%02d/%s%s%s%s",
                         day_time->tm_mday,
                         day_time->tm_hour,
                         day_time->tm_min,
                         my_pos,
                         output_cs,
-                        output_brk,
                         output_alt,
                         my_comment_tx);
 
@@ -7557,25 +7554,16 @@ void output_my_aprs_data(void)
       case(2):
         /* APRS_MOBILE ZULU DATE-TIME */
 
-        if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-            (strlen(output_alt) > 0))
-        {
-          xastir_snprintf(output_brk,
-                          sizeof(output_brk),
-                          "/");
-        }
-
         day_time = gmtime(&sec);
 
         xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
-                        "@%02d%02d%02dz%s%s%s%s%s",
+                        "@%02d%02d%02dz%s%s%s%s",
                         day_time->tm_mday,
                         day_time->tm_hour,
                         day_time->tm_min,
                         my_pos,
                         output_cs,
-                        output_brk,
                         output_alt,
                         my_comment_tx);
 
@@ -7611,25 +7599,16 @@ void output_my_aprs_data(void)
       case(3):
         /* APRS_MOBILE ZULU TIME w/SEC */
 
-        if((strlen(output_cs) < 8) && (my_last_altitude_time > 0) &&
-            (strlen(output_alt) > 0))
-        {
-          xastir_snprintf(output_brk,
-                          sizeof(output_brk),
-                          "/");
-        }
-
         day_time = gmtime(&sec);
 
         xastir_snprintf(data_txt_save,
                         sizeof(data_txt_save),
-                        "@%02d%02d%02dh%s%s%s%s%s",
+                        "@%02d%02d%02dh%s%s%s%s",
                         day_time->tm_hour,
                         day_time->tm_min,
                         day_time->tm_sec,
                         my_pos,
                         output_cs,
-                        output_brk,
                         output_alt,
                         my_comment_tx);
 
@@ -7713,51 +7692,9 @@ void output_my_aprs_data(void)
         else
         {
           /* default to APRS FIXED if no wx data. No timestamp */
-
-          if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
-              (strlen(output_alt) > 0))
-          {
-            xastir_snprintf(output_brk,
-                            sizeof(output_brk),
-                            "/");
-          }
-
-          xastir_snprintf(data_txt_save,
-                          sizeof(data_txt_save),
-                          "%c%s%s%s%s%s",
-                          aprs_station_message_type,
-                          my_pos,
-                          output_phg,
-                          output_brk,
-                          output_alt,
-                          my_comment_tx);
-
-          // WE7U2:
-          // Truncate at max length for this type of APRS
-          // packet.
-          if (transmit_compressed_posit)
-          {
-            if (strlen(data_txt_save) > 54)
-            {
-              data_txt_save[54] = '\0';
-            }
-          }
-          else   // Uncompressed lat/long
-          {
-            if (strlen(data_txt_save) > 63)
-            {
-              data_txt_save[63] = '\0';
-            }
-          }
-
-          // Add '\r' onto end.
-          strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
-
-          strcpy(data_txt, output_net);
-          data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
-
-          strcat(data_txt, data_txt_save);
-          data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+          output_fixed_position(data_txt_save, sizeof(data_txt_save),
+                                my_pos, output_phg, output_alt, my_comment_tx,
+                                data_txt, sizeof(data_txt), output_net);
         }
 
         break;
@@ -7808,104 +7745,19 @@ void output_my_aprs_data(void)
         else
         {
           /* default to APRS FIXED if no wx data */
-
-          if((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
-              (strlen(output_alt) > 0))
-          {
-            xastir_snprintf(output_brk,
-                            sizeof(output_brk),
-                            "/");
-          }
-
-          xastir_snprintf(data_txt_save,
-                          sizeof(data_txt_save),
-                          "%c%s%s%s%s%s",
-                          aprs_station_message_type,
-                          my_pos,
-                          output_phg,
-                          output_brk,
-                          output_alt,
-                          my_comment_tx);
-
-          // WE7U2:
-          // Truncate at max length for this type of APRS
-          // packet.
-          if (transmit_compressed_posit)
-          {
-            if (strlen(data_txt_save) > 54)
-            {
-              data_txt_save[54] = '\0';
-            }
-          }
-          else   // Uncompressed lat/long
-          {
-            if (strlen(data_txt_save) > 63)
-            {
-              data_txt_save[63] = '\0';
-            }
-          }
-
-          // Add '\r' onto end.
-          strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
-
-          strcpy(data_txt, output_net);
-          data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
-
-          strcat(data_txt, data_txt_save);
-          data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+          output_fixed_position(data_txt_save, sizeof(data_txt_save),
+                                my_pos, output_phg, output_alt, my_comment_tx,
+                                data_txt, sizeof(data_txt),output_net);
         }
         break;
 
       /* default to APRS FIXED if no wx data */
       case(0):
-
       default:
         /* APRS_FIXED */
-
-        if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0) &&
-            (strlen(output_alt) > 0))
-        {
-          xastir_snprintf(output_brk,
-                          sizeof(output_brk),
-                          "/");
-        }
-
-        xastir_snprintf(data_txt_save,
-                        sizeof(data_txt_save),
-                        "%c%s%s%s%s%s",
-                        aprs_station_message_type,
-                        my_pos,
-                        output_phg,
-                        output_brk,
-                        output_alt,
-                        my_comment_tx);
-
-        // WE7U2:
-        // Truncate at max length for this type of APRS
-        // packet.
-        if (transmit_compressed_posit)
-        {
-          if (strlen(data_txt_save) > 54)
-          {
-            data_txt_save[54] = '\0';
-          }
-        }
-        else   // Uncompressed lat/long
-        {
-          if (strlen(data_txt_save) > 63)
-          {
-            data_txt_save[63] = '\0';
-          }
-        }
-
-        // Add '\r' onto end.
-        strncat(data_txt_save, "\r", sizeof(data_txt_save)-strlen(data_txt_save)-1);
-
-        strcpy(data_txt, output_net);
-        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
-
-        strcat(data_txt, data_txt_save);
-        data_txt[sizeof(data_txt)-1] = '\0';  // Terminate string
+        output_fixed_position(data_txt_save, sizeof(data_txt_save),
+                              my_pos, output_phg, output_alt, my_comment_tx,
+                              data_txt, sizeof(data_txt),output_net);
 
         break;
     }
@@ -9026,3 +8878,51 @@ int tnc_get_data_type(char *buf, int UNUSED(port) )
 }
 
 
+/* This function is reused several times in the output_my_aprs_data function
+   to create a string for the fixed aprs station, no timestamp.
+
+   It is created to do away with three instances of cut/pasted code
+   that complicated maintenance and readability.
+*/
+void output_fixed_position(char *data_txt_save, size_t data_txt_save_size,
+                           char *my_pos, char * output_phg, char * output_alt,
+                           char *my_comment_tx,
+                           char *data_txt, size_t data_txt_size,
+                           char *output_net)
+{
+
+  xastir_snprintf(data_txt_save,
+                  data_txt_save_size,
+                  "%c%s%s%s%s",
+                  aprs_station_message_type,
+                  my_pos,
+                  output_phg,
+                  output_alt,
+                  my_comment_tx);
+  
+  // Truncate at max length for this type of APRS
+  // packet.
+  if (transmit_compressed_posit)
+    {
+      if (strlen(data_txt_save) > 54)
+        {
+          data_txt_save[54] = '\0';
+        }
+    }
+  else   // Uncompressed lat/long
+    {
+      if (strlen(data_txt_save) > 63)
+        {
+          data_txt_save[63] = '\0';
+        }
+    }
+  
+  // Add '\r' onto end.
+  strncat(data_txt_save, "\r", data_txt_save_size-strlen(data_txt_save)-1);
+  
+  strcpy(data_txt, output_net);
+  data_txt[data_txt_size-1] = '\0';  // Terminate string
+  
+  strcat(data_txt, data_txt_save);
+  data_txt[data_txt_size-1] = '\0';  // Terminate string
+}
