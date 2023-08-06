@@ -981,10 +981,9 @@ void draw_shapefile_map (Widget w,
     }
   }
   /*
-   * DBFAWK: all this WX junk following to set up the search fields and
-   * parameters is now done by the dbfawk file which sets the "key"
-   * variable to the appropriate search key for each record which is
-   * compared to the alert->title[].
+   * Weather alert dbfawk files set the "key" variable to the
+   * appropriate search key for each record which is compared to the
+   * alert->title[].  Use the key to find the record we need to alert on.
    */
 
   // Search for specific record if we're doing alerts
