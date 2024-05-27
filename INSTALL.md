@@ -77,6 +77,7 @@ these packages for which both are available.
   mode AX.25 for sharing/access of KISS TNC devices)
 * festival (enables text-to-speech options)
 * Berkeley DB version 5 (enables caching of some online map imagery)
+  or version 18.1
 
 In some cases, there are alternatives that can provide the same
 features:
@@ -273,12 +274,23 @@ GraphicsMagick will not work with the default system C compiler at
 all.  So in my case, I have to run configure as:
 ```
 cd ~/MyXastirBuildDirectory
-~/src/XASTIR/Xastir/configure --with-bdb-incdir=/usr/local/include/db5 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc10 CXX=g++10
+~/src/XASTIR/Xastir/configure --with-bdb-incdir=/usr/local/include/db5 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc10 CXX=g++10 LIBS="-ldb-5.3"
 ```
 
 Here, I'm telling it to look in special places when looking for
 Berkeley DB headers and libraries, to use a specific (non-default)
-compiler, and to use specific compiler options (CFLAGS).
+compiler, to use specific compiler options (CFLAGS), and to use the
+Berkeley DB library "libdb-5.3" (LIBS) irrespective of any other that might
+be found on the system.
+
+It is critically important when building with Berkeley DB that the
+headers in the bdb-incdir are for the same version of Berkeley DB as
+the most recent version present in the library directory.  If one
+has both Berkeley DB 5 and Berkeley DB 18.1 installed, Xastir will use
+the most recent version present, even if one has told it to use an
+older set of headers.   The example above forces Xastir to use the
+older library even if a newer one is present, because it is also using
+the older header files per the setting of "--with-bdb-incdir".
 
 
 ## Build Xastir ##
