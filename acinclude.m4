@@ -926,60 +926,34 @@ fi
 ])
 ])
 
-# From Cyrus imap distribution (KB3EGH)
-
-dnl These are the Cyrus Berkeley DB macros.  In an ideal world these would be
-dnl identical to the above.
-
-dnl They are here so that they can be shared between Cyrus IMAPd
-dnl and Cyrus SASL with relative ease.
-
-dnl The big difference between this and the ones above is that we don't assume
-dnl that we know the name of the library, and we try a lot of permutations
-dnl instead.  We also assume that DB4 is acceptable.
-
-dnl When we're done, there will be a BDB_LIBADD and a BDB_INCADD which should
-dnl be used when necessary.  We should probably be smarter about our RPATH
-dnl handling.
-
-dnl Call these with XASTIR_BERKELEY_DB_CHK.
-
-dnl We will also set $dblib to "berkeley" if we are successful, "no" otherwise.
-
-dnl this is unbelievably painful due to confusion over what db-3 should be
-dnl named and where the db-3 header file is located.  arg.
+# Look for a library that contains the Berkeley DB function "db_create"
+# and put it into LIBS if it's not already found by the current setting of
+# LIBS
+#
+# If "--with-bdb-incdir" was specified, it will already have been added
+# to CPPFLAGS by the caller
+#
+# If "--with-bdb-libdir" was specified, we tentatively add it to LDFLAGS
+# here and add it to BDB_LIBADD.  Only if we actually find the library
+# will this get added to LDFLAGS permanently
+#
+# if we find it, dblib will have "berkeley" in it, otherwise it will have
+# "no"
+#
+# Note that this is not perfectly safe.  We only call this macro if we
+# have found a usable "db.h" header in the default CPP search path or
+# the path augmented by "--with-bdb-incdir", but we have no way of telling
+# (without actually running a program that calls db_version) whether
+# this header is actually for the most recent libdb installed on the
+# system.  This can bite users who have multiple versions, but tell Xastir
+# that they want to use the older header in some nonstandard directory.
+#
+# In that case, the ONLY solution for forcing use of the old library is to
+# specify it in LIBS (e.g. "LIBS='-ldb-5.3'").
 AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 [
 
-
-# We need to add the following algorithm here:
-#
-#   Find the db.h file, grep for DB_VERSION_MAJOR and
-#     DB_VERSION_MINOR.  In my case I get this:
-#
-#       #define DB_VERSION_MAJOR        4
-#       #define DB_VERSION_MINOR        1
-#
-#   Find the libdb.so file that Xastir would link to.  Find the
-#     version via the target of the symlink?  In my case I have
-#     this:
-#
-#       > ls -al libdb.so
-#       lrwxrwxrwx 1 root root 12 2004-01-07 11:29 libdb.so -> libdb-4.
-#
-#   Compare the major/minor numbers.  If they match, we're good to
-#   go.  If not, don't compile in libdb support.  Perhaps we could
-#   just run ldd on the test code to get the version number of the
-#   linked library instead?
-#
-# Another possible way to do it would be to create test code and
-# compile/run it which would open/write/read/close/delete a
-# database.  That should help to prove that Xastir would run ok if
-# the library were used.
-
-
-
-	BDB_SAVE_LDFLAGS=$LDFLAGS
+  BDB_SAVE_LDFLAGS=$LDFLAGS
 
 	if test -d $with_bdb_lib; then
 	    LDFLAGS="-L$with_bdb_lib $LDFLAGS"
@@ -988,50 +962,8 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 	    BDB_LIBADD=""
 	fi
 
-	saved_LIBS=$LIBS
-# Removed db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 
-# from the probe.  The map_cache.c code explicitly bombs if it doesn't have
-# version 4 or above, so why probe for version 3?
+  AC_SEARCH_LIBS([db_create],[db-18.1 db-18 db-5.3 db5.3 db53 db-5.2 db-5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50],[dblib="berkeley"],[dblib="no"])
 
-# it would be nice if this could be done with AC_SEARCH_LIBS but that doesn't
-# work as it appears that there is some C++-type name mangling going on,
-# and just probing for a library that contains "db_create" fails.  One needs
-# to specify the function call with the full prototype for it to be found.
-  BDB_LIB_FOUND="no"
-  AC_MSG_CHECKING([for a library containing db_create in default LIBS])
-  AC_LINK_IFELSE(
-      [AC_LANG_PROGRAM([[
-                         #include <db.h>
-                         ]],
-                       [[db_create(NULL, NULL, 0);]])],
-                       [BDB_LIBADD="$BDB_LIBADD"; dblib="berkeley";
-                            BDB_LIB_FOUND="yes"],
-                       [dblib="no"])
-  AC_MSG_RESULT([$BDB_LIB_FOUND])
-  if test $dblib = "no"
-  then
-    BDB_LIB_FOUND="none"
-    AC_MSG_CHECKING([for a library containing db_create])
-    for dbname in db-18.1 db-18 db-5.3 db5.3 db53 db-5.2 db5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
-     do
-  	    LIBS="$saved_LIBS -l$dbname"
-        AC_LINK_IFELSE(
-                       [AC_LANG_PROGRAM([[
-                                          #include <db.h>
-                                          ]],
-                                        [[db_create(NULL, NULL, 0);]])],
-                                        [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
-                                         BDB_LIB_FOUND="-l$dbname"],
-                                        [dblib="no"])
-#      STOP if we find one.  Otherwise we'll keep stepping through the 
-#      list and resetting dblib to "no" over and over.
-        if test $dblib = "berkeley" ; then
-           break;
-        fi
-     done
-     AC_MSG_RESULT([$BDB_LIB_FOUND])
-  fi
-  LIBS=$saved_LIBS
   LDFLAGS=$BDB_SAVE_LDFLAGS
 ])
 
@@ -1060,20 +992,9 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
 	    BDB_INCADD=""
 	fi
 
-	dnl Note that FreeBSD puts it in a weird place 
-        dnl (/usr/local/include/db42)
-        dnl (but they should use with-bdb-incdir)
-# Commented out because it doesn't distinguish between versions of db.h
-# that can work with xastir and versions that can't.  It is possible to 
-# have multiple versions of db installed in different places, pick up the 
-# header for one and the library for another.  Bleah.
-#        AC_CHECK_HEADER(db.h,
-#                        [XASTIR_BERKELEY_DB_CHK_LIB()],
-#                        dblib="no")
-#
-# Do this instead --- check to see if the db.h we find first in the search
+# check to see if the db.h we find first in the search
 # path will actually pass the test we do in map_cache.c.  Don't even bother
-# looking for a library if not.  
+# looking for a library if not.
         AC_MSG_CHECKING([if db.h is exists and is usable])
         AC_COMPILE_IFELSE(
         [AC_LANG_PROGRAM(
@@ -1095,14 +1016,14 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
          ])
 	CPPFLAGS=$xastir_save_CPPFLAGS
 
-    use_map_cache="no"
-    if test "${dblib}" = "berkeley"; then
-        LIBS="$BDB_LIBADD $LIBS"
-	CPPFLAGS="$CPPFLAGS $BDB_INCADD"
-        AC_DEFINE(USE_MAP_CACHE, 1, [Berkeley DB Map Caching])
-        use_map_cache="yes"
-    fi
- 
+  use_map_cache="no"
+  if test "${dblib}" = "berkeley"; then
+    	CPPFLAGS="$CPPFLAGS $BDB_INCADD"
+    	LDFLAGS="$BDB_LIBADD $LDFLAGS"
+      AC_DEFINE(USE_MAP_CACHE, 1, [Berkeley DB Map Caching])
+      use_map_cache="yes"
+  fi
+
 ])
 
 
