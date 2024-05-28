@@ -997,28 +997,42 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 # work as it appears that there is some C++-type name mangling going on,
 # and just probing for a library that contains "db_create" fails.  One needs
 # to specify the function call with the full prototype for it to be found.
-        BDB_LIB_FOUND="none"
-        AC_MSG_CHECKING([for a library containing db_create])
-        for dbname in db-5.3 db5.3 db53 db-5.2 db5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
-          do
-	    LIBS="$saved_LIBS -l$dbname"
-      AC_LINK_IFELSE(
-        [AC_LANG_PROGRAM([[#include <db.h>]],
-           [[db_create(NULL, NULL, 0);]])],
-        [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
-                BDB_LIB_FOUND="-l$dbname"],
-        [dblib="no"])
-#         STOP if we find one.  Otherwise we'll keep stepping through the 
-#         list and resetting dblib to "no" over and over.
-          if test $dblib = "berkeley" ; then
-            break;
-          fi
-          done
-        AC_MSG_RESULT([$BDB_LIB_FOUND])
-
-	LIBS=$saved_LIBS
-
-	LDFLAGS=$BDB_SAVE_LDFLAGS
+  BDB_LIB_FOUND="no"
+  AC_MSG_CHECKING([for a library containing db_create in default LIBS])
+  AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM([[
+                         #include <db.h>
+                         ]],
+                       [[db_create(NULL, NULL, 0);]])],
+                       [BDB_LIBADD="$BDB_LIBADD"; dblib="berkeley";
+                            BDB_LIB_FOUND="yes"],
+                       [dblib="no"])
+  AC_MSG_RESULT([$BDB_LIB_FOUND])
+  if test $dblib = "no"
+  then
+    BDB_LIB_FOUND="none"
+    AC_MSG_CHECKING([for a library containing db_create])
+    for dbname in db-18.1 db-18 db-5.3 db5.3 db53 db-5.2 db5.2 db52 db-5.1 db5.1 db51 db-5.0 db5.0 db50 db-4.9 db4.9 db49 db-4.8 db4.8 db48 db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
+     do
+  	    LIBS="$saved_LIBS -l$dbname"
+        AC_LINK_IFELSE(
+                       [AC_LANG_PROGRAM([[
+                                          #include <db.h>
+                                          ]],
+                                        [[db_create(NULL, NULL, 0);]])],
+                                        [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; 
+                                         BDB_LIB_FOUND="-l$dbname"],
+                                        [dblib="no"])
+#      STOP if we find one.  Otherwise we'll keep stepping through the 
+#      list and resetting dblib to "no" over and over.
+        if test $dblib = "berkeley" ; then
+           break;
+        fi
+     done
+     AC_MSG_RESULT([$BDB_LIB_FOUND])
+  fi
+  LIBS=$saved_LIBS
+  LDFLAGS=$BDB_SAVE_LDFLAGS
 ])
 
 AC_DEFUN([XASTIR_BERKELEY_DB_OPTS],
