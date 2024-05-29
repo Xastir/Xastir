@@ -107,7 +107,7 @@ There are two ways to get Xastir source code:
 ```
   This gets you ONLY the source code for one single release of
   Xastir.  The source code will live in the directory
-  `~/src/XASTIR/Xastir-Release-X.Y.Z` 
+  `~/src/XASTIR/Xastir-Release-X.Y.Z`
 
 2. An alternative to the above steps is to use git to download the
   Xastir sources:
@@ -143,7 +143,7 @@ must always be "bootstrapped" before proceeding.
 
 In either case, you should see the following output:
 ```
-> ./bootstrap.sh 
+> ./bootstrap.sh
     5) Removing autom4te.cache directory...
     4) Running aclocal...
     3) Running autoheader...
@@ -169,7 +169,7 @@ Linux you can get away with running it with no options at all and
 it'll find everything it needs.  In some cases you might need to
 provide it with hints about where to find things like libraries and
 headers. And there are a number of configure options that allow you to
-controll whether to skip some features you don't want, even if you've
+control whether to skip some features you don't want, even if you've
 got all the pieces installed that would normally enable them.
 
 We strongly recommend doing configuration and building of Xastir in a
@@ -408,7 +408,6 @@ of these switches, that language option becomes "sticky", meaning
 you won't have to enter that command-line switch again unless you
 wish to change languages.
 
-There are some command-line switches that you can 
 If you type "xastir -?", which is an invalid command-line option,
 you'll see this:
 
@@ -456,7 +455,7 @@ you can safely ignore this download.
 
 ### Configuring Xastir:
 
-* Note that the menu's have a dashed line near the top.  If you
+* Note that the menus have a dashed line near the top.  If you
 click on that dashed line it acts like a cut-line for the menu and
 detaches that menu from the main menu.  You can then move that menu
 off to another area of your screen.  You might try that with the
@@ -540,7 +539,7 @@ column performs.
 
 Alt-F, Alt-V, etc to bring up main menus via the keyboard.  Use
 arrow keys to navigate menus and/or single letters corresponding to
-the "hot" letter (underlined lettter) for each menu item.
+the "hot" letter (underlined letter) for each menu item.
 
 "ESC" to back out of the menu system.
 
@@ -594,9 +593,9 @@ your maps.
 
 ### Enabling Weather Alerts:
 
-You must have Shapelib compiled into Xastir.  Xastir now comes with
-Shapelib support built-in.  PRCE/dbfawk are optional.  Install NOAA
-shapefile maps as specified in README.MAPS.  These files must be
+You must have Shapelib compiled into Xastir, which also requires the
+PCRE2 library and its development headers to be installed.  Install
+NOAA shapefile maps as specified in README.MAPS.  These files must be
 installed into the /usr/local/share/xastir/Counties/ directory.  You
 may use this script to download/install them for you:
 
@@ -692,7 +691,7 @@ default.  In particular the ~/.xastir/config/xastir.cnf file is where most
 of the configs are kept.  This directory can be optionally specified using
 the -c /path/dir command line option.  Make sure you specify a directory,
 not a file!  Xastir will create the directory and several subdirectories if
-they do not exist when you start up. 
+they do not exist when you start up.
 
 A few executables are installed in /usr/local/bin/.
 
