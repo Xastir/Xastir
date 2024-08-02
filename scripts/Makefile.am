@@ -13,7 +13,6 @@ dist_scripts_DATA = \
     get-BOMdata \
     get-fcc-rac.pl \
     get-gnis \
-    get-pop \
     get-NWSdata \
     gpx2shape \
     icontable.pl \
