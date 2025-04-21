@@ -94,55 +94,6 @@ AC_MSG_CHECKING([for compiler flags])
 AC_MSG_RESULT(using $CFLAGS)
 ])
 
-# set XASTIR_SYSTEM
-# JMT - is this really necessary?
-AC_DEFUN([XASTIR_SET_SYSTEM],
-[
-AC_MSG_CHECKING([for system])
-
-case "$host_os" in
-cygwin*)
-  system=Cygnus
-;;
-darwin*)
-  system=Darwin
-  LDFLAGS="-L/sw/lib -L/opt/local/lib $LDFLAGS"
-  CPPFLAGS="-I/sw/include -I/opt/local/include $CPPFLAGS"
-  EXTRA_BIN_PATH=":/opt/local/bin:/sw/bin"
-;;
-freebsd*)
-  system=FreeBSD
-;;
-hpux*)
-  system=HP/UX
-;;
-linux*)
-  system=Linux
-#
-#
-# Useful for testing MacOSX paths on a Linux development box:
-#  EXTRA_BIN_PATH=":/opt/local/bin:/sw/bin"
-#
-#
-;;
-netbsd*)
-  system=NetBSD
-;;
-openbsd*)
-  system=OpenBSD
-;;
-solaris*)
-  system=Solaris
-;;
-*)
-  system=unknown
-;;
-esac
-
-AC_DEFINE_UNQUOTED([XASTIR_SYSTEM], "$system", [Define system type.])
-AC_MSG_RESULT($system)
-])
-
 AC_DEFUN([XASTIR_DETECT_BINARIES],
 [
 BINPATH=$PATH

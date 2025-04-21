@@ -76,9 +76,6 @@ ACX_PTHREAD
 # add compiler flags 
 XASTIR_COMPILER_FLAGS
 
-# set XASTIR_SYSTEM
-XASTIR_SET_SYSTEM
-
 # Check for binaries
 use_festival=yes
 use_gpsman=yes
