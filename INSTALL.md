@@ -441,7 +441,7 @@ you'll see this:
 Ignore those for now unless you need to change the Language.
 
 OK, Xastir should show up on your screen at this point.  We're
-assuming that you're already running X-Windows graphical environment
+assuming that you're already running the X Window System environment
 at this point.  If you're in command-line Linux/Unix only, Xastir
 won't run.
 

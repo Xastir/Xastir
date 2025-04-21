@@ -1270,7 +1270,7 @@ DRAWING SAR SEARCH SEGMENTS IN XASTIR:
     are almost done describing a polygon (don't close it yet).  If
     you don't have a middle mouse button, clicking on BOTH mouse
     buttons at once will do it if you have "emulate third mouse
-    button" enabled in your X-Windows configuration.
+    button" enabled in your X Window System configuration.
 
     Go to Map->Draw CAD Objects->Close Polygon.  The polygon will
     get completed, the area enclosed will be computed, and a dialog

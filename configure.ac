@@ -116,7 +116,7 @@ AC_DEFINE_UNQUOTED(STIPPLE, 1, [Legacy stuff, use crowbar and lets keep going])
 # 
 AC_PATH_XTRA
 if test "$no_x" = "yes"; then
-  AC_MSG_ERROR(*** No X11!  Install X-Windows development headers/libraries! ***)
+  AC_MSG_ERROR(*** No X11!  Install the X Window System development headers/libraries! ***)
 fi
 
 CPPFLAGS="$CPPFLAGS $X_CFLAGS" 
