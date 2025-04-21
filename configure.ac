@@ -389,7 +389,7 @@ use_pcre=no
 if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "yes"; then
   AC_CHECK_HEADERS([pcre2.h],
                    [AC_CHECK_LIB([pcre2-8],[pcre2_compile_8],
-                                 [use_pcre="yes(PCRE2)"
+                                 [use_pcre="yes (PCRE2)"
                                   LIBS="$LIBS -lpcre2-8"
                                   ],
                                  [use_pcre=no
@@ -405,7 +405,7 @@ if test "${shapelib_desired}" = "yes" -a "${use_shapelib}" = "yes"; then
      AC_MSG_WARN([Modern PCRE2 not found, checking for legacy version])
      AC_CHECK_HEADERS([pcre.h pcre/pcre.h],
                       [AC_CHECK_LIB([pcre], [pcre_compile],
-                                    [use_pcre="yes(legacy)"
+                                    [use_pcre="yes (legacy)"
                                      LIBS="$LIBS -lpcre"
                                      AC_DEFINE(XASTIR_LEGACY_PCRE, 1, Define to 1 if you have the legacy `pcre' library (-lpcre). )
                                                    ])
