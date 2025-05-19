@@ -274,7 +274,7 @@ GraphicsMagick will not work with the default system C compiler at
 all.  So in my case, I have to run configure as:
 ```
 cd ~/MyXastirBuildDirectory
-~/src/XASTIR/Xastir/configure --with-bdb-incdir=/usr/local/include/db5 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc10 CXX=g++10 LIBS="-ldb-5.3"
+~/src/XASTIR/Xastir/configure --with-bdb-incdir=/usr/local/include/db5 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc13 CXX=g++13 LIBS="-ldb-5.3"
 ```
 
 Here, I'm telling it to look in special places when looking for
@@ -292,6 +292,18 @@ older set of headers.   The example above forces Xastir to use the
 older library even if a newer one is present, because it is also using
 the older header files per the setting of "--with-bdb-incdir".
 
+Since db5 is now very old and deprecated on FreeBSD, I can instead build
+Xastir with DB version 18.1, so long as I make sure to point to the right
+headers:
+
+```
+cd ~/MyXastirBuildDirectory
+../Xastir/configure --with-bdb-incdir=/usr/local/include/db18 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc13 CXX=g++13
+```
+
+Here, all I've had to do is specify where the headers are.  Since db18.1 is
+the most recent version installed configure will find and use it by default,
+so I don't need to specify LIBS in this case.
 
 ## Build Xastir ##
 
