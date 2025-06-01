@@ -566,10 +566,12 @@ int search_fcc_data_appl(char *callsign, FccAppl *data)
             }
             else
             {
+              // IF we aren't some bogus record with a null next field
+              // (in which we skip to the next),
               // Check whether we passed the alphabetic
               // location for the callsign.  Return if so.
-              if ( (temp[0] < line[pos]) ||
-                   ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]) ) )
+              if ( line[pos] != '|' && ((temp[0] < line[pos]) ||
+                   ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]))))
               {
 
                 // "Callsign Search", "Callsign Not Found!"
