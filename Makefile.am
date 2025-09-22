@@ -88,13 +88,13 @@ OSM_tiled_cycle.geo: OSM_template
 
 OSM_tiled_mapnik.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
-	    -e's!^#URL tileURL!URL http://tile.openstreetmap.org/!' \
+	    -e's!^#URL tileURL!URL https://tile.openstreetmap.org/!' \
 	    -e 's/-STYLE/-mapnik/' \
 	    < $(top_srcdir)/OSM_template >$@
 
 OSM_tiled_fosm.geo: OSM_template
 	sed -e '/THIS IS A TEMPLATE FILE/d' -e's/^#OSM_TILED_MAP/OSM_TILED_MAP/' \
-	    -e's!^#URL tileURL!URL http://map.fosm.org/default/!' \
+	    -e's!^#URL tileURL!URL https://map.fosm.org/default/!' \
 	    -e 's/-STYLE/-fosm/' \
 	    < $(top_srcdir)/OSM_template >$@
 
