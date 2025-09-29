@@ -99,11 +99,11 @@ CURL *xastir_curl_init(char *errBuf)
   {
     if (debug_level & 8192)
     {
-      curl_easy_setopt(mySession, CURLOPT_VERBOSE, 1);
+      curl_easy_setopt(mySession, CURLOPT_VERBOSE, 1L);
     }
     else
     {
-      curl_easy_setopt(mySession, CURLOPT_VERBOSE, 0);
+      curl_easy_setopt(mySession, CURLOPT_VERBOSE, 0L);
     }
 
 
@@ -143,9 +143,11 @@ CURL *xastir_curl_init(char *errBuf)
     //
     //     http://curl.haxx.se/mail/lib-2002-12/0103.html
     //
-    curl_easy_setopt(mySession, CURLOPT_NOSIGNAL, 1);
+    curl_easy_setopt(mySession, CURLOPT_NOSIGNAL, 1L);
 #endif // LIBCURL_VERSION_NUM
 
+    // Respect and follow http redirects
+    curl_easy_setopt(mySession, CURLOPT_FOLLOWLOCATION, 1L);
   }
 
   return(mySession);
