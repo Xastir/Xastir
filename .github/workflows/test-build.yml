@@ -50,11 +50,11 @@ jobs:
     - name: Install XQuartz
       run: brew install xquartz --cask
     - name: Install Packages
-      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib wget
+      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
-      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff -I/opt/homebrew/include -I/opt/homebrew/opt/berkeley-db@4/include" "LDFLAGS=-L/opt/homebrew/lib -L/opt/homebrew/opt/berkeley-db@4/lib"
     - name: make
       run: make
     - name: make install
