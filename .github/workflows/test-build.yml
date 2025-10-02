@@ -34,8 +34,8 @@ jobs:
       run: sudo apt-get update
     - name: Install Packages
       run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp 
-    - name: Bootstrap
-      run: ./bootstrap.sh
+    - name: Bootstrap (with autoreconf)
+      run: autoreconf -i
     - name: configure
       run: ./configure CPPFLAGS="-I/usr/include/geotiff"
     - name: make
