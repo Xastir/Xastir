@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Basic Ubuntu Build
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     - name: Update Packages
       run: sudo apt-get update
     - name: Install Packages
-      run: sudo apt-get install -y imagemagick libmagickcore-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev
+      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
