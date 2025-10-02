@@ -217,6 +217,7 @@ int fetch_remote_file(char *fileimg, char *local_filename)
       fprintf(stderr, "curlerr: %s\n", curlerr);
       fprintf(stderr,
               "Perhaps a timeout? Try increasing \"Internet Map Timeout\".\n");
+      fprintf(stderr,"Could also be malformed URL, '%s'",fileimg);
     }
 
     if (ftpfile.stream)
