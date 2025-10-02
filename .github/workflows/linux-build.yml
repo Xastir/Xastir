@@ -48,7 +48,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Packages
-      run: brew install berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib wget
+      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib wget
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
