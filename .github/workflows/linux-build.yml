@@ -1,4 +1,4 @@
-name: Basic Ubuntu Build
+name: Test Builds
 
 on:
   push:
@@ -7,8 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  basic-ubuntu-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,6 +16,39 @@ jobs:
       run: sudo apt-get update
     - name: Install Packages
       run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev
+    - name: Bootstrap
+      run: ./bootstrap.sh
+    - name: configure
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
+
+  full-ubuntu-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update Packages
+      run: sudo apt-get update
+    - name: Install Packages
+      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp 
+    - name: Bootstrap
+      run: ./bootstrap.sh
+    - name: configure
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
+
+  macos-build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Packages
+      run: brew install berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib wget
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
