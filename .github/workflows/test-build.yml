@@ -54,7 +54,7 @@ jobs:
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
-      run: ./configure CPPFLAGS="-I/usr/include/geotiff -I/opt/homebrew/include -I/opt/homebrew/opt/berkeley-db@4/include" "LDFLAGS=-L/opt/homebrew/lib -L/opt/homebrew/opt/berkeley-db@4/lib"
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff -I/opt/homebrew/include -I/opt/homebrew/opt/berkeley-db/include" "LDFLAGS=-L/opt/homebrew/lib -L/opt/homebrew/opt/berkeley-db/lib"
     - name: make
       run: make
     - name: make install
