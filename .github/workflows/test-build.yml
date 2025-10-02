@@ -1,0 +1,61 @@
+name: Test Builds
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  basic-ubuntu-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update Packages
+      run: sudo apt-get update
+    - name: Install Packages
+      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev
+    - name: Bootstrap
+      run: ./bootstrap.sh
+    - name: configure
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
+
+  full-ubuntu-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update Packages
+      run: sudo apt-get update
+    - name: Install Packages
+      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp 
+    - name: Bootstrap (with autoreconf)
+      run: autoreconf -i
+    - name: configure
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
+
+  macos-build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install XQuartz
+      run: brew install xquartz --cask
+    - name: Install Packages
+      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib
+    - name: Bootstrap
+      run: ./bootstrap.sh
+    - name: configure
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff -I/opt/homebrew/include -I/opt/homebrew/opt/berkeley-db/include" "LDFLAGS=-L/opt/homebrew/lib -L/opt/homebrew/opt/berkeley-db/lib"
+    - name: make
+      run: make
+    - name: make install
+      run: sudo make install
