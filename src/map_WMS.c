@@ -356,7 +356,7 @@ void draw_WMS_map (Widget w,
 
 // This specifies a bounding box based on square pixels.
   xastir_snprintf(tmpstr, sizeof(tmpstr),
-                  "&BBOX=%8.5f,%7.5f,%8.5f,%7.5f",
+                  "&BBOX=%08.5f,%07.5f,%08.5f,%07.5f",
                   left,   // Lower left
                   bottom, // Lower left
                   right,  // Upper right
