@@ -131,7 +131,10 @@ char *xastir_version=VERSION;
 #include "datum.h"
 #include "igate.h"
 #include "objects.h"
+#include "db_funcs.h"
+#include "db_gui.h"
 #include "db_gis.h"
+#include "sound.h"
 
 #include "map_OSM.h"
 
@@ -367,6 +370,7 @@ static char coordinate_calc_lon_min[15];
 static char coordinate_calc_lon_dir[5];
 coordinate_calc_array_type coordinate_calc_array;
 
+extern void fix_dialog_size(Widget w);
 
 
 // --------------------------- help menu -----------------------------
@@ -30473,6 +30477,7 @@ int main(int argc, char *argv[], char *envp[])
 
   (void)bulletin_gui_init();
   (void)db_init();
+  (void)db_gui_init();
   (void)draw_symbols_init();
   (void)interface_gui_init();
   (void)list_gui_init();

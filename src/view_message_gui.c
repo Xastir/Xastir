@@ -48,6 +48,7 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "util.h"
 
 // Must be last include file

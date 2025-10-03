@@ -105,7 +105,7 @@ extern char predefined_object_definition_filename[256];
 // 1=use predefined_object_definition_filename
 extern int predefined_menu_from_file;
 
-//extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
+extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Create_SAR_Object(Widget w, XtPointer clientData, XtPointer calldata);
 
 typedef struct

@@ -75,6 +75,7 @@
 #include "alert.h"
 #include "util.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "datum.h"
 #include "draw_symbols.h"
 #include "rotated.h"

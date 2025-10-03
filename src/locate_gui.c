@@ -38,6 +38,8 @@
 #include "main.h"
 #include "lang.h"
 #include "maps.h"
+#include "db_funcs.h"
+#include "db_gui.h"
 
 // Must be last include file
 #include "leak_detection.h"

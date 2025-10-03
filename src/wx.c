@@ -71,6 +71,7 @@
 
 #include "wx.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "xastir.h"
 #include "interface.h"
 #include "lang.h"

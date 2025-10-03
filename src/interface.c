@@ -73,6 +73,7 @@
 #include "xastir.h"
 #include "symbols.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "xa_config.h"
 //#include "maps.h"
 #include "interface.h"
@@ -461,8 +462,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
       //new_length = strlen(callsign_base) + length + 2;
       new_length = 255+255;
 
-      output_string[28] = (unsigned char)(new_length % 256);
-      output_string[29] = (unsigned char)((new_length >> 8) % 256);
+      output_string[28] = (unsigned char)(new_length % APRS_MAX_PACKET_DATA_LEN);
+      output_string[29] = (unsigned char)((new_length >> 8) % APRS_MAX_PACKET_DATA_LEN);
 
       // Write login/password out as 255-byte strings each
 
@@ -491,8 +492,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
       // Write the PID type into the frame
       output_string[6] = 0xF0;    // UI Frame
 
-      output_string[28] = (unsigned char)(length % 256);
-      output_string[29] = (unsigned char)((length >> 8) % 256);
+      output_string[28] = (unsigned char)(length % APRS_MAX_PACKET_DATA_LEN);
+      output_string[29] = (unsigned char)((length >> 8) % APRS_MAX_PACKET_DATA_LEN);
 
       // Copy Data onto the end of the string.  This one
       // doesn't have to be null-terminated, so strncpy() is
@@ -667,8 +668,8 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
       return;
     }
 
-    output_string[28] = (unsigned char)(data_length % 256);
-    output_string[29] = (unsigned char)((data_length >> 8) % 256);
+    output_string[28] = (unsigned char)(data_length % APRS_MAX_PACKET_DATA_LEN);
+    output_string[29] = (unsigned char)((data_length >> 8) % APRS_MAX_PACKET_DATA_LEN);
 
     full_length = data_length + agwpe_header_size;
 
@@ -1834,7 +1835,7 @@ static void data_out_ax25(int port, unsigned char *string)
         temp = strtok(NULL," \t\r\n");
         if (temp != NULL)
         {
-          substr(ui_mycall, temp, 9);
+          substr(ui_mycall, temp, APRS_MAX_CALLSIGN_LEN);
           xastir_snprintf(port_data[port].ui_call,
                           sizeof(port_data[port].ui_call),
                           "%s",
@@ -1873,7 +1874,7 @@ static void data_out_ax25(int port, unsigned char *string)
             temp = strtok(NULL," ,\t\r\n");
             if (temp != NULL)
             {
-              if (quantity < 9)
+              if (quantity < APRS_MAX_CALLSIGN_LEN)
               {
                 to[quantity++] = temp;
               }
@@ -7179,10 +7180,10 @@ void output_my_aprs_data(void)
   char data_txt2[5];
   struct tm *day_time;
   time_t sec;
-  char my_pos[256];
+  char my_pos[APRS_MAX_PACKET_DATA_LEN];
   char my_output_lat[MAX_LAT];
   char my_output_long[MAX_LONG];
-  char output_net[256];
+  char output_net[APRS_MAX_PACKET_DATA_LEN];
   char wx_data[200];
   char output_phg[10];
   char output_cs[10];
@@ -7667,16 +7668,16 @@ void output_my_aprs_data(void)
           //
           if (transmit_compressed_posit)
           {
-            if (strlen(data_txt_save) > 256)
+            if (strlen(data_txt_save) > APRS_MAX_PACKET_DATA_LEN)
             {
-              data_txt_save[256] = '\0';
+              data_txt_save[APRS_MAX_PACKET_DATA_LEN] = '\0';
             }
           }
           else   // Uncompressed lat/long
           {
-            if (strlen(data_txt_save) > 256)
+            if (strlen(data_txt_save) > APRS_MAX_PACKET_DATA_LEN)
             {
-              data_txt_save[256] = '\0';
+              data_txt_save[APRS_MAX_PACKET_DATA_LEN] = '\0';
             }
           }
 
@@ -8015,7 +8016,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
   char temp[MAX_LINE_SIZE+5];
   char path_txt[MAX_LINE_SIZE+5];
   char *unproto_path = "";
-  char output_net[256];
+  char output_net[APRS_MAX_PACKET_DATA_LEN];
   int ok, start, finish, port;
   int done;
   char logfile_tmp_path[MAX_VALUE];

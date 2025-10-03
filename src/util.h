@@ -25,9 +25,10 @@
 #ifndef __XASTIR_UTIL_H
 #define __XASTIR_UTIL_H
 
-#include "database.h"
+#include <stdio.h>
 #include <pthread.h>
 #include "hashtable.h"
+#include "database.h"
 
 // Max number of WIDE digipeaters allowed
 #define MAX_WIDES 3

@@ -40,6 +40,7 @@
 #include "xastir.h"
 #include "draw_symbols.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "xa_config.h"
 #include "maps.h"
 #include "interface.h"
@@ -11237,31 +11238,31 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
 
             switch (p_station->NRQ[2])
             {
-              case ('1'):   // 240°
+              case ('1'):   // 240Â°
                 XmToggleButtonGadgetSetState(woption1, TRUE, TRUE);
                 break;
-              case ('2'):   // 120°
+              case ('2'):   // 120Â°
                 XmToggleButtonGadgetSetState(woption2, TRUE, TRUE);
                 break;
-              case ('3'):   // 64°
+              case ('3'):   // 64Â°
                 XmToggleButtonGadgetSetState(woption3, TRUE, TRUE);
                 break;
-              case ('4'):   // 32°
+              case ('4'):   // 32Â°
                 XmToggleButtonGadgetSetState(woption4, TRUE, TRUE);
                 break;
-              case ('5'):   // 16°
+              case ('5'):   // 16Â°
                 XmToggleButtonGadgetSetState(woption5, TRUE, TRUE);
                 break;
-              case ('6'):   // 8°
+              case ('6'):   // 8Â°
                 XmToggleButtonGadgetSetState(woption6, TRUE, TRUE);
                 break;
-              case ('7'):   // 4°
+              case ('7'):   // 4Â°
                 XmToggleButtonGadgetSetState(woption7, TRUE, TRUE);
                 break;
-              case ('8'):   // 2°
+              case ('8'):   // 2Â°
                 XmToggleButtonGadgetSetState(woption8, TRUE, TRUE);
                 break;
-              case ('9'):   // 1°
+              case ('9'):   // 1Â°
                 XmToggleButtonGadgetSetState(woption9, TRUE, TRUE);
                 break;
               case ('0'):   // Useless
@@ -11499,22 +11500,22 @@ void Set_Del_Object( Widget w, XtPointer clientData, XtPointer calldata)
       y = (center_latitude  - ((screen_height * scale_y)/2) + (input_y * scale_y));
       if (x < 0)
       {
-        x = 0l;  // 180°W
+        x = 0l;  // 180Â°W
       }
 
       if (x > 129600000l)
       {
-        x = 129600000l;  // 180°E
+        x = 129600000l;  // 180Â°E
       }
 
       if (y < 0)
       {
-        y = 0l;  //  90°N
+        y = 0l;  //  90Â°N
       }
 
       if (y > 64800000l)
       {
-        y = 64800000l;  //  90°S
+        y = 64800000l;  //  90Â°S
       }
 
       convert_lat_l2s(y, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);

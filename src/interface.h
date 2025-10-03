@@ -238,6 +238,13 @@ extern ioparam devices[];
   typedef unsigned int socklen_t;
 #endif
 
+/* APRS Packet Size Constants */
+#define APRS_MAX_PATH_LEN 100
+#define APRS_MAX_CALLSIGN_LEN 9
+#define APRS_MAX_PACKET_DATA_LEN 256
+
+
+
 /* from interface_gui.c */
 extern void interface_gui_init(void);
 extern void Configure_interface_destroy_shell(Widget widget, XtPointer clientData, XtPointer callData);

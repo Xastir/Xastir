@@ -1,0 +1,13 @@
+# Main Autotest suite for Xastir 
+# This file defines the test suite structure
+
+AT_INIT([Xastir Tests])
+AT_COPYRIGHT([Copyright (C) 2025 The Xastir Group])
+
+AT_COLOR_TESTS
+
+# Include interface helper function tests
+m4_include([interface_helpers.at])
+
+# Include database function tests
+m4_include([db_tests.at])

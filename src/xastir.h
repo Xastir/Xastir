@@ -86,8 +86,6 @@
   #define M_PI 3.14159265358979323846
 #endif  // M_PI
 
-#define SPEECH_TEST_STRING      "Greeteengz frum eggzaster"
-
 /* GLOBAL DEFINES */
 extern char dangerous_operation[200];
 extern GC gc;
@@ -103,21 +101,6 @@ extern Widget appshell;
 
 
 extern int wait_to_redraw;
-/*extern char my_callsign[MAX_CALLSIGN+1];*/
-
-extern void pad_callsign(char *callsignout, char *callsignin);
-
-
-
-extern char *to_upper(char *data);
-
-extern void Send_message(Widget w, XtPointer clientData, XtPointer callData);
-
-extern void create_gc(Widget w);
-
-extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
-
-extern void fix_dialog_size(Widget w);
 
 void resize_dialog( Widget form, Widget dialog);
 
@@ -206,23 +189,11 @@ extern void check_and_transmit_messages(time_t time);
 extern Message_Window mw[MAX_MESSAGE_WINDOWS+1];
 extern void clear_message_windows(void);
 
-/* from sound.c */
-extern pid_t play_sound(char *sound_cmd, char *soundfile);
-extern int sound_done(void);
-
-/* from fcc_data.c */
-
-
-
-/* from rac_data.c */
 
 /* from lang.c */
 extern int load_language_file(char *filename);
 extern char *langcode(char *code);
 extern char langcode_hotkey(char *code);
-
-/* from sound.c */
-extern pid_t play_sound(char *sound_cmd, char *soundfile);
 
 /* from location.c */
 extern void set_last_position(void);
@@ -258,8 +229,6 @@ extern void popup_ID_message(char *banner, char *message);
 extern void all_messages(char from, char *call_sign, char *from_call, char *message);
 extern void view_all_messages(Widget w, XtPointer clientData, XtPointer callData);
 
-/* from db.c */
-extern void setup_in_view(void);
 
 #endif /* XASTIR_H */
 

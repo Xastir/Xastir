@@ -31,10 +31,11 @@
 
 #ifndef XASTIR_DATABASE_H
 #define XASTIR_DATABASE_H
+#include <time.h>
+#include "globals.h"
 
 
 #define MSG_INCREMENT 200
-#define MAX_CALLSIGN 9       // Objects are up to 9 chars
 #define MAX_TACTICAL_CALL 57 // Up to XX chars for tactical calls
 #define MAX_COMMENT_LINES 20  // Save XX unique comment strings per station
 #define MAX_STATUS_LINES 20   // Save XX unique status strings per station
@@ -126,8 +127,6 @@ enum APRS_Types
 
 // Define file info, string length are without trailing '\0'
 #define MAX_TIME             20
-#define MAX_LONG             12
-#define MAX_LAT              11
 #define MAX_ALTITUDE         10         //-32808.4 to 300000.0? feet
 #define MAX_SPEED             9         /* ?? 3 in knots */
 #define MAX_COURSE            7         /* ?? */
@@ -145,14 +144,6 @@ enum APRS_Types
 #define EXPORT_XASTIR_TRACK 0
 #define EXPORT_KML_TRACK 1
 
-extern char *get_most_recent_ack(char *callsign);
-
-extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata); // From main.c
-
-
-extern char my_callsign[MAX_CALLSIGN+1];
-extern char my_lat[MAX_LAT];
-extern char my_long[MAX_LONG];
 
 
 
@@ -196,8 +187,6 @@ extern void msg_copy_data(Message *to, Message *from);
 #define msg_copy_data(to, from) memmove((Message *)to, (Message *)from, \
                                         sizeof(Message))
 #endif /* MSG_DEBUG */
-
-extern int message_update_time(void);
 
 
 
@@ -270,14 +259,14 @@ typedef struct                  //                      strlen
   time_t  wx_sec_time;
   int     wx_storm;           // Set to one if severe storm
   char    wx_time[MAX_TIME];
-  char    wx_course[4];       // in �                     3
+  char    wx_course[4];       // in 째                     3
   char    wx_speed[4];        // in mph                   3
   time_t  wx_speed_sec_time;
   char    wx_gust[4];         // in mph                   3
   char    wx_hurricane_radius[4];  //nautical miles       3
   char    wx_trop_storm_radius[4]; //nautical miles       3
   char    wx_whole_gale_radius[4]; // nautical miles      3
-  char    wx_temp[5];         // in 캟                    3
+  char    wx_temp[5];         // in 째F                    3
   char    wx_rain[10];        // in hundredths inch/h     3
   char    wx_rain_total[10];  // in hundredths inch
   char    wx_snow[6];         // in inches/24h            3
@@ -285,7 +274,7 @@ typedef struct                  //                      strlen
   char    wx_prec_00[10];     // in hundredths inch       3
   char    wx_hum[5];          // in %                     3
   char    wx_baro[10];        // in hPa                   6
-  char    wx_fuel_temp[5];    // in 캟                    3
+  char    wx_fuel_temp[5];    // in 째F                    3
   char    wx_fuel_moisture[5];// in %                     2
   char    wx_type;
   char    wx_station[MAX_WXSTATION];
@@ -378,8 +367,8 @@ typedef struct _DataRow
   // name
   char *tactical_call_sign;   // Tactical callsign.  NULL if not assigned
   APRS_Symbol aprs_symbol;
-  long coord_lon;             // Xastir coordinates 1/100 sec, 0 = 180캷
-  long coord_lat;             // Xastir coordinates 1/100 sec, 0 =  90캮
+  long coord_lon;             // Xastir coordinates 1/100 sec, 0 = 180째W
+  long coord_lat;             // Xastir coordinates 1/100 sec, 0 =  90째N
 
   int  time_sn;               // serial number for making time index unique
   time_t sec_heard;           // time last heard, used also for time index
@@ -521,9 +510,6 @@ typedef struct _CADRow
 } CADRow;
 
 
-extern CADRow *CAD_list_head;
-
-
 
 // station flag definitions.  We have 16 bits available here as
 // "flag" in "DataRow" is defined as a short.
@@ -542,105 +528,6 @@ extern CADRow *CAD_list_head;
 #define ST_MYSTATION    0x400   // station is owned by my call-SSID
 #define ST_MYOBJITEM    0x800   // object/item owned by me
 
-
-#ifdef DATA_DEBUG
-extern void clear_data(DataRow *clear);
-extern void copy_data(DataRow *to, DataRow *from);
-#else   // DATA_DEBUG
-#define clear_data(clear) memset((DataRow *)clear, 0, sizeof(DataRow))
-#define copy_data(to, from) memmove((DataRow *)to, (DataRow *)from, \
-                                    sizeof(DataRow))
-#endif /* DATA_DEBUG */
-
-
-extern void db_init(void);
-extern void export_trail_as_kml(DataRow *p_station);   // export trail of one or all stations to kml file
-
-//
-extern int is_my_call(char *call, int exact);
-extern int is_my_station(DataRow *p_station);
-extern int is_my_object_item(DataRow *p_station);
-
-void mscan_file(char msg_type, void (*function)(Message *fill));
-extern void msg_record_ack(char *to_call_sign, char *my_call, char *seq,
-                           int timeout, int cancel);
-extern void msg_record_interval_tries(char *to_call_sign, char *my_call,
-                                      char *seq, time_t interval, int tries);
-extern void display_file(Widget w);
-extern void clean_data_file(void);
-extern void read_file_line(FILE *f);
-extern void mdisplay_file(char msg_type);
-extern void mem_display(void);
-extern long sort_input_database(char *filename, char *fill, int size);
-extern void sort_display_file(char *filename, int size);
-extern void clear_sort_file(char *filename);
-extern void display_packet_data(void);
-extern int  redraw_on_new_packet_data;
-extern int decode_ax25_header(unsigned char *data_string, int *length);
-extern int decode_ax25_line(char *line, char from, int port, int dbadd);
-
-// utilities
-extern void packet_data_add(char *from, char *line, int data_port);
-extern void General_query(Widget w, XtPointer clientData, XtPointer calldata);
-extern void IGate_query(Widget w, XtPointer clientData, XtPointer calldata);
-extern void WX_query(Widget w, XtPointer clientData, XtPointer calldata);
-extern unsigned long max_stations;
-extern int  heard_via_tnc_in_past_hour(char *call);
-
-// messages
-extern void update_messages(int force);
-extern void mdelete_messages_from(char *from);
-extern void mdelete_messages_to(char *to);
-extern void init_message_data(void);
-extern void check_message_remove(time_t curr_sec);
-extern int  new_message_data;
-extern time_t msg_data_add(char *call_sign, char *from_call, char *data,
-                           char *seq, char type, char from, long *record_out);
-
-// stations
-extern int st_direct_timeout;   // Interval that ST_DIRECT flag stays set
-extern int station_count;       // Count of stations in the database
-extern int station_count_save;  // Old copy of the above
-extern DataRow *n_first;  // pointer to first element in name ordered station
-// list
-extern DataRow *n_last;   // pointer to last element in name ordered station
-// list
-extern DataRow *t_oldest; // pointer to first element in time ordered station
-// list
-extern DataRow *t_newest; // pointer to last element in time ordered station
-// list
-extern void init_station_data(void);
-extern void Station_data(Widget w, XtPointer clientData, XtPointer calldata);
-extern int station_data_auto_update;
-extern int  next_station_name(DataRow **p_curr);
-extern int  prev_station_name(DataRow **p_curr);
-extern int  next_station_time(DataRow **p_curr);
-extern int  prev_station_time(DataRow **p_curr);
-extern int  search_station_name(DataRow **p_name, char *call, int exact);
-extern int  search_station_time(DataRow **p_time, time_t heard, int serial);
-extern void check_station_remove(time_t curr_sec);
-extern void delete_all_stations(void);
-extern void station_del(char *callsign);
-extern void my_station_add(char *my_call_sign, char my_group, char my_symbol,
-                           char *my_long, char *my_lat, char *my_phg,
-                           char *my_comment, char my_amb);
-extern void my_station_gps_change(char *pos_long, char *pos_lat, char *course,
-                                  char *speed, char speedu, char *alt,
-                                  char *sats);
-extern int  locate_station(Widget w, char *call, int follow_case,
-                           int get_match, int center_map);
-extern void update_station_info(Widget w);
-
-// objects/items
-extern time_t last_object_check;
-
-// trails
-extern int  delete_trail(DataRow *fill);
-
-// weather
-extern int  get_weather_record(DataRow *fill);
-
-extern void set_map_position(Widget w, long lat, long lon);
 
 
 // just used for aloha calcs
@@ -665,16 +552,6 @@ typedef struct
   int total;
 } aloha_stats;
 
-double calc_aloha_distance(void); //meat
-void calc_aloha(int curr_sec); // periodic function
-void Show_Aloha_Stats(Widget w, XtPointer clientData,
-                      XtPointer callData); // popup window
-
-int comp_by_dist(const void *,const void *);// used only for qsort
-DataRow * sanity_check_time_list(time_t); // used only for debugging
-void dump_time_sorted_list(void);
-
-extern int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *alt, char *speed, char *course, short stn_flag);
 
 #ifdef HAVE_DB
   extern int add_simple_station(DataRow *p_new_station,char *station, char *origin, char *symbol, char *overlay, char *aprs_type, char *latitude, char *longitude, char *record_type, char *node_path, char *transmit_time, char *timeformat);

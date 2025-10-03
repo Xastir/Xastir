@@ -42,6 +42,7 @@
 #include "xastir.h"
 #include "wx.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "alert.h"
 #include "lang.h"
 

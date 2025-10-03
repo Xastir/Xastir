@@ -1,0 +1,190 @@
+# Autotest tests for db.c Functions
+# Tests for standalone utility functions from db.c
+
+AT_BANNER([Database Utility Functions])
+
+# pad_callsign() tests
+AT_BANNER([pad_callsign() Function Tests])
+
+AT_SETUP([pad_callsign: basic callsign])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_basic], [0], [PASS: pad_callsign with basic callsign
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: callsign with SSID])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_with_ssid], [0], [PASS: pad_callsign with SSID
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: full length callsign])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_full_length], [0], [PASS: pad_callsign with full length callsign
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: empty string])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_empty], [0], [PASS: pad_callsign with empty string
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: short callsign])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_short], [0], [PASS: pad_callsign with short callsign
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: invalid characters])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_invalid_chars], [0], [PASS: pad_callsign with invalid characters
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: multiple invalid characters])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_multiple_invalid], [0], [PASS: pad_callsign with multiple invalid characters
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: lowercase letters])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_lowercase], [0], [PASS: pad_callsign with lowercase letters
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: mixed case])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_mixed_case], [0], [PASS: pad_callsign with mixed case
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: numbers only])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_numbers_only], [0], [PASS: pad_callsign with numbers only
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: single hyphen])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_hyphen_only], [0], [PASS: pad_callsign with single hyphen
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: spaces in input])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_spaces_in_input], [0], [PASS: pad_callsign with spaces in input
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: trailing hyphen])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_trailing_hyphen], [0], [PASS: pad_callsign with trailing hyphen
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: leading hyphen])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_leading_hyphen], [0], [PASS: pad_callsign with leading hyphen
+])
+AT_CLEANUP
+
+AT_SETUP([pad_callsign: multiple hyphens])
+AT_KEYWORDS([db pad_callsign])
+AT_CHECK(["$abs_top_builddir/tests/test_db" pad_callsign_multiple_hyphens], [0], [PASS: pad_callsign with multiple hyphens
+])
+AT_CLEANUP
+
+# extract_speed_course() tests
+AT_BANNER([extract_speed_course() Function Tests])
+
+AT_SETUP([extract_speed_course: valid basic format])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_valid_basic], [0], [PASS: extract_speed_course with valid basic format
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: exact length input])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_valid_no_extra_data], [0], [PASS: extract_speed_course with exact length
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: course zero (undefined)])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_course_zero], [0], [PASS: extract_speed_course with course=000 (undefined)
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: with spaces])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_with_spaces], [0], [PASS: extract_speed_course with spaces in numbers
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: with periods])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_with_periods], [0], [PASS: extract_speed_course with periods
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: invalid separator])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_invalid_separator], [0], [PASS: extract_speed_course with invalid separator
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: too short])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_too_short], [0], [PASS: extract_speed_course with too short input
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: invalid characters])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_invalid_chars], [0], [PASS: extract_speed_course with invalid characters
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: empty string])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_empty_string], [0], [PASS: extract_speed_course with empty string
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: maximum values])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_max_values], [0], [PASS: extract_speed_course with maximum values
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: leading zeros])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_leading_zeros], [0], [PASS: extract_speed_course with leading zeros
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: mixed valid characters])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_mixed_valid_chars], [0], [PASS: extract_speed_course with mixed valid characters
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: partial match])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_partial_match], [0], [PASS: extract_speed_course with partial match
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: long additional data])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_long_string], [0], [PASS: extract_speed_course with long additional data
+])
+AT_CLEANUP
+
+AT_SETUP([extract_speed_course: minimum valid course])
+AT_KEYWORDS([db extract_speed_course])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_course_001], [0], [PASS: extract_speed_course with course=001 (minimum valid)
+])
+AT_CLEANUP

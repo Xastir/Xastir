@@ -36,6 +36,8 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "db_funcs.h"
+#include "db_gui.h"
 #include "lang.h"
 #include "objects.h"
 #include "popup.h"

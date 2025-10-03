@@ -1,0 +1,9 @@
+# Autotest tests for Interface Helper Functions
+
+AT_BANNER([Infrastructure Tests])
+
+AT_SETUP([Test framework is working])
+AT_KEYWORDS([infrastructure])
+AT_CHECK([echo "Test framework operational"], [0], [Test framework operational
+])
+AT_CLEANUP

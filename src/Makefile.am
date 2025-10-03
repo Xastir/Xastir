@@ -15,8 +15,9 @@ XASTIR_SRC = \
     bulletin_gui.c bulletin_gui.h \
     color.c color.h \
     datum.c datum.h \
-    db.c database.h \
+    db.c db_funcs.h database.h \
     db_gis.c db_gis.h \
+    db_gui.c db_gui.h \
     dbfawk.c dbfawk.h \
     dlm.c dlm.h \
     draw_symbols.c draw_symbols.h \
@@ -60,7 +61,7 @@ XASTIR_SRC = \
     rpl_malloc.c rpl_malloc.h \
     shp_hash.c shp_hash.h \
     snprintf.c snprintf.h \
-    sound.c symbols.h \
+    sound.c sound.h symbols.h \
     tile_mgmnt.c tile_mgmnt.h \
     track_gui.c track_gui.h \
     util.c util.h \
