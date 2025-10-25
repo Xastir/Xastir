@@ -373,7 +373,6 @@ extern void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData);
 
 extern void HandlePendingEvents(XtAppContext app);
 extern void create_gc(Widget w);
-extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Station_List(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Tracks_All_Clear(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_station(Widget w, XtPointer clientData, XtPointer callData);

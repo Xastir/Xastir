@@ -304,6 +304,8 @@
 #include "wx.h"
 #include "hashtable.h"
 #include "hashtable_itr.h"
+#include "database.h"
+#include "db_funcs.h"
 
 // Must be last include file
 #include "leak_detection.h"

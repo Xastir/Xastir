@@ -867,6 +867,9 @@ AC_SUBST(X_CFLAGS)
 #AC_SUBST(X_LIBS) 
 #AC_SUBST(X_EXTRA_LIBS) 
 
+# Configure autotest support
+AC_CONFIG_TESTDIR([tests])
+
 AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
@@ -875,6 +878,8 @@ AC_CONFIG_FILES([Makefile \
     src/Makefile \
     src/rtree/Makefile \
     symbols/Makefile \
+    tests/Makefile \
+    tests/atlocal \
     xastir.spec \
     xastir-min.spec \
     xastir-lsb.spec]) 

@@ -35,6 +35,8 @@
 
 #include "xastir.h"
 #include "database.h"
+#include "db_funcs.h"
+
 #include "draw_symbols.h"
 #include "main.h"
 #include "util.h"

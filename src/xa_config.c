@@ -39,6 +39,7 @@
 #include "interface.h"
 #include "xastir.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "util.h"
 #include "bulletin_gui.h"
 #include "list_gui.h"

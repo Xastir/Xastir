@@ -94,9 +94,12 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "xastir.h"
+#include "sound.h"
 #include "festival.h"
 #include "snprintf.h"
+#include "util.h"
+#include "xastir.h"
+
 
 // Must be last include file
 #include "leak_detection.h"

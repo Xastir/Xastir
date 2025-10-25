@@ -56,10 +56,10 @@
 #include "bulletin_gui.h"
 #include "interface.h"
 #include "util.h"
+#include "db_funcs.h"
 
 // Must be last include file
 #include "leak_detection.h"
-
 
 extern XmFontList fontlist1;    // Menu/System fontlist
 Widget Display_bulletins_dialog = NULL;
@@ -74,8 +74,6 @@ int new_bulletin_flag = 0;
 int new_bulletin_count = 0;
 static time_t first_new_bulletin_time = 0;
 static time_t last_new_bulletin_time = 0;
-
-
 
 
 

@@ -35,6 +35,7 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "track_gui.h"
 
 // Must be last include file

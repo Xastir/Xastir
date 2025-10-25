@@ -42,6 +42,7 @@
 #include "xastir.h"
 #include "igate.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "interface.h"
 #include "xa_config.h"
 #include "util.h"

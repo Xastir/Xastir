@@ -48,6 +48,7 @@
 #include "xastir.h"
 #include "util.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "xa_config.h"
 #include "datum.h"
 #include "hashtable.h"
@@ -2174,7 +2175,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
 
 /*
  * See if position is defined
- * 90°N 180°W (0,0 in internal coordinates) is our undefined position
+ * 90Â°N 180Â°W (0,0 in internal coordinates) is our undefined position
  * 0N/0E is excluded from trails, could be excluded from map (#define ACCEPT_0N_0E)
  */
 
@@ -2213,22 +2214,22 @@ void convert_screen_to_xastir_coordinates(int x,
 
   if (*lon < 0)
   {
-    *lon = 0l;  // 180°W
+    *lon = 0l;  // 180Â°W
   }
 
   if (*lon > 129600000l)
   {
-    *lon = 129600000l;  // 180°E
+    *lon = 129600000l;  // 180Â°E
   }
 
   if (*lat < 0)
   {
-    *lat = 0l;  //  90°N
+    *lat = 0l;  //  90Â°N
   }
 
   if (*lat > 64800000l)
   {
-    *lat = 64800000l;  //  90°S
+    *lat = 64800000l;  //  90Â°S
   }
 }
 
@@ -2942,7 +2943,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
 // Input is in [D]DMM.MM[MM]N format (degrees/decimal
 // minutes/direction)
 //
-long convert_lat_s2l(char *lat)        /* N=0°, Ctr=90°, S=180° */
+long convert_lat_s2l(char *lat)        /* N=0Â°=Â°, Ctr=90Â°, S=180Â° */
 {
   long centi_sec;
   char copy[15];
@@ -3064,7 +3065,7 @@ long convert_lat_s2l(char *lat)        /* N=0°, Ctr=90°, S=180° */
 // Input is in [DD]DMM.MM[MM]W format (degrees/decimal
 // minutes/direction).
 //
-long convert_lon_s2l(char *lon)       /* W=0°, Ctr=180°, E=360° */
+long convert_lon_s2l(char *lon)       /* W=0Â°, Ctr=180Â°, E=360Â° */
 {
   long centi_sec;
   char copy[16];
@@ -3560,7 +3561,7 @@ char *convert_bearing_to_name(char *bearing, int opposite)
 //
 // Input:   lat/long in Xastir coordinate system (100ths of seconds)
 //          distance in nautical miles
-//          angle in ° true
+//          angle in Â° true
 //
 // Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
 //           seconds)
@@ -3569,27 +3570,27 @@ char *convert_bearing_to_name(char *bearing, int opposite)
 // From http://home.t-online.de/home/h.umland/Chapter12.pdf
 //
 // Dead-reckoning using distance in km, course C:
-// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+// Lat_BÂ° = Lat_AÂ° + ( (360/40031.6) * distance * cos C )
 //
 // Dead-reckoning using distance in nm, course C:
-// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+// Lat_BÂ° = Lat_AÂ° + ( (distance/60) * cos C )
 //
 // Average of two latitudes (required for next two equations)
-// Lat_M° = (Lat_A° + Lat_B°) / 2
+// Lat_MÂ° = (Lat_AÂ° + Lat_BÂ°) / 2
 //
 // Dead-reckoning using distance in km, course C:
-// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos
+// Lon_BÂ° = Lon_AÂ° + ( (360/40031.6) * distance * (sin C / cos
 // Lat_M) )
 //
 // Dead-reckoning using distance in nm, course C:
-// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+// Lon_BÂ° = Lon_AÂ° + ( (distance/60) * (sin C / cos Lat_M) )
 //
-// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+// If resulting longitude exceeds +/- 180Â°, subtract/add 360Â°.
 //
 void compute_DR_position(long x_long,   // input
                          long y_lat,     // input
                          double range,   // input in nautical miles
-                         double course,  // input in ° true
+                         double course,  // input in Â° true
                          long *x_long2,  // output
                          long *y_lat2)   // output
 {
@@ -3685,22 +3686,22 @@ void compute_DR_position(long x_long,   // input
 // From http://home.t-online.de/home/h.umland/Chapter12.pdf
 //
 // Dead-reckoning using distance in km, course C:
-// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+// Lat_BÂ° = Lat_AÂ° + ( (360/40031.6) * distance * cos C )
 //
 // Dead-reckoning using distance in nm, course C:
-// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+// Lat_BÂ° = Lat_AÂ° + ( (distance/60) * cos C )
 //
 // Average of two latitudes (required for next two equations)
-// Lat_M° = (Lat_A° + Lat_B°) / 2
+// Lat_MÂ° = (Lat_AÂ° + Lat_BÂ°) / 2
 //
 // Dead-reckoning using distance in km, course C:
-// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos
+// Lon_BÂ° = Lon_AÂ° + ( (360/40031.6) * distance * (sin C / cos
 // Lat_M) )
 //
 // Dead-reckoning using distance in nm, course C:
-// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+// Lon_BÂ° = Lon_AÂ° + ( (distance/60) * (sin C / cos Lat_M) )
 //
-// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+// If resulting longitude exceeds +/- 180Â°, subtract/add 360Â°.
 //
 //
 // Possible Problems/Changes:
@@ -3729,7 +3730,7 @@ void compute_DR_position(long x_long,   // input
 //
 void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat)
 {
-  int my_course = 0;  // In ° true
+  int my_course = 0;  // In Â° true
   double range = 0.0;
   double bearing_radians, lat_M_radians;
   float lat_A, lat_B, lon_A, lon_B, lat_M;
@@ -3746,7 +3747,7 @@ void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat)
   if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) )
   {
 
-    my_course = atoi(p_station->course);    // In ° true
+    my_course = atoi(p_station->course);    // In Â° true
   }
   //
   // Else check whether the previous position had a course.  Note
@@ -3762,7 +3763,7 @@ void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat)
             && ( (secs_now-p_station->newest_trackpoint->prev->sec) < dead_reckoning_timeout) )
   {
 
-    // In ° true
+    // In Â° true
     my_course = p_station->newest_trackpoint->prev->course;
   }
 
@@ -5206,8 +5207,8 @@ char *sec_to_loc(long longitude, long latitude)
   static char buf[7];
   char *loc = buf;
 
-  // database.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
-  // database.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+  // database.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180Â°W
+  // database.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90Â°N
 
   longitude /= 100L;
   latitude  =  2L * 90L * 3600L - 1L - (latitude / 100L);

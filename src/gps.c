@@ -43,6 +43,7 @@
 #include "gps.h"
 #include "main.h"
 #include "interface.h"
+#include "db_funcs.h"
 #include "lang.h"
 #include "util.h"
 

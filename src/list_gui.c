@@ -46,6 +46,8 @@
 #include "draw_symbols.h"
 #include "list_gui.h"
 #include "database.h"
+#include "db_funcs.h"
+#include "db_gui.h"
 
 #include <stdlib.h>
 #include <stdio.h>

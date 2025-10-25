@@ -35,6 +35,7 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "db_funcs.h"
 #include "lang.h"
 #include "xa_config.h"
 

@@ -1,0 +1,11 @@
+# atlocal.in - Test environment setup
+# This file is processed by configure to create atlocal
+
+# Paths
+PATH="@abs_top_builddir@/tests:@abs_top_builddir@/src:$PATH"
+export PATH
+
+# Build directories
+abs_top_builddir="@abs_top_builddir@"
+abs_top_srcdir="@abs_top_srcdir@"
+export abs_top_builddir abs_top_srcdir
