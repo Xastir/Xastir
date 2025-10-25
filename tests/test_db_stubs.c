@@ -122,6 +122,8 @@ STUB_IMPL(position_defined)
 STUB_IMPL(remove_leading_spaces)
 STUB_IMPL(remove_trailing_asterisk)
 STUB_IMPL(remove_trailing_spaces)
+STUB_IMPL(SayText)
+STUB_IMPL(spell_it_out)
 STUB_IMPL(sec_now)
 STUB_IMPL(send_agwpe_packet)
 STUB_IMPL(send_ax25_frame)
@@ -262,6 +264,16 @@ int sound_play_new_message;
 int sound_play_new_station;
 int sound_play_prox_message;
 int sound_prox_message = 0;
+
+/* Festival speak globals */
+int festival_speak_ID=0;
+int festival_speak_new_station=0;
+int festival_speak_proximity_alert=0;
+int festival_speak_tracked_proximity_alert=0;
+int festival_speak_band_opening=0;
+int festival_speak_new_message_alert=0;
+int festival_speak_new_message_body=0;
+int festival_speak_new_weather_alert=0;
 
 /* Station capability globals */
 int show_only_station_capabilities = 0;

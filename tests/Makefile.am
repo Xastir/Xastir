@@ -14,7 +14,7 @@ test_interface_helpers_CPPFLAGS = -I$(top_srcdir)/src
 
 
 test_db_SOURCES = test_db.c test_db_stubs.c $(top_srcdir)/src/db.c
-test_db_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir)/src -I$(top_builddir)
+test_db_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 #test_db_LDADD = -L$(top_builddir)/src/rtree -lrtree
 
 # Run tests
