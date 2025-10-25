@@ -36,8 +36,8 @@
 #include "interface.h"
 
 /* Define necessary constants and types */
-#define MAX_COMMENT 100
-#define MAX_PHG 10
+#define MAX_COMMENT 80
+#define MAX_PHG 8
 
 
 
