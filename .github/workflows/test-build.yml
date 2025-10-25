@@ -64,3 +64,38 @@ jobs:
       run: make check
     - name: make install
       run: sudo make install
+
+  freebsd-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set-up VM
+      uses: vmactions/freebsd-vm@v1
+      with:
+        sync: nfs
+        usesh: true
+        prepare: |
+          pkg install -y devel/autoconf devel/automake print/freetype2 graphics/jasper graphics/jbigkit graphics/lcms2 graphics/png devel/shapelib graphics/tiff graphics/webp graphics/libwmf devel/pcre2 graphics/libjxl graphics/libjxl graphics/GraphicsMagick graphics/libgeotiff ftp/curl databases/db18 lang/gcc13 x11-toolkits/open-motif audio/festival
+    - name: Bootstrap
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        autoreconf -i
+    - name: configure out-of-source
+      shell: freebsd {0} 
+      run: |
+        cd $GITHUB_WORKSPACE
+        cd ..
+        mkdir build
+        cd build
+        ../Xastir/configure --with-bdb-incdir=/usr/local/include/db18 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc13 CXX=g++13
+    - name: make
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE/../build
+        make
+    - name: make check
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE/../build
+        make check
