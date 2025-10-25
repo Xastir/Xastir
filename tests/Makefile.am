@@ -3,11 +3,11 @@
 
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at output_my_aprs_data_tests.at
 EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in
 
 # Test programs
-check_PROGRAMS = test_interface_helpers test_db
+check_PROGRAMS = test_interface_helpers test_db test_output_my_aprs_data
 
 test_interface_helpers_SOURCES = test_interface_helpers.c
 test_interface_helpers_CPPFLAGS = -I$(top_srcdir)/src
@@ -16,6 +16,11 @@ test_interface_helpers_CPPFLAGS = -I$(top_srcdir)/src
 test_db_SOURCES = test_db.c test_db_stubs.c $(top_srcdir)/src/db.c
 test_db_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 #test_db_LDADD = -L$(top_builddir)/src/rtree -lrtree
+
+test_output_my_aprs_data_SOURCES = test_output_my_aprs_data.c mock_output_my_aprs_data.c \
+	$(top_srcdir)/src/interface.c
+test_output_my_aprs_data_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+test_output_my_aprs_data_LDADD = -lpthread
 
 # Run tests
 check-local: atconfig atlocal $(TESTSUITE)
