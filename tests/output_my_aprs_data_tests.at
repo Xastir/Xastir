@@ -51,3 +51,40 @@ AT_CLEANUP
 AT_SETUP([output_my_aprs_data: mobile zulu time with seconds format])
 AT_CHECK([test_output_my_aprs_data mobile_zulu_time_with_seconds_format], [0], [ignore], [ignore])
 AT_CLEANUP
+
+# Core Position Formatting Tests
+
+# Test: uncompressed_fixed_basic
+AT_SETUP([output_my_aprs_data: uncompressed fixed basic])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_basic], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_fixed_phg
+AT_SETUP([output_my_aprs_data: uncompressed fixed with PHG])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_phg], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_mobile_course_speed
+AT_SETUP([output_my_aprs_data: uncompressed mobile with course/speed])
+AT_CHECK([test_output_my_aprs_data uncompressed_mobile_course_speed], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_fixed_altitude
+AT_SETUP([output_my_aprs_data: uncompressed fixed with altitude])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_altitude], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: compressed_fixed_basic
+AT_SETUP([output_my_aprs_data: compressed fixed basic])
+AT_CHECK([test_output_my_aprs_data compressed_fixed_basic], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: message_type_equals
+AT_SETUP([output_my_aprs_data: message type equals])
+AT_CHECK([test_output_my_aprs_data message_type_equals], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: message_type_exclamation
+AT_SETUP([output_my_aprs_data: message type exclamation])
+AT_CHECK([test_output_my_aprs_data message_type_exclamation], [0], [ignore], [ignore])
+AT_CLEANUP

@@ -172,6 +172,40 @@ void mock_set_output_station_type(int type)
   output_station_type = type;
 }
 
+void mock_set_compressed_posit(int value)
+{
+  transmit_compressed_posit = value;
+}
+
+void mock_set_phg(const char *phg)
+{
+  strncpy(my_phg, phg, MAX_PHG);
+  my_phg[MAX_PHG] = '\0';
+}
+
+void mock_set_course_speed(int course, int speed)
+{
+  my_last_course = course;
+  my_last_speed = speed;
+}
+
+void mock_set_altitude(long altitude)
+{
+  my_last_altitude = altitude;
+  my_last_altitude_time = time(NULL);
+}
+
+void mock_set_comment(const char *comment)
+{
+  strncpy(my_comment, comment, MAX_COMMENT);
+  my_comment[MAX_COMMENT] = '\0';
+}
+
+void mock_set_message_type(char type)
+{
+  aprs_station_message_type = type;
+}
+
 void mock_add_interface(int port, int device_type, int status, int transmit_enabled)
 {
   if (port < 0 || port >= MAX_IFACE_DEVICES)
