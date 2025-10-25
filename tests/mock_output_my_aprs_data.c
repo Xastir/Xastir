@@ -379,25 +379,26 @@ time_t wx_tx_data1(char *wx_data, int wx_data_size)
 }
 
 /* Additional stubs for other functions interface.c needs */
-void *LOGFILE_NET = NULL;
-void *LOGFILE_TNC = NULL;
+char LOGFILE_NET[400];
+char LOGFILE_TNC[400];
 int altnet = 0;
 char altnet_call[MAX_CALLSIGN+1] = "";
 Widget appshell;
 void busy_cursor(void *w) { (void)w; }
 int check_unproto_path(char* data) { return 1; }
-void decode_ax25_header(unsigned char *data, int *from_type, char *call) {}
-void decode_ax25_line(char *line, int line_len, int port){}
+int decode_ax25_header(unsigned char *data_string, int *length) { (void)data_string; (void)length; return 0; }
+int decode_ax25_line(char *line, char from, int port, int dbadd) { (void)line; (void)from; (void)port; (void)dbadd; return 0; }
 int egid = 0;
-int enable_server_port = 0;
 int euid = 0;
+int enable_server_port = 0;
 int filethere(char *path) { return 0; }
-void forked_freeaddrinfo(void *res) { (void)res; }
-int forked_getaddrinfo(const char *node, const char *service,
-                      const void *hints, void **res)
+void forked_freeaddrinfo(struct addrinfo *ai) {}
+int forked_getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *hints,
+    struct addrinfo **resout, int time)
 {
   return -1;
 }
+
 char *get_data_base_dir(char *dir) 
 { 
   strcpy(dir, "/tmp"); 
@@ -455,8 +456,9 @@ char *to_upper(char *str)
 }
 void update_interface_list(void) { }
 int using_gps_position = 0;
-int writen(int fd, const void *buf, size_t count)
+
+
+int writen(int fd, char *ptr, int nbytes)
 {
-  (void)fd; (void)buf; (void)count;
   return 0;
 }
