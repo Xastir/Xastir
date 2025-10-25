@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <ctype.h>
@@ -406,20 +407,20 @@ void draw_geotiff_image_map (Widget w,
   GTIF *gtif = (GTIF *) 0;    /* GeoKey-level descriptor */
   /* enum { VERSION = 0, MAJOR, MINOR }; */
   int versions[3];
-  uint32 width;               /* Width of the image */
-  uint32 height;              /* Height of the image */
-  uint16 bitsPerSample;       /* Should be 8 for USGS DRG's */
-  uint16 samplesPerPixel = 1; /* Should be 1 for USGS DRG's.  Some maps
+  uint32_t width;               /* Width of the image */
+  uint32_t height;              /* Height of the image */
+  uint16_t bitsPerSample;       /* Should be 8 for USGS DRG's */
+  uint16_t samplesPerPixel = 1; /* Should be 1 for USGS DRG's.  Some maps
                                    don't have this tag so we default to 1 */
-  uint32 rowsPerStrip;        /* Should be 1 for USGS DRG's */
-  uint16 planarConfig;        /* Should be 1 for USGS DRG's */
-  uint16 photometric;         /* DRGs are RGB (2) */
+  uint32_t rowsPerStrip;        /* Should be 1 for USGS DRG's */
+  uint16_t planarConfig;        /* Should be 1 for USGS DRG's */
+  uint16_t photometric;         /* DRGs are RGB (2) */
   int    bytesPerRow;            /* Bytes per scanline row of tiff file */
   GTIFDefn defn;              /* Stores geotiff details */
   u_char *imageMemory;        /* Fixed pointer to same memory area */
-  uint32 row;                 /* My row counter for the loop */
+  uint32_t row;                 /* My row counter for the loop */
   int num_colors;             /* Number of colors in the geotiff colormap */
-  uint16 *red_orig, *green_orig, *blue_orig; /* Used for storing geotiff colors */
+  uint16_t *red_orig, *green_orig, *blue_orig; /* Used for storing geotiff colors */
   XColor my_colors[256];      /* Used for translating colormaps */
   unsigned long west_bounding = 0;
   unsigned long east_bounding = 0;
@@ -488,7 +489,7 @@ void draw_geotiff_image_map (Widget w,
   //double *GeoTie;
   int crop_it = 0;            /* Flag which tells whether the image should be cropped */
 
-  uint32 column;
+  uint32_t column;
 
   float xastir_left_x_increment;
   float left_x_increment;
@@ -507,15 +508,15 @@ void draw_geotiff_image_map (Widget w,
   int row_offset;
   unsigned long current_xastir_left;
   unsigned long current_xastir_right;
-  uint32 current_left;
-  uint32 current_right;
-  //    uint32 current_line_width;
+  uint32_t current_left;
+  uint32_t current_right;
+  //    uint32_t current_line_width;
   unsigned long xastir_current_y;
-  uint32 column_offset;
+  uint32_t column_offset;
   unsigned long xastir_current_x;
   double *PixelScale;
   int have_PixelScale;
-  uint16 qty;
+  uint16_t qty;
   int SkipRows;
   unsigned long view_min_x, view_max_x;
   unsigned long view_min_y, view_max_y;
@@ -2024,9 +2025,9 @@ void draw_geotiff_image_map (Widget w,
       case PHOTOMETRIC_PALETTE:
         for (l = 0; l < num_colors; l++)
         {
-          my_colors[l].red   =   (uint16)(red_orig[l] * raster_map_intensity);
-          my_colors[l].green = (uint16)(green_orig[l] * raster_map_intensity);
-          my_colors[l].blue  =  (uint16)(blue_orig[l] * raster_map_intensity);
+          my_colors[l].red   =   (uint16_t)(red_orig[l] * raster_map_intensity);
+          my_colors[l].green = (uint16_t)(green_orig[l] * raster_map_intensity);
+          my_colors[l].blue  =  (uint16_t)(blue_orig[l] * raster_map_intensity);
 
           if (visual_type == NOT_TRUE_NOR_DIRECT)
           {
@@ -2045,7 +2046,7 @@ void draw_geotiff_image_map (Widget w,
         {
           int v = (l * 255) / (num_colors-1);
           my_colors[l].red = my_colors[l].green = my_colors[l].blue =
-              (uint16)(v * raster_map_intensity) << 8;
+              (uint16_t)(v * raster_map_intensity) << 8;
 
           if (visual_type == NOT_TRUE_NOR_DIRECT)
           {
@@ -2064,7 +2065,7 @@ void draw_geotiff_image_map (Widget w,
         {
           int v = (((num_colors-1)-l) * 255) / (num_colors-1);
           my_colors[l].red = my_colors[l].green = my_colors[l].blue =
-              (uint16)(v * raster_map_intensity) << 8;
+              (uint16_t)(v * raster_map_intensity) << 8;
 
           if (visual_type == NOT_TRUE_NOR_DIRECT)
           {
