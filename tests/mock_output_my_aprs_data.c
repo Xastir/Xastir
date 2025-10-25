@@ -61,7 +61,6 @@ int output_station_type = 0;
 int debug_level = 0xfff;
 char aprs_station_message_type = '!';
 
-iface port_data[MAX_IFACE_DEVICES];
 ioparam devices[MAX_IFACE_DEVICES];
 xastir_mutex devices_lock;
 
