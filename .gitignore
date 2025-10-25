@@ -63,3 +63,5 @@ tests/*.log
 tests/test_db
 tests/test_interface_helpers
 tests/atconfig
+tests/testsuite
+
