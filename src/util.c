@@ -2157,7 +2157,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
   xastir_snprintf(pos,
                   sizeof(pos),
                   "%c%s%s%c%c%c%c",
-                  group,
+                  group >= '0' && group <= '9' ? group - '0' + 'a' : group,
                   lat,
                   lon,
                   symbol,
