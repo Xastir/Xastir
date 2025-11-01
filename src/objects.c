@@ -621,13 +621,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         char temp_group = object_group;
         long x_long, y_lat;
 
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
         if (speed == 0)
         {
           x_long = p_station->coord_lon;
@@ -692,13 +685,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
         long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
 
         if (speed == 0)
         {
@@ -778,13 +764,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         char temp_group = object_group;
         long x_long, y_lat;
 
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
         if (speed == 0)
         {
           x_long = p_station->coord_lon;
@@ -839,13 +818,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
         long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
 
         if (speed == 0)
         {
@@ -905,13 +877,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         char temp_group = object_group;
         long x_long, y_lat;
 
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
         if (speed == 0)
         {
           x_long = p_station->coord_lon;
@@ -967,13 +932,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
         long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
 
         if (speed == 0)
         {
@@ -1044,13 +1002,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         char temp_group = object_group;
         long x_long, y_lat;
 
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
         if (speed == 0)
         {
           x_long = p_station->coord_lon;
@@ -1107,13 +1058,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
         long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
 
         if (speed == 0)
         {
@@ -1175,13 +1119,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         char temp_group = object_group;
         long x_long, y_lat;
 
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
         if (speed == 0)
         {
           x_long = p_station->coord_lon;
@@ -1233,13 +1170,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
         long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
 
         if (speed == 0)
         {
@@ -4979,13 +4909,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
                       last_object,
                       time,
@@ -5079,13 +5002,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
                       last_object,
                       time,
@@ -5146,13 +5062,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ";%-9s*%s%sDFS%s/%s%s",
                         last_object,
@@ -5226,13 +5135,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
                         last_object,
@@ -5323,13 +5225,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
 
       xastir_snprintf(line,
                       line_length,
@@ -5873,13 +5768,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
                       last_object,
                       compress_posit(ext_lat_str,
@@ -5968,13 +5856,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ")%s!%s%s%s",
                       last_object,
                       compress_posit(ext_lat_str,
@@ -6033,13 +5914,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ")%s!%sDFS%s/%s%s",
                         last_object,
@@ -6112,13 +5986,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
                         last_object,
@@ -6209,13 +6076,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
 
       xastir_snprintf(line,
                       line_length,
