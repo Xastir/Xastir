@@ -2157,7 +2157,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
   xastir_snprintf(pos,
                   sizeof(pos),
                   "%c%s%s%c%c%c%c",
-                  group,
+                  compress_group(group),
                   lat,
                   lon,
                   symbol,
@@ -2170,8 +2170,15 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
 }
 
 
-
-
+char compress_group(char group_in)
+{
+  char group_out=group_in;
+  if (group_in >= '0' && group_in <= '9')
+  {
+    group_out=group_in - '0' + 'a';
+  }
+  return (group_out);
+}
 
 /*
  * See if position is defined

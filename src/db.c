@@ -2427,7 +2427,7 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call)
         if (hold[2] >= 'a' && hold[2] <= 'j')
         {
           // Compressed mode numeric overlay
-          symbol.special_overlay = hold[2] - 'a';
+          symbol.special_overlay = hold[2] - 'a' + '0';
         }
         else if ( (hold[2] >= '0' && hold[2] <= '9')
                   || (hold[2] >= 'A' && hold[2] <= 'Z') )
@@ -11796,8 +11796,8 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     }
     else
     {
-      // Found a bad overlay character
-      p_station->aprs_symbol.aprs_type = my_group;
+      // Found a bad overlay character, just use normal alternate character
+      p_station->aprs_symbol.aprs_type = '\\';
       p_station->aprs_symbol.special_overlay = '\0';
     }
   }
