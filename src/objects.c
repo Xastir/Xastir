@@ -355,10 +355,22 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     return(0);
   }
 
-  // Lat/lon are in Xastir coordinates, so we need to convert
-  // them to APRS string format here.
-  convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
-  convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
+  {
+    long x_long = p_station->coord_lon;
+    long y_lat = p_station->coord_lat;;
+    if (strlen(p_station->speed) != 0)
+    {
+      int temp = atoi(p_station->speed);
+      if ( (temp >=0) && (temp <= 999))
+      {
+        compute_current_DR_position(p_station,&x_long,&y_lat);
+      }
+    }
+    // Lat/lon are in Xastir coordinates, so we need to convert
+    // them to APRS string format here.
+    convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
+    convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
+  }
 
   // Check for an overlay character.  Replace the group character
   // (table char) with the overlay if present.
@@ -514,28 +526,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
               tempstr,
               sizeof(speed_course) - 1 - strlen(speed_course));
       speed = temp;
-
-      // Speed is non-zero.  Compute the current dead-reckoned
-      // position and use that instead.
-      compute_current_DR_position(p_station,
-                                  &x_long,
-                                  &y_lat);
-
-      // Lat/lon are in Xastir coordinates, so we need to
-      // convert them to APRS string format here.
-      //
-      convert_lat_l2s(y_lat,
-                      lat_str,
-                      sizeof(lat_str),
-                      CONVERT_LP_NOSP);
-
-      convert_lon_l2s(x_long,
-                      lon_str,
-                      sizeof(lon_str),
-                      CONVERT_LP_NOSP);
-
-//fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
-
     }
     else
     {
