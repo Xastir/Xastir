@@ -1,0 +1,42 @@
+# Autotest tests for object_utils.c Functions
+# Tests for standalone utility functions from object_utils.c
+
+AT_BANNER([Object Utility Functions])
+
+AT_BANNER([format_course_speed() tests])
+
+AT_SETUP([format_course_speed: valid input])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_basic], [0], [PASS: format_course_speed with valid input for both
+])
+AT_CLEANUP
+
+AT_SETUP([format_course_speed: bad input for course])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_bad_course], [0], [PASS: format_course_speed with bad input for course
+])
+AT_CLEANUP
+
+AT_SETUP([format_course_speed: null input for course])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_null_course], [0], [PASS: format_course_speed with null input for course
+])
+AT_CLEANUP
+
+AT_SETUP([format_course_speed: bad input for speed])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_bad_speed], [0], [PASS: format_course_speed with bad input for speed
+])
+AT_CLEANUP
+
+AT_SETUP([format_course_speed: null input for speed])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_null_speed], [0], [PASS: format_course_speed with null input for speed
+])
+AT_CLEANUP
+
+AT_SETUP([format_course_speed: null inputs])
+AT_KEYWORDS([object_utils format_course_speed])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_null_inputs], [0], [PASS: format_course_speed with null input for both
+])
+AT_CLEANUP

@@ -54,6 +54,7 @@ XASTIR_SRC = \
     messages.c messages.h \
     messages_gui.c \
     objects.h objects.c \
+    object_utils.h object_utils.c \
     popup.h \
     popup_gui.c \
     rac_data.c rac_data.h \
