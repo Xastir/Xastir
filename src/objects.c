@@ -45,6 +45,7 @@
 #include "maps.h"
 #include "interface.h"
 #include "objects.h"
+#include "object_utils.h"
 
 void move_station_time(DataRow *p_curr, DataRow *p_time);
 
@@ -495,56 +496,16 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 // Handle Generic Options
 
   // Speed/Course Fields
-  xastir_snprintf(speed_course, sizeof(speed_course), ".../"); // Start with invalid-data string
-  course = 0;
-  if (strlen(p_station->course) != 0)      // Course was entered
-  {
-    // Need to check for 1 to three digits only, and 001-360
-    // degrees)
-    temp = atoi(p_station->course);
-    if ( (temp >= 1) && (temp <= 360) )
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "%03d/",temp);
-      course = temp;
-    }
-    else if (temp == 0)     // Spec says 001 to 360 degrees...
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "360/");
-    }
-  }
-  speed = 0;
-  if (strlen(p_station->speed) != 0)   // Speed was entered (we only handle knots currently)
-  {
-    // Need to check for 1 to three digits, no alpha characters
-    temp = atoi(p_station->speed);
-    if ( (temp >= 0) && (temp <= 999) )
-    {
-      xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
-      strncat(speed_course,
-              tempstr,
-              sizeof(speed_course) - 1 - strlen(speed_course));
-      speed = temp;
-    }
-    else
-    {
-      strncat(speed_course,
-              "...",
-              sizeof(speed_course) - 1 - strlen(speed_course));
-    }
-  }
-  else    // No speed entered, blank it out
-  {
-    strncat(speed_course,
-            "...",
-            sizeof(speed_course) - 1 - strlen(speed_course));
-  }
-  if ( (speed_course[0] == '.') && (speed_course[4] == '.') )
-  {
-    speed_course[0] = '\0'; // No speed or course entered, so blank it
-  }
+
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)    // It's an area object
   {
     speed_course[0] = '\0'; // Course/Speed not allowed if Area Object
+    course=0;
+    speed=0;
+  }
+  else
+  {
+    format_course_speed(speed_course,sizeof(speed_course),p_station->course,p_station->speed,&course,&speed);
   }
 
   // Altitude Field
