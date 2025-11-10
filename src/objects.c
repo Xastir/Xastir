@@ -308,6 +308,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char object_symbol;
   int killed = 0;
 
+  long x_long = p_station->coord_lon;
+  long y_lat = p_station->coord_lat;;
 
   (void)remove_trailing_spaces(p_station->call_sign);
   //(void)to_upper(p_station->call_sign);     Not per spec.  Don't
@@ -355,22 +357,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     return(0);
   }
 
+  // If the object or item has an associated speed, use the dead-reckoned
+  // position instead of the one in p_station.
+  if (strlen(p_station->speed) != 0)
   {
-    long x_long = p_station->coord_lon;
-    long y_lat = p_station->coord_lat;;
-    if (strlen(p_station->speed) != 0)
+    int temp = atoi(p_station->speed);
+    if ( (temp >=0) && (temp <= 999))
     {
-      int temp = atoi(p_station->speed);
-      if ( (temp >=0) && (temp <= 999))
-      {
-        compute_current_DR_position(p_station,&x_long,&y_lat);
-      }
+      compute_current_DR_position(p_station,&x_long,&y_lat);
     }
-    // Lat/lon are in Xastir coordinates, so we need to convert
-    // them to APRS string format here.
-    convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
-    convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
   }
+
+  // Lat/lon are in Xastir coordinates, so we need to convert
+  // them to APRS string format here.
+  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
+  convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
 
   // Check for an overlay character.  Replace the group character
   // (table char) with the overlay if present.
@@ -493,7 +494,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
 // Handle Generic Options
 
-
   // Speed/Course Fields
   xastir_snprintf(speed_course, sizeof(speed_course), ".../"); // Start with invalid-data string
   course = 0;
@@ -519,8 +519,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     temp = atoi(p_station->speed);
     if ( (temp >= 0) && (temp <= 999) )
     {
-      long x_long, y_lat;
-
       xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
       strncat(speed_course,
               tempstr,
@@ -609,21 +607,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -674,21 +657,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -752,21 +720,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -807,21 +760,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -865,21 +803,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -921,21 +844,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -990,21 +898,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1047,21 +940,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1107,21 +985,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1159,21 +1022,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
