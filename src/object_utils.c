@@ -92,6 +92,13 @@ void format_course_speed(char *dst, size_t dst_size, char *course_str, char *spe
   }
 }
 
+// Given a string representation of altitude, return the correctly
+// formatted string for transmission of that altitude as part of an object
+// packet.  Returns an empty string if the altitude is out of range or empty.
+//
+// At the moment (and for at least 20 years prior to the moment) this code
+// only handles input altitudes in feet.  These altitudes are converted to
+// meters for purposes of transmission.
 void format_altitude(char *dst, size_t dst_size, char *altitude_str)
 {
   long alt_in_meters;
