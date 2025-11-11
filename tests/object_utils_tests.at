@@ -40,3 +40,23 @@ AT_KEYWORDS([object_utils format_course_speed])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_course_speed_null_inputs], [0], [PASS: format_course_speed with null input for both
 ])
 AT_CLEANUP
+
+AT_BANNER([format_altitude() tests])
+
+AT_SETUP([format_altitude: valid input])
+AT_KEYWORDS([object_utils format_altitude])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_altitude_basic], [0], [PASS: format_altitude with valid input
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: null input])
+AT_KEYWORDS([object_utils format_altitude])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_altitude_null_input], [0], [PASS: format_altitude with null input
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: invalid input])
+AT_KEYWORDS([object_utils format_altitude])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_altitude_invalid_input], [0], [PASS: format_altitude with invalid input
+])
+AT_CLEANUP

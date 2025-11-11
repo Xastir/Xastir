@@ -117,6 +117,30 @@ int test_format_course_speed_null_inputs(void)
   TEST_PASS("format_course_speed with null input for both");
 }
 
+int test_format_altitude_basic(void)
+{
+  char altitude[10];
+  format_altitude(altitude, sizeof(altitude),"15");
+  TEST_ASSERT_STR_EQ("/A=000049",altitude,"15 feet altitude should be 49 meters, properly formatted");
+  TEST_PASS("format_altitude with valid input");
+}
+
+int test_format_altitude_null_input(void)
+{
+  char altitude[10];
+  format_altitude(altitude, sizeof(altitude),"");
+  TEST_ASSERT_STR_EQ("",altitude,"Null input should yield null output");
+  TEST_PASS("format_altitude with null input");
+}
+
+int test_format_altitude_invalid_input(void)
+{
+  char altitude[10];
+  format_altitude(altitude, sizeof(altitude),"330000");
+  TEST_ASSERT_STR_EQ("",altitude,"Excessive altitude should yield null output");
+  TEST_PASS("format_altitude with invalid input");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -133,6 +157,9 @@ int main(int argc, char *argv[])
     {"format_course_speed_bad_speed", test_format_course_speed_bad_speed},
     {"format_course_speed_null_speed", test_format_course_speed_null_speed},
     {"format_course_speed_null_inputs", test_format_course_speed_null_inputs},
+    {"format_altitude_basic", test_format_altitude_basic},
+    {"format_altitude_null_input", test_format_altitude_null_input},
+    {"format_altitude_invalid_input", test_format_altitude_invalid_input},
     {NULL,NULL}
   };
 

@@ -91,3 +91,25 @@ void format_course_speed(char *dst, size_t dst_size, char *course_str, char *spe
     dst[0] = '\0'; // No speed or course entered, so blank it
   }
 }
+
+void format_altitude(char *dst, size_t dst_size, char *altitude_str)
+{
+  long alt_in_meters;
+  dst[0] = '\0'; // Start with empty string
+  if (strlen(altitude_str) != 0)     // Altitude was entered (we only handle feet currently)
+  {
+    // Need to check for all digits, and 1 to 6 digits
+    if (isdigit((int)altitude_str[0]))
+    {
+      // Must convert from meters to feet before transmitting
+      alt_in_meters = (int)( (atof(altitude_str) / 0.3048) + 0.5);
+      if ( (alt_in_meters >= 0) && (alt_in_meters <= 99999l) )
+      {
+        char temp_alt[20];
+        xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",alt_in_meters);
+        memcpy(dst, temp_alt, dst_size - 1);
+        dst[dst_size-1] = '\0';  // Terminate string
+      }
+    }
+  }
+}

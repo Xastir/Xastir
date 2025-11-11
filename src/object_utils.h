@@ -24,4 +24,4 @@
 #include <stddef.h>
 
 extern void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
-
+extern void format_altitude(char *dst, size_t dst_size, char *altitude_str);

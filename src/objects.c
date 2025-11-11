@@ -301,7 +301,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   int speed;
   int course;
   int temp;
-  long temp2;
   char signpost[6];
   int bearing;
   char tempstr[50];
@@ -509,28 +508,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   }
 
   // Altitude Field
-  altitude[0] = '\0'; // Start with empty string
-  if (strlen(p_station->altitude) != 0)     // Altitude was entered (we only handle feet currently)
-  {
-    // Need to check for all digits, and 1 to 6 digits
-    if (isdigit((int)p_station->altitude[0]))
-    {
-      // Must convert from meters to feet before transmitting
-      temp2 = (int)( (atof(p_station->altitude) / 0.3048) + 0.5);
-      if ( (temp2 >= 0) && (temp2 <= 99999l) )
-      {
-        char temp_alt[20];
-        xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",temp2);
-        memcpy(altitude, temp_alt, sizeof(altitude) - 1);
-        altitude[sizeof(altitude)-1] = '\0';  // Terminate string
-      }
-    }
-  }
-
+  format_altitude(altitude, sizeof(altitude), p_station->altitude);
 
 // Handle Specific Options
-
-
   // Area Objects
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)   // It's an area object
   {
