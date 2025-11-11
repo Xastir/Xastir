@@ -17,7 +17,7 @@ test_db_SOURCES = test_db.c test_db_stubs.c $(top_srcdir)/src/db.c
 test_db_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 #test_db_LDADD = -L$(top_builddir)/src/rtree -lrtree
 
-test_object_utils_SOURCES = test_object_utils.c $(top_srcdir)/src/object_utils.c
+test_object_utils_SOURCES = test_object_utils.c test_object_utils_stubs.c $(top_srcdir)/src/object_utils.c
 test_object_utils_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
 # Run tests

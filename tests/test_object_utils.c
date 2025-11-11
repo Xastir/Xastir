@@ -36,7 +36,8 @@
 
 /* forward declarations (so we don't need to include object_utils.h */
 void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
-extern void format_altitude(char *dst, size_t dst_size, char *altitude_str);
+void format_altitude(char *dst, size_t dst_size, char *altitude_str);
+void format_zulu_time(char *dst, size_t dst_size);
 
 /* test cases for format_course_speed */
 
@@ -118,6 +119,8 @@ int test_format_course_speed_null_inputs(void)
   TEST_PASS("format_course_speed with null input for both");
 }
 
+// tests for format_altitude
+
 int test_format_altitude_basic(void)
 {
   char altitude[10];
@@ -142,6 +145,15 @@ int test_format_altitude_invalid_input(void)
   TEST_PASS("format_altitude with invalid input");
 }
 
+// test for format_zulu_time
+int test_format_zulu_time(void)
+{
+  char time[8];
+  format_zulu_time(time,sizeof(time));
+  TEST_ASSERT_STR_EQ("111618z",time,"Format of unix timestamp 1762877880 should map to day 11 hour 16 minute 18 zulu");
+  TEST_PASS("format_zulu_time for specific unix timestamp");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -161,6 +173,7 @@ int main(int argc, char *argv[])
     {"format_altitude_basic", test_format_altitude_basic},
     {"format_altitude_null_input", test_format_altitude_null_input},
     {"format_altitude_invalid_input", test_format_altitude_invalid_input},
+    {"format_zulu_time", test_format_zulu_time},
     {NULL,NULL}
   };
 

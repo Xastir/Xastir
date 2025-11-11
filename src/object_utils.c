@@ -31,9 +31,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <time.h>
 #include <string.h>
 
 #include "object_utils.h"
+
+// forward declaration so we don't need to include util.h and all that
+// drags in
+time_t sec_now(void);
 
 // Given strings representing course and speed, return an appropriate
 // CSE/SPD string for transmitting of object in the dst array, and integer
@@ -119,4 +124,18 @@ void format_altitude(char *dst, size_t dst_size, char *altitude_str)
       }
     }
   }
+}
+
+void format_zulu_time(char *dst, size_t dst_size)
+{
+  struct tm *day_time;
+  time_t sec;
+  sec = sec_now();
+  day_time = gmtime(&sec);
+  xastir_snprintf(dst,
+                  dst_size,
+                  "%02d%02d%02dz",
+                  day_time->tm_mday,
+                  day_time->tm_hour,
+                  day_time->tm_min);
 }

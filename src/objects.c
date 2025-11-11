@@ -290,8 +290,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char comment[43+1];                 // max 43 characters of comment
   char comment2[43+1];
   char time[7+1];
-  struct tm *day_time;
-  time_t sec;
   char complete_area_color[3];
   int complete_area_type;
   int lat_offset, lon_offset;
@@ -481,14 +479,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   // from the extract_?? code.
   if ((p_station->flag & ST_OBJECT) != 0)
   {
-    sec = sec_now();
-    day_time = gmtime(&sec);
-    xastir_snprintf(time,
-                    sizeof(time),
-                    "%02d%02d%02dz",
-                    day_time->tm_mday,
-                    day_time->tm_hour,
-                    day_time->tm_min);
+    format_zulu_time(time,sizeof(time));
   }
 
 

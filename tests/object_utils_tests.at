@@ -60,3 +60,11 @@ AT_KEYWORDS([object_utils format_altitude])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_altitude_invalid_input], [0], [PASS: format_altitude with invalid input
 ])
 AT_CLEANUP
+
+AT_BANNER([format_zulu_time() tests])
+
+AT_SETUP([format_zulu_time: specific timestamp])
+AT_KEYWORDS([object_utils format_zulu_time])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_zulu_time], [0], [PASS: format_zulu_time for specific unix timestamp
+])
+AT_CLEANUP

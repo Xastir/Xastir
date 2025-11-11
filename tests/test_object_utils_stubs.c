@@ -1,8 +1,7 @@
 /*
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
- * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000-2023 The Xastir Group
+ * Copyright (C) 2025 The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +20,20 @@
  * Look at the README for more information on the program.
  */
 
-#include <stddef.h>
+/* 
+ * Stub implementations for symbols referenced by object_utils.c
+ * but not used by the unit tests.
+ * 
+ * These stubs allow us to link with the real object_utils.o for testing
+ * without pulling in the entire Xastir codebase.
+ */
 
-extern void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
-extern void format_altitude(char *dst, size_t dst_size, char *altitude_str);
-extern void format_zulu_time(char *dst, size_t dst_size);
+#include <time.h>
+#include "tests/test_framework.h"
+
+// Not actually a stub, a fake implementation of sec_now()
+time_t sec_now(void)
+{
+  // Unix timestamp for 2025-11-11 16:18:00 UTC
+  return( (time_t) 1762877880);
+}
