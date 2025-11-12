@@ -126,6 +126,8 @@ void format_altitude(char *dst, size_t dst_size, char *altitude_str)
   }
 }
 
+// Return a string suitable for placing the current zulu time into an APRS
+// packet
 void format_zulu_time(char *dst, size_t dst_size)
 {
   struct tm *day_time;
@@ -138,4 +140,106 @@ void format_zulu_time(char *dst, size_t dst_size)
                   day_time->tm_mday,
                   day_time->tm_hour,
                   day_time->tm_min);
+}
+
+// APRS Area objects are transmitted with colors from /0 through /9 and 10
+// through 15.  /0-/7 are "high intensity" colors and /8 through 15 are low
+// intensity values of the same.   They are stored in the DataRow as an unsigned
+// four-bit bit field.
+
+// This function formats a color as stored numerically into the format needed
+// for transmit
+
+// Because the DataRow only stores this value in a 4-bit bit unsigned bit
+// field, we'll never get an invalid color, but guard against misuse just in
+// case.
+void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int color)
+{
+  dst[0] = '\0';  // start with null string
+
+  // Because the DataRow only stores this value in a 4-bit bit unsigned bit
+  // field, we'll never get an invalid color, but guard against misuse just in
+  // case.
+  if (color <= 15)
+  {
+    xastir_snprintf(dst,dst_size,"%02d", color);
+    if ( dst[0] == '0')
+      dst[0]='/';
+  }
+}
+
+// When decoding a color from a packet, we need to convert it to a number
+// This function takes such a string and returns the appropriate value
+// (it is currently unused by any object code, but db.c does some goofy stuff
+// to decode a received area object's color in extract_area, and this
+// function might just come in useful later in a refactor)
+unsigned int area_color_from_string(char *color_string)
+{
+  unsigned int return_color=0;
+  // we might be getting passed a pointer to the middle of an APRS packet
+  // that might not end at the color's end, so let's just make sure we
+  // have enough characters to read and not make assumptions that we're
+  // ONLY getting the color.
+  // Valid colors are /0-/9 and 10-15.  If invalid, just return 0.
+  if (strlen(color_string) >= 2
+      && ((color_string[0] == '/' && isdigit((int)color_string[1]))
+          || (color_string[0] == '1'
+              &&  color_string[1] >= '0'
+              && color_string[1] <= '5')))
+
+  {
+    if (color_string[0] == '/')
+    {
+      return_color = color_string[1] - '0';
+    }
+    else  // first character must be a one if we get here
+    {
+      return_color = color_string[1] - '0' + 10;
+    }
+  }
+  return (return_color);
+}
+
+// When we *create* an object from the dialog box, the color is
+// determined from a combination of the selected color and the
+// selected (or not-selected) "Bright color" button.  The dialog
+// provides '/0' through '/7' for the color and an integer
+// representing the button state (0 is deselected)
+//
+// This function takes values that came from the dialog box and formats
+// it into an appropriate two-character color string that combines the
+// two bits of information
+
+void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright)
+{
+  // This initial implementation just does exactly what
+  // Setup_object_data does in all its glory.  It is ripe for
+  // rewriting after we have it in unit testing
+
+  // Note that we are ASSUMING that "color" has at least 2 elements.  Not cool.
+
+  // note also the lack of any sanity checking of inputs, because the function
+  // assumes valid inputs from the dialog box because the user must choose
+  // from radio buttons and on/off buttons, not freeform values.
+
+  if (bright)
+  {
+    // if it's bright color, it's /0 - /7 directly from the dialog, so just
+    // use it.
+    xastir_snprintf(dst, dst_size, "%2s", color);
+  }
+  else  // Dim color
+  {
+    // if it's dim color, it needs to be /8, /9, or 10-15.  Add 8 to the
+    // given color's value (which is always 0-7), stuff it in the output,
+    // and then change the first character to '/' if the original was 0 or 1
+    // (i.e. the new value is 8 or 9).
+    xastir_snprintf(dst, dst_size, "%02.0f",
+                      (float)(atoi(&color[1]) + 8) );
+
+      if ( (color[1] == '0') || (color[1] == '1') )
+      {
+        dst[0] = '/';
+      }
+  }
 }

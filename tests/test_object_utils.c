@@ -38,6 +38,9 @@
 void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
 void format_altitude(char *dst, size_t dst_size, char *altitude_str);
 void format_zulu_time(char *dst, size_t dst_size);
+void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int color);
+unsigned int area_color_from_string(char *color_string);
+void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
 
 /* test cases for format_course_speed */
 
@@ -154,6 +157,78 @@ int test_format_zulu_time(void)
   TEST_PASS("format_zulu_time for specific unix timestamp");
 }
 
+int test_format_area_color_from_numeric_basic(void)
+{
+  char color[3];
+  format_area_color_from_numeric(color,sizeof(color),0);
+  TEST_ASSERT_STR_EQ("/0",color,"Bright black correct");
+  format_area_color_from_numeric(color,sizeof(color),1);
+  TEST_ASSERT_STR_EQ("/1",color,"Bright blue correct");
+  format_area_color_from_numeric(color,sizeof(color),8);
+  TEST_ASSERT_STR_EQ("/8",color,"Low black correct");
+  format_area_color_from_numeric(color,sizeof(color),14);
+  TEST_ASSERT_STR_EQ("14",color,"Low yellow correct");
+  TEST_PASS("format_area_color_from_numeric for valid colors");
+}
+
+int test_format_area_color_from_numeric_invalid(void)
+{
+  char color[3];
+  format_area_color_from_numeric(color,sizeof(color),16);
+  TEST_ASSERT_STR_EQ("",color,"Bad color gives empty string");
+  TEST_PASS("format_area_color_from_numeric for invalid colors");
+}
+
+int test_area_color_from_string_basic(void)
+{
+  int color;
+  color = area_color_from_string("/1");
+  TEST_ASSERT(color == 1, " /1 maps to 1");
+  color = area_color_from_string("/8");
+  TEST_ASSERT(color == 8, " /8 maps to 8");
+  color = area_color_from_string("15");
+  TEST_ASSERT(color == 15, " 15 maps to 15");
+  TEST_PASS("area_color_from_string for valid color strings");
+}
+
+int test_area_color_from_string_invalid(void)
+{
+  int color;
+  color = area_color_from_string("16");
+  TEST_ASSERT(color == 0, " invalid value maps to 0");
+  color = area_color_from_string("20");
+  TEST_ASSERT(color == 0, " invalid string maps to 0");
+  color = area_color_from_string("FOOBIE");
+  TEST_ASSERT(color == 0, " non-numeric string maps to 0");
+  color = area_color_from_string("");
+  TEST_ASSERT(color == 0, " empty string maps to 0");
+  TEST_PASS("area_color_from_string for invalid color strings");
+}
+
+int test_area_color_from_string_midstring(void)
+{
+  int color;
+  char *color_string = "XXX/1XXX";
+  color = area_color_from_string(&(color_string[3]));
+  TEST_ASSERT(color == 1, " /1 maps to 1");
+  TEST_PASS("area_color_from_string for color string inside longer string");
+}
+
+int test_format_area_color_from_dialog_basic(void)
+{
+  char outstring[3];
+
+  format_area_color_from_dialog(outstring, sizeof(outstring), "/1", 1);
+  TEST_ASSERT_STR_EQ("/1", outstring, "Bright blue maps correctly");
+  format_area_color_from_dialog(outstring, sizeof(outstring), "/1", 0);
+  TEST_ASSERT_STR_EQ("/9", outstring, "Dim blue maps correctly");
+  format_area_color_from_dialog(outstring, sizeof(outstring), "/7", 1);
+  TEST_ASSERT_STR_EQ("/7", outstring, "Bright grey maps correctly");
+  format_area_color_from_dialog(outstring, sizeof(outstring), "/7", 0);
+  TEST_ASSERT_STR_EQ("15", outstring, "Dim grey maps correctly");
+  TEST_PASS("format_area_color_from_dialog for valid bright and dim colors");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -174,6 +249,12 @@ int main(int argc, char *argv[])
     {"format_altitude_null_input", test_format_altitude_null_input},
     {"format_altitude_invalid_input", test_format_altitude_invalid_input},
     {"format_zulu_time", test_format_zulu_time},
+    {"format_area_color_from_numeric_basic", test_format_area_color_from_numeric_basic},
+    {"format_area_color_from_numeric_invalid", test_format_area_color_from_numeric_invalid},
+    {"area_color_from_string_basic", test_area_color_from_string_basic},
+    {"area_color_from_string_invalid", test_area_color_from_string_invalid},
+    {"area_color_from_string_midstring", test_area_color_from_string_midstring},
+    {"format_area_color_from_dialog_basic",test_format_area_color_from_dialog_basic},
     {NULL,NULL}
   };
 

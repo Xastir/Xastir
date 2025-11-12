@@ -68,3 +68,41 @@ AT_KEYWORDS([object_utils format_zulu_time])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_zulu_time], [0], [PASS: format_zulu_time for specific unix timestamp
 ])
 AT_CLEANUP
+
+AT_BANNER([object color function tests])
+
+AT_SETUP([format_area_color_from_numeric: valid colors])
+AT_KEYWORDS([object_utils format_area_color_from_numeric])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_numeric_basic], [0], [PASS: format_area_color_from_numeric for valid colors
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_color_from_numeric: invalid color])
+AT_KEYWORDS([object_utils format_area_color_from_numeric])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_numeric_invalid], [0], [PASS: format_area_color_from_numeric for invalid colors
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string: valid colors])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_basic], [0], [PASS: area_color_from_string for valid color strings
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string: invalid colors])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_invalid], [0], [PASS: area_color_from_string for invalid color strings
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string:  color is substring])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_midstring], [0], [PASS: area_color_from_string for color string inside longer string
+])
+AT_CLEANUP
+
+AT_SETUP([format area_color_from_dialog:  valid inputs])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_dialog_basic], [0], [PASS: format_area_color_from_dialog for valid bright and dim colors
+])
+AT_CLEANUP
