@@ -507,13 +507,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)   // It's an area object
   {
 
-    // Note that transmitted color consists of two characters,
-    // from "/0" to "15"
-    xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02d", p_station->aprs_symbol.area_object.color);
-    if (complete_area_color[0] == '0')
-    {
-      complete_area_color[0] = '/';
-    }
+    format_area_color_from_numeric(complete_area_color,
+                                   sizeof(complete_area_color),
+                                   p_station->aprs_symbol.area_object.color);
 
     complete_area_type = p_station->aprs_symbol.area_object.type;
 
