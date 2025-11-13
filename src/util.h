@@ -82,9 +82,9 @@ extern int get_minutes(void);
 extern int get_seconds(void);
 extern double phg_range(char p, char h, char g);
 extern double shg_range(char s, char h, char g);
-extern void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg_decoded_length);
-extern void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length);
-extern void bearing_decode(const char *langstr, const char *bearing_str, const char *NRQ, char *bearing_decoded, int bearing_decoded_length);
+extern void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg_decoded_length, int english_units);
+extern void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length, int english_units);
+extern void bearing_decode(const char *langstr, const char *bearing_str, const char *NRQ, char *bearing_decoded, int bearing_decoded_length, int english_units);
 extern char *get_line(FILE *f, char *linedata, int maxline);
 extern time_t time_from_aprsstring(char *timestamp);
 extern char *compress_posit(const char *lat, const char group, const char *lon, const char symbol,

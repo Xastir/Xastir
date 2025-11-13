@@ -665,7 +665,7 @@ double shg_range(char s, char h, char g)
 /* NOTE: Keep these calculations consistent with phg_range!          */
 /*       Yes, there is a reason why they both exist.                 */
 /*********************************************************************/
-void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg_decoded_length)
+void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg_decoded_length, int english_units)
 {
   double power, height, gain, range;
   char directivity[6], temp[64];
@@ -815,7 +815,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
 /* SHG decode                                                        */
 /*                                                                   */
 /*********************************************************************/
-void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length)
+void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg_decoded_length, int english_units)
 {
   double power, height, gain, range;
   char directivity[6], temp[100], signal[64];
@@ -1051,7 +1051,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
 /*                                                                   */
 /*********************************************************************/
 void bearing_decode(const char *langstr, const char *bearing_str,
-                    const char *NRQ, char *bearing_decoded, int bearing_decoded_length)
+                    const char *NRQ, char *bearing_decoded, int bearing_decoded_length, int english_units)
 {
   int bearing, range, width;
   char N,R,Q;
