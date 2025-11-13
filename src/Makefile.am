@@ -67,6 +67,7 @@ XASTIR_SRC = \
     sound.c sound.h symbols.h \
     tactical_call_utils.c tactical_call_utils.h \
     tile_mgmnt.c tile_mgmnt.h \
+    timer_utils.c timer_utils.h \
     track_gui.c track_gui.h \
     util.c util.h \
     view_message_gui.c \

@@ -70,11 +70,6 @@ char echo_digis[6][MAX_CALLSIGN+1];
 
 #define ACCEPT_0N_0E    /* set this to see stations at 0N/0E on the map */
 
-struct timeval timer_start;
-struct timeval timer_stop;
-struct timezone tz;
-
-
 #define MAX_LOGFILE_SIZE 2048000
 
 
@@ -384,39 +379,6 @@ char *remove_trailing_dash_zero(char *data)
 
   return(data);
 }
-
-
-
-
-
-// Save the current time, used for timing code sections.
-void start_timer(void)
-{
-  gettimeofday(&timer_start,&tz);
-}
-
-
-
-
-
-// Save the current time, used for timing code sections.
-void stop_timer(void)
-{
-  gettimeofday(&timer_stop,&tz);
-}
-
-
-
-
-
-// Print the difference in the two times saved above.
-void print_timer_results(void)
-{
-  fprintf(stderr,"Total: %f sec\n",
-          (float)(timer_stop.tv_sec - timer_start.tv_sec +
-                  ((timer_stop.tv_usec - timer_start.tv_usec) / 1000000.0) ));
-}
-
 
 
 
