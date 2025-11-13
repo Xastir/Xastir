@@ -108,9 +108,6 @@ extern double distance_from_my_station(char *call_sign, char *course_deg, int en
 
 extern char *convert_bearing_to_name(char *bearing, int opposite);
 
-extern void compute_DR_position(long x_long, long y_lat, double range, double course, long *x_long2, long *y_lat2);
-extern void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat);
-
 extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
 extern int copy_file(char *infilename, char *outfilename);

@@ -22,6 +22,7 @@ XASTIR_SRC = \
     db_gui.c db_gui.h \
     dbfawk.c dbfawk.h \
     dlm.c dlm.h \
+    dr_utils.c dr_utils.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
     festival.c festival.h \

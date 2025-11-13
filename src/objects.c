@@ -46,6 +46,7 @@
 #include "interface.h"
 #include "objects.h"
 #include "object_utils.h"
+#include "dr_utils.h"
 
 void move_station_time(DataRow *p_curr, DataRow *p_time);
 
