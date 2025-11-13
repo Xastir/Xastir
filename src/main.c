@@ -138,6 +138,7 @@ char *xastir_version=VERSION;
 #include "sound.h"
 #include "ambiguity_utils.h"
 #include "mgrs_utils.h"
+#include "log_utils.h"
 
 #include "map_OSM.h"
 

@@ -85,6 +85,7 @@
 #include "db_gis.h"
 #include "gps.h"
 #include "ambiguity_utils.h"
+#include "log_utils.h"
 
 #ifdef HAVE_LIBAX25
   #include <netax25/ax25.h>

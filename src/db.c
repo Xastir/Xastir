@@ -78,6 +78,7 @@
 #include "db_gui.h"
 #include "db_funcs.h"
 #include "sound.h"
+#include "log_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

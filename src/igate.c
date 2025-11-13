@@ -46,6 +46,7 @@
 #include "interface.h"
 #include "xa_config.h"
 #include "util.h"
+#include "log_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

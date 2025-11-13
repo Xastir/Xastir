@@ -43,6 +43,7 @@ XASTIR_SRC = \
     locate_gui.c \
     location.c \
     location_gui.c \
+    log_utils.c log_utils.h \
     main.c main.h \
     maps.c maps.h \
     map_cache.c map_cache.h \

@@ -112,8 +112,6 @@ extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
 extern int copy_file(char *infilename, char *outfilename);
 extern time_t file_time(char *fn);
-extern void load_wx_alerts_from_log(void);
-extern void log_data(char *file, char *line);
 extern time_t sec_now(void);
 extern char *get_time(char *time_here);
 
