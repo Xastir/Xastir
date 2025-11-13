@@ -27,7 +27,6 @@
 
 #include <stdio.h>
 #include <pthread.h>
-#include "hashtable.h"
 #include "database.h"
 
 // Max number of WIDE digipeaters allowed
@@ -71,8 +70,6 @@ extern int convert_to_xastir_coordinates (unsigned long* x,
     unsigned long* y,
     float f_longitude,
     float f_latitude);
-extern char *get_tactical_from_hash(char *callsign);
-extern void destroy_tactical_hash(void);
 extern void xastir_debug(int my_debug_level, char *debug_string);
 extern char *remove_all_spaces(char *data);
 extern char *remove_leading_spaces(char *data);
@@ -135,8 +132,6 @@ extern int copy_file(char *infilename, char *outfilename);
 extern time_t file_time(char *fn);
 extern void load_wx_alerts_from_log(void);
 extern void log_data(char *file, char *line);
-extern void log_tactical_call(char *call_sign, char *tactical_call_sign);
-extern void reload_tactical_calls(void);
 extern time_t sec_now(void);
 extern char *get_time(char *time_here);
 

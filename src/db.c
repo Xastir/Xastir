@@ -59,6 +59,7 @@
 #include "draw_symbols.h"
 #include "alert.h"
 #include "util.h"
+#include "tactical_call_utils.h"
 #include "bulletin_gui.h"
 #include "fcc_data.h"
 #include "geo.h"

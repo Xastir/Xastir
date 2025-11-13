@@ -63,6 +63,7 @@ XASTIR_SRC = \
     shp_hash.c shp_hash.h \
     snprintf.c snprintf.h \
     sound.c sound.h symbols.h \
+    tactical_call_utils.c tactical_call_utils.h \
     tile_mgmnt.c tile_mgmnt.h \
     track_gui.c track_gui.h \
     util.c util.h \
