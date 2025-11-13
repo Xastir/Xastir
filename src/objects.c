@@ -369,8 +369,11 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   // Lat/lon are in Xastir coordinates, so we need to convert
   // them to APRS string format here.
-  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
-  convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
+  // Need low-precision if uncompressed, high precision if compressed
+  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str),
+          (transmit_compressed_objects_items)?CONVERT_HP_NOSP:CONVERT_LP_NOSP);
+  convert_lon_l2s(x_long, lon_str, sizeof(lon_str),
+          (transmit_compressed_objects_items)?CONVERT_HP_NOSP:CONVERT_LP_NOSP);
 
   // Check for an overlay character.  Replace the group character
   // (table char) with the overlay if present.
@@ -537,11 +540,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
 
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
         xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
                         p_station->call_sign,
                         time,
@@ -586,11 +584,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
         xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
                         p_station->call_sign,
@@ -650,11 +643,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
 
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
         xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
                         p_station->call_sign,
                         time,
@@ -689,11 +677,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
         xastir_snprintf(line, line_length, ")%s!%s%s%s",
                         p_station->call_sign,
@@ -733,11 +716,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
 
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
         xastir_snprintf(line, line_length, ";%-9s*%s%s%s/%s%s",
                         p_station->call_sign,
                         time,
@@ -773,11 +751,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
         xastir_snprintf(line, line_length, ")%s!%s%s/%s%s",
                         p_station->call_sign,
@@ -828,11 +801,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
 
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
         xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
                         p_station->call_sign,
                         time,
@@ -869,11 +837,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
         xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
                         p_station->call_sign,
@@ -915,11 +878,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       {
         char temp_group = object_group;
 
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
         xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
                         p_station->call_sign,
                         time,
@@ -951,11 +909,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
         xastir_snprintf(line, line_length, ")%s!%s%s",
                         p_station->call_sign,
