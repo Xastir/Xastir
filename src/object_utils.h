@@ -20,6 +20,8 @@
  *
  * Look at the README for more information on the program.
  */
+#ifndef __XASTIR_OBJECT_UTILS_H
+#define __XASTIR_OBJECT_UTILS_H
 
 #include <stddef.h>
 
@@ -30,3 +32,5 @@ extern void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned
 extern unsigned int area_color_from_string(char *color_string);
 extern void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
 extern void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
+
+#endif
