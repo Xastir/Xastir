@@ -227,23 +227,6 @@ int convert_to_xastir_coordinates ( unsigned long* x,
 
 
 
-// Prints string to STDERR only if "my_debug_level" bits are set in
-// the global "debug_level" variable.  Used for getting extra debug
-// messages during various stages of debugging.
-//
-void xastir_debug(int my_debug_level, char *debug_string)
-{
-
-  if (debug_level & my_debug_level)
-  {
-    fprintf(stderr, "%s", debug_string);
-  }
-}
-
-
-
-
-
 char *remove_all_spaces(char *data)
 {
   char *ptr;

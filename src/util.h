@@ -69,7 +69,6 @@ extern int convert_to_xastir_coordinates (unsigned long* x,
     unsigned long* y,
     float f_longitude,
     float f_latitude);
-extern void xastir_debug(int my_debug_level, char *debug_string);
 extern char *remove_all_spaces(char *data);
 extern char *remove_leading_spaces(char *data);
 extern char *remove_trailing_spaces(char *data);

@@ -15,6 +15,7 @@ XASTIR_SRC = \
     bulletin_gui.c bulletin_gui.h \
     color.c color.h \
     datum.c datum.h \
+    debug_utils.c debug_utils.h \
     db.c db_funcs.h database.h \
     db_gis.c db_gis.h \
     db_gui.c db_gui.h \
