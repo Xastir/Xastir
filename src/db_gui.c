@@ -28,6 +28,7 @@
 #include "xa_config.h"
 #include "x_spider.h"
 #include "sound.h"
+#include "mgrs_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

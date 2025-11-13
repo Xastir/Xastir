@@ -137,6 +137,7 @@ char *xastir_version=VERSION;
 #include "db_gis.h"
 #include "sound.h"
 #include "ambiguity_utils.h"
+#include "mgrs_utils.h"
 
 #include "map_OSM.h"
 

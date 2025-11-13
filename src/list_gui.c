@@ -49,6 +49,7 @@
 #include "database.h"
 #include "db_funcs.h"
 #include "db_gui.h"
+#include "mgrs_utils.h"
 
 #include <stdlib.h>
 #include <stdio.h>

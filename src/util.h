@@ -93,13 +93,6 @@ extern char compress_group(char group_in);
 extern int  position_defined(long lat, long lon, int strict);
 extern void convert_screen_to_xastir_coordinates(int x, int y, long *lat, long *lon);
 extern void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y);
-extern void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
-    char *EastingL, int EastingL_len,
-    char *NorthingL, int NorthingL_len,
-    unsigned int *int_utmEasting, unsigned int *int_utmNorthing,
-    long x,  long y,
-    int nice_format, char *space_string, int space_string_len);
-extern void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice_format);
 extern void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zone_len, long x, long y);
 extern void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y);
 extern double convert_lat_l2r(long lat);
