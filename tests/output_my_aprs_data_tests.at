@@ -1,0 +1,123 @@
+# output_my_aprs_data_tests.at - Autotest suite for output_my_aprs_data function
+
+AT_BANNER([output_my_aprs_data function tests])
+
+# Test: transmit_disabled
+AT_SETUP([output_my_aprs_data: transmit disabled])
+AT_CHECK([test_output_my_aprs_data transmit_disabled], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: transmit_disabled_with_emergency
+AT_SETUP([output_my_aprs_data: transmit disabled with emergency beacon])
+AT_CHECK([test_output_my_aprs_data transmit_disabled_with_emergency], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: no_active_interfaces
+AT_SETUP([output_my_aprs_data: no active interfaces])
+AT_CHECK([test_output_my_aprs_data no_active_interfaces], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: basic_position_output
+AT_SETUP([output_my_aprs_data: basic position output])
+AT_CHECK([test_output_my_aprs_data basic_position_output], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: network_stream_output
+AT_SETUP([output_my_aprs_data: network stream output])
+AT_CHECK([test_output_my_aprs_data network_stream_output], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: interface_down
+AT_SETUP([output_my_aprs_data: interface down])
+AT_CHECK([test_output_my_aprs_data interface_down], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: transmit_disabled_on_interface
+AT_SETUP([output_my_aprs_data: transmit disabled on interface])
+AT_CHECK([test_output_my_aprs_data transmit_disabled_on_interface], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: mobile_local_time_format
+AT_SETUP([output_my_aprs_data: mobile local time format])
+AT_CHECK([test_output_my_aprs_data mobile_local_time_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: mobile_zulu_datetime_format
+AT_SETUP([output_my_aprs_data: mobile zulu datetime format])
+AT_CHECK([test_output_my_aprs_data mobile_zulu_datetime_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: mobile_zulu_time_with_seconds_format
+AT_SETUP([output_my_aprs_data: mobile zulu time with seconds format])
+AT_CHECK([test_output_my_aprs_data mobile_zulu_time_with_seconds_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Core Position Formatting Tests
+
+# Test: uncompressed_fixed_basic
+AT_SETUP([output_my_aprs_data: uncompressed fixed basic])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_basic], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_fixed_phg
+AT_SETUP([output_my_aprs_data: uncompressed fixed with PHG])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_phg], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_mobile_course_speed
+AT_SETUP([output_my_aprs_data: uncompressed mobile with course/speed])
+AT_CHECK([test_output_my_aprs_data uncompressed_mobile_course_speed], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: uncompressed_fixed_altitude
+AT_SETUP([output_my_aprs_data: uncompressed fixed with altitude])
+AT_CHECK([test_output_my_aprs_data uncompressed_fixed_altitude], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: compressed_fixed_basic
+AT_SETUP([output_my_aprs_data: compressed fixed basic])
+AT_CHECK([test_output_my_aprs_data compressed_fixed_basic], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: message_type_equals
+AT_SETUP([output_my_aprs_data: message type equals])
+AT_CHECK([test_output_my_aprs_data message_type_equals], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: message_type_exclamation
+AT_SETUP([output_my_aprs_data: message type exclamation])
+AT_CHECK([test_output_my_aprs_data message_type_exclamation], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Device-specific Formatting Tests
+
+# Test: network_stream_format
+AT_SETUP([output_my_aprs_data: network stream format])
+AT_CHECK([test_output_my_aprs_data network_stream_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: serial_tnc_format
+AT_SETUP([output_my_aprs_data: serial TNC format])
+AT_CHECK([test_output_my_aprs_data serial_tnc_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: kiss_tnc_format
+AT_SETUP([output_my_aprs_data: KISS TNC format])
+AT_CHECK([test_output_my_aprs_data kiss_tnc_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: agwpe_format
+AT_SETUP([output_my_aprs_data: AGWPE format])
+AT_CHECK([test_output_my_aprs_data agwpe_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: multiple_interfaces
+AT_SETUP([output_my_aprs_data: multiple interfaces])
+AT_CHECK([test_output_my_aprs_data multiple_interfaces], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: mixed_interface_states
+AT_SETUP([output_my_aprs_data: mixed interface states])
+AT_CHECK([test_output_my_aprs_data mixed_interface_states], [0], [ignore], [ignore])
+AT_CLEANUP
+

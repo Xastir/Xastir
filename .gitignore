@@ -57,5 +57,11 @@ config/tnc-startup.def
 callpass/callpass
 Davis/src/db2APRS
 LaCrosse/src/open2300db2APRS
+test-driver
+test-suite.log
+tests/*.log
+tests/test_db
+tests/test_interface_helpers
+tests/atconfig
 tests/testsuite
 

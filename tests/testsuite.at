@@ -12,5 +12,8 @@ m4_include([interface_helpers.at])
 # Include database function tests
 m4_include([db_tests.at])
 
+# Include output_my_aprs_data function tests
+m4_include([output_my_aprs_data_tests.at])
+
 # Include object utility function tests
 m4_include([object_utils_tests.at])
