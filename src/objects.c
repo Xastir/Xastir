@@ -45,6 +45,7 @@
 #include "maps.h"
 #include "interface.h"
 #include "objects.h"
+#include "object_utils.h"
 
 void move_station_time(DataRow *p_curr, DataRow *p_time);
 
@@ -289,8 +290,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char comment[43+1];                 // max 43 characters of comment
   char comment2[43+1];
   char time[7+1];
-  struct tm *day_time;
-  time_t sec;
   char complete_area_color[3];
   int complete_area_type;
   int lat_offset, lon_offset;
@@ -300,7 +299,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   int speed;
   int course;
   int temp;
-  long temp2;
   char signpost[6];
   int bearing;
   char tempstr[50];
@@ -308,6 +306,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char object_symbol;
   int killed = 0;
 
+  long x_long = p_station->coord_lon;
+  long y_lat = p_station->coord_lat;;
 
   (void)remove_trailing_spaces(p_station->call_sign);
   //(void)to_upper(p_station->call_sign);     Not per spec.  Don't
@@ -355,10 +355,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     return(0);
   }
 
+  // If the object or item has an associated speed, use the dead-reckoned
+  // position instead of the one in p_station.
+  if (strlen(p_station->speed) != 0)
+  {
+    int temp = atoi(p_station->speed);
+    if ( (temp >=0) && (temp <= 999))
+    {
+      compute_current_DR_position(p_station,&x_long,&y_lat);
+    }
+  }
+
   // Lat/lon are in Xastir coordinates, so we need to convert
   // them to APRS string format here.
-  convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
-  convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
+  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
+  convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
 
   // Check for an overlay character.  Replace the group character
   // (table char) with the overlay if present.
@@ -468,120 +479,29 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   // from the extract_?? code.
   if ((p_station->flag & ST_OBJECT) != 0)
   {
-    sec = sec_now();
-    day_time = gmtime(&sec);
-    xastir_snprintf(time,
-                    sizeof(time),
-                    "%02d%02d%02dz",
-                    day_time->tm_mday,
-                    day_time->tm_hour,
-                    day_time->tm_min);
+    format_zulu_time(time,sizeof(time));
   }
 
 
 // Handle Generic Options
 
-
   // Speed/Course Fields
-  xastir_snprintf(speed_course, sizeof(speed_course), ".../"); // Start with invalid-data string
-  course = 0;
-  if (strlen(p_station->course) != 0)      // Course was entered
-  {
-    // Need to check for 1 to three digits only, and 001-360
-    // degrees)
-    temp = atoi(p_station->course);
-    if ( (temp >= 1) && (temp <= 360) )
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "%03d/",temp);
-      course = temp;
-    }
-    else if (temp == 0)     // Spec says 001 to 360 degrees...
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "360/");
-    }
-  }
-  speed = 0;
-  if (strlen(p_station->speed) != 0)   // Speed was entered (we only handle knots currently)
-  {
-    // Need to check for 1 to three digits, no alpha characters
-    temp = atoi(p_station->speed);
-    if ( (temp >= 0) && (temp <= 999) )
-    {
-      long x_long, y_lat;
 
-      xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
-      strncat(speed_course,
-              tempstr,
-              sizeof(speed_course) - 1 - strlen(speed_course));
-      speed = temp;
-
-      // Speed is non-zero.  Compute the current dead-reckoned
-      // position and use that instead.
-      compute_current_DR_position(p_station,
-                                  &x_long,
-                                  &y_lat);
-
-      // Lat/lon are in Xastir coordinates, so we need to
-      // convert them to APRS string format here.
-      //
-      convert_lat_l2s(y_lat,
-                      lat_str,
-                      sizeof(lat_str),
-                      CONVERT_LP_NOSP);
-
-      convert_lon_l2s(x_long,
-                      lon_str,
-                      sizeof(lon_str),
-                      CONVERT_LP_NOSP);
-
-//fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
-
-    }
-    else
-    {
-      strncat(speed_course,
-              "...",
-              sizeof(speed_course) - 1 - strlen(speed_course));
-    }
-  }
-  else    // No speed entered, blank it out
-  {
-    strncat(speed_course,
-            "...",
-            sizeof(speed_course) - 1 - strlen(speed_course));
-  }
-  if ( (speed_course[0] == '.') && (speed_course[4] == '.') )
-  {
-    speed_course[0] = '\0'; // No speed or course entered, so blank it
-  }
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)    // It's an area object
   {
     speed_course[0] = '\0'; // Course/Speed not allowed if Area Object
+    course=0;
+    speed=0;
+  }
+  else
+  {
+    format_course_speed(speed_course,sizeof(speed_course),p_station->course,p_station->speed,&course,&speed);
   }
 
   // Altitude Field
-  altitude[0] = '\0'; // Start with empty string
-  if (strlen(p_station->altitude) != 0)     // Altitude was entered (we only handle feet currently)
-  {
-    // Need to check for all digits, and 1 to 6 digits
-    if (isdigit((int)p_station->altitude[0]))
-    {
-      // Must convert from meters to feet before transmitting
-      temp2 = (int)( (atof(p_station->altitude) / 0.3048) + 0.5);
-      if ( (temp2 >= 0) && (temp2 <= 99999l) )
-      {
-        char temp_alt[20];
-        xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",temp2);
-        memcpy(altitude, temp_alt, sizeof(altitude) - 1);
-        altitude[sizeof(altitude)-1] = '\0';  // Terminate string
-      }
-    }
-  }
-
+  format_altitude(altitude, sizeof(altitude), p_station->altitude);
 
 // Handle Specific Options
-
-
   // Area Objects
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)   // It's an area object
   {
@@ -619,28 +539,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -691,28 +589,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -776,28 +652,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -838,28 +692,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -903,28 +735,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -966,28 +776,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1042,28 +830,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1106,28 +872,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1173,28 +917,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -1232,28 +954,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       if (transmit_compressed_objects_items)
       {
         char temp_group = object_group;
-        long x_long, y_lat;
-
-        // If we have a numeric overlay, we need to convert
-        // it to 'a-j' for compressed objects.
-        if (temp_group >= '0' && temp_group <= '9')
-        {
-          temp_group = temp_group + 'a';
-        }
-
-        if (speed == 0)
-        {
-          x_long = p_station->coord_lon;
-          y_lat  = p_station->coord_lat;
-        }
-        else
-        {
-          // Speed is non-zero.  Compute the current
-          // dead-reckoned position and use that instead.
-          compute_current_DR_position(p_station,
-                                      &x_long,
-                                      &y_lat);
-        }
 
         // We need higher precision lat/lon strings than
         // those created above.
@@ -4979,13 +4679,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
                       last_object,
                       time,
@@ -5079,13 +4772,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
                       last_object,
                       time,
@@ -5146,13 +4832,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ";%-9s*%s%sDFS%s/%s%s",
                         last_object,
@@ -5226,13 +4905,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
                         last_object,
@@ -5323,13 +4995,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
 
       xastir_snprintf(line,
                       line_length,
@@ -5873,13 +5538,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
                       last_object,
                       compress_posit(ext_lat_str,
@@ -5968,13 +5626,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // necessary.
 
 
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
-
       xastir_snprintf(line, line_length, ")%s!%s%s%s",
                       last_object,
                       compress_posit(ext_lat_str,
@@ -6033,13 +5684,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ")%s!%sDFS%s/%s%s",
                         last_object,
@@ -6112,13 +5756,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-        // Need to handle the conversion of numeric overlay
-        // chars to "a-j" here.
-        if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-        {
-          temp_overlay = last_obj_overlay + 'a';
-        }
 
         xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
                         last_object,
@@ -6209,13 +5846,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
 // whether to add altitude as an uncompressed extension if
 // necessary.
 
-
-      // Need to handle the conversion of numeric overlay
-      // chars to "a-j" here.
-      if (last_obj_overlay >= '0' && last_obj_overlay <= '9')
-      {
-        temp_overlay = last_obj_overlay + 'a';
-      }
 
       xastir_snprintf(line,
                       line_length,
