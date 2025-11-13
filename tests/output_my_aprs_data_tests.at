@@ -88,3 +88,36 @@ AT_CLEANUP
 AT_SETUP([output_my_aprs_data: message type exclamation])
 AT_CHECK([test_output_my_aprs_data message_type_exclamation], [0], [ignore], [ignore])
 AT_CLEANUP
+
+# Device-specific Formatting Tests
+
+# Test: network_stream_format
+AT_SETUP([output_my_aprs_data: network stream format])
+AT_CHECK([test_output_my_aprs_data network_stream_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: serial_tnc_format
+AT_SETUP([output_my_aprs_data: serial TNC format])
+AT_CHECK([test_output_my_aprs_data serial_tnc_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: kiss_tnc_format
+AT_SETUP([output_my_aprs_data: KISS TNC format])
+AT_CHECK([test_output_my_aprs_data kiss_tnc_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: agwpe_format
+AT_SETUP([output_my_aprs_data: AGWPE format])
+AT_CHECK([test_output_my_aprs_data agwpe_format], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: multiple_interfaces
+AT_SETUP([output_my_aprs_data: multiple interfaces])
+AT_CHECK([test_output_my_aprs_data multiple_interfaces], [0], [ignore], [ignore])
+AT_CLEANUP
+
+# Test: mixed_interface_states
+AT_SETUP([output_my_aprs_data: mixed interface states])
+AT_CHECK([test_output_my_aprs_data mixed_interface_states], [0], [ignore], [ignore])
+AT_CLEANUP
+

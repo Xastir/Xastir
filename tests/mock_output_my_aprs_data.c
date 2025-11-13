@@ -39,8 +39,6 @@
 #define MAX_COMMENT 80
 #define MAX_PHG 8
 
-
-
 /* Global variables that output_my_aprs_data needs */
 int transmit_disable = 0;
 int emergency_beacon = 0;
@@ -83,25 +81,6 @@ static int popup_count = 0;
 static char last_popup_title[256] = "";
 static char last_popup_message[1024] = "";
 
-void mock_record_write(int port, const char *data)
-{
-  if (port < 0 || port >= MAX_IFACE_DEVICES)
-    return;
-    
-  mock_ports[port].write_count++;
-  
-  strncpy(mock_ports[port].last_write, data, sizeof(mock_ports[port].last_write)-1);
-  mock_ports[port].last_write[sizeof(mock_ports[port].last_write)-1] = '\0';
-  
-  if (mock_ports[port].total_writes < 10)
-  {
-    strncpy(mock_ports[port].all_writes[mock_ports[port].total_writes], 
-            data, 
-            sizeof(mock_ports[port].all_writes[0])-1);
-    mock_ports[port].all_writes[mock_ports[port].total_writes][sizeof(mock_ports[port].all_writes[0])-1] = '\0';
-    mock_ports[port].total_writes++;
-  }
-}
 
 /* Mock control functions */
 void mock_reset_all(void)
@@ -224,9 +203,6 @@ void mock_add_interface(int port, int device_type, int status, int transmit_enab
   strcpy(devices[port].unproto1, "WIDE1-1,WIDE2-1");
   devices[port].unprotonum = 0;
   strcpy(devices[port].device_converse_string, "CONV");
-  
-  fprintf(stderr, "DEBUG mock_add_interface: port=%d, type=%d, status=%d, tx=%d\n",
-          port, device_type, status, transmit_enabled);
 }
 
 int mock_get_write_count(int port)
@@ -459,23 +435,44 @@ int my_position_valid = 0;
 int pipe_xastir_to_tcp_server = 0;
 void popup_message(char *title, char *message)
 {
+  popup_count++;
+  strncpy(last_popup_title, title, sizeof(last_popup_title) - 1); 
   fprintf(stderr, "POPUP: %s - %s\n", title, message);
 }
 int serial_char_pacing = 0;
-void split_string ( char *data, char *cptr[], int max, char search_char )
+void split_string( char *data, char *cptr[], int max, char search_char )
 {
-  char *start = data;
-  char *end;
-  int count = 0;
+  int ii;
+  char *temp;
+  char *current = data;
 
-  while ((end = strchr(start, search_char)) != NULL && count < max)
+
+  // NULL each char pointer
+  for (ii = 0; ii < max; ii++)
   {
-    *end = '\0';
-    cptr[count++] = start;
-    start = end + 1;
+    cptr[ii] = NULL;
   }
-  if (count < max)
-    cptr[count] = start;
+
+  // Save the beginning substring address
+  cptr[0] = current;
+
+  for (ii = 1; ii < max; ii++)
+  {
+    temp = strchr(current,search_char);  // Find next search character
+
+    if(!temp)   // No search characters found
+    {
+      return; // All done with string
+    }
+
+    // Store pointer to next substring in array
+    cptr[ii] = &temp[1];
+    current  = &temp[1];
+
+    // Overwrite search character  with end-of-string char and bump
+    // pointer by one.
+    temp[0] = '\0';
+  }
 }
 void statusline(const char *msg, int clear){}
 void substr(char *dest, char *src, int size)

@@ -65,7 +65,10 @@ int test_transmit_disabled(void)
     mock_reset_all();
     mock_set_transmit_disable(1);
     mock_set_emergency_beacon(0);
-    
+
+    // Add one active TNC interface
+    mock_add_interface(0, DEVICE_SERIAL_TNC, DEVICE_UP, 1); // transmit enabled
+
     output_my_aprs_data();
     
     // Should not transmit anything
@@ -80,7 +83,10 @@ int test_transmit_disabled_with_emergency(void)
     mock_reset_all();
     mock_set_transmit_disable(1);
     mock_set_emergency_beacon(1);
-    
+
+    // Add one active TNC interface
+    mock_add_interface(0, DEVICE_SERIAL_TNC, DEVICE_UP, 1); // transmit enabled
+
     output_my_aprs_data();
     
     // Should not transmit but should popup warning
@@ -91,7 +97,7 @@ int test_transmit_disabled_with_emergency(void)
     TEST_ASSERT(mock_get_popup_count() > 0,
         "A popup warning should be displayed when emergency beacon is on but transmit is disabled");
     
-    // Optionally check the popup content (language codes may vary)
+    // Optionally check the popup content
     const char *popup_msg = mock_get_last_popup_message();
     if (popup_msg != NULL)
     {
@@ -125,15 +131,11 @@ int test_basic_position_output(void)
     mock_set_my_position("4700.00N", "12200.00W");
     mock_set_output_station_type(0); // APRS_FIXED
     
-    // Add one active TNC interface - use type 1 for DEVICE_SERIAL_TNC
+    // Add one active TNC interface
     mock_add_interface(0, DEVICE_SERIAL_TNC, DEVICE_UP, 1); // transmit enabled
     
-    fprintf(stderr, "DEBUG: Before calling output_my_aprs_data\n");
     output_my_aprs_data();
-    fprintf(stderr, "DEBUG: After calling output_my_aprs_data\n");
-    
     int write_count = mock_get_write_count(0);
-    fprintf(stderr, "DEBUG: Write count = %d\n", write_count);
     
     // Should transmit something
     TEST_ASSERT(write_count > 0, 
@@ -511,6 +513,237 @@ int test_message_type_exclamation(void)
     TEST_PASS("output_my_aprs_data message type exclamation");
 }
 
+/*  Device-Specific Formatting Tests */
+
+int test_network_stream_format(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add network stream interface (DEVICE_NET_STREAM = 5)
+    mock_add_interface(0, DEVICE_NET_STREAM, DEVICE_UP, 1);
+    
+    output_my_aprs_data();
+    
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on network stream");
+    
+    const char *output = mock_get_last_write(0);
+    TEST_ASSERT(output != NULL, "Output should not be NULL");
+    
+    fprintf(stderr, "DEBUG: Network stream output: %s\n", output);
+    
+    // Network stream should have proper header format
+    TEST_ASSERT(strstr(output, "N7ABC>") != NULL,
+        "Network stream should include source callsign in header");
+    TEST_ASSERT(strstr(output, "APX2") != NULL,
+        "Network stream should include destination in header (APX2xx)");
+    TEST_ASSERT(strstr(output, "TCPIP*") != NULL,
+        "Network stream should include TCPIP* in path");
+    
+    // Should have a colon separator before data
+    TEST_ASSERT(strchr(output, ':') != NULL,
+        "Network stream should have colon separator");
+    
+    // Should end with \r\n (network format)
+    size_t len = strlen(output);
+    TEST_ASSERT(len >= 2 && output[len-2] == '\r' && output[len-1] == '\n',
+        "Network stream should end with \\r\\n");
+    
+    TEST_PASS("output_my_aprs_data network stream format");
+}
+
+int test_serial_tnc_format(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add serial TNC interface
+    mock_add_interface(0, DEVICE_SERIAL_TNC, DEVICE_UP, 1);
+    
+    output_my_aprs_data();
+    
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on serial TNC");
+    
+    const char *output = mock_get_last_write(0);
+    TEST_ASSERT(output != NULL, "Output should not be NULL");
+    
+    fprintf(stderr, "DEBUG: Serial TNC output: %s\n", output);
+    
+    // Serial TNC should have TNC commands
+    // The output should contain MYCALL, UNPROTO, and CONV commands followed by data
+    // These may be in the buffer as separate writes or combined
+    TEST_ASSERT(strstr(output, "MYCALL") != NULL || strstr(output, "N7ABC") != NULL,
+        "Serial TNC should include MYCALL command or callsign");
+    
+    // Should contain actual position data
+    TEST_ASSERT(strstr(output, "470") != NULL,
+        "Serial TNC should include position data");
+    
+    TEST_PASS("output_my_aprs_data serial TNC format");
+}
+
+int test_kiss_tnc_format(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add KISS TNC interface
+    mock_add_interface(0, DEVICE_SERIAL_KISS_TNC, DEVICE_UP, 1);
+    
+    output_my_aprs_data();
+    
+    // KISS TNC uses send_ax25_frame() which we're mocking
+    // The data should still be written to the device buffer
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on KISS TNC");
+
+    const char *output = mock_get_last_write(0);
+    TEST_ASSERT(output != NULL, "Output should not be NULL");
+    
+    // KISS format should NOT have TNC commands like MYCALL or UNPROTO
+    TEST_ASSERT(strstr(output, "MYCALL") == NULL,
+        "KISS TNC should not include MYCALL command");
+    TEST_ASSERT(strstr(output, "UNPROTO") == NULL,
+        "KISS TNC should not include UNPROTO command");
+
+    // Should have AX.25 framing (starts with FEND byte 0xC0 in KISS)
+    // and at least contain the position data
+    TEST_ASSERT(output != NULL && (unsigned char)output[0] == 0xC0,
+        "KISS TNC output should start with FEND (0xC0)");
+    TEST_ASSERT(strstr(output+2, "470") != NULL,
+        "KISS TNC should contain position data starting with 470");
+
+    TEST_PASS("output_my_aprs_data KISS TNC format");
+}
+
+int test_agwpe_format(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add AGWPE interface
+    mock_add_interface(0, DEVICE_NET_AGWPE, DEVICE_UP, 1);
+    
+    output_my_aprs_data();
+    
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on AGWPE");
+    
+    const char *output = mock_get_last_write(0);
+    TEST_ASSERT(output != NULL, "Output should not be NULL");
+    
+    fprintf(stderr, "DEBUG: AGWPE output: %s\n", output);
+    
+    // AGWPE should not have TNC commands
+    TEST_ASSERT(strstr(output, "MYCALL") == NULL,
+        "AGWPE should not include MYCALL command");
+    TEST_ASSERT(strstr(output, "UNPROTO") == NULL,
+        "AGWPE should not include UNPROTO command");
+    
+    // Note - I would like to expand this test to verify proper AGWPE framing,
+    TEST_PASS("output_my_aprs_data AGWPE format");
+}
+
+int test_multiple_interfaces(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add multiple interfaces
+    mock_add_interface(0, DEVICE_NET_STREAM, DEVICE_UP, 1);
+    mock_add_interface(1, DEVICE_SERIAL_TNC, DEVICE_UP, 1);
+    
+    output_my_aprs_data();
+    
+    // Both interfaces should receive data
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on first interface");
+    TEST_ASSERT(mock_get_write_count(1) > 0, 
+        "Data should be transmitted on second interface");
+    
+    // Get output from port 0 and make a copy since mock_get_last_write uses a static buffer
+    const char *output0_tmp = mock_get_last_write(0);
+    TEST_ASSERT(output0_tmp != NULL, "First output should not be NULL");
+    char output0_copy[1024];
+    strncpy(output0_copy, output0_tmp, sizeof(output0_copy) - 1);
+    output0_copy[sizeof(output0_copy) - 1] = '\0';
+    const char *output0 = output0_copy;
+    
+    const char *output1 = mock_get_last_write(1);
+    TEST_ASSERT(output1 != NULL, "Second output should not be NULL");
+    
+    fprintf(stderr, "DEBUG: Port 0 output: '%s'\n", output0);
+    fprintf(stderr, "DEBUG: Port 1 output: '%s'\n", output1);
+    
+    // Network stream should have TCPIP*, TNC should not
+    TEST_ASSERT(strstr(output0, "TCPIP*") != NULL,
+        "Network stream should have TCPIP* in output");
+    TEST_ASSERT(strstr(output1, "TCPIP*") == NULL,
+        "Serial TNC should not have TCPIP* in output");
+    /* Require both MYCALL and callsign to be present */
+    TEST_ASSERT(strstr(output1, "MYCALL") != NULL,
+        "Serial TNC should include MYCALL command");
+    TEST_ASSERT(strstr(output1, "N7ABC") != NULL,
+        "Serial TNC should include callsign");
+
+    TEST_PASS("output_my_aprs_data multiple interfaces");
+}
+
+int test_mixed_interface_states(void)
+{
+    mock_reset_all();
+    mock_set_transmit_disable(0);
+    mock_set_my_callsign("N7ABC");
+    mock_set_my_position("4700.00N", "12200.00W");
+    mock_set_output_station_type(0); // APRS_FIXED
+    mock_set_compressed_posit(0);
+    mock_set_comment("Test");
+    
+    // Add interfaces with different states
+    mock_add_interface(0, DEVICE_NET_STREAM, DEVICE_UP, 1);     // Active, TX enabled
+    mock_add_interface(1, DEVICE_SERIAL_TNC, DEVICE_DOWN, 1);   // Down
+    mock_add_interface(2, DEVICE_NET_STREAM, DEVICE_UP, 0);     // Active, TX disabled
+    
+    output_my_aprs_data();
+    
+    // Only first interface should transmit
+    TEST_ASSERT(mock_get_write_count(0) > 0, 
+        "Data should be transmitted on active interface with TX enabled");
+    TEST_ASSERT(mock_get_write_count(1) == 0, 
+        "No data should be transmitted on down interface");
+    TEST_ASSERT(mock_get_write_count(2) == 0, 
+        "No data should be transmitted on interface with TX disabled");
+    TEST_PASS("output_my_aprs_data mixed interface states");
+}
+
 /* Test runner */
 typedef struct
 {
@@ -541,6 +774,13 @@ int main(int argc, char *argv[])
     {"compressed_fixed_basic", test_compressed_fixed_basic},
     {"message_type_equals", test_message_type_equals},
     {"message_type_exclamation", test_message_type_exclamation},
+    /* Phase 3: Device-specific formatting tests */
+    {"network_stream_format", test_network_stream_format},
+    {"serial_tnc_format", test_serial_tnc_format},
+    {"kiss_tnc_format", test_kiss_tnc_format},
+    {"agwpe_format", test_agwpe_format},
+    {"multiple_interfaces", test_multiple_interfaces},
+    {"mixed_interface_states", test_mixed_interface_states},
     {NULL, NULL}
   };
 
