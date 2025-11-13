@@ -2712,7 +2712,7 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
 // station hasn't sent out a posit yet.
 //*****************************************************************
 
-double distance_from_my_station(char *call_sign, char *course_deg)
+double distance_from_my_station(char *call_sign, char *course_deg, int english_units)
 {
   DataRow *p_station;
   double distance;

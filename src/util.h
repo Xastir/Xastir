@@ -104,7 +104,7 @@ extern long convert_lon_s2l(char *lon);
 
 extern double calc_distance(long lat1, long lon1, long lat2, long lon2);
 extern double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *course_deg, int course_deg_length);
-extern double distance_from_my_station(char *call_sign, char *course_deg);
+extern double distance_from_my_station(char *call_sign, char *course_deg, int english_units);
 
 extern char *convert_bearing_to_name(char *bearing, int opposite);
 
