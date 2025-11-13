@@ -65,7 +65,6 @@
 
 
 
-int position_amb_chars;
 char echo_digis[6][MAX_CALLSIGN+1];
 
 #define ACCEPT_0N_0E    /* set this to see stations at 0N/0E on the map */
@@ -552,112 +551,6 @@ int get_seconds(void)
   (void)strftime(sminute,4,"%S",time_now);
   return(atoi(sminute));
 }
-
-
-
-
-
-
-/*************************************************************************/
-/* output_lat - format position with position_amb_chars for transmission */
-/*************************************************************************/
-char *output_lat(char *in_lat, int comp_pos)
-{
-  int i,j;
-
-//fprintf(stderr,"in_lat:%s\n", in_lat);
-
-  if (!comp_pos)
-  {
-    // Don't do this as it results in truncation!
-    //in_lat[7]=in_lat[8]; // Shift N/S down for transmission
-  }
-  else if (position_amb_chars>0)
-  {
-    in_lat[7]='0';
-  }
-
-  j=0;
-  if (position_amb_chars>0 && position_amb_chars<5)
-  {
-    for (i=6; i>(6-position_amb_chars-j); i--)
-    {
-      if (i==4)
-      {
-        i--;
-        j=1;
-      }
-      if (!comp_pos)
-      {
-        in_lat[i]=' ';
-      }
-      else
-      {
-        in_lat[i]='0';
-      }
-    }
-  }
-
-  if (!comp_pos)
-  {
-    in_lat[8] = '\0';
-  }
-
-  return(in_lat);
-}
-
-
-
-
-
-/**************************************************************************/
-/* output_long - format position with position_amb_chars for transmission */
-/**************************************************************************/
-char *output_long(char *in_long, int comp_pos)
-{
-  int i,j;
-
-//fprintf(stderr,"in_long:%s\n", in_long);
-
-  if (!comp_pos)
-  {
-    // Don't do this as it results in truncation!
-    //in_long[8]=in_long[9]; // Shift e/w down for transmission
-  }
-  else if (position_amb_chars>0)
-  {
-    in_long[8]='0';
-  }
-
-  j=0;
-  if (position_amb_chars>0 && position_amb_chars<5)
-  {
-    for (i=7; i>(7-position_amb_chars-j); i--)
-    {
-      if (i==5)
-      {
-        i--;
-        j=1;
-      }
-      if (!comp_pos)
-      {
-        in_long[i]=' ';
-      }
-      else
-      {
-        in_long[i]='0';
-      }
-    }
-  }
-
-  if (!comp_pos)
-  {
-    in_long[9] = '\0';
-  }
-
-  return(in_long);
-}
-
 
 
 
