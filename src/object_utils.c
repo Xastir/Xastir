@@ -243,3 +243,34 @@ void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int 
       }
   }
 }
+
+// Area objects of the linear type may have a corridor width, which
+// is transmitted as "{xxx}".
+//
+// This function extracted from objects.c as is.  Note that it does NOT
+// check that the width is small enough to fit in the size of the destination
+// buffer, it merely truncates the string to fit in the destination after
+// it's created.  This is a candidate for sanity checking and cleanup.
+//
+// The corridor width is stored in the DataRow as a 16-bit bitfield, and
+// so has a maximum value of 65535, too big to fit in the 6-byte buffer that
+// Create_object_item_tx_string reserves for the formatted string.  So really
+// we should be making sure that the corridor is less than 1000 (miles) before
+// formatting it.
+//
+// This code *depends* on the fact that the actual dialog box that allows you
+// to enter the corridor refuses to accept more than three digits.
+void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width)
+{
+  dst[0] = '\0';
+  if ( (type == 1) || (type == 6))
+  {
+    if (width > 0)
+    {
+      char temp_corridor[10];
+      xastir_snprintf(temp_corridor, sizeof(temp_corridor), "{%d}", width);
+      memcpy(dst, temp_corridor, dst_size - 1);
+      dst[dst_size-1] = '\0';  // Terminate string
+    }
+  }
+}

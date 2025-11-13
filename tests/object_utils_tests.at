@@ -106,3 +106,9 @@ AT_KEYWORDS([object_utils area_color_from_string])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_dialog_basic], [0], [PASS: format_area_color_from_dialog for valid bright and dim colors
 ])
 AT_CLEANUP
+
+AT_SETUP([format area_corridor:  valid inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_basic], [0], [PASS: format_area_corridor for valid corridor values
+])
+AT_CLEANUP

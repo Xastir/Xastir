@@ -520,18 +520,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     lon_offset = p_station->aprs_symbol.area_object.sqrt_lon_off;
 
     // Corridor
-    complete_corridor[0] = '\0';
-    if ( (complete_area_type == 1) || (complete_area_type == 6))
-    {
-      if (p_station->aprs_symbol.area_object.corridor_width > 0)
-      {
-        char temp_corridor[10];
-        xastir_snprintf(temp_corridor, sizeof(temp_corridor), "{%d}",
-                        p_station->aprs_symbol.area_object.corridor_width);
-        memcpy(complete_corridor, temp_corridor, sizeof(complete_corridor) - 1);
-        complete_corridor[sizeof(complete_corridor)-1] = '\0';  // Terminate string
-      }
-    }
+    format_area_corridor(complete_corridor, sizeof(complete_corridor),
+                         complete_area_type,
+                         p_station->aprs_symbol.area_object.corridor_width);
 
     if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
     {

@@ -41,6 +41,7 @@ void format_zulu_time(char *dst, size_t dst_size);
 void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int color);
 unsigned int area_color_from_string(char *color_string);
 void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
+void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
 
 /* test cases for format_course_speed */
 
@@ -229,6 +230,18 @@ int test_format_area_color_from_dialog_basic(void)
   TEST_PASS("format_area_color_from_dialog for valid bright and dim colors");
 }
 
+int test_format_area_corridor_basic(void)
+{
+  char complete_corridor[6];
+  format_area_corridor(complete_corridor, sizeof(complete_corridor), 1, 100);
+  TEST_ASSERT_STR_EQ("{100}", complete_corridor, "Three-digit corridor correctly formatted");
+  format_area_corridor(complete_corridor, sizeof(complete_corridor), 1, 10);
+  TEST_ASSERT_STR_EQ("{10}", complete_corridor, "Two-digit corridor correctly formatted");
+  format_area_corridor(complete_corridor, sizeof(complete_corridor), 1, 1);
+  TEST_ASSERT_STR_EQ("{1}", complete_corridor, "one-digit corridor correctly formatted");
+  TEST_PASS("format_area_corridor for valid corridor values");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -255,6 +268,7 @@ int main(int argc, char *argv[])
     {"area_color_from_string_invalid", test_area_color_from_string_invalid},
     {"area_color_from_string_midstring", test_area_color_from_string_midstring},
     {"format_area_color_from_dialog_basic",test_format_area_color_from_dialog_basic},
+    {"format_area_corridor_basic",test_format_area_corridor_basic},
     {NULL,NULL}
   };
 
