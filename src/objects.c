@@ -529,13 +529,12 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
       if (transmit_compressed_objects_items)
       {
-        char temp_group = object_group;
 
         xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
                         p_station->call_sign,
                         time,
                         compress_posit(lat_str,
-                                       temp_group,
+                                       object_group,
                                        lon_str,
                                        object_symbol,
                                        course,
@@ -574,12 +573,11 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
       if (transmit_compressed_objects_items)
       {
-        char temp_group = object_group;
 
         xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
                         p_station->call_sign,
                         compress_posit(lat_str,
-                                       temp_group,
+                                       object_group,
                                        lon_str,
                                        object_symbol,
                                        course,
