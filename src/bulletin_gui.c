@@ -56,6 +56,7 @@
 #include "bulletin_gui.h"
 #include "interface.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "db_funcs.h"
 
 // Must be last include file

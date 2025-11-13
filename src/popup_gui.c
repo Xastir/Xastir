@@ -37,6 +37,7 @@
 #include "main.h"
 #include "lang.h"
 #include "rotated.h"
+#include "mutex_utils.h"
 #include "snprintf.h"
 
 // Must be last include file

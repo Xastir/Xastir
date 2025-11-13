@@ -78,6 +78,7 @@
 //#include "maps.h"
 #include "interface.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "wx.h"
 #include "forked_getaddrinfo.h"
 #include "x_spider.h"

@@ -24,6 +24,9 @@
 #ifndef XASTIR_MESSAGES_H
 #define XASTIR_MESSAGES_H
 
+// this file uses structures defined in this header
+#include "mutex_utils.h"
+
 /*
  * Message structures
  *

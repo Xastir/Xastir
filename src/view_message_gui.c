@@ -50,6 +50,7 @@
 #include "main.h"
 #include "db_funcs.h"
 #include "util.h"
+#include "mutex_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

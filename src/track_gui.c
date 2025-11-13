@@ -43,6 +43,7 @@
 #include "popup.h"
 #include "fetch_remote.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "xa_config.h"
 
 // Must be last include file

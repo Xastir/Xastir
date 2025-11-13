@@ -37,6 +37,7 @@
 #include "main.h"
 #include "db_funcs.h"
 #include "lang.h"
+#include "mutex_utils.h"
 #include "xa_config.h"
 
 // Must be last include file

@@ -45,6 +45,7 @@
 #include "db_funcs.h"
 #include "alert.h"
 #include "lang.h"
+#include "mutex_utils.h"
 
 #include <Xm/XmAll.h>
 #ifdef HAVE_XBAE_MATRIX_H

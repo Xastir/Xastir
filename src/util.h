@@ -26,7 +26,6 @@
 #define __XASTIR_UTIL_H
 
 #include <stdio.h>
-#include <pthread.h>
 #include "database.h"
 
 // Max number of WIDE digipeaters allowed
@@ -151,16 +150,6 @@ extern int  is_xnum_or_dash(char *data, int max);
 extern void removeCtrlCodes(char *cp);
 extern void makePrintable(char *cp);
 extern void spell_it_out(char *text, int max_length);
-
-typedef struct
-{
-  pthread_mutex_t lock;
-  pthread_t threadID;
-} xastir_mutex;
-
-extern void init_critical_section(xastir_mutex *lock);
-extern int begin_critical_section(xastir_mutex *lock, char *text);
-extern int end_critical_section(xastir_mutex *lock, char *text);
 
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG

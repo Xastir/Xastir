@@ -113,6 +113,7 @@
 #include "maps.h"
 #include "alert.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "main.h"
 #include "datum.h"
 #include "draw_symbols.h"

@@ -40,6 +40,7 @@
 #include "draw_symbols.h"
 #include "main.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "color.h"
 #include "maps.h"
 

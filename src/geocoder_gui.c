@@ -43,6 +43,7 @@
 #include "io.h"
 #include "geo.h"
 #include "db_gui.h"
+#include "mutex_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

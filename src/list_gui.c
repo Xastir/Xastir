@@ -42,6 +42,7 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "mutex_utils.h"
 #include "messages.h"
 #include "draw_symbols.h"
 #include "list_gui.h"
