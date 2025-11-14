@@ -145,3 +145,60 @@ AT_KEYWORDS([object_utils probability_ring])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_max_only], [0], [PASS: format_probability_ring_data when only max specified
 ])
 AT_CLEANUP
+
+AT_BANNER([area object formatting tests])
+
+AT_SETUP([format_area_object_item_packet:  circle object with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  circle object with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle object with altitude])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with altitude])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  circle object with altitude, compressed])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with altitude, compressed])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt, compressed
+])
+AT_CLEANUP
+
+

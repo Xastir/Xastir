@@ -44,6 +44,15 @@ void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int 
 void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
 void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                   char *pmax);
+void format_area_object_item_packet(char *dst, size_t dst_size,
+                                    char *name, char object_group,
+                                    char object_symbol, char *time, char *lat_str,
+                                    char *lon_str, int area_type,
+                                    char *area_color,
+                                    int lat_offset, int lon_offset,
+                                    char *speed_course, char *corridor,
+                                    char *altitude, int course, int speed,
+                                    int is_object, int compressed);
 
 /* test cases for format_course_speed */
 
@@ -283,6 +292,158 @@ int test_format_probability_ring_data_max_only(void)
   TEST_PASS("format_probability_ring_data when only max specified");
 }
 
+int test_format_area_object_item_packet_object_circle_uncomp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 1, 0);                  // object, uncomp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z3501.63N\\10612.38Wl006/806",
+                     line,
+                     "circle, dim black, no course/speed/alt, object, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for simple circle case");
+}
+
+int test_format_area_object_item_packet_item_circle_uncomp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 0, 0);                  // item, uncomp
+  TEST_ASSERT_STR_EQ(")TestAr!3501.63N\\10612.38Wl006/806",
+                     line,
+                     "circle, dim black, no course/speed/alt, item, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for simple circle item case");
+}
+
+int test_format_area_object_item_packet_object_circle_comp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 1, 1);                  // object, comp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z\\<he:3\\8.l   006/806",
+                     line,
+                     "circle, dim black, no course/speed/alt, object, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for simple circle case, compressed");
+}
+
+int test_format_area_object_item_packet_item_circle_comp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 0, 1);                  // item, comp
+  TEST_ASSERT_STR_EQ(")TestAr!\\<he:3\\8.l   006/806",
+                     line,
+                     "circle, dim black, no course/speed/alt, item, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for simple circle item case, compressed");
+}
+
+int test_format_area_object_item_packet_object_circle_uncomp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 1, 0);                  // object, uncomp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z3501.63N\\10612.38Wl006/806/A=000100",
+                     line,
+                     "circle, dim black, no course/speed with alt, object, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for circle case with alt");
+}
+
+int test_format_area_object_item_packet_item_circle_uncomp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 0, 0);                  // item, uncomp
+  TEST_ASSERT_STR_EQ(")TestAr!3501.63N\\10612.38Wl006/806/A=000100",
+                     line,
+                     "circle, dim black, no course/speed with alt, item, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for circle item case with alt");
+}
+
+int test_format_area_object_item_packet_object_circle_comp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 1, 1);                  // object, comp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z\\<he:3\\8.l   006/806/A=000100",
+                     line,
+                     "circle, dim black, no course/speed with alt, object, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for circle case with alt, compressed");
+}
+
+int test_format_area_object_item_packet_item_circle_comp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 0,           // lon, type(cir)
+                                 "/8",                     // color (dark, bla)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 0, 1);                  // item, comp
+  TEST_ASSERT_STR_EQ(")TestAr!\\<he:3\\8.l   006/806/A=000100",
+                     line,
+                     "circle, dim black, no course/speed with alt, item, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result for circle item case with alt, compressed");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -315,6 +476,14 @@ int main(int argc, char *argv[])
     {"format_probability_ring_data_both",test_format_probability_ring_data_both},
     {"format_probability_ring_data_min_only",test_format_probability_ring_data_min_only},
     {"format_probability_ring_data_max_only",test_format_probability_ring_data_max_only},
+    {"format_area_object_item_packet_object_circle_uncomp_nodata",test_format_area_object_item_packet_object_circle_uncomp_nodata},
+    {"format_area_object_item_packet_item_circle_uncomp_nodata",test_format_area_object_item_packet_item_circle_uncomp_nodata},
+    {"format_area_object_item_packet_object_circle_comp_nodata",test_format_area_object_item_packet_object_circle_comp_nodata},
+    {"format_area_object_item_packet_item_circle_comp_nodata",test_format_area_object_item_packet_item_circle_comp_nodata},
+    {"format_area_object_item_packet_object_circle_uncomp_alt",test_format_area_object_item_packet_object_circle_uncomp_alt},
+    {"format_area_object_item_packet_item_circle_uncomp_alt",test_format_area_object_item_packet_item_circle_uncomp_alt},
+    {"format_area_object_item_packet_object_circle_comp_alt",test_format_area_object_item_packet_object_circle_comp_alt},
+    {"format_area_object_item_packet_item_circle_comp_alt",test_format_area_object_item_packet_item_circle_comp_alt},
     {NULL,NULL}
   };
 

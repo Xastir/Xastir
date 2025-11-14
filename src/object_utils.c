@@ -37,8 +37,13 @@
 #include "object_utils.h"
 
 // forward declaration so we don't need to include util.h and all that
-// drags in
+// drags in, and so we can mock them up in unit testing
 time_t sec_now(void);
+char *compress_posit(const char *input_lat, const char group,
+                     const char *input_lon, const char symbol,
+                     const unsigned int last_course,
+                     const unsigned int last_speed, const char *phg);
+char compress_group(char group_in);
 
 // Given strings representing course and speed, return an appropriate
 // CSE/SPD string for transmitting of object in the dst array, and integer
@@ -275,6 +280,108 @@ void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
     else    // Have both
     {
       xastir_snprintf(dst, dst_size, "Pmin%s,Pmax%s,%s",pmin,pmax,comment2);
+    }
+  }
+}
+
+// given a mess of data, format into an area object or item packet,
+// compressed or otherwise.
+// If compressed, lat_str and lon_str must be in high precision, we do not
+// check that here --- do it in the caller
+void format_area_object_item_packet(char *dst, size_t dst_size,
+                                    char *name, char object_group,
+                                    char object_symbol, char *time, char *lat_str,
+                                    char *lon_str, int area_type,
+                                    char *area_color,
+                                    int lat_offset, int lon_offset,
+                                    char *speed_course, char *corridor,
+                                    char *altitude, int course, int speed,
+                                    int is_object, int compressed)
+{
+  if (is_object)     // It's an object
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
+                      name,
+                      time,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      area_type,
+                      lat_offset,
+                      area_color,
+                      lon_offset,
+                      speed_course,
+                      corridor,
+                      altitude);
+
+    }
+    else    // Non-compressed posit object
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                      name,
+                      time,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      area_type,
+                      lat_offset,
+                      area_color,
+                      lon_offset,
+                      speed_course,
+                      corridor,
+                      altitude);
+    }
+  }
+  else        // It's an item
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%1d%02d%2s%02d%s%s%s",
+                      name,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      area_type,
+                      lat_offset,
+                      area_color,
+                      lon_offset,
+                      speed_course,
+                      corridor,
+                      altitude);
+
+    }
+    else    // Non-compressed item
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                      name,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      area_type,
+                      lat_offset,
+                      area_color,
+                      lon_offset,
+                      speed_course,
+                      corridor,
+                      altitude);
     }
   }
 }
