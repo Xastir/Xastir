@@ -274,3 +274,65 @@ void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigne
     }
   }
 }
+
+
+// If we are a probability ring object we have pmin and/or pmax data and
+// should prepend the data to the object comment.
+//
+// As it stands here, this function is a direct cut/paste of what was in
+// Create_object_item_tx_string, but it should be refactored to avoid
+// using the unsafe strcpy and strcat functions, which have no safety valve
+// for oversized strings that overrun buffers.
+//
+// I'll do that after testing is in place
+void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
+                                  char *pmax)
+{
+  char comment2[43+1];
+
+  if ( (pmin[0] != '\0')
+       || (pmax[0] != '\0') )
+  {
+
+    if (pmax[0] == '\0')
+    {
+      // Only have probability_min
+      strcpy(comment2, "Pmin");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, pmin);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, ",");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, dst);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+    }
+    else if (pmin[0] == '\0')
+    {
+      // Only have probability_max
+      strcpy(comment2, "Pmax");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, pmax);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, ",");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, dst);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+    }
+    else    // Have both
+    {
+      strcpy(comment2, "Pmin");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, pmin);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, ",Pmax");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, pmax);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, ",");
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      strcat(comment2, dst);
+      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+    }
+    xastir_snprintf(dst,dst_size, "%s", comment2);
+  }
+}

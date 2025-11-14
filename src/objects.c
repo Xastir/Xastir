@@ -414,52 +414,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     comment[0] = '\0';  // Empty string
   }
 
-  if ( (p_station->probability_min[0] != '\0')
-       || (p_station->probability_max[0] != '\0') )
-  {
-
-    if (p_station->probability_max[0] == '\0')
-    {
-      // Only have probability_min
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_min);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    else if (p_station->probability_min[0] == '\0')
-    {
-      // Only have probability_max
-      strcpy(comment2, "Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_max);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    else    // Have both
-    {
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_min);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_max);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    xastir_snprintf(comment,sizeof(comment), "%s", comment2);
-  }
-
+  format_probability_ring_data(comment,sizeof(comment), p_station->probability_min, p_station->probability_max);
 
   // Put RNG or PHG at the beginning of the comment
   strcpy(comment2, p_station->power_gain);

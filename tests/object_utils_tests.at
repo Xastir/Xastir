@@ -101,14 +101,47 @@ AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_mid
 ])
 AT_CLEANUP
 
-AT_SETUP([format area_color_from_dialog:  valid inputs])
+AT_SETUP([format_area_color_from_dialog:  valid inputs])
 AT_KEYWORDS([object_utils area_color_from_string])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_dialog_basic], [0], [PASS: format_area_color_from_dialog for valid bright and dim colors
 ])
 AT_CLEANUP
 
-AT_SETUP([format area_corridor:  valid inputs])
+AT_BANNER([object corridor function tests])
+
+AT_SETUP([format_area_corridor:  three-digit inputs])
 AT_KEYWORDS([object_utils area_corridor])
-AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_basic], [0], [PASS: format_area_corridor for valid corridor values
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_threedigit], [0], [PASS: format_area_corridor for three-digit corridor values
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_corridor:  two-digit inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_twodigit], [0], [PASS: format_area_corridor for two-digit corridor values
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_corridor:  one-digit inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_onedigit], [0], [PASS: format_area_corridor for one-digit corridor values
+])
+AT_CLEANUP
+
+AT_BANNER([probability ring formatting tests])
+AT_SETUP([format_probability_ring_data:  both inputs])
+AT_KEYWORDS([object_utils probability_ring])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_both], [0], [PASS: format_probability_ring_data when min and max specified
+])
+AT_CLEANUP
+
+AT_SETUP([format_probability_ring_data:  min input only])
+AT_KEYWORDS([object_utils probability_ring])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_min_only], [0], [PASS: format_probability_ring_data when only min specified
+])
+AT_CLEANUP
+
+AT_SETUP([format_probability_ring_data:  max input only])
+AT_KEYWORDS([object_utils probability_ring])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_max_only], [0], [PASS: format_probability_ring_data when only max specified
 ])
 AT_CLEANUP
