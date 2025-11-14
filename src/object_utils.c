@@ -209,36 +209,16 @@ unsigned int area_color_from_string(char *color_string)
 
 void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright)
 {
-  // This initial implementation just does exactly what
-  // Setup_object_data does in all its glory.  It is ripe for
-  // rewriting after we have it in unit testing
+  unsigned int color_int;
+  // We are going to be passed a color /0 through /7.  decode it.
+  color_int = area_color_from_string(color);
 
-  // Note that we are ASSUMING that "color" has at least 2 elements.  Not cool.
+  // If it's bright, just use it.  If it's low-intensity we need to add 8
+  if (!bright)
+    color_int += 8;
 
-  // note also the lack of any sanity checking of inputs, because the function
-  // assumes valid inputs from the dialog box because the user must choose
-  // from radio buttons and on/off buttons, not freeform values.
-
-  if (bright)
-  {
-    // if it's bright color, it's /0 - /7 directly from the dialog, so just
-    // use it.
-    xastir_snprintf(dst, dst_size, "%2s", color);
-  }
-  else  // Dim color
-  {
-    // if it's dim color, it needs to be /8, /9, or 10-15.  Add 8 to the
-    // given color's value (which is always 0-7), stuff it in the output,
-    // and then change the first character to '/' if the original was 0 or 1
-    // (i.e. the new value is 8 or 9).
-    xastir_snprintf(dst, dst_size, "%02.0f",
-                      (float)(atoi(&color[1]) + 8) );
-
-      if ( (color[1] == '0') || (color[1] == '1') )
-      {
-        dst[0] = '/';
-      }
-  }
+  // now encode it
+  format_area_color_from_numeric(dst, dst_size, color_int);
 }
 
 // Area objects of the linear type may have a corridor width, which
