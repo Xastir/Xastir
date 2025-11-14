@@ -117,10 +117,7 @@ void format_altitude(char *dst, size_t dst_size, char *altitude_str)
       alt_in_meters = (int)( (atof(altitude_str) / 0.3048) + 0.5);
       if ( (alt_in_meters >= 0) && (alt_in_meters <= 99999l) )
       {
-        char temp_alt[20];
-        xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld",alt_in_meters);
-        memcpy(dst, temp_alt, dst_size - 1);
-        dst[dst_size-1] = '\0';  // Terminate string
+        xastir_snprintf(dst, dst_size, "/A=%06ld",alt_in_meters);
       }
     }
   }
@@ -247,10 +244,10 @@ void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int 
 // Area objects of the linear type may have a corridor width, which
 // is transmitted as "{xxx}".
 //
-// This function extracted from objects.c as is.  Note that it does NOT
-// check that the width is small enough to fit in the size of the destination
-// buffer, it merely truncates the string to fit in the destination after
-// it's created.  This is a candidate for sanity checking and cleanup.
+// Note that it does NOT check that the width is small enough to fit
+// in the size of the destination buffer, it merely truncates the
+// string to fit in the destination after it's created.  This is a
+// candidate for sanity checking and cleanup.
 //
 // The corridor width is stored in the DataRow as a 16-bit bitfield, and
 // so has a maximum value of 65535, too big to fit in the 6-byte buffer that
@@ -267,10 +264,7 @@ void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigne
   {
     if (width > 0)
     {
-      char temp_corridor[10];
-      xastir_snprintf(temp_corridor, sizeof(temp_corridor), "{%d}", width);
-      memcpy(dst, temp_corridor, dst_size - 1);
-      dst[dst_size-1] = '\0';  // Terminate string
+      xastir_snprintf(dst, dst_size, "{%d}", width);
     }
   }
 }
@@ -279,12 +273,6 @@ void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigne
 // If we are a probability ring object we have pmin and/or pmax data and
 // should prepend the data to the object comment.
 //
-// As it stands here, this function is a direct cut/paste of what was in
-// Create_object_item_tx_string, but it should be refactored to avoid
-// using the unsafe strcpy and strcat functions, which have no safety valve
-// for oversized strings that overrun buffers.
-//
-// I'll do that after testing is in place
 void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                   char *pmax)
 {
@@ -293,46 +281,20 @@ void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
   if ( (pmin[0] != '\0')
        || (pmax[0] != '\0') )
   {
+    strncpy(comment2,dst,sizeof(comment2)-1);
+    comment2[sizeof(comment2)-1] = '\0';  // assure that we're null terminated
 
     if (pmax[0] == '\0')
     {
-      // Only have probability_min
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, pmin);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, dst);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      xastir_snprintf(dst, dst_size, "Pmin%s,%s",pmin,comment2);
     }
     else if (pmin[0] == '\0')
     {
-      // Only have probability_max
-      strcpy(comment2, "Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, pmax);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, dst);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      xastir_snprintf(dst, dst_size, "Pmax%s,%s",pmax,comment2);
     }
     else    // Have both
     {
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, pmin);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, pmax);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, dst);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+      xastir_snprintf(dst, dst_size, "Pmin%s,Pmax%s,%s",pmin,pmax,comment2);
     }
-    xastir_snprintf(dst,dst_size, "%s", comment2);
   }
 }
