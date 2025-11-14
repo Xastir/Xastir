@@ -51,6 +51,7 @@
 #include "snprintf.h"
 #include "objects.h"
 #include "db_gis.h"
+#include "ambiguity_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

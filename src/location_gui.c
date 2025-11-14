@@ -36,6 +36,7 @@
 #include "db_funcs.h"
 #include "xa_config.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "lang.h"
 #include "snprintf.h"
 

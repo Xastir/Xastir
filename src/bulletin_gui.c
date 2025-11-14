@@ -56,6 +56,7 @@
 #include "bulletin_gui.h"
 #include "interface.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "db_funcs.h"
 
 // Must be last include file
@@ -136,7 +137,7 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
 
   (void)strftime(time_str,sizeof(time_str),"%b %d %H:%M",tmp);
 
-  distance = distance_from_my_station(call_sign,temp_my_course);
+  distance = distance_from_my_station(call_sign,temp_my_course, english_units);
   xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
                   call_sign, &tag[3], time_str, distance,
                   english_units ? langcode("UNIOP00004"): langcode("UNIOP00005"),
@@ -279,7 +280,7 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
     // We add to the distance in order to come up with 0.0
     // if the distance is not known at all (no position
     // found yet).
-    distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
+    distance = (int)(distance_from_my_station(from_call,temp,english_units) + 0.9999);
 
     if ( (bulletin_range == 0)
          || (distance <= bulletin_range && distance > 0)
@@ -356,7 +357,7 @@ void count_bulletin_messages(char *call_sign, char *packet_message, time_t sec_h
     return;
   }
 
-  distance = distance_from_my_station(call_sign,temp_my_course);
+  distance = distance_from_my_station(call_sign,temp_my_course,english_units);
 
   // Operands of <= have incompatible types (double, int):
   if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
@@ -452,7 +453,8 @@ static void zero_bulletin_processing(Message *fill)
           char temp_my_course[10];
 
           distance = (int)(distance_from_my_station(fill->from_call_sign,
-                           temp_my_course) + 0.9999);
+                                                    temp_my_course,
+                                                    english_units) + 0.9999);
 
           if ( (bulletin_range == 0)
                || (distance <= bulletin_range && distance > 0) )

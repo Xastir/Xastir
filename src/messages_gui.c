@@ -37,7 +37,9 @@
 #include "main.h"
 #include "db_funcs.h"
 #include "lang.h"
+#include "mutex_utils.h"
 #include "xa_config.h"
+#include "log_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

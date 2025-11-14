@@ -78,11 +78,14 @@
 //#include "maps.h"
 #include "interface.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "wx.h"
 #include "forked_getaddrinfo.h"
 #include "x_spider.h"
 #include "db_gis.h"
 #include "gps.h"
+#include "ambiguity_utils.h"
+#include "log_utils.h"
 
 #ifdef HAVE_LIBAX25
   #include <netax25/ax25.h>

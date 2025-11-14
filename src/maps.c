@@ -113,12 +113,15 @@
 #include "maps.h"
 #include "alert.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "main.h"
 #include "datum.h"
 #include "draw_symbols.h"
 #include "rotated.h"
 #include "color.h"
 #include "xa_config.h"
+#include "timer_utils.h"
+#include "mgrs_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

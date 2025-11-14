@@ -59,6 +59,7 @@
 #include "draw_symbols.h"
 #include "alert.h"
 #include "util.h"
+#include "tactical_call_utils.h"
 #include "bulletin_gui.h"
 #include "fcc_data.h"
 #include "geo.h"
@@ -77,6 +78,7 @@
 #include "db_gui.h"
 #include "db_funcs.h"
 #include "sound.h"
+#include "log_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -1431,7 +1433,8 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     m_fill.heard_via_tnc = (from == 'T') ? VIA_TNC : NOT_VIA_TNC;
   }
 
-  distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
+  distance = (int)(distance_from_my_station(from_call,temp,english_units)
+                   + 0.9999);
 
   if (distance != 0)      // Have a posit from the sending station
   {
@@ -12562,7 +12565,8 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
           char course_deg[5];
 
 
-          distance = distance_from_my_station(call_sign, course_deg);
+          distance = distance_from_my_station(call_sign, course_deg,
+                                              english_units);
 
           // Because of the distance check we have to receive a valid position
           // from the station BEFORE we process the EMERGENCY portion and
@@ -16542,7 +16546,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd)
         if (emergency_distance_check)
         {
 
-          distance = distance_from_my_station(call_sign, course_deg);
+          distance = distance_from_my_station(call_sign, course_deg,
+                                              english_units);
 
           // Because of the distance check we have to receive a valid position
           // from the station BEFORE we process the EMERGENCY portion and
@@ -17112,7 +17117,7 @@ double calc_aloha_distance(void)
               aloha_array[num_aloha_entries].is_home =
                 aloha_array[num_aloha_entries].is_wx = (char) FALSE;
         aloha_array[num_aloha_entries].distance =
-          distance_from_my_station(p_station->call_sign,temp);
+          distance_from_my_station(p_station->call_sign,temp, english_units);
 
         if ( p_station->newest_trackpoint != NULL
              && strlen(p_station->speed) > 0)

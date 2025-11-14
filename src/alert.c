@@ -300,6 +300,7 @@
 #include "xastir.h"
 #include "alert.h"
 #include "util.h"
+#include "mutex_utils.h"
 #include "snprintf.h"
 #include "wx.h"
 #include "hashtable.h"

@@ -42,12 +42,14 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "mutex_utils.h"
 #include "messages.h"
 #include "draw_symbols.h"
 #include "list_gui.h"
 #include "database.h"
 #include "db_funcs.h"
 #include "db_gui.h"
+#include "mgrs_utils.h"
 
 #include <stdlib.h>
 #include <stdio.h>

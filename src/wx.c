@@ -76,6 +76,7 @@
 #include "interface.h"
 #include "lang.h"
 #include "util.h"
+#include "mutex_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"

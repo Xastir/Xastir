@@ -11,15 +11,18 @@ EXTRA_DIST=icon.xbm
 
 XASTIR_SRC = \
     alert.c alert.h \
+    ambiguity_utils.c ambiguity_utils.h \
     awk.c awk.h \
     bulletin_gui.c bulletin_gui.h \
     color.c color.h \
     datum.c datum.h \
+    debug_utils.c debug_utils.h \
     db.c db_funcs.h database.h \
     db_gis.c db_gis.h \
     db_gui.c db_gui.h \
     dbfawk.c dbfawk.h \
     dlm.c dlm.h \
+    dr_utils.c dr_utils.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
     festival.c festival.h \
@@ -40,6 +43,7 @@ XASTIR_SRC = \
     locate_gui.c \
     location.c \
     location_gui.c \
+    log_utils.c log_utils.h \
     main.c main.h \
     maps.c maps.h \
     map_cache.c map_cache.h \
@@ -53,6 +57,8 @@ XASTIR_SRC = \
     map_WMS.c \
     messages.c messages.h \
     messages_gui.c \
+    mgrs_utils.c mgrs_utils.h \
+    mutex_utils.c mutex_utils.h \
     objects.h objects.c \
     object_utils.h object_utils.c \
     popup.h \
@@ -63,7 +69,9 @@ XASTIR_SRC = \
     shp_hash.c shp_hash.h \
     snprintf.c snprintf.h \
     sound.c sound.h symbols.h \
+    tactical_call_utils.c tactical_call_utils.h \
     tile_mgmnt.c tile_mgmnt.h \
+    timer_utils.c timer_utils.h \
     track_gui.c track_gui.h \
     util.c util.h \
     view_message_gui.c \

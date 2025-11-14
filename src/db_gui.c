@@ -11,6 +11,8 @@
 #include "draw_symbols.h"
 #include "alert.h"
 #include "util.h"
+#include "tactical_call_utils.h"
+#include "mutex_utils.h"
 #include "bulletin_gui.h"
 #include "fcc_data.h"
 #include "geo.h"
@@ -26,6 +28,7 @@
 #include "xa_config.h"
 #include "x_spider.h"
 #include "sound.h"
+#include "mgrs_utils.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -2942,7 +2945,7 @@ void station_data_fill_in ( Widget w, XtPointer clientData, XtPointer calldata )
       phg_decode(langcode("WPUPSTI014"), // "Current Power Gain"
                  p_station->power_gain,
                  temp,
-                 sizeof(temp) );
+                 sizeof(temp), english_units );
     }
 
     // Check for Map View symbol:  Eyeball symbol with // RNG
@@ -3005,7 +3008,7 @@ void station_data_fill_in ( Widget w, XtPointer clientData, XtPointer calldata )
   // Current DF Info ...
   if (strlen(p_station->signal_gain) == 7)
   {
-    shg_decode(langcode("WPUPSTI057"), p_station->signal_gain, temp, sizeof(temp) );
+    shg_decode(langcode("WPUPSTI057"), p_station->signal_gain, temp, sizeof(temp) , english_units);
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
     xastir_snprintf(temp, sizeof(temp), "\n");
@@ -3014,7 +3017,7 @@ void station_data_fill_in ( Widget w, XtPointer clientData, XtPointer calldata )
   }
   if (strlen(p_station->bearing) == 3)
   {
-    bearing_decode(langcode("WPUPSTI058"), p_station->bearing, p_station->NRQ, temp, sizeof(temp) );
+    bearing_decode(langcode("WPUPSTI058"), p_station->bearing, p_station->NRQ, temp, sizeof(temp), english_units );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
     xastir_snprintf(temp, sizeof(temp), "\n");

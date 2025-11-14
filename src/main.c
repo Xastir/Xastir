@@ -124,6 +124,7 @@ char *xastir_version=VERSION;
 #include "track_gui.h"
 #include "list_gui.h"
 #include "util.h"
+#include "tactical_call_utils.h"
 #include "color.h"
 #include "gps.h"
 #include "bulletin_gui.h"
@@ -135,6 +136,9 @@ char *xastir_version=VERSION;
 #include "db_gui.h"
 #include "db_gis.h"
 #include "sound.h"
+#include "ambiguity_utils.h"
+#include "mgrs_utils.h"
+#include "log_utils.h"
 
 #include "map_OSM.h"
 
