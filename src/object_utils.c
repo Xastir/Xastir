@@ -424,3 +424,86 @@ void format_area_object_item_packet(char *dst, size_t dst_size,
     }
   }
 }
+
+
+// Format a signpost object or item packet given all the pre-formatted
+// bits and bobs
+
+void format_signpost_object_item_packet(char *dst, size_t dst_size,
+                                        char *name, char object_group,
+                                        char object_symbol, char *time,
+                                        char * lat_str, char *lon_str,
+                                        char *speed_course,
+                                        char *altitude,
+                                        char *signpost,
+                                        int course, int speed,
+                                        int is_object, int compressed)
+{
+  if (is_object)     // It's an object
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%s%s",
+                      name,
+                      time,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      altitude,
+                      signpost);
+    }
+    else    // Non-compressed posit object
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%c%s%c%s%s%s",
+                      name,
+                      time,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      speed_course,
+                      altitude,
+                      signpost);
+    }
+  }
+  else    // It's an item
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%s%s",
+                      name,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      altitude,
+                      signpost);
+    }
+    else    // Non-compressed item
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%c%s%c%s%s%s",
+                      name,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      speed_course,
+                      altitude,
+                      signpost);
+    }
+  }
+
+}

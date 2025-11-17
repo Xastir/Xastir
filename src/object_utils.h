@@ -47,4 +47,13 @@ extern void format_area_object_item_packet(char *dst, size_t dst_size,
                                     char *altitude, int course, int speed,
                                     int is_object, int compressed);
 
+extern void format_signpost_object_item_packet(char *dst, size_t dst_size,
+                                        char *name, char object_group,
+                                        char object_symbol, char *time,
+                                        char * lat_str, char *lon_str,
+                                        char *speed_course,
+                                        char *altitude,
+                                        char *signpost,
+                                        int course, int speed,
+                                        int is_object, int compressed);
 #endif

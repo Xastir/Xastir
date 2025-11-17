@@ -231,110 +231,208 @@ AT_CLEANUP
 AT_BANNER([area object formatting tests])
 
 AT_SETUP([format_area_object_item_packet:  circle object with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  circle item with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case
 ])
 AT_CLEANUP
 
 AT_SETUP([format_area_object_item_packet:  circle object with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  circle item with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  circle object with altitude])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  circle item with altitude])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt
 ])
 AT_CLEANUP
 
 AT_SETUP([format_area_object_item_packet:  circle object with altitude, compressed])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  circle item with altitude, compressed])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line object with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line item with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case
 ])
 AT_CLEANUP
 
 AT_SETUP([format_area_object_item_packet:  line object with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line item with no data])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line object with altitude])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line item with altitude])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt
 ])
 AT_CLEANUP
 
 AT_SETUP([format_area_object_item_packet:  line object with altitude, compressed])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt, compressed
 ])
 AT_CLEANUP
 
 
 AT_SETUP([format_area_object_item_packet:  line item with altitude, compressed])
-AT_KEYWORDS([object_utils object_item_packet])
+AT_KEYWORDS([object_utils area_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt, compressed
 ])
 AT_CLEANUP
 
 
+AT_BANNER([signpost formatting tests])
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude, compressed
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, no speed or altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, no speed or altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, no speed or altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, no speed or  altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed no altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed no altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed no altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed no  altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
