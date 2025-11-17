@@ -25,6 +25,7 @@
 
 #include <stddef.h>
 
+extern void pad_item_name(char *name, size_t name_size);
 extern void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
 extern void format_altitude(char *dst, size_t dst_size, char *altitude_str);
 extern void format_zulu_time(char *dst, size_t dst_size);

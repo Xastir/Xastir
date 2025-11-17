@@ -302,7 +302,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   int temp;
   char signpost[6];
   int bearing;
-  char tempstr[50];
   char object_group;
   char object_symbol;
   int killed = 0;
@@ -324,25 +323,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   }
   else if ((p_station->flag & ST_ITEM) != 0)      // We have an item
   {
-    xastir_snprintf(tempstr,
-                    sizeof(tempstr),
-                    "%s",
-                    p_station->call_sign);
-
-    if (strlen(tempstr) == 1)   // Add two spaces (to make 3 minimum chars)
-    {
-      strcpy(p_station->call_sign, tempstr);
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-      strcat(p_station->call_sign, "  ");
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-    }
-    else if (strlen(tempstr) == 2)   // Add one space (to make 3 minimum chars)
-    {
-      strcpy(p_station->call_sign, tempstr);
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-      strcat(p_station->call_sign, " ");
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-    }
+    pad_item_name(p_station->call_sign, sizeof(p_station->call_sign));
 
     if (!valid_item(p_station->call_sign))
     {

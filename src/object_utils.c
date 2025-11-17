@@ -45,6 +45,33 @@ char *compress_posit(const char *input_lat, const char group,
                      const unsigned int last_speed, const char *phg);
 char compress_group(char group_in);
 
+// Pad an item name out to at least 3 characters
+// Direct cut and paste from Create_object_item_tx_string.
+// Replaces given name with padded name.
+void pad_item_name(char *name, size_t name_size)
+{
+  char tempstr[50];
+  xastir_snprintf(tempstr,
+                  sizeof(tempstr),
+                  "%s",
+                  name);
+
+  if (strlen(tempstr) == 1)   // Add two spaces (to make 3 minimum chars)
+  {
+    strcpy(name, tempstr);
+    name[name_size-1] = '\0';  // Terminate string
+    strcat(name, "  ");
+    name[name_size-1] = '\0';  // Terminate string
+  }
+  else if (strlen(tempstr) == 2)   // Add one space (to make 3 minimum chars)
+  {
+    strcpy(name, tempstr);
+    name[name_size-1] = '\0';  // Terminate string
+    strcat(name, " ");
+    name[name_size-1] = '\0';  // Terminate string
+  }
+}
+
 // Given strings representing course and speed, return an appropriate
 // CSE/SPD string for transmitting of object in the dst array, and integer
 // representations of course and speed

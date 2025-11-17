@@ -35,6 +35,7 @@
 #include "tests/test_framework.h"
 
 /* forward declarations (so we don't need to include object_utils.h */
+void pad_item_name(char *name, size_t name_size);
 void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
 void format_altitude(char *dst, size_t dst_size, char *altitude_str);
 void format_zulu_time(char *dst, size_t dst_size);
@@ -53,6 +54,80 @@ void format_area_object_item_packet(char *dst, size_t dst_size,
                                     char *speed_course, char *corridor,
                                     char *altitude, int course, int speed,
                                     int is_object, int compressed);
+
+/* test cases for pad_item_name */
+int test_pad_item_name_nopad9(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A12345678");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A12345678",name,"9-char name not modified");
+  TEST_PASS("pad_item_name: 9 character name not modified");
+}
+int test_pad_item_name_nopad8(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A1234567");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A1234567",name,"8-char name not modified");
+  TEST_PASS("pad_item_name: 8 character name not modified");
+}
+int test_pad_item_name_nopad7(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A123456");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A123456",name,"7-char name not modified");
+  TEST_PASS("pad_item_name: 7 character name not modified");
+}
+int test_pad_item_name_nopad6(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A12345");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A12345",name,"6-char name not modified");
+  TEST_PASS("pad_item_name: 6 character name not modified");
+}
+int test_pad_item_name_nopad5(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A1234");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A1234",name,"5-char name not modified");
+  TEST_PASS("pad_item_name: 5 character name not modified");
+}
+int test_pad_item_name_nopad4(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A123");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A123",name,"4-char name not modified");
+  TEST_PASS("pad_item_name: 4 character name not modified");
+}
+int test_pad_item_name_nopad3(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A12");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A12",name,"3-char name not modified");
+  TEST_PASS("pad_item_name: 3 character name not modified");
+}
+int test_pad_item_name_pad2(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A1");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A1 ",name,"2-char name padded with one space");
+  TEST_PASS("pad_item_name: 2 character name padded with one space");
+}
+int test_pad_item_name_pad1(void)
+{
+  char name[10];
+  snprintf(name,sizeof(name),"A");
+  pad_item_name(name,sizeof(name));
+  TEST_ASSERT_STR_EQ("A  ",name,"1-char name padded with two spaces");
+  TEST_PASS("pad_item_name: 1 character name padded with two spaces");
+}
 
 /* test cases for format_course_speed */
 
@@ -645,6 +720,15 @@ int main(int argc, char *argv[])
     {"format_area_object_item_packet_item_line_uncomp_alt",test_format_area_object_item_packet_item_line_uncomp_alt},
     {"format_area_object_item_packet_object_line_comp_alt",test_format_area_object_item_packet_object_line_comp_alt},
     {"format_area_object_item_packet_item_line_comp_alt",test_format_area_object_item_packet_item_line_comp_alt},
+    {"pad_item_name_nopad9",test_pad_item_name_nopad9},
+    {"pad_item_name_nopad8",test_pad_item_name_nopad8},
+    {"pad_item_name_nopad7",test_pad_item_name_nopad7},
+    {"pad_item_name_nopad6",test_pad_item_name_nopad6},
+    {"pad_item_name_nopad5",test_pad_item_name_nopad5},
+    {"pad_item_name_nopad4",test_pad_item_name_nopad4},
+    {"pad_item_name_nopad3",test_pad_item_name_nopad3},
+    {"pad_item_name_pad2",test_pad_item_name_pad2},
+    {"pad_item_name_pad1",test_pad_item_name_pad1},
     {NULL,NULL}
   };
 
