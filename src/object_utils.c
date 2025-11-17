@@ -310,15 +310,8 @@ void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
 void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain)
 {
   char comment2[43+1];
-  strcpy(comment2, power_gain);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-  strcat(comment2, dst);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-
-  xastir_snprintf(dst,
-                  dst_size,
-                  "%s",
-                  comment2);
+  xastir_snprintf(comment2,sizeof(comment2),"%s%s",power_gain,dst);
+  strncpy(dst,comment2,dst_size-1);
 }
 
 // given a mess of data, format into an area object or item packet,
