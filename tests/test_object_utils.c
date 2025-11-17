@@ -1005,6 +1005,74 @@ int test_format_signpost_object_item_packet_item_txt_speed_alt_comp(void)
                      "format_signpost_object_item_packet produces correct result with text, no velocity, or altitude, compressed");
   TEST_PASS("format_signpost_object_item_packet produces correct result");
 }
+int test_format_signpost_object_item_packet_object_notxt_speed_alt(void)
+{
+  char line[256];
+  format_signpost_object_item_packet(line, sizeof(line),
+                                     "Signpost", '\\', // name, group
+                                     'm', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                     "",           // signpost notxt
+                                     356,5,               // no course/speed
+                                     1,0);              // object, not comp
+  TEST_ASSERT_STR_EQ(";Signpost *111618z3501.63N\\10612.38Wm356/005/A=000100",
+                     line,
+                     "format_signpost_object_item_packet produces correct result");
+  TEST_PASS("format_signpost_object_item_packet produces correct result");
+}
+int test_format_signpost_object_item_packet_object_notxt_speed_alt_comp(void)
+{
+  char line[256];
+  format_signpost_object_item_packet(line, sizeof(line),
+                                     "Signpost", '\\', // name, group
+                                     'm', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "356/005",         // course/speed
+                                     "/A=000100",       //  altitude
+                                     "",           // signpost txt
+                                     356,5,             // course/speed
+                                     1,1);              // object, comp
+  TEST_ASSERT_STR_EQ(";Signpost *111618z\\<he43\\7ymz8C/A=000100",
+                     line,
+                     "format_signpost_object_item_packet produces correct result with text, no velocity, or altitude, compressed");
+  TEST_PASS("format_signpost_object_item_packet produces correct result");
+}
+int test_format_signpost_object_item_packet_item_notxt_speed_alt(void)
+{
+  char line[256];
+  format_signpost_object_item_packet(line, sizeof(line),
+                                     "Signpost", '\\', // name, group
+                                     'm', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "356/005",         // course/speed
+                                     "/A=000100",                // altitude
+                                     "",           // signpost txt
+                                     356,5,               // no course/speed
+                                     0,0);              // object, not comp
+  TEST_ASSERT_STR_EQ(")Signpost!3501.63N\\10612.38Wm356/005/A=000100",
+                     line,
+                     "format_signpost_object_item_packet produces correct result");
+  TEST_PASS("format_signpost_object_item_packet produces correct result");
+}
+int test_format_signpost_object_item_packet_item_notxt_speed_alt_comp(void)
+{
+  char line[256];
+  format_signpost_object_item_packet(line, sizeof(line),
+                                     "Signpost", '\\', // name, group
+                                     'm', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                     "",           // signpost txt
+                                     356,5,               // course/speed
+                                     0,1);              // object, comp
+  TEST_ASSERT_STR_EQ(")Signpost!\\<he43\\7ymz8C/A=000100",
+                     line,
+                     "format_signpost_object_item_packet produces correct result with text, no velocity, or altitude, compressed");
+  TEST_PASS("format_signpost_object_item_packet produces correct result");
+}
 
 /* Test runner */
 typedef struct {
@@ -1084,6 +1152,10 @@ int main(int argc, char *argv[])
     {"format_signpost_object_item_packet_object_txt_speed_alt_comp",test_format_signpost_object_item_packet_object_txt_speed_alt_comp},
     {"format_signpost_object_item_packet_item_txt_speed_alt",test_format_signpost_object_item_packet_item_txt_speed_alt},
     {"format_signpost_object_item_packet_item_txt_speed_alt_comp",test_format_signpost_object_item_packet_item_txt_speed_noalt_comp},
+    {"format_signpost_object_item_packet_object_notxt_speed_alt",test_format_signpost_object_item_packet_object_notxt_speed_alt},
+    {"format_signpost_object_item_packet_object_notxt_speed_alt_comp",test_format_signpost_object_item_packet_object_notxt_speed_alt_comp},
+    {"format_signpost_object_item_packet_item_notxt_speed_alt",test_format_signpost_object_item_packet_item_notxt_speed_alt},
+    {"format_signpost_object_item_packet_item_notxt_speed_alt_comp",test_format_signpost_object_item_packet_item_notxt_speed_alt_comp},
     {NULL,NULL}
   };
 

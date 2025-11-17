@@ -436,3 +436,27 @@ AT_KEYWORDS([object_utils signpost_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
 ])
 AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, with speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, with speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, with speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, with speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
