@@ -50,26 +50,13 @@ char compress_group(char group_in);
 // Replaces given name with padded name.
 void pad_item_name(char *name, size_t name_size)
 {
-  char tempstr[50];
+  char tempstr[10]; // max name is 9 characters
   xastir_snprintf(tempstr,
                   sizeof(tempstr),
                   "%s",
                   name);
-
-  if (strlen(tempstr) == 1)   // Add two spaces (to make 3 minimum chars)
-  {
-    strcpy(name, tempstr);
-    name[name_size-1] = '\0';  // Terminate string
-    strcat(name, "  ");
-    name[name_size-1] = '\0';  // Terminate string
-  }
-  else if (strlen(tempstr) == 2)   // Add one space (to make 3 minimum chars)
-  {
-    strcpy(name, tempstr);
-    name[name_size-1] = '\0';  // Terminate string
-    strcat(name, " ");
-    name[name_size-1] = '\0';  // Terminate string
-  }
+  if (strlen(tempstr) < 3)
+    xastir_snprintf(name, name_size,"%-3s",tempstr);
 }
 
 // Given strings representing course and speed, return an appropriate
