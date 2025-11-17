@@ -45,6 +45,7 @@ void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int 
 void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
 void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                   char *pmax);
+void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain);
 void format_area_object_item_packet(char *dst, size_t dst_size,
                                     char *name, char object_group,
                                     char object_symbol, char *time, char *lat_str,
@@ -366,6 +367,27 @@ int test_format_probability_ring_data_max_only(void)
   TEST_ASSERT_STR_EQ("Pmax1,Pointless Noise", comment, "Probability rings correctly formatted when only max specified.");
   TEST_PASS("format_probability_ring_data when only max specified");
 }
+
+// tests of prepend_rng_phg
+int test_prepend_rng_phg_short_comment(void)
+{
+  char comment[43+1];
+  snprintf(comment,sizeof(comment),"A little comment");
+  prepend_rng_phg(comment,sizeof(comment),"PHG5400");
+  TEST_ASSERT_STR_EQ("PHG5400A little comment",comment, "PHG prepended to comment and not truncated");
+  TEST_PASS("prepend_rng_phg when comment is shorter than max");
+}
+
+int test_prepend_rng_phg_long_comment(void)
+{
+  char comment[43+1];
+  snprintf(comment,sizeof(comment),"An unbelievably long and verbose comment...");
+  prepend_rng_phg(comment,sizeof(comment),"PHG5400");
+  TEST_ASSERT_STR_EQ("PHG5400An unbelievably long and verbose com",comment, "PHG prepended to comment and truncated");
+  TEST_PASS("prepend_rng_phg when comment is already max");
+}
+
+// Tests of format_area_object_item_packet
 
 int test_format_area_object_item_packet_object_circle_uncomp_nodata(void)
 {
@@ -704,6 +726,8 @@ int main(int argc, char *argv[])
     {"format_probability_ring_data_both",test_format_probability_ring_data_both},
     {"format_probability_ring_data_min_only",test_format_probability_ring_data_min_only},
     {"format_probability_ring_data_max_only",test_format_probability_ring_data_max_only},
+    {"prepend_rng_phg_short_comment",test_prepend_rng_phg_short_comment},
+    {"prepend_rng_phg_long_comment",test_prepend_rng_phg_long_comment},
     {"format_area_object_item_packet_object_circle_uncomp_nodata",test_format_area_object_item_packet_object_circle_uncomp_nodata},
     {"format_area_object_item_packet_item_circle_uncomp_nodata",test_format_area_object_item_packet_item_circle_uncomp_nodata},
     {"format_area_object_item_packet_object_circle_comp_nodata",test_format_area_object_item_packet_object_circle_comp_nodata},

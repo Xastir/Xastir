@@ -298,6 +298,29 @@ void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
   }
 }
 
+// While Xastir doesn't actually allow you to enter PHG and RNG for
+// objects (?) it does check to see if a station record for an object
+// has such data and tries to insert it.  Perhaps this is possible only
+// when Xastir adopts an object created elsewhere, and that other station
+// transmitted the object with PHG?
+//
+// If it's there, this data needs to be prepended to the comment
+// string.  We are given the comment string in dst.
+
+void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain)
+{
+  char comment2[43+1];
+  strcpy(comment2, power_gain);
+  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+  strcat(comment2, dst);
+  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
+
+  xastir_snprintf(dst,
+                  dst_size,
+                  "%s",
+                  comment2);
+}
+
 // given a mess of data, format into an area object or item packet,
 // compressed or otherwise.
 // If compressed, lat_str and lon_str must be in high precision, we do not

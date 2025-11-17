@@ -189,9 +189,16 @@ AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_da
 ])
 AT_CLEANUP
 
-AT_SETUP([format_probability_ring_data:  min input only])
-AT_KEYWORDS([object_utils probability_ring])
-AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_min_only], [0], [PASS: format_probability_ring_data when only min specified
+AT_BANNER([prepend rng/png formatting tests])
+AT_SETUP([prepend_rng_phg with short comment])
+AT_KEYWORDS([object_utils prepend_rng_phg])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" prepend_rng_phg_short_comment], [0], [PASS: prepend_rng_phg when comment is shorter than max
+])
+AT_CLEANUP
+
+AT_SETUP([prepend_rng_phg with long comment])
+AT_KEYWORDS([object_utils prepend_rng_phg])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" prepend_rng_phg_long_comment], [0], [PASS: prepend_rng_phg when comment is already max
 ])
 AT_CLEANUP
 

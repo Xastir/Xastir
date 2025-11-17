@@ -289,7 +289,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
   char comment[43+1];                 // max 43 characters of comment
-  char comment2[43+1];
   char time[7+1];
   char complete_area_color[3];
   int complete_area_type;
@@ -397,17 +396,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   format_probability_ring_data(comment,sizeof(comment), p_station->probability_min, p_station->probability_max);
 
-  // Put RNG or PHG at the beginning of the comment
-  strcpy(comment2, p_station->power_gain);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-  strcat(comment2, comment);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-
-  xastir_snprintf(comment,
-                  sizeof(comment),
-                  "%s",
-                  comment2);
-
+  prepend_rng_phg(comment,sizeof(comment),p_station->power_gain);
 
   (void)remove_trailing_spaces(comment);
 
