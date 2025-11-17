@@ -483,77 +483,17 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   else if (p_station->signal_gain[0] != '\0')   // Must be an Omni-DF object/item
   {
-
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%s/%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        xastir_snprintf(line, line_length, ")%s!%s%s/%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-    }
+    format_omni_df_object_item_packet(line, line_length,
+                                      p_station->call_sign,
+                                      object_group, object_symbol,
+                                      time,
+                                      lat_str, lon_str,
+                                      p_station->signal_gain,
+                                      speed_course,
+                                      altitude,
+                                      course, speed,
+                                      (p_station->flag & ST_OBJECT),
+                                      transmit_compressed_objects_items);
   }
   else if (p_station->NRQ[0] != 0)    // It's a Beam Heading DFS object/item
   {
