@@ -444,6 +444,159 @@ int test_format_area_object_item_packet_item_circle_comp_alt(void)
   TEST_PASS("format_area_object_item_packet produces correct result for circle item case with alt, compressed");
 }
 
+// line right with offset and corridor
+int test_format_area_object_item_packet_object_line_uncomp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 1, 0);                  // object, uncomp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z3501.63N\\10612.38Wl106/406{100}",
+                     line,
+                     "line, high red, no course/speed/alt, object, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for simple line case");
+}
+
+int test_format_area_object_item_packet_item_line_uncomp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 0, 0);                  // item, uncomp
+  TEST_ASSERT_STR_EQ(")TestAr!3501.63N\\10612.38Wl106/406{100}",
+                     line,
+                     "line, high red, no course/speed/alt, item, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for simple line item case");
+}
+
+int test_format_area_object_item_packet_object_line_comp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 1, 1);                  // object, comp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z\\<he:3\\8.l   106/406{100}",
+                     line,
+                     "line, high red, no course/speed/alt, object, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for simple line case, compressed");
+}
+
+int test_format_area_object_item_packet_item_line_comp_nodata(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "", 0, 0,               //alt, speed, course
+                                 0, 1);                  // item, comp
+  TEST_ASSERT_STR_EQ(")TestAr!\\<he:3\\8.l   106/406{100}",
+                     line,
+                     "line, high red, no course/speed/alt, item, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for simple line item case, compressed");
+}
+
+int test_format_area_object_item_packet_object_line_uncomp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 1, 0);                  // object, uncomp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z3501.63N\\10612.38Wl106/406{100}/A=000100",
+                     line,
+                     "line, high red, no course/speed with alt, object, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for line case with alt");
+}
+
+int test_format_area_object_item_packet_item_line_uncomp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.63N", // sym, time, lat
+                                 "10612.38W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 0, 0);                  // item, uncomp
+  TEST_ASSERT_STR_EQ(")TestAr!3501.63N\\10612.38Wl106/406{100}/A=000100",
+                     line,
+                     "line, high red, no course/speed with alt, item, uncompressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for line item case with alt");
+}
+
+int test_format_area_object_item_packet_object_line_comp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 1, 1);                  // object, comp
+  TEST_ASSERT_STR_EQ(";TestAr   *111618z\\<he:3\\8.l   106/406{100}/A=000100",
+                     line,
+                     "line, high red, no course/speed with alt, object, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for line case with alt, compressed");
+}
+
+int test_format_area_object_item_packet_item_line_comp_alt(void)
+{
+  char line[256];
+
+  format_area_object_item_packet(line,sizeof(line),
+                                 "TestAr", '\\',     // name, group
+                                 'l',"111618z","3501.630N", // sym, time, lat
+                                 "10612.380W", 1,           // lon, type(line right)
+                                 "/4",                     // color (high, red)
+                                 6, 6,                   //sqrt lat, lon offsets
+                                 "","{100}",                  //spd/cse, corridor
+                                 "/A=000100", 0, 0,      //alt, speed, course
+                                 0, 1);                  // item, comp
+  TEST_ASSERT_STR_EQ(")TestAr!\\<he:3\\8.l   106/406{100}/A=000100",
+                     line,
+                     "line, dim black, no course/speed with alt, item, compressed is as expected.");
+  TEST_PASS("format_area_object_item_packet produces correct result with corridor for line item case with alt, compressed");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -484,6 +637,14 @@ int main(int argc, char *argv[])
     {"format_area_object_item_packet_item_circle_uncomp_alt",test_format_area_object_item_packet_item_circle_uncomp_alt},
     {"format_area_object_item_packet_object_circle_comp_alt",test_format_area_object_item_packet_object_circle_comp_alt},
     {"format_area_object_item_packet_item_circle_comp_alt",test_format_area_object_item_packet_item_circle_comp_alt},
+    {"format_area_object_item_packet_object_line_uncomp_nodata",test_format_area_object_item_packet_object_line_uncomp_nodata},
+    {"format_area_object_item_packet_item_line_uncomp_nodata",test_format_area_object_item_packet_item_line_uncomp_nodata},
+    {"format_area_object_item_packet_object_line_comp_nodata",test_format_area_object_item_packet_object_line_comp_nodata},
+    {"format_area_object_item_packet_item_line_comp_nodata",test_format_area_object_item_packet_item_line_comp_nodata},
+    {"format_area_object_item_packet_object_line_uncomp_alt",test_format_area_object_item_packet_object_line_uncomp_alt},
+    {"format_area_object_item_packet_item_line_uncomp_alt",test_format_area_object_item_packet_item_line_uncomp_alt},
+    {"format_area_object_item_packet_object_line_comp_alt",test_format_area_object_item_packet_object_line_comp_alt},
+    {"format_area_object_item_packet_item_line_comp_alt",test_format_area_object_item_packet_item_line_comp_alt},
     {NULL,NULL}
   };
 

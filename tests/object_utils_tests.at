@@ -202,3 +202,57 @@ AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_pa
 AT_CLEANUP
 
 
+AT_SETUP([format_area_object_item_packet:  line object with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  line object with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with no data])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line object with altitude])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with altitude])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  line object with altitude, compressed])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with altitude, compressed])
+AT_KEYWORDS([object_utils object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt, compressed
+])
+AT_CLEANUP
+
+
