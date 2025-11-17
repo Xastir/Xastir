@@ -243,25 +243,21 @@ void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int 
 // Area objects of the linear type may have a corridor width, which
 // is transmitted as "{xxx}".
 //
-// Note that it does NOT check that the width is small enough to fit
-// in the size of the destination buffer, it merely truncates the
-// string to fit in the destination after it's created.  This is a
-// candidate for sanity checking and cleanup.
-//
-// The corridor width is stored in the DataRow as a 16-bit bitfield, and
-// so has a maximum value of 65535, too big to fit in the 6-byte buffer that
-// Create_object_item_tx_string reserves for the formatted string.  So really
-// we should be making sure that the corridor is less than 1000 (miles) before
-// formatting it.
-//
-// This code *depends* on the fact that the actual dialog box that allows you
-// to enter the corridor refuses to accept more than three digits.
+// The corridor width is stored in the DataRow as a 16-bit bitfield,
+// and so has a maximum value of 65535, too big to fit in the 6-byte
+// buffer that Create_object_item_tx_string reserves for the formatted
+// string.  So really we mustmake sure that the corridor is less than
+// 1000 (miles) before formatting it.  Otherwise we'd create a
+// truncated string and a malformed corridor.  Fortunately, Xastir's
+// object creation dialog doesn't let us enter more than three digits,
+// so there has never been a problem.
+
 void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width)
 {
   dst[0] = '\0';
   if ( (type == 1) || (type == 6))
   {
-    if (width > 0)
+    if (width > 0 && width < 1000)
     {
       xastir_snprintf(dst, dst_size, "{%d}", width);
     }
@@ -270,20 +266,15 @@ void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigne
 
 // Signpost objects can have a 3 character string attached.
 // The resulting packet is supposed to get that string inserted as "{xxx}",
-// just as for area object corridors.  Just as for area object corridors,
-// this function  does NO checking that it is truncating the desired
-// string.  it depends on the fact that the dialog box  only allows entry
-// of three characters.
+// just as for area object corridors.  If we are given too many characters,
+// just ignore the whole thing.
 
 void format_signpost(char *dst, size_t dst_size, char *signpost)
 {
   dst[0]='\0';
-  if (strlen(signpost) > 0)
+  if (strlen(signpost) > 0 && strlen(signpost)<=3)
   {
-    char temp_sign[10];
-    xastir_snprintf(temp_sign, sizeof(temp_sign), "{%s}", signpost);
-    memcpy(dst, temp_sign, dst_size);
-    dst[dst_size-1] = '\0';  // Terminate string
+    xastir_snprintf(dst, dst_size, "{%s}", signpost);
   }
 }
 
