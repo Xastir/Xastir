@@ -479,91 +479,18 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                          complete_area_type,
                          p_station->aprs_symbol.area_object.corridor_width);
 
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       object_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-    }
-    else        // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       object_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-    }
+    format_area_object_item_packet(line, line_length,
+                                   p_station->call_sign,
+                                   object_group, object_symbol,
+                                   time,
+                                   lat_str, lon_str,
+                                   complete_area_type,
+                                   complete_area_color,
+                                   lat_offset, lon_offset,
+                                   speed_course, complete_corridor,
+                                   altitude, course, speed,
+                                   (p_station->flag & ST_OBJECT),
+                                   transmit_compressed_objects_items);
   }
 
   else if ( (p_station->aprs_symbol.aprs_type == '\\') // We have a signpost object

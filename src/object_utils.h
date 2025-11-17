@@ -34,5 +34,14 @@ extern void format_area_color_from_dialog(char *dst, size_t dst_size, char *colo
 extern void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
 extern void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                          char *pmax);
+extern void format_area_object_item_packet(char *dst, size_t dst_size,
+                                    char *name, char object_group,
+                                    char object_symbol, char *time, char *lat_str,
+                                    char *lon_str, int area_type,
+                                    char *area_color,
+                                    int lat_offset, int lon_offset,
+                                    char *speed_course, char *corridor,
+                                    char *altitude, int course, int speed,
+                                    int is_object, int compressed);
 
 #endif
