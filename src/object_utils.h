@@ -33,6 +33,7 @@ extern void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned
 extern unsigned int area_color_from_string(char *color_string);
 extern void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
 extern void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
+extern void format_signpost(char *dst, size_t dst_size, char *signpost);
 extern void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                          char *pmax);
 extern void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain);

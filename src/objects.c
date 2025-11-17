@@ -466,17 +466,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   else if ( (p_station->aprs_symbol.aprs_type == '\\') // We have a signpost object
             && (p_station->aprs_symbol.aprs_symbol == 'm' ) )
   {
-    if (strlen(p_station->signpost) > 0)
-    {
-      char temp_sign[10];
-      xastir_snprintf(temp_sign, sizeof(temp_sign), "{%s}", p_station->signpost);
-      memcpy(signpost, temp_sign, sizeof(signpost));
-      signpost[sizeof(signpost)-1] = '\0';  // Terminate string
-    }
-    else    // No signpost data entered, blank it out
-    {
-      signpost[0] = '\0';
-    }
+    format_signpost(signpost,sizeof(signpost),p_station->signpost);
+
     if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
     {
 
