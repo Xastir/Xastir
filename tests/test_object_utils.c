@@ -65,6 +65,16 @@ void format_signpost_object_item_packet(char *dst, size_t dst_size,
                                         char *signpost,
                                         int course, int speed,
                                         int is_object, int compressed);
+void format_omni_df_object_item_packet(char *dst, size_t dst_size,
+                                       char *name,
+                                       char object_group, char object_symbol,
+                                       char *time,
+                                       char *lat_str, char *lon_str,
+                                       char *signal_gain,
+                                       char *speed_course,
+                                       char *altitude,
+                                       int course, int speed,
+                                       int is_object, int compressed);
 
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
@@ -1073,6 +1083,216 @@ int test_format_signpost_object_item_packet_item_notxt_speed_alt_comp(void)
                      "format_signpost_object_item_packet produces correct result with text, no velocity, or altitude, compressed");
   TEST_PASS("format_signpost_object_item_packet produces correct result");
 }
+int test_format_omni_df_object_item_packet_object_nospeed_noalt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "",         // course/speed
+                                     "",       // altitude
+                                     0,0,               // no course/speed
+                                     1,0);              // object, not comp
+  TEST_ASSERT_STR_EQ(";OmniDF   *111618z3501.63N/10612.38W\\DFS4130/",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_object_nospeed_noalt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "",         // course/speed
+                                     "",       // altitude
+                                     0,0,               // no course/speed
+                                     1,1);              // object, comp
+
+   TEST_ASSERT_STR_EQ(";OmniDF   *111618z/<he43\\7y\\   DFS4130/",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_nospeed_noalt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "",         // course/speed
+                                     "",       // altitude
+                                     0,0,               // no course/speed
+                                     0,0);              // item, not comp
+  TEST_ASSERT_STR_EQ(")OmniDF!3501.63N/10612.38W\\DFS4130/",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_nospeed_noalt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "",         // course/speed
+                                     "",       // altitude
+                                     0,0,               // no course/speed
+                                     0,1);              // item, comp
+
+   TEST_ASSERT_STR_EQ(")OmniDF!/<he43\\7y\\   DFS4130/",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_object_speed_noalt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "",       // altitude
+                                    356,5,               // course/speed
+                                     1,0);              // object, not comp
+  TEST_ASSERT_STR_EQ(";OmniDF   *111618z3501.63N/10612.38W\\DFS4130/356/005",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_object_speed_noalt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "",       // altitude
+                                     356,5,               // no course/speed
+                                     1,1);              // object, comp
+
+   TEST_ASSERT_STR_EQ(";OmniDF   *111618z/<he43\\7y\\z8CDFS4130/356/005",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_speed_noalt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "",       // altitude
+                                     356,5,               // no course/speed
+                                     0,0);              // item, not comp
+  TEST_ASSERT_STR_EQ(")OmniDF!3501.63N/10612.38W\\DFS4130/356/005",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_speed_noalt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "",       // altitude
+                                     356,5,               // no course/speed
+                                     0,1);              // item, comp
+
+   TEST_ASSERT_STR_EQ(")OmniDF!/<he43\\7y\\z8CDFS4130/356/005",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_object_speed_alt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                    356,5,               // course/speed
+                                     1,0);              // object, not comp
+  TEST_ASSERT_STR_EQ(";OmniDF   *111618z3501.63N/10612.38W\\DFS4130/356/005/A=000100",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_object_speed_alt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                     356,5,               // no course/speed
+                                     1,1);              // object, comp
+
+   TEST_ASSERT_STR_EQ(";OmniDF   *111618z/<he43\\7y\\z8CDFS4130/356/005/A=000100",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_speed_alt(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.63N", "10612.38W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                     356,5,               // no course/speed
+                                     0,0);              // item, not comp
+  TEST_ASSERT_STR_EQ(")OmniDF!3501.63N/10612.38W\\DFS4130/356/005/A=000100",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
+int test_format_omni_df_object_item_packet_item_speed_alt_comp(void)
+{
+  char line[256];
+  format_omni_df_object_item_packet(line, sizeof(line),
+                                     "OmniDF", '/', // name, group
+                                     '\\', "111618z",    // sym, time
+                                     "3501.631N", "10612.385W",
+                                     "DFS4130",  // signal-gain
+                                     "356/005",         // course/speed
+                                     "/A=000100",       // altitude
+                                     356,5,               // no course/speed
+                                     0,1);              // item, comp
+
+   TEST_ASSERT_STR_EQ(")OmniDF!/<he43\\7y\\z8CDFS4130/356/005/A=000100",
+                     line,
+                     "format_omni_df_object_item_packet produces correct result");
+  TEST_PASS("format_omni_df_object_item_packet produces correct result");
+}
 
 /* Test runner */
 typedef struct {
@@ -1156,6 +1376,18 @@ int main(int argc, char *argv[])
     {"format_signpost_object_item_packet_object_notxt_speed_alt_comp",test_format_signpost_object_item_packet_object_notxt_speed_alt_comp},
     {"format_signpost_object_item_packet_item_notxt_speed_alt",test_format_signpost_object_item_packet_item_notxt_speed_alt},
     {"format_signpost_object_item_packet_item_notxt_speed_alt_comp",test_format_signpost_object_item_packet_item_notxt_speed_alt_comp},
+    {"format_omni_df_object_item_packet_object_nospeed_noalt",test_format_omni_df_object_item_packet_object_nospeed_noalt},
+    {"format_omni_df_object_item_packet_object_nospeed_noalt_comp",test_format_omni_df_object_item_packet_object_nospeed_noalt_comp},
+    {"format_omni_df_object_item_packet_item_nospeed_noalt",test_format_omni_df_object_item_packet_item_nospeed_noalt},
+    {"format_omni_df_object_item_packet_item_nospeed_noalt_comp",test_format_omni_df_object_item_packet_item_nospeed_noalt_comp},
+    {"format_omni_df_object_item_packet_object_speed_noalt",test_format_omni_df_object_item_packet_object_speed_noalt},
+    {"format_omni_df_object_item_packet_object_speed_noalt_comp",test_format_omni_df_object_item_packet_object_speed_noalt_comp},
+    {"format_omni_df_object_item_packet_item_speed_noalt",test_format_omni_df_object_item_packet_item_speed_noalt},
+    {"format_omni_df_object_item_packet_item_speed_noalt_comp",test_format_omni_df_object_item_packet_item_speed_noalt_comp},
+    {"format_omni_df_object_item_packet_object_speed_alt",test_format_omni_df_object_item_packet_object_speed_alt},
+    {"format_omni_df_object_item_packet_object_speed_alt_comp",test_format_omni_df_object_item_packet_object_speed_alt_comp},
+    {"format_omni_df_object_item_packet_item_speed_alt",test_format_omni_df_object_item_packet_item_speed_alt},
+    {"format_omni_df_object_item_packet_item_speed_alt_comp",test_format_omni_df_object_item_packet_item_speed_alt_comp},
     {NULL,NULL}
   };
 

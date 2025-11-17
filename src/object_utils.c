@@ -507,3 +507,86 @@ void format_signpost_object_item_packet(char *dst, size_t dst_size,
   }
 
 }
+
+void format_omni_df_object_item_packet(char *dst, size_t dst_size,
+                                       char *name,
+                                       char object_group, char object_symbol,
+                                       char *time,
+                                       char *lat_str, char *lon_str,
+                                       char *signal_gain,
+                                       char *speed_course,
+                                       char *altitude,
+                                       int course, int speed,
+                                       int is_object, int compressed)
+{
+  if (is_object)     // It's an object
+  {
+
+    if (compressed)
+    {
+      char temp_group = object_group;
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%s/%s%s",
+                      name,
+                      time,
+                      compress_posit(lat_str,
+                                     temp_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      signal_gain,
+                      speed_course,
+                      altitude);
+    }
+    else    // Non-compressed posit object
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%c%s%c%s/%s%s",
+                      name,
+                      time,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      signal_gain,
+                      speed_course,
+                      altitude);
+    }
+  }
+  else    // It's an item
+  {
+
+    if (compressed)
+    {
+      char temp_group = object_group;
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%s/%s%s",
+                      name,
+                      compress_posit(lat_str,
+                                     temp_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      signal_gain,
+                      speed_course,
+                      altitude);
+    }
+    else    // Non-compressed item
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%c%s%c%s/%s%s",
+                      name,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      signal_gain,
+                      speed_course,
+                      altitude);
+    }
+  }
+}

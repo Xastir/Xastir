@@ -460,3 +460,76 @@ AT_KEYWORDS([object_utils signpost_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
 ])
 AT_CLEANUP
+
+AT_BANNER([omni df formatting tests])
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with no speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_nospeed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with no speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with no speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_nospeed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with no speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, no altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, no altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_alt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_alt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_alt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_alt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
