@@ -43,6 +43,7 @@ void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int co
 unsigned int area_color_from_string(char *color_string);
 void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
 void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
+void format_signpost(char *dst, size_t dst_size, char *signpost);
 void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
                                   char *pmax);
 void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain);
@@ -341,6 +342,32 @@ int test_format_area_corridor_onedigit(void)
   TEST_PASS("format_area_corridor for one-digit corridor values");
 }
 
+// test format_signpost
+int test_format_signpost_threechar(void)
+{
+  char signpost[6];
+  format_signpost(signpost, sizeof(signpost), "100");
+  TEST_ASSERT_STR_EQ("{100}", signpost, "Three-char signpost correctly formatted");
+  TEST_PASS("format_signpost for three-char signpost values");
+}
+
+int test_format_signpost_twochar(void)
+{
+  char signpost[6];
+  format_signpost(signpost, sizeof(signpost), "10");
+  TEST_ASSERT_STR_EQ("{10}", signpost, "Two-char signpost correctly formatted");
+  TEST_PASS("format_signpost for two-char signpost values");
+}
+
+int test_format_signpost_onechar(void)
+{
+  char signpost[6];
+  format_signpost(signpost, sizeof(signpost), "1");
+  TEST_ASSERT_STR_EQ("{1}", signpost, "one-char signpost correctly formatted");
+  TEST_PASS("format_signpost for one-char signpost values");
+}
+
+// test probability ring formatting
 int test_format_probability_ring_data_both(void)
 {
   char comment[43+1];
@@ -723,6 +750,9 @@ int main(int argc, char *argv[])
     {"format_area_corridor_threedigit",test_format_area_corridor_threedigit},
     {"format_area_corridor_twodigit",test_format_area_corridor_twodigit},
     {"format_area_corridor_onedigit",test_format_area_corridor_onedigit},
+    {"format_signpost_threechar",test_format_signpost_threechar},
+    {"format_signpost_twochar",test_format_signpost_twochar},
+    {"format_signpost_onechar",test_format_signpost_onechar},
     {"format_probability_ring_data_both",test_format_probability_ring_data_both},
     {"format_probability_ring_data_min_only",test_format_probability_ring_data_min_only},
     {"format_probability_ring_data_max_only",test_format_probability_ring_data_max_only},

@@ -268,6 +268,24 @@ void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigne
   }
 }
 
+// Signpost objects can have a 3 character string attached.
+// The resulting packet is supposed to get that string inserted as "{xxx}",
+// just as for area object corridors.  Just as for area object corridors,
+// this function  does NO checking that it is truncating the desired
+// string.  it depends on the fact that the dialog box  only allows entry
+// of three characters.
+
+void format_signpost(char *dst, size_t dst_size, char *signpost)
+{
+  dst[0]='\0';
+  if (strlen(signpost) > 0)
+  {
+    char temp_sign[10];
+    xastir_snprintf(temp_sign, sizeof(temp_sign), "{%s}", signpost);
+    memcpy(dst, temp_sign, dst_size);
+    dst[dst_size-1] = '\0';  // Terminate string
+  }
+}
 
 // If we are a probability ring object we have pmin and/or pmax data and
 // should prepend the data to the object comment.

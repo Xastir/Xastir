@@ -182,6 +182,26 @@ AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_onedi
 ])
 AT_CLEANUP
 
+AT_BANNER([signpost value function tests])
+
+AT_SETUP([format_signpost:  three-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_threechar], [0], [PASS: format_signpost for three-char signpost values
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost:  two-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_twochar], [0], [PASS: format_signpost for two-char signpost values
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost:  one-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_onechar], [0], [PASS: format_signpost for one-char signpost values
+])
+AT_CLEANUP
+
 AT_BANNER([probability ring formatting tests])
 AT_SETUP([format_probability_ring_data:  both inputs])
 AT_KEYWORDS([object_utils probability_ring])
