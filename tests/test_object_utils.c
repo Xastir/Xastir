@@ -75,6 +75,17 @@ void format_omni_df_object_item_packet(char *dst, size_t dst_size,
                                        char *altitude,
                                        int course, int speed,
                                        int is_object, int compressed);
+void format_beam_df_object_item_packet(char *dst, size_t dst_size,
+                                       char *name,
+                                       char object_group, char object_symbol,
+                                       char *time,
+                                       char *lat_str, char *lon_str,
+                                       char *bearing_string,
+                                       char *NRQ,
+                                       char *speed_course,
+                                       char *altitude,
+                                       int course, int speed,
+                                       int is_object, int compressed);
 
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
@@ -265,6 +276,7 @@ int test_format_zulu_time(void)
   TEST_PASS("format_zulu_time for specific unix timestamp");
 }
 
+// area color tests
 int test_format_area_color_from_numeric_basic(void)
 {
   char color[3];
@@ -1083,6 +1095,8 @@ int test_format_signpost_object_item_packet_item_notxt_speed_alt_comp(void)
                      "format_signpost_object_item_packet produces correct result with text, no velocity, or altitude, compressed");
   TEST_PASS("format_signpost_object_item_packet produces correct result");
 }
+
+// Omni df formatting tests
 int test_format_omni_df_object_item_packet_object_nospeed_noalt(void)
 {
   char line[256];
@@ -1294,6 +1308,307 @@ int test_format_omni_df_object_item_packet_item_speed_alt_comp(void)
   TEST_PASS("format_omni_df_object_item_packet produces correct result");
 }
 
+// beam df tests
+int test_format_beam_df_object_item_packet_object_nullspeed_noalt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    0,0,                // course and speed
+                                    1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\000/000/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_object_nospeed_noalt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"000/000");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    0,0,                // course and speed
+                                    1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\000/000/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_object_speed_noalt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    90,1,               // course and speed
+                                    1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\090/001/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_object_speed_alt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\090/001/140/965/A=000100",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_nospeed_noalt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"000/000");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    0,0,                // course and speed
+                                    0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!3501.63N/10612.38W\\000/000/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_speed_noalt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    90,1,               // course and speed
+                                    0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!3501.63N/10612.38W\\090/001/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_speed_alt(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!3501.63N/10612.38W\\090/001/140/965/A=000100",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+// compressed
+int test_format_beam_df_object_item_packet_object_nospeed_noalt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"000/000");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    0,0,                // course and speed
+                                    1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z/<he43\\7y\\   /140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_object_speed_noalt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    90,1,               // course and speed
+                                    1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z/<he43\\7y\\7*C/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_object_speed_alt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z/<he43\\7y\\7*C/140/965/A=000100",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_nospeed_noalt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"000/000");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    0,0,                // course and speed
+                                    0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!/<he43\\7y\\   /140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_speed_noalt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "",                 // altitude string
+                                    90,1,               // course and speed
+                                    0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!/<he43\\7y\\7*C/140/965",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
+int test_format_beam_df_object_item_packet_item_speed_alt_comp(void)
+{
+  char line[256];
+  char speed_course[8];
+  // the function can scribble into speed_course if it's empty, so never
+  // pass it a null string literal
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.631N", "10612.385W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")BeamDF!/<he43\\7y\\7*C/140/965/A=000100",
+                     line,
+                     "format_beam_df_object_item_packet produces correct result");
+  TEST_PASS("format_beam_df_object_item_packet produces correct result");
+}
 /* Test runner */
 typedef struct {
     const char *name;
@@ -1388,6 +1703,19 @@ int main(int argc, char *argv[])
     {"format_omni_df_object_item_packet_object_speed_alt_comp",test_format_omni_df_object_item_packet_object_speed_alt_comp},
     {"format_omni_df_object_item_packet_item_speed_alt",test_format_omni_df_object_item_packet_item_speed_alt},
     {"format_omni_df_object_item_packet_item_speed_alt_comp",test_format_omni_df_object_item_packet_item_speed_alt_comp},
+    {"format_beam_df_object_item_packet_object_nullspeed_noalt",test_format_beam_df_object_item_packet_object_nullspeed_noalt},
+    {"format_beam_df_object_item_packet_object_nospeed_noalt",test_format_beam_df_object_item_packet_object_nospeed_noalt},
+    {"format_beam_df_object_item_packet_object_speed_noalt",test_format_beam_df_object_item_packet_object_speed_noalt},
+    {"format_beam_df_object_item_packet_object_speed_alt",test_format_beam_df_object_item_packet_object_speed_alt},
+    {"format_beam_df_object_item_packet_item_nospeed_noalt",test_format_beam_df_object_item_packet_item_nospeed_noalt},
+    {"format_beam_df_object_item_packet_item_speed_noalt",test_format_beam_df_object_item_packet_item_speed_noalt},
+    {"format_beam_df_object_item_packet_item_speed_alt",test_format_beam_df_object_item_packet_item_speed_alt},
+    {"format_beam_df_object_item_packet_object_nospeed_noalt_comp",test_format_beam_df_object_item_packet_object_nospeed_noalt_comp},
+    {"format_beam_df_object_item_packet_object_speed_noalt_comp",test_format_beam_df_object_item_packet_object_speed_noalt_comp},
+    {"format_beam_df_object_item_packet_object_speed_alt_comp",test_format_beam_df_object_item_packet_object_speed_alt_comp},
+    {"format_beam_df_object_item_packet_item_nospeed_noalt_comp",test_format_beam_df_object_item_packet_item_nospeed_noalt_comp},
+    {"format_beam_df_object_item_packet_item_speed_noalt_comp",test_format_beam_df_object_item_packet_item_speed_noalt_comp},
+    {"format_beam_df_object_item_packet_item_speed_alt_comp",test_format_beam_df_object_item_packet_item_speed_alt_comp},
     {NULL,NULL}
   };
 

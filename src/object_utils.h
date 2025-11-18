@@ -66,4 +66,15 @@ extern void format_omni_df_object_item_packet(char *dst, size_t dst_size,
                                        char *altitude,
                                        int course, int speed,
                                        int is_object, int compressed);
+extern void format_beam_df_object_item_packet(char *dst, size_t dst_size,
+                                       char *name,
+                                       char object_group, char object_symbol,
+                                       char *time,
+                                       char *lat_str, char *lon_str,
+                                       char *bearing_string,
+                                       char *NRQ,
+                                       char *speed_course,
+                                       char *altitude,
+                                       int course, int speed,
+                                       int is_object, int compressed);
 #endif

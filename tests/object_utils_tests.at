@@ -533,3 +533,83 @@ AT_KEYWORDS([object_utils omni_df_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_alt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
 ])
 AT_CLEANUP
+
+AT_BANNER([beam df formatting tests])
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with NULL speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nullspeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with no speed or altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nospeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed and altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_alt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with no speed or altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_nospeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed and altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_alt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed no altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed and altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_alt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed no altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed and altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_alt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP

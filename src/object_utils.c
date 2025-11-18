@@ -590,3 +590,105 @@ void format_omni_df_object_item_packet(char *dst, size_t dst_size,
     }
   }
 }
+
+// note that this version clobbers the speed_course string if it is
+// not filled in (either incompletely or not at all), which it
+// probably shouldn't do in a refactor, and we have to be careful in unit
+// testing to pass a character buffer that can be written to until then.
+
+void format_beam_df_object_item_packet(char *dst, size_t dst_size,
+                                       char *name,
+                                       char object_group, char object_symbol,
+                                       char *time,
+                                       char *lat_str, char *lon_str,
+                                       char *bearing_string,
+                                       char *NRQ,
+                                       char *speed_course,
+                                       char *altitude,
+                                       int course, int speed,
+                                       int is_object, int compressed)
+{
+  int bearing = atoi(bearing_string);
+
+  if (strlen(speed_course) != 7)
+    xastir_snprintf(speed_course,
+                    8,               // used sizeof in original, can't do here
+                    "000/000");
+
+  bearing = atoi(bearing_string);
+  if ( (bearing < 1) || (bearing > 360) )
+  {
+    bearing = 360;
+  }
+
+  if (is_object)     // It's an object
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s/%03i/%s%s",
+                      name,
+                      time,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      bearing,
+                      NRQ,
+                      altitude);
+    }
+    else    // Non-compressed posit object
+    {
+
+      xastir_snprintf(dst, dst_size, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
+                      name,
+                      time,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      speed_course,
+                      bearing,
+                      NRQ,
+                      altitude);
+    }
+  }
+  else    // It's an item
+  {
+
+    if (compressed)
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s/%03i/%s%s",
+                      name,
+                      compress_posit(lat_str,
+                                     object_group,
+                                     lon_str,
+                                     object_symbol,
+                                     course,
+                                     speed,  // In knots
+                                     ""),    // PHG, must be blank
+                      bearing,
+                      NRQ,
+                      altitude);
+    }
+    else    // Non-compressed item
+    {
+
+      xastir_snprintf(dst, dst_size, ")%s!%s%c%s%c%s/%03i/%s%s",
+                      name,
+                      lat_str,
+                      object_group,
+                      lon_str,
+                      object_symbol,
+                      speed_course,
+                      bearing,
+                      NRQ,
+                      altitude);
+    }
+  }
+}
