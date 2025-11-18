@@ -300,7 +300,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   int course;
   int temp;
   char signpost[6];
-  int bearing;
   char object_group;
   char object_symbol;
   int killed = 0;
@@ -497,90 +496,18 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   }
   else if (p_station->NRQ[0] != 0)    // It's a Beam Heading DFS object/item
   {
-
-    if (strlen(speed_course) != 7)
-      xastir_snprintf(speed_course,
-                      sizeof(speed_course),
-                      "000/000");
-
-    bearing = atoi(p_station->bearing);
-    if ( (bearing < 1) || (bearing > 360) )
-    {
-      bearing = 360;
-    }
-
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-    }
+    format_beam_df_object_item_packet(line, line_length,
+                                      p_station->call_sign,
+                                      object_group, object_symbol,
+                                      time,
+                                      lat_str, lon_str,
+                                      p_station->bearing,
+                                      p_station->NRQ,
+                                      speed_course,
+                                      altitude,
+                                      course,speed,
+                                      (p_station->flag & ST_OBJECT),
+                                      transmit_compressed_objects_items);
   }
 
   else    // Else it's a normal object/item
