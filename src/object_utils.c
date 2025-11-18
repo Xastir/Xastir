@@ -591,11 +591,6 @@ void format_omni_df_object_item_packet(char *dst, size_t dst_size,
   }
 }
 
-// note that this version clobbers the speed_course string if it is
-// not filled in (either incompletely or not at all), which it
-// probably shouldn't do in a refactor, and we have to be careful in unit
-// testing to pass a character buffer that can be written to until then.
-
 void format_beam_df_object_item_packet(char *dst, size_t dst_size,
                                        char *name,
                                        char object_group, char object_symbol,
@@ -609,11 +604,9 @@ void format_beam_df_object_item_packet(char *dst, size_t dst_size,
                                        int is_object, int compressed)
 {
   int bearing = atoi(bearing_string);
+  char *spd_cse;
 
-  if (strlen(speed_course) != 7)
-    xastir_snprintf(speed_course,
-                    8,               // used sizeof in original, can't do here
-                    "000/000");
+  spd_cse = (strlen(speed_course)!=7)?"000/000":speed_course;
 
   bearing = atoi(bearing_string);
   if ( (bearing < 1) || (bearing > 360) )
@@ -651,7 +644,7 @@ void format_beam_df_object_item_packet(char *dst, size_t dst_size,
                       object_group,
                       lon_str,
                       object_symbol,
-                      speed_course,
+                      spd_cse,
                       bearing,
                       NRQ,
                       altitude);
@@ -685,7 +678,7 @@ void format_beam_df_object_item_packet(char *dst, size_t dst_size,
                       object_group,
                       lon_str,
                       object_symbol,
-                      speed_course,
+                      spd_cse,
                       bearing,
                       NRQ,
                       altitude);
