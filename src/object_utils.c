@@ -182,6 +182,11 @@ void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int co
     if ( dst[0] == '0')
       dst[0]='/';
   }
+  else
+  {
+    xastir_snprintf(dst,dst_size,"/4");
+    fprintf(stderr,"Invalid color value passed to format_area_from_numeric.  Returning string for bright red instead.\n");
+  }
 }
 
 // When decoding a color from a packet, we need to convert it to a number

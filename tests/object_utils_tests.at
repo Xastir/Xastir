@@ -135,6 +135,8 @@ AT_CLEANUP
 AT_SETUP([format_area_color_from_numeric: invalid color])
 AT_KEYWORDS([object_utils format_area_color_from_numeric])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_numeric_invalid], [0], [PASS: format_area_color_from_numeric for invalid colors
+],
+[Invalid color value passed to format_area_from_numeric.  Returning string for bright red instead.
 ])
 AT_CLEANUP
 

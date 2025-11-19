@@ -309,7 +309,7 @@ int test_format_area_color_from_numeric_invalid(void)
 {
   char color[3];
   format_area_color_from_numeric(color,sizeof(color),16);
-  TEST_ASSERT_STR_EQ("",color,"Bad color gives empty string");
+  TEST_ASSERT_STR_EQ("/4",color,"Bad color gives bright red");
   TEST_PASS("format_area_color_from_numeric for invalid colors");
 }
 
