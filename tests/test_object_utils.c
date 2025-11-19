@@ -97,7 +97,10 @@ void format_normal_object_item_packet(char *dst, size_t dst_size,
                                       int is_object, int compressed);
 int reformat_killed_object_item_packet(char *dst, size_t dst_size,
                                        int is_object, int is_active);
-
+void append_comment_to_object_item_packet(char *line, size_t line_length,
+                                                 char *comment,
+                                                 char *name,
+                                                 int is_object);
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
 {
@@ -1929,6 +1932,128 @@ int test_reformat_killed_object_item_packet_item_inactive(void)
   TEST_PASS("reformat_killed_object_item_packet produces correct result");
 }
 
+// test appending comment to objects and items
+int test_append_comment_to_object_item_packet_object_notlong(void)
+{
+  char line[256];
+  char speed_course[8];
+  // make a fully padded out object packet.  A beam DF object should do
+  // This one should produce a 61 character packet, which only leaves room for
+  // 19 characters of comment.
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    1,0);               // is_object, compress
+  append_comment_to_object_item_packet(line, sizeof(line),
+                                       "Comment890123456789",
+                                       "BeamDF",
+                                       1);
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\090/001/140/965/A=000100Comment890123456789",
+                     line,
+                     "append_comment_to_object_item_packet produces correct result");
+  TEST_ASSERT(strlen(line) == 80, "length should be exactly 80 chars");
+  TEST_PASS("append_comment_to_object_item_packet produces correct result");
+}
+
+int test_append_comment_to_object_item_packet_object_toolong(void)
+{
+  char line[256];
+  char speed_course[8];
+  // make a fully padded out object packet.  A beam DF object should do
+  // This one should produce a 61 character packet, which only leaves room for
+  // 19 characters of comment.  WE pass in a 30 character comment and it should
+  // get truncated to 19, for a total packet length of 80
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    1,0);               // is_object, compress
+  append_comment_to_object_item_packet(line, sizeof(line),
+                                       "Comment89012345678901234567890",
+                                       "BeamDF",
+                                       1);
+  TEST_ASSERT_STR_EQ(";BeamDF   *111618z3501.63N/10612.38W\\090/001/140/965/A=000100Comment890123456789",
+                     line,
+                     "append_comment_to_object_item_packet produces correct result");
+  TEST_ASSERT(strlen(line) == 80, "length should be exactly 80 chars");
+  TEST_PASS("append_comment_to_object_item_packet produces correct result");
+}
+int test_append_comment_to_object_item_packet_item_notlong(void)
+{
+  char line[256];
+  char speed_course[8];
+  // make a fully padded out item packet.  A beam DF object should do
+  // This one should produce a 51 character packet, which only leaves room for
+  // 19 characters of comment
+
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    0,0);               // is_object, compress
+  append_comment_to_object_item_packet(line, sizeof(line),
+                                       "Comment890123456789",
+                                       "BeamDF",
+                                       1);
+
+  TEST_ASSERT_STR_EQ(")BeamDF!3501.63N/10612.38W\\090/001/140/965/A=000100Comment890123456789",
+                     line,
+                     "append_comment_to_object_item_packet produces correct result");
+  TEST_ASSERT(strlen(line) == 70, "length should be exactly 70 chars");
+  TEST_PASS("append_comment_to_object_item_packet produces correct result");
+}
+
+int test_append_comment_to_object_item_packet_item_toolong(void)
+{
+  char line[256];
+  char speed_course[8];
+  // make a fully padded out object packet.  A beam DF object should do
+  // This one should produce a 51 character packet, which only leaves room for
+  // 19 characters of comment.
+  snprintf(speed_course,sizeof(speed_course),"090/001");
+
+  format_beam_df_object_item_packet(line, sizeof(line),
+                                    "BeamDF", '/',
+                                    '\\', "111618z",
+                                    "3501.63N", "10612.38W",
+                                    "140",              // bearing string
+                                    "965",              // NRQ
+                                    speed_course,
+                                    "/A=000100",        // altitude string
+                                    90,1,               // course and speed
+                                    0,0);               // is_object, compress
+  append_comment_to_object_item_packet(line, sizeof(line),
+                                       "Comment89012345678901234567890",
+                                       "BeamDF",
+                                       0);
+  TEST_ASSERT_STR_EQ(")BeamDF!3501.63N/10612.38W\\090/001/140/965/A=000100Comment890123456789",
+                     line,
+                     "append_comment_to_object_item_packet produces correct result");
+  TEST_ASSERT(strlen(line) == 70, "length should be exactly 70 chars");
+  TEST_PASS("append_comment_to_object_item_packet produces correct result");
+}
 /* Test runner */
 typedef struct {
     const char *name;
@@ -2052,6 +2177,10 @@ int main(int argc, char *argv[])
     {"reformat_killed_object_item_packet_item_active",test_reformat_killed_object_item_packet_item_active},
     {"reformat_killed_object_item_packet_object_inactive",test_reformat_killed_object_item_packet_object_inactive},
     {"reformat_killed_object_item_packet_item_inactive",test_reformat_killed_object_item_packet_item_inactive},
+    {"append_comment_to_object_item_packet_object_notlong",test_append_comment_to_object_item_packet_object_notlong},
+    {"append_comment_to_object_item_packet_object_toolong",test_append_comment_to_object_item_packet_object_toolong},
+    {"append_comment_to_object_item_packet_item_notlong",test_append_comment_to_object_item_packet_item_notlong},
+    {"append_comment_to_object_item_packet_item_toolong",test_append_comment_to_object_item_packet_item_toolong},
     {NULL,NULL}
   };
 

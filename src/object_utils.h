@@ -88,4 +88,8 @@ extern void format_normal_object_item_packet(char *dst, size_t dst_size,
                                       int is_object, int compressed);
 extern int reformat_killed_object_item_packet(char *dst, size_t dst_size,
                                               int is_object, int is_active);
+extern void append_comment_to_object_item_packet(char *line, size_t line_length,
+                                                 char *comment,
+                                                 char *name,
+                                                 int is_object);
 #endif

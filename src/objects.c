@@ -297,7 +297,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char speed_course[8];
   int speed;
   int course;
-  int temp;
   char signpost[6];
   char object_group;
   char object_symbol;
@@ -307,8 +306,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   long y_lat = p_station->coord_lat;;
 
   (void)remove_trailing_spaces(p_station->call_sign);
-  //(void)to_upper(p_station->call_sign);     Not per spec.  Don't
-  //use this.
 
   if ((p_station->flag & ST_OBJECT) != 0)     // We have an object
   {
@@ -572,30 +569,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   // We need to tack the comment on the end, but need to make
   // sure we don't go over the maximum length for an object/item.
-  if (strlen(comment) != 0)
-  {
-    temp = 0;
-    if ((p_station->flag & ST_OBJECT) != 0)
-    {
-      while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) )
-      {
-        line[strlen(line) + 1] = '\0';
-        line[strlen(line)] = comment[temp++];
-      }
-    }
-    else    // It's an item
-    {
-      while ( (strlen(line) < (64 + strlen(p_station->call_sign))) && (temp < (int)strlen(comment)) )
-      {
-        line[strlen(line) + 1] = '\0';
-        line[strlen(line)] = comment[temp++];
-      }
-    }
-  }
-
-
-// NOTE:  Compressed mode will be shorter still.  Account
-// for that when compressed mode is implemented for objects/items.
+  append_comment_to_object_item_packet(line, line_length,
+                                       comment,
+                                       p_station->call_sign,
+                                       (p_station->flag & ST_OBJECT));
 
   return(1);
 }

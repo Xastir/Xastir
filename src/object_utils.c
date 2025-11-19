@@ -794,3 +794,57 @@ int reformat_killed_object_item_packet(char *dst, size_t dst_size,
   }
   return (killed);
 }
+
+// Surely this could be done in a more straightforward manner
+//
+// Append the comment string to the otherwise fully assembled object/item
+// packet string, but make sure it does not exceed allowable length
+// by copying ONLY the characters of the comment that don't exceed that
+// length.
+//
+// Before refactoring this in any way, make absolutely sure it actually
+// conforms to spec.  A comment in the original suggests it does not for
+// the case of compressed objects/items
+void append_comment_to_object_item_packet(char *line, size_t line_length,
+                                          char *comment,
+                                          char *name,
+                                          int is_object)
+{
+  int temp = 0;
+  // We need to tack the comment on the end, but need to make
+  // sure we don't go over the maximum length for an object/item.
+  if (strlen(comment) != 0)
+  {
+    temp = 0;
+    if (is_object)
+    {
+      while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) )
+      {
+        line[strlen(line) + 1] = '\0';
+        line[strlen(line)] = comment[temp++];
+      }
+    }
+    else    // It's an item
+    {
+      while ( (strlen(line) < (64 + strlen(name))) && (temp < (int)strlen(comment)) )
+      {
+        line[strlen(line) + 1] = '\0';
+        line[strlen(line)] = comment[temp++];
+      }
+    }
+  }
+  // This note was in the original:
+
+  //---
+  // NOTE:  Compressed mode will be shorter still.  Account
+  // for that when compressed mode is implemented for objects/items.
+  //---
+
+  // But compressed mode IS implemented for objects/items, so clearly
+  // this stuff is not accounted for yet.
+  // According to spec, an object with compressed position can have a max
+  // length of 74 chars, not 80, and an item with compressed position can have
+  // a max length of 58+strlen(name), not 64+strlen(name).
+  // When we refactor this function, make it so, and pass in the compressed
+  // boolean.
+}

@@ -713,3 +713,26 @@ AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_item_inactive], [0], [PASS: reformat_killed_object_item_packet produces correct result
 ])
 AT_CLEANUP
+
+AT_BANNER([append comment tests])
+AT_SETUP([append_comment_to_object_item_packet: comment that should fit in object])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_object_notlong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+AT_SETUP([append_comment_to_object_item_packet: comment that should get truncated in object])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_object_toolong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([append_comment_to_object_item_packet: comment that should fit in item])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_item_notlong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+AT_SETUP([append_comment_to_object_item_packet: comment that should get truncated in item])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_item_toolong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
