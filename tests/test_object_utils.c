@@ -86,6 +86,15 @@ void format_beam_df_object_item_packet(char *dst, size_t dst_size,
                                        char *altitude,
                                        int course, int speed,
                                        int is_object, int compressed);
+void format_normal_object_item_packet(char *dst, size_t dst_size,
+                                      char *name,
+                                      char object_group, char object_symbol,
+                                      char *time,
+                                      char *lat_str, char *lon_str,
+                                      char *speed_course,
+                                      char *altitude,
+                                      int course, int speed,
+                                      int is_object, int compressed);
 
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
@@ -1315,7 +1324,7 @@ int test_format_beam_df_object_item_packet_object_nullspeed_noalt(void)
   char speed_course[8];
   // the function can scribble into speed_course if it's empty, so never
   // pass it a null string literal
-  snprintf(speed_course,sizeof(speed_course),"");
+  speed_course[0]='\0';
 
   format_beam_df_object_item_packet(line, sizeof(line),
                                     "BeamDF", '/',
@@ -1609,6 +1618,227 @@ int test_format_beam_df_object_item_packet_item_speed_alt_comp(void)
                      "format_beam_df_object_item_packet produces correct result");
   TEST_PASS("format_beam_df_object_item_packet produces correct result");
 }
+
+// Just basic object/item formatting
+int test_format_normal_object_item_packet_object_nospeed_noalt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z3501.63N/10612.38W/",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_object_speed_noalt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "090/005",          // course/speed
+                                   "",                 // altitude
+                                   90,5,               // course, speed
+                                   1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z3501.63N/10612.38W/090/005",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_object_speed_alt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "090/005",          // course/speed
+                                   "/A=000100",        // altitude
+                                   90,5,               // course, speed
+                                   1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z3501.63N/10612.38W/090/005/A=000100",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+// test items
+int test_format_normal_object_item_packet_item_nospeed_noalt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!3501.63N/10612.38W/",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_item_speed_noalt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "090/005",          // course/speed
+                                   "",                 // altitude
+                                   90,5,               // course, speed
+                                   0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!3501.63N/10612.38W/090/005",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_item_speed_alt(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "090/005",          // course/speed
+                                   "/A=000100",        // altitude
+                                   90,5,               // course, speed
+                                   0,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!3501.63N/10612.38W/090/005/A=000100",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+// now do it all for compressed:
+int test_format_normal_object_item_packet_object_nospeed_noalt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z/<he43\\7y/   ",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_object_speed_noalt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "090/005",          // course/speed
+                                   "",                 // altitude
+                                   90,5,               // course, speed
+                                   1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z/<he43\\7y/78C",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_object_speed_alt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "090/005",          // course/speed
+                                   "/A=000100",        // altitude
+                                   90,5,               // course, speed
+                                   1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z/<he43\\7y/78C/A=000100",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_item_nospeed_noalt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!/<he43\\7y/   ",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_item_speed_noalt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "090/005",          // course/speed
+                                   "",                 // altitude
+                                   90,5,               // course, speed
+                                   0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!/<he43\\7y/78C",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+int test_format_normal_object_item_packet_item_speed_alt_comp(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "090/005",          // course/speed
+                                   "/A=000100",        // altitude
+                                   90,5,               // course, speed
+                                   0,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(")obj!/<he43\\7y/78C/A=000100",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -1716,6 +1946,18 @@ int main(int argc, char *argv[])
     {"format_beam_df_object_item_packet_item_nospeed_noalt_comp",test_format_beam_df_object_item_packet_item_nospeed_noalt_comp},
     {"format_beam_df_object_item_packet_item_speed_noalt_comp",test_format_beam_df_object_item_packet_item_speed_noalt_comp},
     {"format_beam_df_object_item_packet_item_speed_alt_comp",test_format_beam_df_object_item_packet_item_speed_alt_comp},
+    {"format_normal_object_item_packet_object_nospeed_noalt",test_format_normal_object_item_packet_object_nospeed_noalt},
+    {"format_normal_object_item_packet_object_speed_noalt",test_format_normal_object_item_packet_object_speed_noalt},
+    {"format_normal_object_item_packet_object_speed_alt",test_format_normal_object_item_packet_object_speed_alt},
+    {"format_normal_object_item_packet_item_nospeed_noalt",test_format_normal_object_item_packet_item_nospeed_noalt},
+    {"format_normal_object_item_packet_item_speed_noalt",test_format_normal_object_item_packet_item_speed_noalt},
+    {"format_normal_object_item_packet_item_speed_alt",test_format_normal_object_item_packet_item_speed_alt},
+    {"format_normal_object_item_packet_object_nospeed_noalt_comp",test_format_normal_object_item_packet_object_nospeed_noalt_comp},
+    {"format_normal_object_item_packet_object_speed_noalt_comp",test_format_normal_object_item_packet_object_speed_noalt_comp},
+    {"format_normal_object_item_packet_object_speed_alt_comp",test_format_normal_object_item_packet_object_speed_alt_comp},
+    {"format_normal_object_item_packet_item_nospeed_noalt_comp",test_format_normal_object_item_packet_item_nospeed_noalt_comp},
+    {"format_normal_object_item_packet_item_speed_noalt_comp",test_format_normal_object_item_packet_item_speed_noalt_comp},
+    {"format_normal_object_item_packet_item_speed_alt_comp",test_format_normal_object_item_packet_item_speed_alt_comp},
     {NULL,NULL}
   };
 
