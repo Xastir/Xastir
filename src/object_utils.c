@@ -755,3 +755,42 @@ void format_normal_object_item_packet(char *dst, size_t dst_size,
     }
   }
 }
+
+// If the object or item has been marked killed, change the character in the
+// line to reflect a killed object
+int reformat_killed_object_item_packet(char *dst, size_t dst_size,
+                                       int is_object, int is_active)
+{
+  int i;
+  int done;
+  int killed;
+  killed = 0;
+  if (is_object)                 // It's an object
+  {
+    if (!is_active)     // It's been killed
+    {
+      dst[10] = '_';
+      killed++;
+    }
+  }
+  // If it's a "killed" item, change '!' to an '_'
+  else                                                    // It's an item
+  {
+    if (!is_active)     // It's been killed
+    {
+      killed++;
+      done = 0;
+      i = 0;
+      while ( (!done) && (i < 11) )
+      {
+        if (dst[i] == '!')
+        {
+          dst[i] = '_';          // mark as deleted object
+          done++;                 // Exit from loop
+        }
+        i++;
+      }
+    }
+  }
+  return (killed);
+}

@@ -617,73 +617,99 @@ AT_CLEANUP
 AT_BANNER([normal object/item tests])
 
 AT_SETUP([format_normal_object_item_packet: object with no speed or altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_nospeed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, no altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_alt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with no speed or altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_nospeed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, no altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, altitude])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_alt], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, no altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_alt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, no altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
 ])
 AT_CLEANUP
 
 AT_SETUP([format_normal_object_item_packet: object with speed, altitude, compressed])
-AT_KEYWORDS([object_utils normalf_object_item_packet])
+AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_alt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([killed object/item tests])
+
+AT_SETUP([reformat_killed_object_item_packet: active object])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_object_active], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: active item])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_item_active], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: killed object])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_object_inactive], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: killed item])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_item_inactive], [0], [PASS: reformat_killed_object_item_packet produces correct result
 ])
 AT_CLEANUP

@@ -95,6 +95,8 @@ void format_normal_object_item_packet(char *dst, size_t dst_size,
                                       char *altitude,
                                       int course, int speed,
                                       int is_object, int compressed);
+int reformat_killed_object_item_packet(char *dst, size_t dst_size,
+                                       int is_object, int is_active);
 
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
@@ -1838,6 +1840,94 @@ int test_format_normal_object_item_packet_item_speed_alt_comp(void)
   TEST_PASS("format_normal_object_item_packet produces correct result");
 }
 
+// Test "killed" object
+int test_reformat_killed_object_item_packet_object_active(void)
+{
+  char line[256];
+  int killed;
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,0);               // is_object, compress
+  killed = reformat_killed_object_item_packet(line, sizeof(line),
+                                              1,1);              // object, active
+  TEST_ASSERT_STR_EQ(";obj      *111618z3501.63N/10612.38W/",
+                     line,
+                     "reformat_killed_object_item_packet produces correct result");
+  TEST_ASSERT(killed == 0, "Killed should be zero");
+  TEST_PASS("reformat_killed_object_item_packet produces correct result");
+}
+int test_reformat_killed_object_item_packet_item_active(void)
+{
+  char line[256];
+  int killed;
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   0,0);               // is_object, compress
+  killed = reformat_killed_object_item_packet(line, sizeof(line),
+                                              0,1);              // item, active
+
+  TEST_ASSERT_STR_EQ(")obj!3501.63N/10612.38W/",
+                     line,
+                     "reformat_killed_object_item_packet produces correct result");
+  TEST_ASSERT(killed == 0, "Killed should be zero");
+  TEST_PASS("reformat_killed_object_item_packet produces correct result");
+}
+int test_reformat_killed_object_item_packet_object_inactive(void)
+{
+  char line[256];
+  int killed;
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,0);               // is_object, compress
+  killed = reformat_killed_object_item_packet(line, sizeof(line),
+                                              1,0);              // object, inactive
+
+  TEST_ASSERT_STR_EQ(";obj      _111618z3501.63N/10612.38W/",
+                     line,
+                     "reformat_killed_object_item_packet produces correct result");
+  TEST_ASSERT(killed != 0, "Killed should be nonzero");
+  TEST_PASS("reformat_killed_object_item_packet produces correct result");
+}
+
+int test_reformat_killed_object_item_packet_item_inactive(void)
+{
+  char line[256];
+  int killed;
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '/','/',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   0,0);               // is_object, compress
+  killed = reformat_killed_object_item_packet(line, sizeof(line),
+                                              0,0);              // item, inactive
+  TEST_ASSERT_STR_EQ(")obj_3501.63N/10612.38W/",
+                     line,
+                     "reformat_killed_object_item_packet produces correct result");
+  TEST_ASSERT(killed != 0, "Killed should be nonzero");
+  TEST_PASS("reformat_killed_object_item_packet produces correct result");
+}
 
 /* Test runner */
 typedef struct {
@@ -1958,6 +2048,10 @@ int main(int argc, char *argv[])
     {"format_normal_object_item_packet_item_nospeed_noalt_comp",test_format_normal_object_item_packet_item_nospeed_noalt_comp},
     {"format_normal_object_item_packet_item_speed_noalt_comp",test_format_normal_object_item_packet_item_speed_noalt_comp},
     {"format_normal_object_item_packet_item_speed_alt_comp",test_format_normal_object_item_packet_item_speed_alt_comp},
+    {"reformat_killed_object_item_packet_object_active",test_reformat_killed_object_item_packet_object_active},
+    {"reformat_killed_object_item_packet_item_active",test_reformat_killed_object_item_packet_item_active},
+    {"reformat_killed_object_item_packet_object_inactive",test_reformat_killed_object_item_packet_object_inactive},
+    {"reformat_killed_object_item_packet_item_inactive",test_reformat_killed_object_item_packet_item_inactive},
     {NULL,NULL}
   };
 

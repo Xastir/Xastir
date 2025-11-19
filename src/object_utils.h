@@ -86,4 +86,6 @@ extern void format_normal_object_item_packet(char *dst, size_t dst_size,
                                       char *altitude,
                                       int course, int speed,
                                       int is_object, int compressed);
+extern int reformat_killed_object_item_packet(char *dst, size_t dst_size,
+                                              int is_object, int is_active);
 #endif

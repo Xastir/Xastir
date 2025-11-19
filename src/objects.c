@@ -285,7 +285,6 @@ void Object_History_Refresh( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
  */
 int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length)
 {
-  int i, done;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
   char comment[43+1];                 // max 43 characters of comment
@@ -525,33 +524,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   }
 
   // If it's a "killed" object, change '*' to an '_'
-  if ((p_station->flag & ST_OBJECT) != 0)                 // It's an object
-  {
-    if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE)     // It's been killed
-    {
-      line[10] = '_';
-      killed++;
-    }
-  }
-  // If it's a "killed" item, change '!' to an '_'
-  else                                                    // It's an item
-  {
-    if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE)     // It's been killed
-    {
-      killed++;
-      done = 0;
-      i = 0;
-      while ( (!done) && (i < 11) )
-      {
-        if (line[i] == '!')
-        {
-          line[i] = '_';          // mark as deleted object
-          done++;                 // Exit from loop
-        }
-        i++;
-      }
-    }
-  }
+  killed=reformat_killed_object_item_packet(line, line_length,
+                                            (p_station->flag & ST_OBJECT),
+                                            (p_station->flag & ST_ACTIVE));
 
   // Check whether we need to stop transmitting particular killed
   // object/items now.
@@ -565,10 +540,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       // We shouldn't be transmitting this killed object/item
       // anymore.  We're already done transmitting it.
 
-//fprintf(stderr, "Done transmitting this object: %s,  %d\n",
-//p_station->call_sign,
-//p_station->object_retransmit);
-
       return(0);
     }
 
@@ -578,11 +549,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     // MAX_KILLED_OBJECT_RETRANSMIT.
     if (p_station->object_retransmit <= -1)
     {
-
-//fprintf(stderr, "Killed object %s, setting retries, %d -> %d\n",
-//p_station->call_sign,
-//p_station->object_retransmit,
-//MAX_KILLED_OBJECT_RETRANSMIT - 1);
 
       if ((MAX_KILLED_OBJECT_RETRANSMIT - 1) < 0)
       {
@@ -599,13 +565,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       // Decrement the timeout if it is a positive number.
       if (p_station->object_retransmit > 0)
       {
-
-//fprintf(stderr, "Killed object %s, decrementing retries, %d ->
-//%d\n",
-//p_station->call_sign,
-//p_station->object_retransmit,
-//p_station->object_retransmit - 1);
-
         p_station->object_retransmit--;
       }
     }
@@ -620,8 +579,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     {
       while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) )
       {
-        //fprintf(stderr,"temp: %d->%d\t%c\n", temp,
-        //strlen(line), comment[temp]);
         line[strlen(line) + 1] = '\0';
         line[strlen(line)] = comment[temp++];
       }
@@ -630,15 +587,12 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     {
       while ( (strlen(line) < (64 + strlen(p_station->call_sign))) && (temp < (int)strlen(comment)) )
       {
-        //fprintf(stderr,"temp: %d->%d\t%c\n", temp,
-        //strlen(line), comment[temp]);
         line[strlen(line) + 1] = '\0';
         line[strlen(line)] = comment[temp++];
       }
     }
   }
 
-  //fprintf(stderr,"line: %s\n",line);
 
 // NOTE:  Compressed mode will be shorter still.  Account
 // for that when compressed mode is implemented for objects/items.
