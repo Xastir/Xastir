@@ -14,6 +14,7 @@ XASTIR_SRC = \
     ambiguity_utils.c ambiguity_utils.h \
     awk.c awk.h \
     bulletin_gui.c bulletin_gui.h \
+    cad_objects.c cad_objects.h \
     color.c color.h \
     datum.c datum.h \
     debug_utils.c debug_utils.h \

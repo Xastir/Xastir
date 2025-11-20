@@ -139,6 +139,7 @@ char *xastir_version=VERSION;
 #include "ambiguity_utils.h"
 #include "mgrs_utils.h"
 #include "log_utils.h"
+#include "cad_objects.h"
 
 #include "map_OSM.h"
 
