@@ -1759,7 +1759,7 @@ void Set_CAD_object_parameters (Widget widget,
 // Update the list of existing CAD objects on the cad list dialog to
 // reflect the current list of objects.
 //
-void Update_CAD_objects_list_dialog()
+void Update_CAD_objects_list_dialog(void)
 {
   CADRow *object_ptr = CAD_list_head;
   int counter = 1;

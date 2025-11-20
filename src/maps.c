@@ -8523,7 +8523,6 @@ static void index_sort(void)
 {
   map_index_record *current, *previous, *next;
   int changed = 1;
-  int loops = 0; // for debug stats
 
   previous = map_index_head;
   next = NULL;
@@ -8573,11 +8572,8 @@ static void index_sort(void)
       previous = map_index_head;
       current = previous->next;
       next = current->next;
-      loops++;
     }
   }
-  // debug stats
-  // fprintf(stderr, "index_sort: ran %d loops.\n", loops);
 }
 
 
@@ -9150,7 +9146,7 @@ static int alert_count;
  * map_search() fills in the filename field of the alert struct.
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
-void fill_in_new_alert_entries()
+void fill_in_new_alert_entries(void)
 {
 //  int ii;
   char alert_scan[MAX_FILENAME];

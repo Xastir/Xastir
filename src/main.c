@@ -15625,7 +15625,6 @@ void Center_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer call
       char temp_course[10];
       double scale_factor;
       long my_scale_y;
-      int fell_off = 0;
 
 
 //fprintf(stderr,"Map View Object: %s\n",p_station->call_sign);
@@ -15673,7 +15672,6 @@ void Center_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer call
       if (x < 0)
       {
         x = 0;
-        fell_off++; // Fell off the edge of the earth
       }
 
       x0 = center_longitude; // Center of screen
@@ -15685,7 +15683,6 @@ void Center_Zoom( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer call
       if (y < 0)
       {
         y = 0;
-        fell_off++; // Fell off the edge of the earth
       }
 
       y0 = center_latitude;  // Center of screen
