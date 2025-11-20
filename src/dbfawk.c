@@ -60,7 +60,7 @@
 #include "awk.h"
 #include "dbfawk.h"
 #include "snprintf.h"
-#include "maps.h"
+#include "globals.h"
 
 #include <sys/stat.h>
 

@@ -44,7 +44,7 @@
 #endif
 
 #include "xastir.h"
-#include "maps.h"    // only for MAX_FILENAME
+#include "globals.h"
 #include "main.h"
 #include "mutex_utils.h"
 

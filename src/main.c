@@ -113,6 +113,7 @@ char *xastir_version=VERSION;
 #endif
 
 #include "xastir.h"
+#include "globals.h"
 #include "draw_symbols.h"
 #include "main.h"
 #include "xa_config.h"

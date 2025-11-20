@@ -62,6 +62,7 @@
 #include <math.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "maps.h"
 #include "fetch_remote.h"
 #include "util.h"

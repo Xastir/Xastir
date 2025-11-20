@@ -28,11 +28,12 @@
 #include "snprintf.h"
 
 #include "xastir.h"
+#include "globals.h"
 #include "main.h"
 #include "xa_config.h"
 #include "db_funcs.h"
-#include "maps.h"   // only for MAX_FILENAME!
 #include "draw_symbols.h"
+#include "maps.h"  // for draw_vector prototype
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>

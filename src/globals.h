@@ -22,11 +22,15 @@
  * Look at the README for more information on the program.
  */
 
- /* Global variables defined in main.c */
+/* Defines used throughout Xastir, mostly, but not exclusively, in maps. */
 
+#define MAX_FILENAME 2000
 #define MAX_CALLSIGN 9       // Objects are up to 9 chars
 #define MAX_LONG             12
 #define MAX_LAT              11
+
+/* Global variables defined in main.c */
+
 
 extern char my_callsign[MAX_CALLSIGN+1];
 extern char my_lat[MAX_LAT];

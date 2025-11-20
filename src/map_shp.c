@@ -71,6 +71,7 @@
 #include <math.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "maps.h"
 #include "alert.h"
 #include "util.h"

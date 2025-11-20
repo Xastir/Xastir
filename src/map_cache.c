@@ -53,8 +53,10 @@
 
 #include "snprintf.h"
 #include "xastir.h"
+#include "globals.h"
 #include "xa_config.h"
 #include "main.h"
+
 #include "maps.h"
 #include "map_cache.h"
 #include <db.h>

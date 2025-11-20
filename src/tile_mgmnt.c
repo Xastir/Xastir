@@ -34,6 +34,7 @@
 #include <errno.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "fetch_remote.h"
 #include "util.h"
 #include "snprintf.h"

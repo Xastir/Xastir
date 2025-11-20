@@ -39,11 +39,13 @@
 
 #include "xastir.h"
 #include "main.h"
+#include "globals.h"
 #include "util.h"
 #include "db_funcs.h"
 #include "xa_config.h"
 #include "snprintf.h"
-#include "maps.h"
+
+#include "maps.h" // for fill_in_new_alert_entries prototype
 
 #define MAX_LOGFILE_SIZE 2048000
 
