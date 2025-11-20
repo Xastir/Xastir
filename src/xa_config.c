@@ -52,6 +52,7 @@
 #include "objects.h"
 #include "db_gis.h"
 #include "ambiguity_utils.h"
+#include "cad_objects.h"
 
 // Must be last include file
 #include "leak_detection.h"

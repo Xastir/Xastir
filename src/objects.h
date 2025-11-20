@@ -48,21 +48,10 @@ extern Widget object_group_data;
 extern Widget object_symbol_data;
 extern void updateObjectPictureCallback(Widget w,XtPointer clientData,XtPointer callData);
 
-extern void Draw_All_CAD_Objects(Widget w);
-extern void Draw_CAD_Objects_erase_dialog(Widget w, XtPointer clientData, XtPointer callData);
-extern void Draw_CAD_Objects_list_dialog(Widget w, XtPointer clientData, XtPointer callData);
-extern int draw_CAD_objects_flag;
-extern int polygon_last_x;
-extern int polygon_last_y;
 extern int doing_move_operation;
 extern char last_object[9+1];
 extern char last_obj_grp;
 extern char last_obj_sym;
-extern int CAD_draw_objects;
-extern int CAD_show_label;
-extern int CAD_show_raw_probability;
-extern int CAD_show_comment;
-extern int CAD_show_area;
 
 /* JMT - works in FreeBSD */
 // Note: weird conditional thing is there just to shut up
@@ -142,13 +131,7 @@ extern int valid_item(char *name);
 extern void Object_History_Refresh( Widget w, XtPointer clientData, XtPointer callData);
 extern void Object_History_Clear( Widget w, XtPointer clientData, XtPointer callData);
 extern void  Move_Object( Widget widget, XtPointer clientData, XtPointer callData);
-extern void Draw_CAD_Objects_mode( Widget widget, XtPointer clientData, XtPointer callData);
-extern void Draw_CAD_Objects_close_polygon(Widget w, XtPointer clientData, XtPointer calldata);
-extern void Draw_CAD_Objects_erase(Widget w, XtPointer clientData, XtPointer calldata);
-extern void CAD_vertice_allocate(long latitude, long longitude);
-extern void CAD_object_allocate(long latitude, long longitude);
 extern void Modify_object( Widget w, XtPointer clientData, XtPointer calldata);
-extern void Restore_CAD_Objects_from_file(void);
 extern void disown_object_item(char *call_sign, char *new_owner);
 extern void log_object_item(char *line, int disable_object, char *object_name);
 extern void reload_object_item(void);
