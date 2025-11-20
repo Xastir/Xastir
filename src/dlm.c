@@ -348,7 +348,6 @@ static void DLM_queue_entry_free(struct DLM_queue_entry *q)
 static void DLM_queue_destroy(void)
 {
   struct DLM_queue_entry *next, *q;
-  int count=0;
 
   q = DLM_queue;
   while (q)
@@ -357,11 +356,9 @@ static void DLM_queue_destroy(void)
     if (q->state==DLM_Q_IDLE)
     {
       DLM_queue_entry_free(q);
-      count++;
     }
     q=next;
   }
-  //fprintf(stderr, "DLM_queue_destroy: %d entries dropped\n", count);
 }
 
 /**********************************************************
@@ -370,7 +367,6 @@ static void DLM_queue_destroy(void)
 void DLM_queue_abort_tiles(void)
 {
   struct DLM_queue_entry *next, *q;
-  int count=0;
 
   q = DLM_queue;
   while (q)
@@ -379,11 +375,9 @@ void DLM_queue_abort_tiles(void)
     if ((q->state==DLM_Q_IDLE) && (q->osm_zl>=0))
     {
       DLM_queue_entry_free(q);
-      count++;
     }
     q=next;
   }
-  //fprintf(stderr, "DLM_queue_abort_tiles: %d entries dropped\n", count);
 }
 
 /**********************************************************
@@ -392,7 +386,6 @@ void DLM_queue_abort_tiles(void)
 void DLM_queue_abort_files(void)
 {
   struct DLM_queue_entry *next, *q;
-  int count=0;
 
   q = DLM_queue;
   while (q)
@@ -401,11 +394,9 @@ void DLM_queue_abort_files(void)
     if ((q->state==DLM_Q_IDLE) && (q->osm_zl<0))
     {
       DLM_queue_entry_free(q);
-      count++;
     }
     q=next;
   }
-  //fprintf(stderr, "DLM_queue_abort_files: %d entries dropped\n", count);
 }
 
 /**********************************************************

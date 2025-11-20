@@ -128,11 +128,10 @@ void dbfawk_free_info ( dbfawk_field_info *list)
 dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
 {
   dbfawk_field_info *fi = NULL, *head = NULL, *prev;
-  int nf;
   char *sp;
 
   /* now build up the list of fields to read */
-  for (nf = 0, sp = dbffields, prev = NULL; *sp; nf++)
+  for (sp = dbffields, prev = NULL; *sp; )
   {
     char *d,*p = sp;
     char junk[XBASE_FLDHDR_SZ];
