@@ -3,6 +3,61 @@
 
 AT_BANNER([Object Utility Functions])
 
+AT_BANNER([pad_item_name() tests])
+AT_SETUP([pad_item_name: no padding9])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad9], [0], [PASS: pad_item_name: 9 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding8])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad8], [0], [PASS: pad_item_name: 8 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding7])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad7], [0], [PASS: pad_item_name: 7 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding6])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad6], [0], [PASS: pad_item_name: 6 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding5])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad5], [0], [PASS: pad_item_name: 5 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding4])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad4], [0], [PASS: pad_item_name: 4 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: no padding3])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_nopad3], [0], [PASS: pad_item_name: 3 character name not modified
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: padding by 1])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_pad2], [0], [PASS: pad_item_name: 2 character name padded with one space
+])
+AT_CLEANUP
+
+AT_SETUP([pad_item_name: padding by 2])
+AT_KEYWORDS([object_utils pad_item_name])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" pad_item_name_pad1], [0], [PASS: pad_item_name: 1 character name padded with two spaces
+])
+AT_CLEANUP
+
 AT_BANNER([format_course_speed() tests])
 
 AT_SETUP([format_course_speed: valid input])
@@ -66,5 +121,620 @@ AT_BANNER([format_zulu_time() tests])
 AT_SETUP([format_zulu_time: specific timestamp])
 AT_KEYWORDS([object_utils format_zulu_time])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_zulu_time], [0], [PASS: format_zulu_time for specific unix timestamp
+])
+AT_CLEANUP
+
+AT_BANNER([object color function tests])
+
+AT_SETUP([format_area_color_from_numeric: valid colors])
+AT_KEYWORDS([object_utils format_area_color_from_numeric])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_numeric_basic], [0], [PASS: format_area_color_from_numeric for valid colors
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_color_from_numeric: invalid color])
+AT_KEYWORDS([object_utils format_area_color_from_numeric])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_numeric_invalid], [0], [PASS: format_area_color_from_numeric for invalid colors
+],
+[Invalid color value passed to format_area_from_numeric.  Returning string for bright red instead.
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string: valid colors])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_basic], [0], [PASS: area_color_from_string for valid color strings
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string: invalid colors])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_invalid], [0], [PASS: area_color_from_string for invalid color strings
+])
+AT_CLEANUP
+
+AT_SETUP([area_color_from_string:  color is substring])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" area_color_from_string_midstring], [0], [PASS: area_color_from_string for color string inside longer string
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_color_from_dialog:  valid inputs])
+AT_KEYWORDS([object_utils area_color_from_string])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_color_from_dialog_basic], [0], [PASS: format_area_color_from_dialog for valid bright and dim colors
+])
+AT_CLEANUP
+
+AT_BANNER([object corridor function tests])
+
+AT_SETUP([format_area_corridor:  three-digit inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_threedigit], [0], [PASS: format_area_corridor for three-digit corridor values
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_corridor:  two-digit inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_twodigit], [0], [PASS: format_area_corridor for two-digit corridor values
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_corridor:  one-digit inputs])
+AT_KEYWORDS([object_utils area_corridor])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_corridor_onedigit], [0], [PASS: format_area_corridor for one-digit corridor values
+])
+AT_CLEANUP
+
+AT_BANNER([signpost value function tests])
+
+AT_SETUP([format_signpost:  three-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_threechar], [0], [PASS: format_signpost for three-char signpost values
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost:  two-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_twochar], [0], [PASS: format_signpost for two-char signpost values
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost:  one-char inputs])
+AT_KEYWORDS([object_utils signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_onechar], [0], [PASS: format_signpost for one-char signpost values
+])
+AT_CLEANUP
+
+AT_BANNER([probability ring formatting tests])
+AT_SETUP([format_probability_ring_data:  both inputs])
+AT_KEYWORDS([object_utils probability_ring])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_both], [0], [PASS: format_probability_ring_data when min and max specified
+])
+AT_CLEANUP
+
+AT_SETUP([format_probability_ring_data:  max input only])
+AT_KEYWORDS([object_utils probability_ring])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_probability_ring_data_max_only], [0], [PASS: format_probability_ring_data when only max specified
+])
+AT_CLEANUP
+
+AT_BANNER([prepend rng/png formatting tests])
+AT_SETUP([prepend_rng_phg with short comment])
+AT_KEYWORDS([object_utils prepend_rng_phg])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" prepend_rng_phg_short_comment], [0], [PASS: prepend_rng_phg when comment is shorter than max
+])
+AT_CLEANUP
+
+AT_SETUP([prepend_rng_phg with long comment])
+AT_KEYWORDS([object_utils prepend_rng_phg])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" prepend_rng_phg_long_comment], [0], [PASS: prepend_rng_phg when comment is already max
+])
+AT_CLEANUP
+
+AT_BANNER([area object formatting tests])
+
+AT_SETUP([format_area_object_item_packet:  circle object with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  circle object with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result for simple circle item case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle object with altitude])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with altitude])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  circle object with altitude, compressed])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  circle item with altitude, compressed])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_circle_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result for circle item case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line object with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  line object with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with no data])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_nodata], [0], [PASS: format_area_object_item_packet produces correct result with corridor for simple line item case, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line object with altitude])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with altitude])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_uncomp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt
+])
+AT_CLEANUP
+
+AT_SETUP([format_area_object_item_packet:  line object with altitude, compressed])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_object_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_area_object_item_packet:  line item with altitude, compressed])
+AT_KEYWORDS([object_utils area_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_area_object_item_packet_item_line_comp_alt], [0], [PASS: format_area_object_item_packet produces correct result with corridor for line item case with alt, compressed
+])
+AT_CLEANUP
+
+
+AT_BANNER([signpost formatting tests])
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude, compressed
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result with no text, velocity, or altitude, compressed
+])
+AT_CLEANUP
+
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, no speed or altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, no speed or altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, no speed or altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_nospeed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, no speed or  altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_nospeed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed no altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed no altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed no altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_noalt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed no  altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_noalt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_txt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with text, speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_txt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, with speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost object with no text, with speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_object_notxt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, with speed, altitude])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_speed_alt], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_signpost_object_item_packet:  signpost item with no text, with speed, altitude, compressed])
+AT_KEYWORDS([object_utils signpost_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_signpost_object_item_packet_item_notxt_speed_alt_comp], [0], [PASS: format_signpost_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([omni df formatting tests])
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with no speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_nospeed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with no speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with no speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_nospeed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with no speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, no altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, no altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_noalt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_alt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df object with speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_object_speed_alt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, altitude])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_alt], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_omni_df_object_item_packet:  omni_df item with speed, altitude, compressed])
+AT_KEYWORDS([object_utils omni_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_omni_df_object_item_packet_item_speed_alt_comp], [0], [PASS: format_omni_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([beam df formatting tests])
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with NULL speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nullspeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with no speed or altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nospeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed and altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_alt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with no speed or altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_nospeed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed no altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_noalt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed and altitude])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_alt], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed no altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df object with speed and altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_object_speed_alt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed no altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_beam_df_object_item_packet: beam df item with speed and altitude, compressed])
+AT_KEYWORDS([object_utils beam_df_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_beam_df_object_item_packet_item_speed_alt_comp], [0], [PASS: format_beam_df_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([normal object/item tests])
+
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_nospeed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, no altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_alt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_nospeed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, no altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_noalt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, altitude])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_alt], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_nospeed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_speed_alt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_nospeed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, no altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with speed, altitude, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_alt_comp], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([killed object/item tests])
+
+AT_SETUP([reformat_killed_object_item_packet: active object])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_object_active], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: active item])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_item_active], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: killed object])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_object_inactive], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([reformat_killed_object_item_packet: killed item])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" reformat_killed_object_item_packet_item_inactive], [0], [PASS: reformat_killed_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_BANNER([append comment tests])
+AT_SETUP([append_comment_to_object_item_packet: comment that should fit in object])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_object_notlong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+AT_SETUP([append_comment_to_object_item_packet: comment that should get truncated in object])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_object_toolong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([append_comment_to_object_item_packet: comment that should fit in item])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_item_notlong], [0], [PASS: append_comment_to_object_item_packet produces correct result
+])
+AT_CLEANUP
+AT_SETUP([append_comment_to_object_item_packet: comment that should get truncated in item])
+AT_KEYWORDS([object_utils append_comment_to_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" append_comment_to_object_item_packet_item_toolong], [0], [PASS: append_comment_to_object_item_packet produces correct result
 ])
 AT_CLEANUP

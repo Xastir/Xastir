@@ -285,11 +285,9 @@ void Object_History_Refresh( Widget UNUSED(w), XtPointer UNUSED(clientData), XtP
  */
 int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length)
 {
-  int i, done;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
   char comment[43+1];                 // max 43 characters of comment
-  char comment2[43+1];
   char time[7+1];
   char complete_area_color[3];
   int complete_area_type;
@@ -299,10 +297,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   char speed_course[8];
   int speed;
   int course;
-  int temp;
   char signpost[6];
-  int bearing;
-  char tempstr[50];
   char object_group;
   char object_symbol;
   int killed = 0;
@@ -311,8 +306,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   long y_lat = p_station->coord_lat;;
 
   (void)remove_trailing_spaces(p_station->call_sign);
-  //(void)to_upper(p_station->call_sign);     Not per spec.  Don't
-  //use this.
 
   if ((p_station->flag & ST_OBJECT) != 0)     // We have an object
   {
@@ -324,25 +317,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   }
   else if ((p_station->flag & ST_ITEM) != 0)      // We have an item
   {
-    xastir_snprintf(tempstr,
-                    sizeof(tempstr),
-                    "%s",
-                    p_station->call_sign);
-
-    if (strlen(tempstr) == 1)   // Add two spaces (to make 3 minimum chars)
-    {
-      strcpy(p_station->call_sign, tempstr);
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-      strcat(p_station->call_sign, "  ");
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-    }
-    else if (strlen(tempstr) == 2)   // Add one space (to make 3 minimum chars)
-    {
-      strcpy(p_station->call_sign, tempstr);
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-      strcat(p_station->call_sign, " ");
-      p_station->call_sign[sizeof(p_station->call_sign)-1] = '\0';  // Terminate string
-    }
+    pad_item_name(p_station->call_sign, sizeof(p_station->call_sign));
 
     if (!valid_item(p_station->call_sign))
     {
@@ -369,8 +344,11 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   // Lat/lon are in Xastir coordinates, so we need to convert
   // them to APRS string format here.
-  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
-  convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
+  // Need low-precision if uncompressed, high precision if compressed
+  convert_lat_l2s(y_lat, lat_str, sizeof(lat_str),
+          (transmit_compressed_objects_items)?CONVERT_HP_NOSP:CONVERT_LP_NOSP);
+  convert_lon_l2s(x_long, lon_str, sizeof(lon_str),
+          (transmit_compressed_objects_items)?CONVERT_HP_NOSP:CONVERT_LP_NOSP);
 
   // Check for an overlay character.  Replace the group character
   // (table char) with the overlay if present.
@@ -411,64 +389,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     comment[0] = '\0';  // Empty string
   }
 
-  if ( (p_station->probability_min[0] != '\0')
-       || (p_station->probability_max[0] != '\0') )
-  {
+  format_probability_ring_data(comment,sizeof(comment), p_station->probability_min, p_station->probability_max);
 
-    if (p_station->probability_max[0] == '\0')
-    {
-      // Only have probability_min
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_min);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    else if (p_station->probability_min[0] == '\0')
-    {
-      // Only have probability_max
-      strcpy(comment2, "Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_max);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    else    // Have both
-    {
-      strcpy(comment2, "Pmin");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_min);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",Pmax");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, p_station->probability_max);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, ",");
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-      strcat(comment2, comment);
-      comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-    }
-    xastir_snprintf(comment,sizeof(comment), "%s", comment2);
-  }
-
-
-  // Put RNG or PHG at the beginning of the comment
-  strcpy(comment2, p_station->power_gain);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-  strcat(comment2, comment);
-  comment2[sizeof(comment2)-1] = '\0';  // Terminate string
-
-  xastir_snprintf(comment,
-                  sizeof(comment),
-                  "%s",
-                  comment2);
-
+  prepend_rng_phg(comment,sizeof(comment),p_station->power_gain);
 
   (void)remove_trailing_spaces(comment);
 
@@ -507,13 +430,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
   if (p_station->aprs_symbol.area_object.type != AREA_NONE)   // It's an area object
   {
 
-    // Note that transmitted color consists of two characters,
-    // from "/0" to "15"
-    xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02d", p_station->aprs_symbol.area_object.color);
-    if (complete_area_color[0] == '0')
-    {
-      complete_area_color[0] = '/';
-    }
+    format_area_color_from_numeric(complete_area_color,
+                                   sizeof(complete_area_color),
+                                   p_station->aprs_symbol.area_object.color);
 
     complete_area_type = p_station->aprs_symbol.area_object.type;
 
@@ -521,499 +440,90 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     lon_offset = p_station->aprs_symbol.area_object.sqrt_lon_off;
 
     // Corridor
-    complete_corridor[0] = '\0';
-    if ( (complete_area_type == 1) || (complete_area_type == 6))
-    {
-      if (p_station->aprs_symbol.area_object.corridor_width > 0)
-      {
-        char temp_corridor[10];
-        xastir_snprintf(temp_corridor, sizeof(temp_corridor), "{%d}",
-                        p_station->aprs_symbol.area_object.corridor_width);
-        memcpy(complete_corridor, temp_corridor, sizeof(complete_corridor) - 1);
-        complete_corridor[sizeof(complete_corridor)-1] = '\0';  // Terminate string
-      }
-    }
+    format_area_corridor(complete_corridor, sizeof(complete_corridor),
+                         complete_area_type,
+                         p_station->aprs_symbol.area_object.corridor_width);
 
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-    }
-    else        // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        complete_area_type,
-                        lat_offset,
-                        complete_area_color,
-                        lon_offset,
-                        speed_course,
-                        complete_corridor,
-                        altitude);
-      }
-    }
+    format_area_object_item_packet(line, line_length,
+                                   p_station->call_sign,
+                                   object_group, object_symbol,
+                                   time,
+                                   lat_str, lon_str,
+                                   complete_area_type,
+                                   complete_area_color,
+                                   lat_offset, lon_offset,
+                                   speed_course, complete_corridor,
+                                   altitude, course, speed,
+                                   (p_station->flag & ST_OBJECT),
+                                   transmit_compressed_objects_items);
   }
 
   else if ( (p_station->aprs_symbol.aprs_type == '\\') // We have a signpost object
             && (p_station->aprs_symbol.aprs_symbol == 'm' ) )
   {
-    if (strlen(p_station->signpost) > 0)
-    {
-      char temp_sign[10];
-      xastir_snprintf(temp_sign, sizeof(temp_sign), "{%s}", p_station->signpost);
-      memcpy(signpost, temp_sign, sizeof(signpost));
-      signpost[sizeof(signpost)-1] = '\0';  // Terminate string
-    }
-    else    // No signpost data entered, blank it out
-    {
-      signpost[0] = '\0';
-    }
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
+    format_signpost(signpost,sizeof(signpost),p_station->signpost);
 
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        altitude,
-                        signpost);
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        altitude,
-                        signpost);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ")%s!%s%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        altitude,
-                        signpost);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        altitude,
-                        signpost);
-      }
-    }
+    format_signpost_object_item_packet(line, line_length,
+                                       p_station->call_sign,
+                                       object_group,object_symbol,
+                                       time,
+                                       lat_str, lon_str,
+                                       speed_course,
+                                       altitude,
+                                       signpost,
+                                       course,speed,
+                                       (p_station->flag&ST_OBJECT),
+                                       transmit_compressed_objects_items);
   }
 
   else if (p_station->signal_gain[0] != '\0')   // Must be an Omni-DF object/item
   {
-
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%s/%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ")%s!%s%s/%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        p_station->signal_gain,
-                        speed_course,
-                        altitude);
-      }
-    }
+    format_omni_df_object_item_packet(line, line_length,
+                                      p_station->call_sign,
+                                      object_group, object_symbol,
+                                      time,
+                                      lat_str, lon_str,
+                                      p_station->signal_gain,
+                                      speed_course,
+                                      altitude,
+                                      course, speed,
+                                      (p_station->flag & ST_OBJECT),
+                                      transmit_compressed_objects_items);
   }
   else if (p_station->NRQ[0] != 0)    // It's a Beam Heading DFS object/item
   {
-
-    if (strlen(speed_course) != 7)
-      xastir_snprintf(speed_course,
-                      sizeof(speed_course),
-                      "000/000");
-
-    bearing = atoi(p_station->bearing);
-    if ( (bearing < 1) || (bearing > 360) )
-    {
-      bearing = 360;
-    }
-
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-      else    // Non-compressed posit object
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        bearing,
-                        p_station->NRQ,
-                        altitude);
-      }
-    }
+    format_beam_df_object_item_packet(line, line_length,
+                                      p_station->call_sign,
+                                      object_group, object_symbol,
+                                      time,
+                                      lat_str, lon_str,
+                                      p_station->bearing,
+                                      p_station->NRQ,
+                                      speed_course,
+                                      altitude,
+                                      course,speed,
+                                      (p_station->flag & ST_OBJECT),
+                                      transmit_compressed_objects_items);
   }
 
   else    // Else it's a normal object/item
   {
-
-    if ((p_station->flag & ST_OBJECT) != 0)     // It's an object
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
-                        p_station->call_sign,
-                        time,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        altitude);
-      }
-      else    // Non-compressed posit object
-      {
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
-                        p_station->call_sign,
-                        time,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        altitude);
-      }
-    }
-    else    // It's an item
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_group = object_group;
-
-        // We need higher precision lat/lon strings than
-        // those created above.
-        convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-        convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
-
-        xastir_snprintf(line, line_length, ")%s!%s%s",
-                        p_station->call_sign,
-                        compress_posit(lat_str,
-                                       temp_group,
-                                       lon_str,
-                                       object_symbol,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank
-                        altitude);
-      }
-      else    // Non-compressed item
-      {
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
-                        p_station->call_sign,
-                        lat_str,
-                        object_group,
-                        lon_str,
-                        object_symbol,
-                        speed_course,
-                        altitude);
-      }
-    }
+    format_normal_object_item_packet(line, line_length,
+                                     p_station->call_sign,
+                                     object_group, object_symbol,
+                                     time,
+                                     lat_str, lon_str,
+                                     speed_course,
+                                     altitude,
+                                     course, speed,
+                                     (p_station->flag & ST_OBJECT),
+                                     transmit_compressed_objects_items);
   }
 
   // If it's a "killed" object, change '*' to an '_'
-  if ((p_station->flag & ST_OBJECT) != 0)                 // It's an object
-  {
-    if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE)     // It's been killed
-    {
-      line[10] = '_';
-      killed++;
-    }
-  }
-  // If it's a "killed" item, change '!' to an '_'
-  else                                                    // It's an item
-  {
-    if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE)     // It's been killed
-    {
-      killed++;
-      done = 0;
-      i = 0;
-      while ( (!done) && (i < 11) )
-      {
-        if (line[i] == '!')
-        {
-          line[i] = '_';          // mark as deleted object
-          done++;                 // Exit from loop
-        }
-        i++;
-      }
-    }
-  }
+  killed=reformat_killed_object_item_packet(line, line_length,
+                                            (p_station->flag & ST_OBJECT),
+                                            (p_station->flag & ST_ACTIVE));
 
   // Check whether we need to stop transmitting particular killed
   // object/items now.
@@ -1027,10 +537,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       // We shouldn't be transmitting this killed object/item
       // anymore.  We're already done transmitting it.
 
-//fprintf(stderr, "Done transmitting this object: %s,  %d\n",
-//p_station->call_sign,
-//p_station->object_retransmit);
-
       return(0);
     }
 
@@ -1040,11 +546,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     // MAX_KILLED_OBJECT_RETRANSMIT.
     if (p_station->object_retransmit <= -1)
     {
-
-//fprintf(stderr, "Killed object %s, setting retries, %d -> %d\n",
-//p_station->call_sign,
-//p_station->object_retransmit,
-//MAX_KILLED_OBJECT_RETRANSMIT - 1);
 
       if ((MAX_KILLED_OBJECT_RETRANSMIT - 1) < 0)
       {
@@ -1061,13 +562,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
       // Decrement the timeout if it is a positive number.
       if (p_station->object_retransmit > 0)
       {
-
-//fprintf(stderr, "Killed object %s, decrementing retries, %d ->
-//%d\n",
-//p_station->call_sign,
-//p_station->object_retransmit,
-//p_station->object_retransmit - 1);
-
         p_station->object_retransmit--;
       }
     }
@@ -1075,35 +569,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
   // We need to tack the comment on the end, but need to make
   // sure we don't go over the maximum length for an object/item.
-  if (strlen(comment) != 0)
-  {
-    temp = 0;
-    if ((p_station->flag & ST_OBJECT) != 0)
-    {
-      while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) )
-      {
-        //fprintf(stderr,"temp: %d->%d\t%c\n", temp,
-        //strlen(line), comment[temp]);
-        line[strlen(line) + 1] = '\0';
-        line[strlen(line)] = comment[temp++];
-      }
-    }
-    else    // It's an item
-    {
-      while ( (strlen(line) < (64 + strlen(p_station->call_sign))) && (temp < (int)strlen(comment)) )
-      {
-        //fprintf(stderr,"temp: %d->%d\t%c\n", temp,
-        //strlen(line), comment[temp]);
-        line[strlen(line) + 1] = '\0';
-        line[strlen(line)] = comment[temp++];
-      }
-    }
-  }
-
-  //fprintf(stderr,"line: %s\n",line);
-
-// NOTE:  Compressed mode will be shorter still.  Account
-// for that when compressed mode is implemented for objects/items.
+  append_comment_to_object_item_packet(line, line_length,
+                                       comment,
+                                       p_station->call_sign,
+                                       (p_station->flag & ST_OBJECT));
 
   return(1);
 }
