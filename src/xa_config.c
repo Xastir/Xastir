@@ -50,6 +50,7 @@
 #include "geo.h"
 #include "snprintf.h"
 #include "objects.h"
+#include "objects_gui.h"
 #include "db_gis.h"
 #include "ambiguity_utils.h"
 #include "cad_objects.h"

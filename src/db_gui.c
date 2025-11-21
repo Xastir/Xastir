@@ -24,6 +24,7 @@
 #include "igate.h"
 #include "list_gui.h"
 #include "objects.h"
+#include "objects_gui.h"
 #include "track_gui.h"
 #include "xa_config.h"
 #include "x_spider.h"

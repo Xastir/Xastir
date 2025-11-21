@@ -61,6 +61,7 @@ XASTIR_SRC = \
     mgrs_utils.c mgrs_utils.h \
     mutex_utils.c mutex_utils.h \
     objects.h objects.c \
+    objects_gui.c objects_gui.h \
     object_utils.h object_utils.c \
     popup.h \
     popup_gui.c \

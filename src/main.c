@@ -133,6 +133,7 @@ char *xastir_version=VERSION;
 #include "datum.h"
 #include "igate.h"
 #include "objects.h"
+#include "objects_gui.h"
 #include "db_funcs.h"
 #include "db_gui.h"
 #include "db_gis.h"
