@@ -191,9 +191,7 @@ aloha_stats the_aloha_stats;
 
 int process_emergency_packet_again = 0;
 
-
-
-
+char echo_digis[6][MAX_CALLSIGN+1];
 
 void db_init(void)
 {
@@ -17393,3 +17391,50 @@ void dump_time_sorted_list(void)
 }
 
 
+/*
+ *  Keep track of last six digis that echo my transmission
+ */
+void upd_echo(char *path)
+{
+  int i,j,len;
+
+  if (echo_digis[5][0] != '\0')
+  {
+    for (i=0; i<5; i++)
+    {
+      xastir_snprintf(echo_digis[i],
+                      MAX_CALLSIGN+1,
+                      "%s",
+                      echo_digis[i+1]);
+
+    }
+    echo_digis[5][0] = '\0';
+  }
+  for (i=0,j=0; i < (int)strlen(path); i++)
+  {
+    if (path[i] == '*')
+    {
+      break;
+    }
+    if (path[i] == ',')
+    {
+      j=i;
+    }
+  }
+  if (j > 0)
+  {
+    j++;  // first char of call
+  }
+  if (i > 0 && i-j <= 9)
+  {
+    len = i-j;
+    for (i=0; i<5; i++)     // look for free entry
+    {
+      if (echo_digis[i][0] == '\0')
+      {
+        break;
+      }
+    }
+    substr(echo_digis[i],path+j,len);
+  }
+}

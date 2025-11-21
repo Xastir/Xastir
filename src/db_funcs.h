@@ -138,4 +138,9 @@ extern DataRow *t_newest; // pointer to last element in time ordered station
 // objects/items
 extern time_t last_object_check;
 
+// array to hold the list of digipeaters that have echoed the station
+extern char echo_digis[6][MAX_CALLSIGN+1];
+// function to update echo_digis
+extern void upd_echo(char *path);
+
 #endif

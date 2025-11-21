@@ -64,8 +64,6 @@
 
 
 
-char echo_digis[6][MAX_CALLSIGN+1];
-
 #define ACCEPT_0N_0E    /* set this to see stations at 0N/0E on the map */
 
 /////////////////////////////////////////////////////////////////////
@@ -3522,58 +3520,6 @@ int valid_inet_name(char *name, char *info, char *origin, int origin_size)
   return(1);  // Accept anything else if we get to this point in
   // the code.  After all, the message came from the
   // internet, not from RF.
-}
-
-
-
-
-
-/*
- *  Keep track of last six digis that echo my transmission
- */
-void upd_echo(char *path)
-{
-  int i,j,len;
-
-  if (echo_digis[5][0] != '\0')
-  {
-    for (i=0; i<5; i++)
-    {
-      xastir_snprintf(echo_digis[i],
-                      MAX_CALLSIGN+1,
-                      "%s",
-                      echo_digis[i+1]);
-
-    }
-    echo_digis[5][0] = '\0';
-  }
-  for (i=0,j=0; i < (int)strlen(path); i++)
-  {
-    if (path[i] == '*')
-    {
-      break;
-    }
-    if (path[i] == ',')
-    {
-      j=i;
-    }
-  }
-  if (j > 0)
-  {
-    j++;  // first char of call
-  }
-  if (i > 0 && i-j <= 9)
-  {
-    len = i-j;
-    for (i=0; i<5; i++)     // look for free entry
-    {
-      if (echo_digis[i][0] == '\0')
-      {
-        break;
-      }
-    }
-    substr(echo_digis[i],path+j,len);
-  }
 }
 
 
