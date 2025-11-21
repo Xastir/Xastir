@@ -34,73 +34,10 @@
 
 #include "tests/test_framework.h"
 
-/* forward declarations (so we don't need to include object_utils.h */
-void pad_item_name(char *name, size_t name_size);
-void format_course_speed(char *dst, size_t dst_size, char *course_str, char *speed_str, int *course, int *speed);
-void format_altitude(char *dst, size_t dst_size, char *altitude_str);
-void format_zulu_time(char *dst, size_t dst_size);
-void format_area_color_from_numeric(char * dst, size_t dst_size, unsigned int color);
-unsigned int area_color_from_string(char *color_string);
-void format_area_color_from_dialog(char *dst, size_t dst_size, char *color, int bright);
-void format_area_corridor(char *dst, size_t dst_size, unsigned int type, unsigned int width);
-void format_signpost(char *dst, size_t dst_size, char *signpost);
-void format_probability_ring_data(char *dst, size_t dst_size, char *pmin,
-                                  char *pmax);
-void prepend_rng_phg(char *dst, size_t dst_size, char *power_gain);
-void format_area_object_item_packet(char *dst, size_t dst_size,
-                                    char *name, char object_group,
-                                    char object_symbol, char *time, char *lat_str,
-                                    char *lon_str, int area_type,
-                                    char *area_color,
-                                    int lat_offset, int lon_offset,
-                                    char *speed_course, char *corridor,
-                                    char *altitude, int course, int speed,
-                                    int is_object, int compressed);
-void format_signpost_object_item_packet(char *dst, size_t dst_size,
-                                        char *name, char object_group,
-                                        char object_symbol, char *time,
-                                        char * lat_str, char *lon_str,
-                                        char *speed_course,
-                                        char *altitude,
-                                        char *signpost,
-                                        int course, int speed,
-                                        int is_object, int compressed);
-void format_omni_df_object_item_packet(char *dst, size_t dst_size,
-                                       char *name,
-                                       char object_group, char object_symbol,
-                                       char *time,
-                                       char *lat_str, char *lon_str,
-                                       char *signal_gain,
-                                       char *speed_course,
-                                       char *altitude,
-                                       int course, int speed,
-                                       int is_object, int compressed);
-void format_beam_df_object_item_packet(char *dst, size_t dst_size,
-                                       char *name,
-                                       char object_group, char object_symbol,
-                                       char *time,
-                                       char *lat_str, char *lon_str,
-                                       char *bearing_string,
-                                       char *NRQ,
-                                       char *speed_course,
-                                       char *altitude,
-                                       int course, int speed,
-                                       int is_object, int compressed);
-void format_normal_object_item_packet(char *dst, size_t dst_size,
-                                      char *name,
-                                      char object_group, char object_symbol,
-                                      char *time,
-                                      char *lat_str, char *lon_str,
-                                      char *speed_course,
-                                      char *altitude,
-                                      int course, int speed,
-                                      int is_object, int compressed);
-int reformat_killed_object_item_packet(char *dst, size_t dst_size,
-                                       int is_object, int is_active);
-void append_comment_to_object_item_packet(char *line, size_t line_length,
-                                                 char *comment,
-                                                 char *name,
-                                                 int is_object);
+// This file contains (and should always contain) only declarations of
+// function prototypes, so it is safe to include here
+#include "object_utils.h"
+
 /* test cases for pad_item_name */
 int test_pad_item_name_nopad9(void)
 {
