@@ -55,7 +55,7 @@
 #include "hashtable.h"
 #include "hashtable_itr.h"
 /// THIS ONLY FOR DEBUGGING!
-#include "hashtable_private.h"
+//#include "hashtable_private.h"
 #include "shp_hash.h"
 #include "snprintf.h"
 
@@ -98,15 +98,12 @@ unsigned int shape_hash_from_key(void *key)
 int shape_keys_equal(void *key1, void *key2)
 {
 
-  //    fprintf(stderr,"Comparing %s to %s\n",(char *)key1,(char *)key2);
   if (strncmp((char *)key1,(char *)key2,strlen((char *)key1))==0)
   {
-    //        fprintf(stderr,"    match\n");
     return(1);
   }
   else
   {
-    //        fprintf(stderr,"  no  match\n");
     return(0);
   }
 }
@@ -117,7 +114,6 @@ int shape_keys_equal(void *key1, void *key2)
 
 void init_shp_hash(int clobber)
 {
-  //fprintf(stderr," Initializing shape hash \n");
   // make sure we don't leak
   if (shp_hash)
   {
@@ -151,9 +147,6 @@ void destroy_shpinfo(shpinfo *si)
   if (si)
   {
     empty_shpinfo(si);
-    //        fprintf(stderr,
-    //                "       Freeing shpinfo %lx\n",
-    //        (unsigned long int) si);
     free(si);
   }
 }
@@ -169,20 +162,14 @@ void empty_shpinfo(shpinfo *si)
   {
     if (si->root)
     {
-      //            fprintf(stderr,"        Freeing root\n");
       Xastir_RTreeDestroyNode(si->root);
       si->root=NULL;
     }
 
-    // This is a little annoying --- the hashtable functions free the
+    // The hashtable functions free the
     // key, which is in our case the filename.  So since we're only going
     // to empty the shpinfo when we're removing from the hashtable, we
-    // must not free the filename ourselves.
-    //        if (si->filename) {
-    //            fprintf(stderr,"        Freeing filename\n");
-    //            free(si->filename);
-    //            si->filename=NULL;
-    //        }
+    // must not free the filename in si->filename ourselves.
   }
 }
 
@@ -264,7 +251,6 @@ void add_shp_to_hash(char *filename, SHPHandle sHP)
 
   build_rtree(&(temp->root),sHP);
 
-  //fprintf(stderr, "  adding %s...",temp->filename);
   if (!hashtable_insert(shp_hash,temp->filename,temp))
   {
     fprintf(stderr,"Insert failed on shapefile hash --- fatal\n");
@@ -287,15 +273,7 @@ shpinfo *get_shp_from_hash(char *filename)
     return NULL;
   }
 
-  //fprintf(stderr,"   searching for %s...",filename);
-
   result=hashtable_search(shp_hash,filename);
-
-  //    if (result) {
-  //        fprintf(stderr,"      found it\n");
-  //    } else {
-  //        fprintf(stderr,"      it is not there\n");
-  //    }
 
   // If there is one, we have now accessed it, so bump the last access time
   if (result)
@@ -357,9 +335,6 @@ void purge_shp_hash(time_t secs_now)
 
   if (secs_now > purge_time)    // Time to purge
   {
-    //time_now = localtime(&secs_now);
-    //(void)strftime(timestring,100,"%a %b %d %H:%M:%S %Z %Y",time_now);
-    //fprintf(stderr,"Purging...%s\n",timestring);
 
     purge_time += PURGE_PERIOD;
 
@@ -381,11 +356,6 @@ void purge_shp_hash(time_t secs_now)
             if (secs_now > si->last_access+PURGE_PERIOD)
             {
               // this is stale, hasn't been accessed in a while
-              //fprintf(stderr,
-              // "found stale entry for %s, deleting it.\n",
-              // si->filename);
-              //fprintf(stderr,"    Destroying si=%lx\n",
-              //            (unsigned long int) si);
               ret=hashtable_iterator_remove(iterator);
 
               // Important that we NOT do the
@@ -397,7 +367,6 @@ void purge_shp_hash(time_t secs_now)
               // invite segfaults
               destroy_shpinfo(si);
 
-              //fprintf(stderr,"    removing from hashtable\n");
             }
             else
             {
@@ -414,7 +383,6 @@ void purge_shp_hash(time_t secs_now)
         free(iterator);
       }
     }
-    //fprintf(stderr,"   done Purging...\n");
   }
 }
 
