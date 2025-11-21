@@ -29,6 +29,11 @@
 #define MAX_LONG             12
 #define MAX_LAT              11
 
+/* Malloc sanity checking macros used in many files */
+#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
+#define CHECKREALLOC(m)  if (!m) { fprintf(stderr, "***** Realloc Failed *****\n"); exit(0); }
+
+
 /* Global variables defined in main.c */
 
 

@@ -76,8 +76,6 @@
 #include "dlm.h"
 #include "map_OSM.h"
 
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
 #ifdef HAVE_MAGICK
   #if HAVE_SYS_TIME_H
     #include <sys/time.h>

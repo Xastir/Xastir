@@ -70,8 +70,6 @@
 #include "color.h"
 #include "xa_config.h"
 
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
 

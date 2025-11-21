@@ -73,8 +73,6 @@
 
 
 
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
 //NOTE:  This function has a problem if a non-pop file is labeled
 //with a ".pop" extension.  It causes a segfault in Xastir.  More
 //error checking needs to be done in order to prevent this.

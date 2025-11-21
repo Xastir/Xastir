@@ -298,6 +298,7 @@
 #include <Xm/XmAll.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "alert.h"
 #include "util.h"
 #include "mutex_utils.h"
@@ -311,9 +312,6 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
-
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 
 // New method for weather alerts, using a hash

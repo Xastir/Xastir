@@ -36,15 +36,13 @@
 #include <stdlib.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "snprintf.h"
 #include "main.h"
 #include "xa_config.h"
 
 static struct hashtable *tactical_hash = NULL;
 #define TACTICAL_HASH_SIZE 1024
-
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
 
 // Multiply all the characters in the callsign, truncated to
 // TACTICAL_HASH_SIZE

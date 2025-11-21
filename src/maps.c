@@ -131,9 +131,6 @@ extern XmFontList fontlist1;    // Menu/System fontlist
 
 #define GRID_MORE 5000
 
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
-
 // Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
 // to disable some routines below if the support for them
 // is not compiled in.

@@ -46,14 +46,13 @@
 #include <errno.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "util.h"
 #include "db_funcs.h"
 #include "xa_config.h"
 #include "datum.h"
 
 
-
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 // Needed for size_t
 #include <sys/types.h>

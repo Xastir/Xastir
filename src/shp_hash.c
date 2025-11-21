@@ -50,6 +50,7 @@
 #include <rtree/index.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "util.h"
 #include "hashtable.h"
 #include "hashtable_itr.h"
@@ -73,10 +74,6 @@ static struct hashtable *shp_hash=NULL;
 static time_t purge_time;
 
 #define SHP_HASH_SIZE 65535
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-
-
-
 
 
 unsigned int shape_hash_from_key(void *key)

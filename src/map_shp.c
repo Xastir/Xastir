@@ -83,9 +83,6 @@
 #include "color.h"
 #include "xa_config.h"
 
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
-#define CHECKREALLOC(m)  if (!m) { fprintf(stderr, "***** Realloc Failed *****\n"); exit(0); }
-
 #ifdef HAVE_LIBSHP
   #include "awk.h"
   #include "dbfawk.h"

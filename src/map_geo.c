@@ -58,6 +58,7 @@
 #include <math.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "maps.h"
 #include "map_cache.h"
 #include "alert.h"
@@ -71,8 +72,6 @@
 #include "xa_config.h"
 
 #include "map_OSM.h"
-
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 
 // Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"

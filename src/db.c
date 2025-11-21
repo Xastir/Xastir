@@ -55,6 +55,7 @@
 #include <Xm/XmAll.h>
 
 #include "xastir.h"
+#include "globals.h"
 #include "main.h"
 #include "draw_symbols.h"
 #include "alert.h"
@@ -84,9 +85,6 @@
 // Must be last include file
 #include "leak_detection.h"
 
-
-
-#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 
 #define STATION_REMOVE_CYCLE 300    /* check station remove in seconds (every 5 minutes) */
