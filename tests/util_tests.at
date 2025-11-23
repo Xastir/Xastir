@@ -1,0 +1,30 @@
+# Autotest tests for utils.c Functions
+# Tests for standalone utility functions from util.c
+
+AT_BANNER([Utility Functions])
+
+AT_BANNER([convert_lat/lon_l2s/s2l() tests])
+
+AT_SETUP([convert_lat_l2s: convert Xastir lat to high-prec string])
+AT_KEYWORDS([util convert_lat_l2s])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lat_l2s_basic], [0], [PASS: convert_lat_l2s: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lon_l2s: convert Xastir lon to high-prec string])
+AT_KEYWORDS([util convert_lon_l2s])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_l2s_basic], [0], [PASS: convert_lon_l2s: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lat_l2s: convert Xastir lat from high-prec string])
+AT_KEYWORDS([util convert_lat_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lat_s2l_basic], [0], [PASS: convert_lat_s2l: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lon_l2s: convert Xastir lon from high-prec string])
+AT_KEYWORDS([util convert_lon_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_s2l_basic], [0], [PASS: convert_lon_s2l: correct
+])
+AT_CLEANUP
