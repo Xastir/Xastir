@@ -35,6 +35,7 @@
 #include "tests/test_framework.h"
 
 #include "util.h"
+#include "globals.h"
 
 int test_convert_lat_l2s_basic(void)
 {
@@ -56,6 +57,29 @@ int test_convert_lon_l2s_basic(void)
   lon = 180*60*60*100-(106*60+12.385)*60*100;
   convert_lon_l2s(lon,lon_str, sizeof(lon_str),CONVERT_HP_NOSP);
   TEST_ASSERT_STR_EQ("10612.385W",lon_str,"xastir x value correctly converted to string");
+  TEST_PASS("convert_lon_l2s: correct");
+}
+int test_convert_lat_l2s_lp(void)
+{
+  long lat;
+  char lat_str[20];
+  // Compute Xastir coordinates for 35d01.631'N
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  lat = 90*60*60*100-(35*60+1.631)*60*100;
+  convert_lat_l2s(lat,lat_str, sizeof(lat_str),CONVERT_LP_NOSP);
+  TEST_ASSERT_STR_EQ("3501.63N",lat_str,"xastir y value correctly converted to string");
+  TEST_PASS("convert_lat_l2s: correct");
+}
+int test_convert_lon_l2s_lp(void)
+{
+  long lon;
+  char lon_str[20];
+  // Compute Xastir coordinates for 106d12.384'W
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  // we're using ".384" here because ".385" would get rounded up, not truncated.
+  lon = 180*60*60*100-(106*60+12.384)*60*100;
+  convert_lon_l2s(lon,lon_str, sizeof(lon_str),CONVERT_LP_NOSP);
+  TEST_ASSERT_STR_EQ("10612.38W",lon_str,"xastir x value correctly converted to string");
   TEST_PASS("convert_lon_l2s: correct");
 }
 int test_convert_lat_s2l_basic(void)
@@ -92,6 +116,8 @@ int main(int argc, char *argv[])
   test_case_t tests[] = {
     {"convert_lat_l2s_basic",test_convert_lat_l2s_basic},
     {"convert_lon_l2s_basic",test_convert_lon_l2s_basic},
+    {"convert_lat_l2s_lp",test_convert_lat_l2s_lp},
+    {"convert_lon_l2s_lp",test_convert_lon_l2s_lp},
     {"convert_lat_s2l_basic",test_convert_lat_s2l_basic},
     {"convert_lon_s2l_basic",test_convert_lon_s2l_basic},
     {NULL,NULL}
