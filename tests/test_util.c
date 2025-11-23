@@ -59,6 +59,28 @@ int test_convert_lon_l2s_basic(void)
   TEST_ASSERT_STR_EQ("10612.385W",lon_str,"xastir x value correctly converted to string");
   TEST_PASS("convert_lon_l2s: correct");
 }
+int test_convert_lat_l2s_basic_s(void)
+{
+  long lat;
+  char lat_str[20];
+  // Compute Xastir coordinates for 35d01.631'S
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  lat = 90*60*60*100+(35*60+1.631)*60*100;
+  convert_lat_l2s(lat,lat_str, sizeof(lat_str),CONVERT_HP_NOSP);
+  TEST_ASSERT_STR_EQ("3501.631S",lat_str,"xastir y value correctly converted to string");
+  TEST_PASS("convert_lat_l2s: correct");
+}
+int test_convert_lon_l2s_basic_e(void)
+{
+  long lon;
+  char lon_str[20];
+  // Compute Xastir coordinates for 106d12.385'E
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  lon = 180*60*60*100+(106*60+12.385)*60*100;
+  convert_lon_l2s(lon,lon_str, sizeof(lon_str),CONVERT_HP_NOSP);
+  TEST_ASSERT_STR_EQ("10612.385E",lon_str,"xastir x value correctly converted to string");
+  TEST_PASS("convert_lon_l2s: correct");
+}
 int test_convert_lat_l2s_lp(void)
 {
   long lat;
@@ -104,6 +126,28 @@ int test_convert_lon_s2l_basic(void)
   TEST_ASSERT(lon==lon_expect,"xastir x value correctly converted from string");
   TEST_PASS("convert_lon_s2l: correct");
 }
+int test_convert_lat_s2l_basic_s(void)
+{
+  long lat;
+  long lat_expect;
+  // Compute Xastir coordinates for 35d01.631'S
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  lat_expect = 90*60*60*100+(35*60+1.631)*60*100;
+  lat = convert_lat_s2l("3501.631S");
+  TEST_ASSERT(lat==lat_expect,"xastir y value correctly converted from string");
+  TEST_PASS("convert_lat_s2l: correct");
+}
+int test_convert_lon_s2l_basic_e(void)
+{
+  long lon;
+  long lon_expect;
+  // Compute Xastir coordinates for 106d12.385'E
+  // Xastir coordinates are in hundredths of seconds, with 0 being 90d N
+  lon_expect = 180*60*60*100+(106*60+12.385)*60*100;
+  lon = convert_lon_s2l("10612.385E");
+  TEST_ASSERT(lon==lon_expect,"xastir x value correctly converted from string");
+  TEST_PASS("convert_lon_s2l: correct");
+}
 
 /* Test runner */
 typedef struct {
@@ -116,10 +160,14 @@ int main(int argc, char *argv[])
   test_case_t tests[] = {
     {"convert_lat_l2s_basic",test_convert_lat_l2s_basic},
     {"convert_lon_l2s_basic",test_convert_lon_l2s_basic},
+    {"convert_lat_l2s_basic_s",test_convert_lat_l2s_basic_s},
+    {"convert_lon_l2s_basic_e",test_convert_lon_l2s_basic_e},
     {"convert_lat_l2s_lp",test_convert_lat_l2s_lp},
     {"convert_lon_l2s_lp",test_convert_lon_l2s_lp},
     {"convert_lat_s2l_basic",test_convert_lat_s2l_basic},
     {"convert_lon_s2l_basic",test_convert_lon_s2l_basic},
+    {"convert_lat_s2l_basic_s",test_convert_lat_s2l_basic_s},
+    {"convert_lon_s2l_basic_e",test_convert_lon_s2l_basic_e},
     {NULL,NULL}
   };
 

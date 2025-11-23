@@ -16,6 +16,17 @@ AT_KEYWORDS([util convert_lon_l2s])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_l2s_basic], [0], [PASS: convert_lon_l2s: correct
 ])
 AT_CLEANUP
+AT_SETUP([convert_lat_l2s: convert Xastir lat to high-prec string (south lat)])
+AT_KEYWORDS([util convert_lat_l2s])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lat_l2s_basic_s], [0], [PASS: convert_lat_l2s: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lon_l2s: convert Xastir lon to high-prec string (east long)])
+AT_KEYWORDS([util convert_lon_l2s])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_l2s_basic_e], [0], [PASS: convert_lon_l2s: correct
+])
+AT_CLEANUP
 
 AT_SETUP([convert_lat_l2s: convert Xastir lat to low-prec string])
 AT_KEYWORDS([util convert_lat_l2s])
@@ -38,5 +49,17 @@ AT_CLEANUP
 AT_SETUP([convert_lon_l2s: convert Xastir lon from high-prec string])
 AT_KEYWORDS([util convert_lon_s2l])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_s2l_basic], [0], [PASS: convert_lon_s2l: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lat_l2s: convert Xastir lat from high-prec string (south)])
+AT_KEYWORDS([util convert_lat_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lat_s2l_basic_s], [0], [PASS: convert_lat_s2l: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lon_l2s: convert Xastir lon from high-prec string (east)])
+AT_KEYWORDS([util convert_lon_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_s2l_basic_e], [0], [PASS: convert_lon_s2l: correct
 ])
 AT_CLEANUP
