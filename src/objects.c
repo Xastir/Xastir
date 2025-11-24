@@ -48,6 +48,10 @@
 
 void move_station_time(DataRow *p_curr, DataRow *p_time);
 
+// forward declaration of a function present in db.c but not advertised by
+// any of the headers we include.
+void init_station(DataRow *p_station);
+
 // Must be last include file
 #include "leak_detection.h"
 
@@ -1043,6 +1047,14 @@ void log_object_item(char *line, int disable_object, char *object_name)
                               ST_OBJECT bit set.  Otherwise, set ST_ITEM.
      killed:                  if nonzero, unset the ST_ACTIVE flag.  Otherwise,
                               set the ST_ACTIVE flag.
+
+    THIS FUNCTION ALLOCATES DATA THAT MUST BE FREED.
+    DO NOT USE THE STATION DELETE FUNCTIONS IN DB.C BECAUSE THEY PRESUME
+    THE RECORD IS LINKED INTO THE LINKED LISTS, AND THESE WILL NOT BE.
+
+    This function is in objects.c and not db.c because it is intended ONLY
+    as a function for preparing a fake record to be used in object packet
+    creation, which will then be discarded after the string is created.
 */
 DataRow *construct_object_item_data_row(char *name,
                                         char *lat_str, char *lon_str,
@@ -1072,5 +1084,50 @@ DataRow *construct_object_item_data_row(char *name,
                                         int is_object,
                                         int killed)
 {
-  return NULL;
+  DataRow *theDataRow = NULL;
+  // if we have these three strings and they're not null, go ahead and try
+  // to do the thing.  We are ASSUMING the caller has already taken care
+  // of sanity checking them.
+  if (name!=NULL && lat_str != NULL && lon_str != NULL &&
+      strlen(name) != 0 && strlen(lat_str) != 0 && strlen(lon_str) != 0)
+  {
+    theDataRow = (DataRow *)calloc(1,sizeof(DataRow));
+    CHECKMALLOC(theDataRow);
+    init_station(theDataRow); // populate with defaults
+    // Truncate name if necessary
+    if (strlen(name) > sizeof(theDataRow->call_sign)-1)
+    {
+      name[sizeof(theDataRow->call_sign)] = '\0';
+    }
+    strncpy(theDataRow->call_sign,name,sizeof(theDataRow->call_sign)-1);
+
+    theDataRow->coord_lat = convert_lat_s2l(lat_str);
+    theDataRow->coord_lon = convert_lon_s2l(lon_str);
+    theDataRow->flag |= (is_object)?(ST_OBJECT):(ST_ITEM);
+
+    if (killed)
+      theDataRow->flag &= ~ST_ACTIVE;
+    else
+      theDataRow->flag |= ST_ACTIVE;
+
+    if (obj_group == '/' || obj_group == '\\')
+    {
+      theDataRow->aprs_symbol.aprs_type=obj_group;
+    }
+    else
+    {
+      theDataRow->aprs_symbol.aprs_type='\\';
+      if ((obj_group >= 'A' && obj_group <= 'Z')
+          || (obj_group >= '0' && obj_group <= '9'))
+      {
+        theDataRow->aprs_symbol.special_overlay = obj_group;
+      }
+      else
+      {
+        theDataRow->aprs_symbol.special_overlay = '\0';
+      }
+    }
+    theDataRow->aprs_symbol.aprs_symbol = obj_symbol;
+  }
+  return theDataRow;
 }
