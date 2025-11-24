@@ -30,7 +30,7 @@ test_output_my_aprs_data_LDADD = -lpthread
 test_util_SOURCES = test_util.c test_util_stubs.c $(top_srcdir)/src/util.c
 test_util_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
-test_objects_SOURCES = test_objects.c test_objects_stubs.c $(top_srcdir)/src/objects.c $(top_srcdir)/src/util.c $(top_srcdir)/src/object_utils.c
+test_objects_SOURCES = test_objects.c test_objects_stubs.c $(top_srcdir)/src/objects.c $(top_srcdir)/src/util.c $(top_srcdir)/src/object_utils.c $(top_srcdir)/src/db.c
 test_objects_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
 # Run tests
