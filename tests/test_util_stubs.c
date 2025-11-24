@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "globals.h"
 #include "tests/test_framework.h"
 
 STUB_IMPL(langcode);
@@ -43,5 +44,5 @@ int debug_level=0;
 long scale_x, scale_y;
 long center_longitude, center_latitude;
 char dangerous_operation[200];
-long my_long, my_lat;
+char my_long[MAX_LONG], my_lat[MAX_LAT];
 long screen_height, screen_width;
