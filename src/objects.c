@@ -967,5 +967,110 @@ void log_object_item(char *line, int disable_object, char *object_name)
 }
 
 
+/*
+  This function exists to take all the strings that are obtained
+  directly from the Object/Item create/modify dialog box and create a
+  stand-alone DataRow structure that can be read by
+  Create_object_item_tx_string to craft a correctly formatted object
+  or item packet.
 
+  Some of the character strings in the argument list will be null
+  strings, either because the user left them blank or because they
+  don't apply to the object type being created.
 
+  The integer types here are all booleans that reflect the settings of
+  toggle buttons in the dialog.
+
+  This function will return a null pointer if the name string is empty.  It
+  will abort with a fatal error if the memory allocation call fails.
+
+  It is ASSUMED that the caller will have done all required sanity
+  checking on the name and latitude/longitude strings.  We do none of that.
+
+  In order to get a valid pointer return, at least name, lat/lon_str,
+  obj_group, and obj_symbol must be provided, in which case the object is
+  just a simple static object.
+
+  Parameters:
+      name:   the object or item name with trailing spaces deleted
+      lat_str,lon_str:  latitude and longitude in DDMM.MM[M]H/DDDMM.MM[M]H
+                        format.  They will be converted to Xastir coordinates
+                        before storage in the data row.
+      obj_group, obj_symbol: The group and symbol taken from the
+                              dialog box.  if obj_group is neither '/'
+                              nor '\' then it must be a valid overlay
+                              character, the upper case letters A-Z or
+                              digits 0-9.  The actual group stored in
+                              the record as the object symbol group
+                              will be '\' and the group given will be
+                              stored instead in the overlay field.
+                              If the overlay character is invalid, it will be
+                              ignored and we'll just use '\' as the group.
+      comment:  A comment string up to 43 characters long.  May be null.
+      course, speed:          course in degrees, speed in knots.  May be null.
+                              must be no more than three digits.
+      altitude:               altitude in feet.  Will be converted to meters
+                              for storage in the record.
+      area_object, area_type, area_filled:
+                              If area_object is nonzero, we are doing an
+                              area object and the following flags define
+                              the type (0-15) and whether or not it's filled.
+     area_color:              two character color string /0 through 15.
+     lat_offset_str, lon_offset_str:
+                              latitude and longitude offset values in 1/100
+                              of a degree.  The actual value stored will be
+                              the square root of this number.  May be null.
+     corridor:                optional three digit corridor used only by
+                              area object types 1 and 6 (lines left and right)
+     signpost_object:         if nonzero, we're creating a signpost object.
+     signpost_str:            character string up to three characters to
+                              be displayed as signpost text.  May be null.
+     df_object:               if nonzero, this is a DF report object.
+     omni_df:                 if nonzero, it's an omnidirectional report and
+                              we need the SHGD string
+     beam_df:                 if nonzero, we're a beam reading DF report
+                              and need bearing and NRQ.
+     df_shgd:                 signal quality, etc. for omni DF
+     bearing:                 beam DF bearing
+     NRQ:                     beam width, etc. for beam df object
+     prob_circles:            if nonzero, we're a probability circles object,
+                              and expect prob_min and/or prob_max to be
+                              non-null.
+     prob_min, prob_max:      min and max radii of probability circles.  May
+                              be null (if both are null, this winds up being
+                              just another ordinary object)
+     is_object:               if nonzero, set this record's flag to have the
+                              ST_OBJECT bit set.  Otherwise, set ST_ITEM.
+     killed:                  if nonzero, unset the ST_ACTIVE flag.  Otherwise,
+                              set the ST_ACTIVE flag.
+*/
+DataRow *construct_object_item_data_row(char *name,
+                                        char *lat_str, char *lon_str,
+                                        char obj_group, char obj_symbol,
+                                        char *comment,
+                                        char *course,
+                                        char *speed,
+                                        char *altitude,
+                                        int area_object,
+                                        int area_type,
+                                        int area_filled,
+                                        char *area_color,
+                                        char *lat_offset_str,
+                                        char *lon_offset_str,
+                                        char *corridor,
+                                        int signpost_object,
+                                        char *signpost_str,
+                                        int df_object,
+                                        int omni_df,
+                                        int beam_df,
+                                        char *df_shgd,
+                                        char *bearing,
+                                        char *NRQ,
+                                        int prob_circles,
+                                        char *prob_min,
+                                        char *prob_max,
+                                        int is_object,
+                                        int killed)
+{
+  return NULL;
+}

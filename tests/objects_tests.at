@@ -1,0 +1,12 @@
+# Autotest tests for objects.c Functions
+# Tests for standalone utility functions from objects.c
+
+AT_BANNER([Object Functions])
+
+AT_BANNER([construct_object_item_data_row() tests])
+
+AT_SETUP([construct_object_item_data_row: returns null given no inputs])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_null_everything], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
