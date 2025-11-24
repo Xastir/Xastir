@@ -1128,6 +1128,14 @@ DataRow *construct_object_item_data_row(char *name,
       }
     }
     theDataRow->aprs_symbol.aprs_symbol = obj_symbol;
+    if (course && strlen(course) >= 1 && strlen(course)<=3 && atoi(course)>0 && atoi(course) <=360)
+    {
+      xastir_snprintf(theDataRow->course,sizeof(theDataRow->course),"%03d",atoi(course));
+    }
+    if (speed && strlen(speed) >= 1 && strlen(speed)<=3 )
+    {
+      xastir_snprintf(theDataRow->speed,sizeof(theDataRow->speed),"%3d",atoi(speed));
+    }
   }
   return theDataRow;
 }

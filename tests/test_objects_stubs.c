@@ -197,7 +197,6 @@ double cvt_kn2len;  // from knots
 double cvt_mi2len;  // from miles
 
 // stubs needed to get objects.c linked in:
-STUB_IMPL(compute_current_DR_position);
 STUB_IMPL(output_my_data);
 STUB_IMPL(langcode);
 STUB_IMPL(get_user_base_dir);
@@ -253,3 +252,11 @@ STUB_IMPL(output_igate_net)
 STUB_IMPL(output_igate_rf)
 STUB_IMPL(output_message)
 STUB_IMPL(output_nws_igate_rf)
+
+// Fake implementation of compute_current_DR_position, just returns
+// position of station without dead reckoning.
+void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat)
+{
+  *x_long = p_station->coord_lon;
+  *y_lat = p_station->coord_lat;
+}

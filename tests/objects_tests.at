@@ -34,3 +34,15 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_killed_item], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good simple object with speed,course])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_object_course_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good simple item with speed,course])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_item_course_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
