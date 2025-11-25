@@ -51,6 +51,8 @@ void move_station_time(DataRow *p_curr, DataRow *p_time);
 // forward declaration of a function present in db.c but not advertised by
 // any of the headers we include.
 void init_station(DataRow *p_station);
+int delete_comments_and_status(DataRow *fill);
+void add_comment(DataRow *p_station, char *comment_string);
 
 // Must be last include file
 #include "leak_detection.h"
@@ -1151,6 +1153,26 @@ DataRow *construct_object_item_data_row(char *name,
         xastir_snprintf(theDataRow->altitude,sizeof(theDataRow->altitude),"%.2f",alt_in_meters);
       }
     }
+    if (comment && strlen(comment)>0)
+    {
+      add_comment(theDataRow,comment);
+    }
   }
   return theDataRow;
+}
+//
+// this function is sufficient to deallocate a DataRow structure as created
+// by the previous function, which can only set the comment field.  The
+// comment field is a dynamically allocated string pointed to by a pointer
+// stored in the DataRow, so has to be deallocated before freeing the row
+// structure itself.  This is much simpler than the function station_del
+// in db.c, which must look up the record in a linked list, deallocate lots
+// of dynamic pieces, then call a function to unlink the record and then
+// deallocate it.  Don't call that one, because we aren't in the linked list
+// in the first place.
+//
+void destroy_object_item_data_row(DataRow *theDataRow)
+{
+  (void) delete_comments_and_status(theDataRow);
+  free(theDataRow);
 }

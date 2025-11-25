@@ -39,6 +39,7 @@
 
 //forward declaration of function not exported by objects.h (yet)
 int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length);
+void destroy_object_item_data_row(DataRow *theDataRow);
 
 int test_constructor_null_everything(void)
 {
@@ -110,7 +111,7 @@ int test_constructor_simple_object(void)
                      "Object string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -158,7 +159,7 @@ int test_constructor_simple_item(void)
                      "item string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -208,7 +209,7 @@ int test_constructor_simple_killed_object(void)
                      "Object string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -255,7 +256,7 @@ int test_constructor_simple_killed_item(void)
                      "item string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -307,7 +308,7 @@ int test_constructor_simple_object_course_speed(void)
                      "Object string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -356,7 +357,7 @@ int test_constructor_simple_item_course_speed(void)
                      "item string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -408,7 +409,7 @@ int test_constructor_simple_object_course_speed_alt(void)
                      "Object string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -458,7 +459,117 @@ int test_constructor_simple_item_course_speed_alt(void)
                      "item string correctly formatted");
 
   if (theDataRow)
-    free(theDataRow);
+    destroy_object_item_data_row(theDataRow);
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_simple_object_course_speed_alt_comment(void)
+{
+  DataRow *theDataRow;
+  long expect_lat = 90*60*60*100-(35*60+1.63)*60*100;
+  long expect_lon = 180*60*60*100-(106*60+12.38)*60*100;
+  char line[256];
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3501.63N",
+                                            "10612.38W", // lat/lon
+                                            '/','/',    // group, symbol
+                                            "A123456789012345678901234567890123456789012",         //comment
+                                            "90","5",      //course, speed
+                                            "100",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            0,          // prob circles
+                                            "","",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lat is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '/',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("090",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("  5",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("30.48",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT(theDataRow->comment_data,"Comment Data Pointer non-null");
+  TEST_ASSERT(theDataRow->comment_data->text_ptr,"Comment text Pointer non-null");
+  TEST_ASSERT_STR_EQ("A123456789012345678901234567890123456789012",theDataRow->comment_data->text_ptr,"Comment correctly stored");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3501.63N/10612.38W/090/005/A=000100A12345678901234567890123456",line,
+                     "Object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_simple_item_course_speed_alt_comment(void)
+{
+  DataRow *theDataRow;
+  long expect_lat = 90*60*60*100-(35*60+1.63)*60*100;
+  long expect_lon = 180*60*60*100-(106*60+12.38)*60*100;
+  char line[256];
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3501.63N",
+                                            "10612.38W", // lat/lon
+                                            '/','/',    // group, symbol
+                                            "A123456789012345678901234567890123456789012",         //comment
+                                            "90","5",      //course, speed
+                                            "100",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            0,          // prob circles
+                                            "","",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lat is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '/',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("090",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("  5",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("30.48",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT(theDataRow->comment_data,"Comment Data Pointer non-null");
+  TEST_ASSERT(theDataRow->comment_data->text_ptr,"Comment text Pointer non-null");
+  TEST_ASSERT_STR_EQ("A123456789012345678901234567890123456789012",theDataRow->comment_data->text_ptr,"Comment correctly stored");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+  TEST_ASSERT_STR_EQ(")TEST!3501.63N/10612.38W/090/005/A=000100A12345678901234567890123456",line,
+                     "item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
 
   TEST_PASS("construct_object_item_data_row");
 
@@ -482,6 +593,8 @@ int main(int argc, char *argv[])
     {"constructor_simple_item_course_speed",test_constructor_simple_item_course_speed},
     {"constructor_simple_object_course_speed_alt",test_constructor_simple_object_course_speed_alt},
     {"constructor_simple_item_course_speed_alt",test_constructor_simple_item_course_speed_alt},
+    {"constructor_simple_object_course_speed_alt_comment",test_constructor_simple_object_course_speed_alt_comment},
+    {"constructor_simple_item_course_speed_alt_comment",test_constructor_simple_item_course_speed_alt_comment},
     {NULL,NULL}
   };
 
