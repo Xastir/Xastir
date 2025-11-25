@@ -1013,8 +1013,14 @@ void log_object_item(char *line, int disable_object, char *object_name)
       comment:  A comment string up to 43 characters long.  May be null.
       course, speed:          course in degrees, speed in knots.  May be null.
                               must be no more than three digits.
-      altitude:               altitude in feet.  Will be converted to meters
-                              for storage in the record.
+      altitude:               altitude in feet.
+                              While the dialog prompts the user for altitude
+                              in feet, it gets converted into meters for
+                              storage in the DataRow comments per
+                              comments in database.h and as handled by
+                              functions in db.c.
+                              Create_object_item_tx_string converts back
+                              to feet for transmit.  Eep.
       area_object, area_type, area_filled:
                               If area_object is nonzero, we are doing an
                               area object and the following flags define
@@ -1135,6 +1141,15 @@ DataRow *construct_object_item_data_row(char *name,
     if (speed && strlen(speed) >= 1 && strlen(speed)<=3 )
     {
       xastir_snprintf(theDataRow->speed,sizeof(theDataRow->speed),"%3d",atoi(speed));
+    }
+    if (altitude && strlen(altitude) > 0)
+    {
+      long alt_in_feet=atoi(altitude);
+      if (alt_in_feet >=0 && alt_in_feet <= 999999)
+      {
+        double alt_in_meters=atof(altitude)*0.3048;
+        xastir_snprintf(theDataRow->altitude,sizeof(theDataRow->altitude),"%.2f",alt_in_meters);
+      }
     }
   }
   return theDataRow;
