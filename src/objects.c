@@ -1168,6 +1168,11 @@ DataRow *construct_object_item_data_row(char *name,
     if (area_object)
     {
 
+      // Enforce correct symbol.  Must be '\l', no overlay.
+      theDataRow->aprs_symbol.aprs_type='\\';
+      theDataRow->aprs_symbol.aprs_symbol='l';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+
       // Area objects are not allowed to have course/speed, clobber those
       // if they were given
       theDataRow->speed[0] = '\0';
@@ -1215,6 +1220,18 @@ DataRow *construct_object_item_data_row(char *name,
         {
           theDataRow->aprs_symbol.area_object.corridor_width = cwidth;
         }
+      }
+    }
+    else if (signpost_object)
+    {
+      // Enforce correct symbol.  Must be '\m', no overlay.
+      theDataRow->aprs_symbol.aprs_type='\\';
+      theDataRow->aprs_symbol.aprs_symbol='m';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+
+      if (signpost_str && strlen(signpost_str) >0 && strlen(signpost_str) <= 3)
+      {
+        xastir_snprintf(theDataRow->signpost,sizeof(theDataRow->signpost),"%s",signpost_str);
       }
     }
   }

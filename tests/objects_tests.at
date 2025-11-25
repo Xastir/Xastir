@@ -150,3 +150,29 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_offsets_alt], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for signposts])
+
+AT_SETUP([construct_object_item_data_row: returns good signpost with text])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_signpost_basic], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good signpost with text])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_signpost_basic], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good signpost with text and course/speed])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_signpost_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good signpost with text and course/speed])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_signpost_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
