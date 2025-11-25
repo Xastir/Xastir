@@ -991,7 +991,8 @@ void log_object_item(char *line, int disable_object, char *object_name)
   will abort with a fatal error if the memory allocation call fails.
 
   It is ASSUMED that the caller will have done all required sanity
-  checking on the name and latitude/longitude strings.  We do none of that.
+  checking on the name and latitude/longitude strings.  We do only very
+  basic checking here, mostly to avoid overrunning buffers.
 
   In order to get a valid pointer return, at least name, lat/lon_str,
   obj_group, and obj_symbol must be provided, in which case the object is
@@ -1102,6 +1103,11 @@ DataRow *construct_object_item_data_row(char *name,
     theDataRow = (DataRow *)calloc(1,sizeof(DataRow));
     CHECKMALLOC(theDataRow);
     init_station(theDataRow); // populate with defaults
+
+    //
+    // Generic data for all object types
+    //
+
     // Truncate name if necessary
     if (strlen(name) > sizeof(theDataRow->call_sign)-1)
     {
@@ -1156,6 +1162,60 @@ DataRow *construct_object_item_data_row(char *name,
     if (comment && strlen(comment)>0)
     {
       add_comment(theDataRow,comment);
+    }
+
+    // Specific data for fancier object types
+    if (area_object)
+    {
+
+      // Area objects are not allowed to have course/speed, clobber those
+      // if they were given
+      theDataRow->speed[0] = '\0';
+      theDataRow->course[0] = '\0';
+
+      if (area_filled && area_type != 1 && area_type != 6)
+      {
+        theDataRow->aprs_symbol.area_object.type = area_type+5;
+      }
+      else
+      {
+              theDataRow->aprs_symbol.area_object.type = area_type;
+      }
+      // here we assume that the area color has already been processed
+      // as far as correcting it for dim/bright by the caller, and that it
+      // is provided us *exactly* as it needs to be
+      theDataRow->aprs_symbol.area_object.color = area_color_from_string(area_color);
+
+      // The dialog asks the user to input the lat/lon offsets in 1/100 degree,
+      // but the value is actually stored as the integer part of the square
+      // root of the value input, because that's what's actually transmitted
+      // per spec.
+      if (lat_offset_str && strlen(lat_offset_str) != 0)
+      {
+        int lat_offset;
+        lat_offset = sqrt(atof(lat_offset_str));
+        if (lat_offset > 99)
+          lat_offset = 99;
+        theDataRow->aprs_symbol.area_object.sqrt_lat_off = lat_offset;
+      }
+      if (lon_offset_str && strlen(lon_offset_str) != 0)
+      {
+        int lon_offset;
+        lon_offset = sqrt(atof(lon_offset_str));
+        if (lon_offset > 99)
+          lon_offset = 99;
+        theDataRow->aprs_symbol.area_object.sqrt_lon_off = lon_offset;
+      }
+      // only line left and line right get this set:
+      if (corridor && strlen(corridor) != 0 &&
+          (area_type == AREA_LINE_LEFT || area_type == AREA_LINE_RIGHT))
+      {
+        unsigned int cwidth = atoi(corridor);
+        if (cwidth >0 && cwidth < 999)
+        {
+          theDataRow->aprs_symbol.area_object.corridor_width = cwidth;
+        }
+      }
     }
   }
   return theDataRow;

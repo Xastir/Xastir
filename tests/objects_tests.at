@@ -76,3 +76,77 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_item_course_speed_alt_comment], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for area objects/items])
+
+AT_SETUP([construct_object_item_data_row: returns good area object with minimal data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_basic], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area item with minimal data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_basic], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area object with course and speed incorrectly specified])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area item with course and speed incorrectly specified])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_speed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area object with offsets data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_offsets], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area item with offsets data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_offsets], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area object with offsets data input, filled circle])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_offsets_filled], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area item with offsets data input filled circle])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_offsets_filled], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good line area object with corridor data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_line_corridor], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good line area item with corridor data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_line_corridor], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area object with offsets and altitude data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_object_offsets_alt], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good area item with offsets and altitude data input])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_offsets_alt], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
