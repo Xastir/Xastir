@@ -176,3 +176,17 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_area_item_signpost_speed], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for omni-df objects])
+
+AT_SETUP([construct_object_item_data_row: returns good omni-df object])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_df_omni], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good omni-df item ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_df_omni], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP

@@ -1584,6 +1584,125 @@ int test_constructor_area_item_signpost_speed(void)
 
 }
 
+// Omni DF objects
+int test_constructor_object_df_omni(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','\\',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            1, 1, 0,    // df, omni, beam
+                                            "4133",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            0,          // prob circles
+                                            "","",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '\\',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("DFS4133",theDataRow->signal_gain, "signal/gain correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W\\DFS4133/",line,
+                     "area object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_item_df_omni(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','\\',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            1, 1, 0,    // df, omni, beam
+                                            "4133",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            0,          // prob circles
+                                            "","",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '\\',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("DFS4133",theDataRow->signal_gain, "signal/gain correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W\\DFS4133/",line,
+                     "area item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+
 
 /* Test runner */
 typedef struct {
@@ -1622,6 +1741,8 @@ int main(int argc, char *argv[])
     {"constructor_area_item_signpost_basic",test_constructor_area_item_signpost_basic},
     {"constructor_area_object_signpost_speed",test_constructor_area_object_signpost_speed},
     {"constructor_area_item_signpost_speed",test_constructor_area_item_signpost_speed},
+    {"constructor_object_df_omni",test_constructor_object_df_omni},
+    {"constructor_item_df_omni",test_constructor_item_df_omni},
     {NULL,NULL}
   };
 

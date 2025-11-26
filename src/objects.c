@@ -1234,6 +1234,20 @@ DataRow *construct_object_item_data_row(char *name,
         xastir_snprintf(theDataRow->signpost,sizeof(theDataRow->signpost),"%s",signpost_str);
       }
     }
+    else if (df_object)
+    {
+      // Enforce correct symbol.  Must be '/\', no overlay.
+      theDataRow->aprs_symbol.aprs_type='/';
+      theDataRow->aprs_symbol.aprs_symbol='\\';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+      if (omni_df)
+      {
+        if (df_shgd && strlen(df_shgd) == 4)
+        {
+          xastir_snprintf(theDataRow->signal_gain,sizeof(theDataRow->signal_gain),"DFS%s",df_shgd);
+        }
+      }
+    }
   }
   return theDataRow;
 }
