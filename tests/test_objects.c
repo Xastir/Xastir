@@ -677,7 +677,7 @@ int test_constructor_area_object_basic(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl000/800",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -733,7 +733,7 @@ int test_constructor_area_item_basic(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl000/800",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -796,7 +796,7 @@ int test_constructor_area_object_speed(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl000/800",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -856,7 +856,7 @@ int test_constructor_area_item_speed(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl000/800",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -917,7 +917,7 @@ int test_constructor_area_object_offsets(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl006/806",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -975,7 +975,7 @@ int test_constructor_area_item_offsets(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl006/806",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1037,7 +1037,7 @@ int test_constructor_area_object_line_corridor(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl106/406{1}",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1096,7 +1096,7 @@ int test_constructor_area_item_line_corridor(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl106/406{1}",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1158,7 +1158,7 @@ int test_constructor_area_object_offsets_filled(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl506/506",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1216,7 +1216,7 @@ int test_constructor_area_item_offsets_filled(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl506/506",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1278,7 +1278,7 @@ int test_constructor_area_object_offsets_alt(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wl006/806/A=000100",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1336,7 +1336,7 @@ int test_constructor_area_item_offsets_alt(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wl006/806/A=000100",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1401,7 +1401,7 @@ int test_constructor_area_object_signpost_basic(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wm{111}",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1458,7 +1458,7 @@ int test_constructor_area_item_signpost_basic(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wm{111}",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1517,7 +1517,7 @@ int test_constructor_area_object_signpost_speed(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N\\10617.83Wm090/005{111}",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1574,7 +1574,7 @@ int test_constructor_area_item_signpost_speed(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N\\10617.83Wm090/005{111}",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1636,7 +1636,7 @@ int test_constructor_object_df_omni(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W\\DFS4133/",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1693,7 +1693,7 @@ int test_constructor_item_df_omni(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W\\DFS4133/",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1755,7 +1755,7 @@ int test_constructor_object_df_beam(void)
   // coz it's in the middle of an existing string
   memcpy(&(line[11]),"111618z",7);
   TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W\\000/000/140/965",line,
-                     "area object string correctly formatted");
+                     "object string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1813,7 +1813,489 @@ int test_constructor_item_df_beam(void)
   Create_object_item_tx_string(theDataRow,line,sizeof(line));
 
   TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W\\000/000/140/965",line,
-                     "area item string correctly formatted");
+                     "item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+
+
+// Tests for probability circles
+// Probability circles are just like normal objects but they get a
+// bit of Xastir-specific text added to their comments reflecting radii.
+// beam DF objects
+int test_constructor_object_prob_circles_noring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "","",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W[",line,
+                     "object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_item_prob_circles_noring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "","",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W[",line,
+                     "item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_object_prob_circles_minring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "1","",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("1",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W[Pmin1,",line,
+                     "object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_item_prob_circles_minring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "1","",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("1",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W[Pmin1,",line,
+                     "item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_object_prob_circles_maxring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "","5",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("5",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W[Pmax5,",line,
+                     "object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_item_prob_circles_maxring(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "","5",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("5",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W[Pmax5,",line,
+                     "item string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_object_prob_circles_minmax(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "1","5",      // prob min, max
+                                            1,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_OBJECT, "Constructor creates object");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active object");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("1",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("5",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  // clobber the time with our standard fake time, don't worry about termination
+  // coz it's in the middle of an existing string
+  memcpy(&(line[11]),"111618z",7);
+  TEST_ASSERT_STR_EQ(";TEST     *111618z3502.64N/10617.83W[Pmin1,Pmax5,",line,
+                     "object string correctly formatted");
+
+  if (theDataRow)
+    destroy_object_item_data_row(theDataRow);
+
+
+  TEST_PASS("construct_object_item_data_row");
+
+}
+int test_constructor_item_prob_circles_minmax(void)
+{
+  DataRow *theDataRow;
+  // this is not *exactly* what convert_lon_s2l does, and so rounding can
+  // make us a little off.  These coords chosen because rounding does NOT
+  // bite us.
+  long expect_lat = 90*60*60*100-(35*60+2.644)*60*100;
+  long expect_lon = 180*60*60*100-((106*60+17.833)*60)*100;
+  char line[256];
+
+  theDataRow=construct_object_item_data_row("TEST",  // name
+                                            "3502.644N",
+                                            "10617.833W", // lat/lon
+                                            '/','[',    // group, symbol
+                                            "",         //comment
+                                            "","",      //course, speed
+                                            "",         //altitude
+                                            0,0,0,      //area, type, filled
+                                            "",         // area color
+                                            "","",      // offsets
+                                            "",         // corridor
+                                            0,          // signpost
+                                            "",         // signpost string
+                                            0, 0, 0,    // df, omni, beam
+                                            "",         // shgd
+                                            "",         //bearing
+                                            "",         // NRQ
+                                            1,          // prob circles
+                                            "1","5",      // prob min, max
+                                            0,          // is_object
+                                            0);         // killed
+  TEST_ASSERT(theDataRow, "Constructor returns valid pointer appropriately");
+  TEST_ASSERT_STR_EQ("TEST",theDataRow->call_sign,"Name populated correctly");
+  TEST_ASSERT(theDataRow->flag & ST_ITEM, "Constructor creates item");
+  TEST_ASSERT(theDataRow->flag & ST_ACTIVE, "Constructor creates active item");
+  TEST_ASSERT(theDataRow->coord_lat == expect_lat, "lat is correct");
+  TEST_ASSERT(theDataRow->coord_lon == expect_lon, "lon is correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_type == '/',"Symbol table correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.aprs_symbol == '[',"Symbol correct");
+  TEST_ASSERT(theDataRow->aprs_symbol.special_overlay == '\0',"overlay null");
+  TEST_ASSERT_STR_EQ("",theDataRow->course,"Course correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->speed,"Speed correct");
+  TEST_ASSERT_STR_EQ("",theDataRow->altitude,"Altitude correct in meters");
+  TEST_ASSERT_STR_EQ("1",theDataRow->probability_min,"Probability min correct");
+  TEST_ASSERT_STR_EQ("5",theDataRow->probability_max,"Probability max correct");
+
+  Create_object_item_tx_string(theDataRow,line,sizeof(line));
+
+  TEST_ASSERT_STR_EQ(")TEST!3502.64N/10617.83W[Pmin1,Pmax5,",line,
+                     "item string correctly formatted");
 
   if (theDataRow)
     destroy_object_item_data_row(theDataRow);
@@ -1865,6 +2347,14 @@ int main(int argc, char *argv[])
     {"constructor_item_df_omni",test_constructor_item_df_omni},
     {"constructor_object_df_beam",test_constructor_object_df_beam},
     {"constructor_item_df_beam",test_constructor_item_df_beam},
+    {"constructor_object_prob_circles_noring",test_constructor_object_prob_circles_noring},
+    {"constructor_item_prob_circles_noring",test_constructor_item_prob_circles_noring},
+    {"constructor_object_prob_circles_minring",test_constructor_object_prob_circles_minring},
+    {"constructor_item_prob_circles_minring",test_constructor_item_prob_circles_minring},
+    {"constructor_object_prob_circles_maxring",test_constructor_object_prob_circles_maxring},
+    {"constructor_item_prob_circles_maxring",test_constructor_item_prob_circles_maxring},
+    {"constructor_object_prob_circles_minmax",test_constructor_object_prob_circles_minmax},
+    {"constructor_item_prob_circles_minmax",test_constructor_item_prob_circles_minmax},
     {NULL,NULL}
   };
 

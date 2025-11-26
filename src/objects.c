@@ -1165,6 +1165,22 @@ DataRow *construct_object_item_data_row(char *name,
     }
 
     // Specific data for fancier object types
+    if (prob_circles)
+    {
+      if (prob_min && strlen(prob_min)>0)
+      {
+        xastir_snprintf(theDataRow->probability_min,
+                        sizeof(theDataRow->probability_min),
+                        "%s", prob_min);
+      }
+      if (prob_max && strlen(prob_max)>0)
+      {
+        xastir_snprintf(theDataRow->probability_max,
+                        sizeof(theDataRow->probability_max),
+                        "%s", prob_max);
+      }
+    }
+
     if (area_object)
     {
 

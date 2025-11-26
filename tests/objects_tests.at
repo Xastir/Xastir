@@ -204,3 +204,54 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_df_beam], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for probability ring objects])
+AT_SETUP([construct_object_item_data_row: returns good probability ring object with no radii])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_prob_circles_noring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring item with no radii ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_prob_circles_noring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for probability ring objects])
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring object with only min radius])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_prob_circles_minring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring item with only min radius ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_prob_circles_minring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring object with only max radius])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_prob_circles_maxring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring item with only max radius ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_prob_circles_maxring], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring object with min and max radius])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_prob_circles_minmax], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good probability ring item with min and max radius ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_prob_circles_minmax], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
