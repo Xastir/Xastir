@@ -102,6 +102,37 @@ XtPointer global_parameter2 = (XtPointer)NULL;
 
 int doing_move_operation = 0;
 
+// forward declare function to read object/item dialog box values
+int Read_object_item_dialog_values(char *name, size_t name_size,
+                                   char *lat_str, size_t lat_str_size,
+                                   char *ext_lat_str, size_t ext_lat_str_size,
+                                   char *lon_str, size_t lon_str_size,
+                                   char *ext_lon_str, size_t ext_lon_str_size,
+                                   char *obj_group, char *obj_symbol,
+                                   char *comment, size_t comment_size,
+                                   char *course, size_t course_size,
+                                   char *speed, size_t speed_size,
+                                   char *altitude, size_t altitude_size,
+                                   int *area_object, int *area_type,
+                                   int *area_filled,
+                                   char *area_color, size_t area_color_size,
+                                   char *lat_offset_str,
+                                   size_t lat_offset_str_size,
+                                   char *lon_offset_str,
+                                   size_t lon_offset_str_size,
+                                   char *corridor, size_t corridor_size,
+                                   int *signpost_object,
+                                   char *signpost_str, size_t signpost_str_size,
+                                   int *df_object,
+                                   int *omni_df,
+                                   int *beam_df,
+                                   char *df_shgd, size_t df_shgd_size,
+                                   char *bearing, size_t bearing_size,
+                                   char *NRQ, size_t NRQ_size,
+                                   int *prob_circles,
+                                   char *prob_min, size_t prob_min_size,
+                                   char *prob_max, size_t prob_max_size
+                                   );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -270,9 +301,139 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
   int DR = 0; // Dead-reckoning flag
   int comment_field_used = 0;   // Amount of comment field used up
 
+  char experimental_line[84];
+    // This block is experimental code and we want to be able to discard
+  // everything it sets when the block ends
+  {
+    char name[MAX_CALLSIGN+1];
+    char obj_group, obj_symbol;
+    char experimental_lat_str[MAX_LAT];
+    char experimental_lon_str[MAX_LONG];
+    char experimental_ext_lat_str[20];
+    char experimental_ext_lon_str[20];
+    char experimental_comment[43+1];
+    char experimental_course[MAX_COURSE+1];
+    char experimental_speed[MAX_SPEED+1];
+    char experimental_altitude[MAX_ALTITUDE];
+    int area_object, area_type,area_filled;
+    char area_color[3];
+    char lat_offset_str[5];
+    char lon_offset_str[5];
+    char corridor[4];
+    int signpost_object;
+    char signpost_str[4];
+    int df_object, omni_df, beam_df;
+    char df_shgd[MAX_POWERGAIN+1];
+    char bearing[MAX_COURSE+1];
+    char NRQ[MAX_COURSE+1];
+    int prob_circles;
+    char prob_min[10+1];
+    char prob_max[10+1];
+    DataRow *theDataRow;
 
-  //fprintf(stderr,"Setup_object_data\n");
+    if (Read_object_item_dialog_values(name, sizeof(name),
+                                       experimental_lat_str, sizeof(experimental_lat_str),
+                                       experimental_ext_lat_str, sizeof(experimental_ext_lat_str),
+                                       experimental_lon_str, sizeof(experimental_lon_str),
+                                       experimental_ext_lon_str, sizeof(experimental_ext_lon_str),
+                                       &obj_group, &obj_symbol,
+                                       experimental_comment, sizeof(experimental_comment),
+                                       experimental_course, sizeof(experimental_course),
+                                       experimental_speed, sizeof(experimental_speed),
+                                       experimental_altitude, sizeof(experimental_altitude),
+                                       &area_object, &area_type,
+                                       &area_filled,
+                                       area_color, sizeof(area_color),
+                                       lat_offset_str, sizeof(lat_offset_str),
+                                       lon_offset_str, sizeof(lon_offset_str),
+                                       corridor, sizeof(corridor),
+                                       &signpost_object,
+                                       signpost_str, sizeof(signpost_str),
+                                       &df_object, &omni_df, &beam_df,
+                                       df_shgd, sizeof(df_shgd),
+                                       bearing, sizeof(bearing),
+                                       NRQ, sizeof(NRQ),
+                                       &prob_circles,
+                                       prob_min, sizeof(prob_min),
+                                       prob_max, sizeof(prob_max)))
+    {
+      fprintf(stderr,"Yahoo!  We just read in ALL THE THINGS\n");
+      fprintf(stderr,"name: '%s'\n",name);
+      fprintf(stderr,"lat: '%s' (%s), lon '%s' (%s)\n",experimental_lat_str,
+              experimental_ext_lat_str, experimental_lon_str,
+              experimental_ext_lon_str);
+      fprintf(stderr,"symbol: '%c%c'\n",obj_group, obj_symbol);
+      fprintf(stderr,"Comment: '%s'\n",experimental_comment);
+      fprintf(stderr,"course: '%s'   speed: '%s'\n",experimental_course,
+              experimental_speed);
+      fprintf(stderr,"Altitude: '%s'\n",experimental_altitude);
+      fprintf(stderr,"area_obj: '%d'  area_type: '%d', area_filled: '%d'\n",
+              area_object, area_type, area_filled);
+      fprintf(stderr,"Area color: '%s'\n",area_color);
+      fprintf(stderr,"lat/lon offsets: '%s', '%s'\n",lat_offset_str, lon_offset_str);
+      fprintf(stderr,"corridor: '%s'\n",corridor);
+      fprintf(stderr,"signpost_object: '%d'\n",signpost_object);
+      fprintf(stderr,"signpost_str: '%s'\n",signpost_str);
+      fprintf(stderr,"df_object: '%d', omni_df: '%d', beam_df: '%d'\n",df_object, omni_df, beam_df);
+      fprintf(stderr,"df_shgd: '%s'\n",df_shgd);
+      fprintf(stderr,"bearing: '%s'\n",bearing);
+      fprintf(stderr,"NRQ: '%s'\n",NRQ);
+      fprintf(stderr,"prob_circles: '%d'\n",prob_circles);
+      fprintf(stderr,"prob_min: '%s'\n",prob_min);
+      fprintf(stderr,"prob_max: '%s'\n",prob_max);
 
+      if (p_station != NULL)
+      {
+        speed = atoi(p_station->speed);
+        if (speed > 0 && !doing_move_operation)
+        {
+          fprintf(stderr,"But hark!  we are given an exisiting record with as speed and we're not moving the station, so let's clobber lat/lon with dead reckoning!");
+          fetch_current_DR_strings(p_station,
+                                   experimental_lat_str,
+                                   experimental_lon_str,
+                                   experimental_ext_lat_str,
+                                   experimental_ext_lon_str);
+        }
+      }
+
+      fprintf(stderr,"Attempting to create data row...");
+      theDataRow=construct_object_item_data_row(name,
+                                                experimental_ext_lat_str,
+                                                experimental_ext_lon_str,
+                                                obj_group, obj_symbol,
+                                                experimental_comment,
+                                                experimental_course,
+                                                experimental_speed,
+                                                experimental_altitude,
+                                                area_object, area_type,
+                                                area_filled,
+                                                area_color,
+                                                lat_offset_str,
+                                                lon_offset_str,
+                                                corridor,
+                                                signpost_object,
+                                                signpost_str,
+                                                df_object, omni_df, beam_df,
+                                                df_shgd,
+                                                bearing, NRQ,
+                                                prob_circles,
+                                                prob_min, prob_max,
+                                                1, 0);
+      if (theDataRow)
+      {
+        fprintf(stderr,"BOOYAH!\n");
+        (void)Create_object_item_tx_string(theDataRow, experimental_line,
+                                           sizeof(experimental_line));
+        fprintf(stderr,"Would be transmitting '%s' from new method\n",
+                experimental_line);
+        destroy_object_item_data_row(theDataRow);
+      }
+      else
+      {
+        fprintf(stderr,"BOO!\n");
+      }
+    }
+  }
   // If speed for the original object was non-zero, then we need
   // to snag the updated DR'ed position for the object.  Snag the
   // current DR position and build the strings we need // for
@@ -1095,11 +1256,11 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
       comment_field_used++;
     }
   }
-  //fprintf(stderr,"line: %s\n",line);
 
 // NOTE:  Compressed mode will be shorter still.  Account
 // for that when compressed mode is implemented for objects.
 
+  fprintf(stderr,"But we transmit '%s' old way\n",line);
   return(1);
 }
 
@@ -7412,3 +7573,330 @@ void reload_object_item(void)
 }
 
 
+//
+// This function was extracted from the original implementation of
+// Setup_object_data.  It reads all the values out of the Object/Item
+// create/modify dialog box and populates the buffers provided.
+//
+// Notes:
+//    while most of these 'char *' arguments are intended to be char arrays
+//    of appropriate size, obj_group and obj_symbols are pointers to a
+//    'char' variable, not an array.  This is so they'll be passed by reference
+//    and we can return values in them.
+//
+// Per the original implementation, we return both the low-precision and
+// high-precision lat/lon strings.  The caller will decide which to use.
+//
+// Note that ALL char arrays passed in have their associated buffer size
+// passed in with them, so we can always make sure we don't overrun them.
+//
+// Function returns 1 if all values read
+// Function returns 0 if any value determined to be invalid.
+//
+
+int Read_object_item_dialog_values(char *name, size_t name_size,
+                                   char *lat_str, size_t lat_str_size,
+                                   char *ext_lat_str, size_t ext_lat_str_size,
+                                   char *lon_str, size_t lon_str_size,
+                                   char *ext_lon_str, size_t ext_lon_str_size,
+                                   char *obj_group, char *obj_symbol,
+                                   char *comment, size_t comment_size,
+                                   char *course, size_t course_size,
+                                   char *speed, size_t speed_size,
+                                   char *altitude, size_t altitude_size,
+                                   int *area_object, int *area_type,
+                                   int *area_filled,
+                                   char *area_color, size_t area_color_size,
+                                   char *lat_offset_str,
+                                   size_t lat_offset_str_size,
+                                   char *lon_offset_str,
+                                   size_t lon_offset_str_size,
+                                   char *corridor, size_t corridor_size,
+                                   int *signpost_object,
+                                   char *signpost_str, size_t signpost_str_size,
+                                   int *df_object,
+                                   int *omni_df,
+                                   int *beam_df,
+                                   char *df_shgd, size_t df_shgd_size,
+                                   char *bearing, size_t bearing_size,
+                                   char *NRQ, size_t NRQ_size,
+                                   int *prob_circles,
+                                   char *prob_min, size_t prob_min_size,
+                                   char *prob_max, size_t prob_max_size
+                                   )
+{
+  char *tmp_ptr;
+  // components of lat/lon
+  char hemisphere;
+  int degrees;
+  double minutes;
+
+  // Initialize all the things
+  name[0] = lat_str[0] = ext_lat_str[0] = lon_str[0] = ext_lon_str[0] = '\0';
+  *obj_group = *obj_symbol = '\0';
+  comment[0] = course[0] = speed[0] = altitude[0] = '\0';
+  *area_object = *area_type = *area_filled = '\0';
+  area_color[0] = lat_offset_str[0] = lon_offset_str[0] = corridor[0] = '\0';
+  *signpost_object = 0;
+  signpost_str[0] = '\0';
+  *df_object = *omni_df = *beam_df = 0;
+  df_shgd[0] = bearing[0] = NRQ[0] = '\0';
+  *prob_circles = 0;
+  prob_min[0] = prob_max[0] = '\0';
+
+  // ----------------------------------------------------------------
+  // All the generic data fields
+  // name
+  tmp_ptr = XmTextFieldGetString(object_name_data);
+  xastir_snprintf(name,name_size,"%s",tmp_ptr);
+  XtFree(tmp_ptr);
+  (void) remove_trailing_spaces(name);
+
+  // assemble latitude
+  tmp_ptr = XmTextFieldGetString(object_lat_data_ns);
+  if ((char)toupper((int)(tmp_ptr[0])) == 'S')
+    hemisphere='S';
+  else
+    hemisphere='N';
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(object_lat_data_deg);
+  degrees=atoi(tmp_ptr);
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(object_lat_data_min);
+  minutes=atof(tmp_ptr);
+  XtFree(tmp_ptr);
+
+  // Check latitude validity
+  if ((degrees > 90) || (degrees < 0))
+    return (0);
+  if ((minutes >= 60.0) || (minutes < 0.0))
+    return (0);
+
+  if ((degrees == 90) && (minutes != 0.0))
+    return (0);
+
+  // Format both low and high precision versions.
+  xastir_snprintf(lat_str,lat_str_size, "%02d%05.2f%c",
+                  degrees, minutes, hemisphere);
+  xastir_snprintf(ext_lat_str,ext_lat_str_size, "%02d%06.3f%c",
+                  degrees, minutes, hemisphere);
+
+  // assemble longitude
+  tmp_ptr = XmTextFieldGetString(object_lon_data_ew);
+  if ((char)toupper((int)(tmp_ptr[0])) == 'E')
+    hemisphere='E';
+  else
+    hemisphere='W';
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(object_lon_data_deg);
+  degrees=atoi(tmp_ptr);
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(object_lon_data_min);
+  minutes=atof(tmp_ptr);
+  XtFree(tmp_ptr);
+
+  // Check longitude validity
+  if ((degrees > 180) || (degrees < 0))
+    return (0);
+  if ((minutes >= 60.0) || (minutes < 0.0))
+    return (0);
+
+  if ((degrees == 180) && (minutes != 0.0))
+    return (0);
+
+  // Format both low and high precision versions.
+  xastir_snprintf(lon_str,lon_str_size, "%03d%05.2f%c",
+                  degrees, minutes, hemisphere);
+  xastir_snprintf(ext_lon_str,ext_lon_str_size, "%03d%06.3f%c",
+                  degrees, minutes, hemisphere);
+
+  // Get symbol
+  // We don't bother processing the group other than to upcase it.
+  // Handling of whether this is an overlay character or not is taken care
+  // of by construct_object_item_data_row.
+  tmp_ptr = XmTextFieldGetString(object_group_data);
+  if (isalpha((int)tmp_ptr[0]))
+    *obj_group = toupper((int)(tmp_ptr[0]));
+  else
+    *obj_group = tmp_ptr[0];
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(object_symbol_data);
+  *obj_symbol = tmp_ptr[0];
+  XtFree(tmp_ptr);
+
+  // Get the comment
+  tmp_ptr = XmTextFieldGetString(object_comment_data);
+  if (tmp_ptr[0] == '}')
+  {
+    // this is a multiline comment, but thoseshould start with a space,
+    // so add one
+    xastir_snprintf(comment,comment_size," %s",tmp_ptr);
+  }
+  else
+  {
+    xastir_snprintf(comment,comment_size,"%s",tmp_ptr);
+  }
+  XtFree(tmp_ptr);
+
+  (void)remove_trailing_spaces(comment);
+
+  // course/speed
+  tmp_ptr = XmTextFieldGetString(ob_course_data);
+  if (strlen(tmp_ptr) != 0)
+  {
+    int tmp_int = atoi(tmp_ptr);
+    tmp_int = (tmp_int==0)?360:tmp_int;
+    if (tmp_int >=1 && tmp_int <= 360)
+    {
+      xastir_snprintf(course, course_size,"%03d",tmp_int);
+    }
+  }
+  else
+  {
+    course[0]='\0';
+  }
+  XtFree(tmp_ptr);
+
+  tmp_ptr = XmTextFieldGetString(ob_speed_data);
+  if (strlen(tmp_ptr) != 0)
+  {
+    int tmp_int = atoi(tmp_ptr);
+    if (tmp_int >=0 && tmp_int <= 999)
+    {
+      xastir_snprintf(speed, speed_size,"%3d",tmp_int);
+    }
+  }
+  else
+  {
+    speed[0]='\0';
+  }
+  XtFree(tmp_ptr);
+
+  // Altitude
+  tmp_ptr = XmTextFieldGetString(ob_altitude_data);
+  if (strlen(tmp_ptr) != 0)
+  {
+    if (isdigit((int)tmp_ptr[0]))
+    {
+      long tmp_int=atoi(tmp_ptr);
+      if (tmp_int >= 0 && tmp_int <= 999999)
+        xastir_snprintf(altitude,altitude_size,"%06ld",tmp_int);
+    }
+  }
+  XtFree(tmp_ptr);
+
+  // ----------------------------------------------------------------
+  // Now handle fields that are only to be read under certain conditions:
+  // ----------------------------------------------------------------
+
+  if (Area_object_enabled)
+  {
+    *area_object=1;
+    // ----------------------------------------------------------------
+    // Area objects
+    // The "Area_" variables are globals that are set by other callback
+    // functions and represent values from radio and check buttons.
+    // ----------------------------------------------------------------
+    format_area_color_from_dialog(area_color,area_color_size,
+                                  Area_color, Area_bright);
+    *area_type = Area_type;
+    *area_filled = Area_filled;
+
+    // don't take the square root here, the function that processes this input
+    // will do that.
+    tmp_ptr = XmTextFieldGetString(ob_lat_offset_data);
+    if (strlen(tmp_ptr) != 0)
+    {
+      xastir_snprintf(lat_offset_str,lat_offset_str_size,"%s",tmp_ptr);
+    }
+    XtFree(tmp_ptr);
+    tmp_ptr = XmTextFieldGetString(ob_lon_offset_data);
+    if (strlen(tmp_ptr) != 0)
+    {
+      xastir_snprintf(lon_offset_str,lon_offset_str_size,"%s",tmp_ptr);
+    }
+    XtFree(tmp_ptr);
+
+    if (Area_type == 1 || Area_type == 6)
+    {
+      tmp_ptr = XmTextFieldGetString(ob_corridor_data);
+      if (strlen(tmp_ptr) != 0)
+      {
+        int tmp_int = atoi(tmp_ptr);
+        if (tmp_int >0 && tmp_int <= 999)
+        {
+          xastir_snprintf(corridor,corridor_size,"%d",tmp_int);
+        }
+      }
+      XtFree(tmp_ptr);
+    }
+  }
+  else if (Signpost_object_enabled)
+  {
+    *signpost_object = 1;
+    tmp_ptr = XmTextFieldGetString(signpost_data);
+    if (strlen(tmp_ptr) >= 0 && strlen(tmp_ptr) <= 3)
+    {
+      xastir_snprintf(signpost_str,signpost_str_size,"%s",tmp_ptr);
+    }
+    XtFree(tmp_ptr);
+  }
+  else if (DF_object_enabled)
+  {
+    // ----------------------------------------------------------------
+    // DF objects
+    // ----------------------------------------------------------------
+    *df_object=1;
+
+    if (Omni_antenna_enabled)
+    {
+      // The Omni_antenna_enabled variable is a global set by other callback
+      // functions, and "object_shgd" is also set from callbacks using
+      // values from the dialog box check- and radio-buttons.
+      *omni_df=1;
+      xastir_snprintf(df_shgd,df_shgd_size,"%s",object_shgd);
+    }
+    else // it's a beam-df
+    {
+      int tmp_int;
+      // In this case, "object_NRQ" is a global being set by callbacks.
+      *beam_df = 1;
+      tmp_ptr = XmTextFieldGetString(ob_bearing_data);
+      tmp_int = atoi(tmp_ptr);
+      XtFree(tmp_ptr);
+
+      if (tmp_int < 1 || tmp_int > 360)
+        tmp_int = 360;
+      xastir_snprintf(bearing,bearing_size,"%03d",tmp_int);
+
+      xastir_snprintf(NRQ,NRQ_size,"%s",object_NRQ);
+    }
+  }
+  else      // just a normal object, but could have probability circles
+  {
+    if (Probability_circles_enabled)
+    {
+      *prob_circles = 1;
+      tmp_ptr = XmTextFieldGetString(probability_data_min);
+      if (strlen(tmp_ptr)!=0)
+      {
+        xastir_snprintf(prob_min,prob_min_size,"%s",tmp_ptr);
+      }
+      XtFree(tmp_ptr);
+      tmp_ptr = XmTextFieldGetString(probability_data_max);
+      if (strlen(tmp_ptr)!=0)
+      {
+        xastir_snprintf(prob_max,prob_max_size,"%s",tmp_ptr);
+      }
+      XtFree(tmp_ptr);
+    }
+  }
+
+  return(1);
+
+}
