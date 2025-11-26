@@ -1247,6 +1247,18 @@ DataRow *construct_object_item_data_row(char *name,
           xastir_snprintf(theDataRow->signal_gain,sizeof(theDataRow->signal_gain),"DFS%s",df_shgd);
         }
       }
+      else if (NRQ && strlen(NRQ) != 0)  // must be a beam df object
+      {
+        // now we are just presuming the bearing is set, coz that's what
+        // the gui code already does
+        int bearing_value=atoi(bearing);
+        if (bearing_value < 1 || bearing_value > 360)
+        {
+          bearing_value=360;
+        }
+        xastir_snprintf(theDataRow->bearing,sizeof(theDataRow->bearing),"%03d",bearing_value);
+        xastir_snprintf(theDataRow->NRQ,sizeof(theDataRow->NRQ),"%3s",NRQ);
+      }
     }
   }
   return theDataRow;

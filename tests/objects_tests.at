@@ -190,3 +190,17 @@ AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_df_omni], [0], [PASS: construct_object_item_data_row
 ])
 AT_CLEANUP
+
+AT_BANNER([construct_object_item_data_row() tests for beam-df objects])
+
+AT_SETUP([construct_object_item_data_row: returns good omni-df object])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_object_df_beam], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good beam-df item ])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_item_df_beam], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
