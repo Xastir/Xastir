@@ -48,6 +48,12 @@
 
 void move_station_time(DataRow *p_curr, DataRow *p_time);
 
+// forward declaration of a function present in db.c but not advertised by
+// any of the headers we include.
+void init_station(DataRow *p_station);
+int delete_comments_and_status(DataRow *fill);
+void add_comment(DataRow *p_station, char *comment_string);
+
 // Must be last include file
 #include "leak_detection.h"
 
@@ -967,5 +973,330 @@ void log_object_item(char *line, int disable_object, char *object_name)
 }
 
 
+/*
+  This function exists to take all the strings that are obtained
+  directly from the Object/Item create/modify dialog box and create a
+  stand-alone DataRow structure that can be read by
+  Create_object_item_tx_string to craft a correctly formatted object
+  or item packet.
 
+  Some of the character strings in the argument list will be null
+  strings, either because the user left them blank or because they
+  don't apply to the object type being created.
 
+  The integer types here are all booleans that reflect the settings of
+  toggle buttons in the dialog.
+
+  This function will return a null pointer if the name string is empty.  It
+  will abort with a fatal error if the memory allocation call fails.
+
+  It is ASSUMED that the caller will have done all required sanity
+  checking on the name and latitude/longitude strings.  We do only very
+  basic checking here, mostly to avoid overrunning buffers.
+
+  In order to get a valid pointer return, at least name, lat/lon_str,
+  obj_group, and obj_symbol must be provided, in which case the object is
+  just a simple static object.
+
+  Parameters:
+      name:   the object or item name with trailing spaces deleted
+      lat_str,lon_str:  latitude and longitude in DDMM.MM[M]H/DDDMM.MM[M]H
+                        format.  They will be converted to Xastir coordinates
+                        before storage in the data row.
+      obj_group, obj_symbol: The group and symbol taken from the
+                              dialog box.  if obj_group is neither '/'
+                              nor '\' then it must be a valid overlay
+                              character, the upper case letters A-Z or
+                              digits 0-9.  The actual group stored in
+                              the record as the object symbol group
+                              will be '\' and the group given will be
+                              stored instead in the overlay field.
+                              If the overlay character is invalid, it will be
+                              ignored and we'll just use '\' as the group.
+      comment:  A comment string up to 43 characters long.  May be null.
+      course, speed:          course in degrees, speed in knots.  May be null.
+                              must be no more than three digits.
+      altitude:               altitude in feet.
+                              While the dialog prompts the user for altitude
+                              in feet, it gets converted into meters for
+                              storage in the DataRow comments per
+                              comments in database.h and as handled by
+                              functions in db.c.
+                              Create_object_item_tx_string converts back
+                              to feet for transmit.  Eep.
+      area_object, area_type, area_filled:
+                              If area_object is nonzero, we are doing an
+                              area object and the following flags define
+                              the type (0-15) and whether or not it's filled.
+     area_color:              two character color string /0 through 15.
+     lat_offset_str, lon_offset_str:
+                              latitude and longitude offset values in 1/100
+                              of a degree.  The actual value stored will be
+                              the square root of this number.  May be null.
+     corridor:                optional three digit corridor used only by
+                              area object types 1 and 6 (lines left and right)
+     signpost_object:         if nonzero, we're creating a signpost object.
+     signpost_str:            character string up to three characters to
+                              be displayed as signpost text.  May be null.
+     df_object:               if nonzero, this is a DF report object.
+     omni_df:                 if nonzero, it's an omnidirectional report and
+                              we need the SHGD string
+     beam_df:                 if nonzero, we're a beam reading DF report
+                              and need bearing and NRQ.
+     df_shgd:                 signal quality, etc. for omni DF
+     bearing:                 beam DF bearing
+     NRQ:                     beam width, etc. for beam df object
+     prob_circles:            if nonzero, we're a probability circles object,
+                              and expect prob_min and/or prob_max to be
+                              non-null.
+     prob_min, prob_max:      min and max radii of probability circles.  May
+                              be null (if both are null, this winds up being
+                              just another ordinary object)
+     is_object:               if nonzero, set this record's flag to have the
+                              ST_OBJECT bit set.  Otherwise, set ST_ITEM.
+     killed:                  if nonzero, unset the ST_ACTIVE flag.  Otherwise,
+                              set the ST_ACTIVE flag.
+
+    THIS FUNCTION ALLOCATES DATA THAT MUST BE FREED.
+    DO NOT USE THE STATION DELETE FUNCTIONS IN DB.C BECAUSE THEY PRESUME
+    THE RECORD IS LINKED INTO THE LINKED LISTS, AND THESE WILL NOT BE.
+
+    This function is in objects.c and not db.c because it is intended ONLY
+    as a function for preparing a fake record to be used in object packet
+    creation, which will then be discarded after the string is created.
+*/
+DataRow *construct_object_item_data_row(char *name,
+                                        char *lat_str, char *lon_str,
+                                        char obj_group, char obj_symbol,
+                                        char *comment,
+                                        char *course,
+                                        char *speed,
+                                        char *altitude,
+                                        int area_object,
+                                        int area_type,
+                                        int area_filled,
+                                        char *area_color,
+                                        char *lat_offset_str,
+                                        char *lon_offset_str,
+                                        char *corridor,
+                                        int signpost_object,
+                                        char *signpost_str,
+                                        int df_object,
+                                        int omni_df,
+                                        int beam_df,
+                                        char *df_shgd,
+                                        char *bearing,
+                                        char *NRQ,
+                                        int prob_circles,
+                                        char *prob_min,
+                                        char *prob_max,
+                                        int is_object,
+                                        int killed)
+{
+  DataRow *theDataRow = NULL;
+  // if we have these three strings and they're not null, go ahead and try
+  // to do the thing.  We are ASSUMING the caller has already taken care
+  // of sanity checking them.
+  if (name!=NULL && lat_str != NULL && lon_str != NULL &&
+      strlen(name) != 0 && strlen(lat_str) != 0 && strlen(lon_str) != 0)
+  {
+    theDataRow = (DataRow *)calloc(1,sizeof(DataRow));
+    CHECKMALLOC(theDataRow);
+    init_station(theDataRow); // populate with defaults
+
+    //
+    // Generic data for all object types
+    //
+
+    // Truncate name if necessary
+    if (strlen(name) > sizeof(theDataRow->call_sign)-1)
+    {
+      name[sizeof(theDataRow->call_sign)-1] = '\0';
+    }
+    strncpy(theDataRow->call_sign,name,sizeof(theDataRow->call_sign)-1);
+
+    theDataRow->coord_lat = convert_lat_s2l(lat_str);
+    theDataRow->coord_lon = convert_lon_s2l(lon_str);
+    theDataRow->flag |= (is_object)?(ST_OBJECT):(ST_ITEM);
+
+    if (killed)
+      theDataRow->flag &= ~ST_ACTIVE;
+    else
+      theDataRow->flag |= ST_ACTIVE;
+
+    if (obj_group == '/' || obj_group == '\\')
+    {
+      theDataRow->aprs_symbol.aprs_type=obj_group;
+    }
+    else
+    {
+      theDataRow->aprs_symbol.aprs_type='\\';
+      if ((obj_group >= 'A' && obj_group <= 'Z')
+          || (obj_group >= '0' && obj_group <= '9'))
+      {
+        theDataRow->aprs_symbol.special_overlay = obj_group;
+      }
+      else
+      {
+        theDataRow->aprs_symbol.special_overlay = '\0';
+      }
+    }
+    theDataRow->aprs_symbol.aprs_symbol = obj_symbol;
+    if (course && strlen(course) >= 1 && strlen(course)<=3 && atoi(course)>0 && atoi(course) <=360)
+    {
+      xastir_snprintf(theDataRow->course,sizeof(theDataRow->course),"%03d",atoi(course));
+    }
+    if (speed && strlen(speed) >= 1 && strlen(speed)<=3 )
+    {
+      xastir_snprintf(theDataRow->speed,sizeof(theDataRow->speed),"%3d",atoi(speed));
+    }
+    if (altitude && strlen(altitude) > 0)
+    {
+      long alt_in_feet=atoi(altitude);
+      if (alt_in_feet >=0 && alt_in_feet <= 999999)
+      {
+        double alt_in_meters=atof(altitude)*0.3048;
+        xastir_snprintf(theDataRow->altitude,sizeof(theDataRow->altitude),"%.2f",alt_in_meters);
+      }
+    }
+    if (comment && strlen(comment)>0)
+    {
+      add_comment(theDataRow,comment);
+    }
+
+    // Specific data for fancier object types
+    if (prob_circles)
+    {
+      if (prob_min && strlen(prob_min)>0)
+      {
+        xastir_snprintf(theDataRow->probability_min,
+                        sizeof(theDataRow->probability_min),
+                        "%s", prob_min);
+      }
+      if (prob_max && strlen(prob_max)>0)
+      {
+        xastir_snprintf(theDataRow->probability_max,
+                        sizeof(theDataRow->probability_max),
+                        "%s", prob_max);
+      }
+    }
+
+    if (area_object)
+    {
+
+      // Enforce correct symbol.  Must be '\l', no overlay.
+      theDataRow->aprs_symbol.aprs_type='\\';
+      theDataRow->aprs_symbol.aprs_symbol='l';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+
+      // Area objects are not allowed to have course/speed, clobber those
+      // if they were given
+      theDataRow->speed[0] = '\0';
+      theDataRow->course[0] = '\0';
+
+      if (area_filled && area_type != 1 && area_type != 6)
+      {
+        theDataRow->aprs_symbol.area_object.type = area_type+5;
+      }
+      else
+      {
+              theDataRow->aprs_symbol.area_object.type = area_type;
+      }
+      // here we assume that the area color has already been processed
+      // as far as correcting it for dim/bright by the caller, and that it
+      // is provided us *exactly* as it needs to be
+      theDataRow->aprs_symbol.area_object.color = area_color_from_string(area_color);
+
+      // The dialog asks the user to input the lat/lon offsets in 1/100 degree,
+      // but the value is actually stored as the integer part of the square
+      // root of the value input, because that's what's actually transmitted
+      // per spec.
+      if (lat_offset_str && strlen(lat_offset_str) != 0)
+      {
+        int lat_offset;
+        lat_offset = sqrt(atof(lat_offset_str));
+        if (lat_offset > 99)
+          lat_offset = 99;
+        theDataRow->aprs_symbol.area_object.sqrt_lat_off = lat_offset;
+      }
+      if (lon_offset_str && strlen(lon_offset_str) != 0)
+      {
+        int lon_offset;
+        lon_offset = sqrt(atof(lon_offset_str));
+        if (lon_offset > 99)
+          lon_offset = 99;
+        theDataRow->aprs_symbol.area_object.sqrt_lon_off = lon_offset;
+      }
+      // only line left and line right get this set:
+      if (corridor && strlen(corridor) != 0 &&
+          (area_type == AREA_LINE_LEFT || area_type == AREA_LINE_RIGHT))
+      {
+        unsigned int cwidth = atoi(corridor);
+        if (cwidth >0 && cwidth < 999)
+        {
+          theDataRow->aprs_symbol.area_object.corridor_width = cwidth;
+        }
+      }
+    }
+    else if (signpost_object)
+    {
+      // Enforce correct symbol.  Must be '\m', no overlay.
+      theDataRow->aprs_symbol.aprs_type='\\';
+      theDataRow->aprs_symbol.aprs_symbol='m';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+
+      if (signpost_str && strlen(signpost_str) >0 && strlen(signpost_str) <= 3)
+      {
+        xastir_snprintf(theDataRow->signpost,sizeof(theDataRow->signpost),"%s",signpost_str);
+      }
+    }
+    else if (df_object)
+    {
+      // Enforce correct symbol.  Must be '/\', no overlay.
+      theDataRow->aprs_symbol.aprs_type='/';
+      theDataRow->aprs_symbol.aprs_symbol='\\';
+      theDataRow->aprs_symbol.special_overlay = '\0';
+      if (omni_df)
+      {
+        if (df_shgd && strlen(df_shgd) == 4)
+        {
+          xastir_snprintf(theDataRow->signal_gain,sizeof(theDataRow->signal_gain),"DFS%s",df_shgd);
+        }
+      }
+      else if (NRQ && strlen(NRQ) != 0)  // must be a beam df object
+      {
+        // now we are just presuming the bearing is set, coz that's what
+        // the gui code already does
+        int bearing_value=atoi(bearing);
+        if (bearing_value < 1 || bearing_value > 360)
+        {
+          bearing_value=360;
+        }
+        xastir_snprintf(theDataRow->bearing,sizeof(theDataRow->bearing),"%03d",bearing_value);
+        xastir_snprintf(theDataRow->NRQ,sizeof(theDataRow->NRQ),"%3s",NRQ);
+      }
+    }
+  }
+
+  // and finally, make sure we set the time we created this record,
+  // or the attempts to DR are hosed.
+  if (theDataRow)
+    theDataRow->sec_heard=sec_now();
+  return theDataRow;
+}
+//
+// this function is sufficient to deallocate a DataRow structure as created
+// by the previous function, which can only set the comment field.  The
+// comment field is a dynamically allocated string pointed to by a pointer
+// stored in the DataRow, so has to be deallocated before freeing the row
+// structure itself.  This is much simpler than the function station_del
+// in db.c, which must look up the record in a linked list, deallocate lots
+// of dynamic pieces, then call a function to unlink the record and then
+// deallocate it.  Don't call that one, because we aren't in the linked list
+// in the first place.
+//
+void destroy_object_item_data_row(DataRow *theDataRow)
+{
+  (void) delete_comments_and_status(theDataRow);
+  free(theDataRow);
+}

@@ -20,3 +20,6 @@ m4_include([object_utils_tests.at])
 
 # Include basic utility function tests
 m4_include([util_tests.at])
+
+# Include basic objects function tests
+m4_include([objects_tests.at])

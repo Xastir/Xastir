@@ -32,6 +32,35 @@ extern void move_station_time(DataRow *p_curr, DataRow *p_time);
 extern int valid_object(char *name);
 extern int valid_item(char *name);
 extern void check_and_transmit_objects_items(time_t time);
+extern int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length);
+extern DataRow *construct_object_item_data_row(char *name,
+                                        char *lat_str, char *lon_str,
+                                        char obj_group, char obj_symbol,
+                                        char *comment,
+                                        char *course,
+                                        char *speed,
+                                        char *altitude,
+                                        int area_object,
+                                        int area_type,
+                                        int area_filled,
+                                        char *area_color,
+                                        char *lat_offset_str,
+                                        char *lon_offset_str,
+                                        char *corridor,
+                                        int signpost_object,
+                                        char *signpost_str,
+                                        int df_object,
+                                        int omni_df,
+                                        int beam_df,
+                                        char *df_shgd,
+                                        char *bearing,
+                                        char *NRQ,
+                                        int prob_circles,
+                                        char *prob_min,
+                                        char *prob_max,
+                                        int is_object,
+                                        int killed);
+extern void destroy_object_item_data_row(DataRow *theDataRow);
 
 #endif /* XASTIR_OBJECTS_H */
 
