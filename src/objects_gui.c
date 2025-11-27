@@ -134,7 +134,7 @@ int Read_object_item_dialog_values(char *name, size_t name_size,
                                    char *prob_max, size_t prob_max_size
                                    );
 int Setup_object_item_data(char *line, int line_length, DataRow *p_station,
-                           int is_object);
+                           int is_object, int is_killed);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Init values for Objects dialog
@@ -290,7 +290,7 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
  * and zero if it's an item.
  */
 int Setup_object_item_data(char *line, int line_length, DataRow *p_station,
-                           int is_object)
+                           int is_object, int is_killed)
 {
   char name[MAX_CALLSIGN+1];
   char obj_group, obj_symbol;
@@ -385,7 +385,7 @@ int Setup_object_item_data(char *line, int line_length, DataRow *p_station,
                                               bearing, NRQ,
                                               prob_circles,
                                               prob_min, prob_max,
-                                              is_object, 0);
+                                              is_object, is_killed);
     if (theDataRow)
     {
       retval=Create_object_item_tx_string(theDataRow, line,line_length);
@@ -418,7 +418,7 @@ void Object_change_data_set(Widget widget, XtPointer clientData, XtPointer UNUSE
   //fprintf(stderr,"Object_change_data_set\n");
 
   // p_station will be NULL if the object is new.
-  if (Setup_object_item_data(line, sizeof(line), p_station,1))
+  if (Setup_object_item_data(line, sizeof(line), p_station, 1, 0))
   {
 
     // Update this object in our save file
@@ -483,7 +483,7 @@ void Item_change_data_set(Widget widget, XtPointer clientData, XtPointer UNUSED(
   DataRow *p_station = global_parameter1;
 
 
-  if (Setup_object_item_data(line,sizeof(line), p_station,0))
+  if (Setup_object_item_data(line,sizeof(line), p_station, 0, 0))
   {
 
     // Update this item in our save file
@@ -636,10 +636,8 @@ void Object_change_data_del(Widget widget, XtPointer clientData, XtPointer UNUSE
   DataRow *p_station = global_parameter1;
 
 
-  if (Setup_object_item_data(line, sizeof(line), p_station,1))
+  if (Setup_object_item_data(line, sizeof(line), p_station, 1, 1))
   {
-
-    line[10] = '_';                         // mark as deleted object
 
     // Update this object in our save file, then comment all
     // instances out in the file.
@@ -677,24 +675,10 @@ void Object_change_data_del(Widget widget, XtPointer clientData, XtPointer UNUSE
 void Item_change_data_del(Widget widget, XtPointer clientData, XtPointer UNUSED(callData) )
 {
   char line[43+1+40];                 // ???
-  int i, done;
   DataRow *p_station = global_parameter1;
 
-
-  if (Setup_object_item_data(line,sizeof(line), p_station,0))
+  if (Setup_object_item_data(line,sizeof(line), p_station, 0, 1))
   {
-
-    done = 0;
-    i = 0;
-    while ( (!done) && (i < 11) )
-    {
-      if (line[i] == '!')
-      {
-        line[i] = '_';          // mark as deleted object
-        done++;                 // Exit from loop
-      }
-      i++;
-    }
 
     // Update this item in our save file, then comment all
     // instances out in the file.
