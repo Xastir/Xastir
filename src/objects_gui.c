@@ -141,7 +141,6 @@ char last_object[9+1];
 char last_obj_grp;
 char last_obj_sym;
 char last_obj_overlay;
-char last_obj_comment[34+1];
 
 /*
  *  Clear out object/item history log file
@@ -261,1006 +260,132 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
 
 
 
-// Convert this eventually to populate a DataRow struct, then call
-// data.c:Create_object_item_tx_string().  Right now we have a lot
-// of code duplication between Setup_object_data, Setup_item_data,
-// and Create_object_item_tx_string.
-//
-// Make sure to look at the "transmit_compressed_objects_items" variable
-// to decide whether to send a compressed packet.
 /*
  *  Setup APRS Information Field for Objects
+ *
+ * We do this by reading the dialog box, creating a DataRow from that
+ * information, then formatting the packet exactly as we would do for
+ * an existing object packet by calling Create_object_item_tx_string.
+ *
+ * If we are passed a p_station, that means the modify dialog was called
+ * and we're creating a new packet for an existing object.  But we still
+ * create a new DataRow for our new packet.
  */
 int Setup_object_data(char *line, int line_length, DataRow *p_station)
 {
+
+  char name[MAX_CALLSIGN+1];
+  char obj_group, obj_symbol;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
-  char ext_lat_str[20];   // Extended precision for base91 compression
-  char ext_lon_str[20];   // Extended precision for base91 compression
-  char comment[43+1];                 // max 43 characters of comment
-  char time[7+1];
-  struct tm *day_time;
-  time_t sec;
-  char complete_area_color[3];
-  int complete_area_type;
-  int lat_offset, lon_offset;
-  char complete_corridor[6];
-  char altitude[10];
-  char speed_course[8];
-  int speed;
-  int course;
-  int temp;
-  long temp2;
-  float temp3;
-  char signpost[6];
-  char prob_min[20+1];
-  char prob_max[20+1];
-  int bearing;
-  char *temp_ptr;
-  char *temp_ptr2;
-  int DR = 0; // Dead-reckoning flag
-  int comment_field_used = 0;   // Amount of comment field used up
+  char ext_lat_str[20];
+  char ext_lon_str[20];
+  char comment[43+1];
+  char course[MAX_COURSE+1];
+  char speed[MAX_SPEED+1];
+  char altitude[MAX_ALTITUDE];
+  int area_object, area_type,area_filled;
+  char area_color[3];
+  char lat_offset_str[5];
+  char lon_offset_str[5];
+  char corridor[4];
+  int signpost_object;
+  char signpost_str[4];
+  int df_object, omni_df, beam_df;
+  char df_shgd[MAX_POWERGAIN+1];
+  char bearing[MAX_COURSE+1];
+  char NRQ[MAX_COURSE+1];
+  int prob_circles;
+  char prob_min[10+1];
+  char prob_max[10+1];
+  DataRow *theDataRow;
 
-  char experimental_line[84];
-    // This block is experimental code and we want to be able to discard
-  // everything it sets when the block ends
+  int object_speed;
+
+  if (Read_object_item_dialog_values(name, sizeof(name),
+                                     lat_str, sizeof(lat_str),
+                                     ext_lat_str, sizeof(ext_lat_str),
+                                     lon_str, sizeof(lon_str),
+                                     ext_lon_str, sizeof(ext_lon_str),
+                                     &obj_group, &obj_symbol,
+                                     comment, sizeof(comment),
+                                     course, sizeof(course),
+                                     speed, sizeof(speed),
+                                     altitude, sizeof(altitude),
+                                     &area_object, &area_type,
+                                     &area_filled,
+                                     area_color, sizeof(area_color),
+                                     lat_offset_str, sizeof(lat_offset_str),
+                                     lon_offset_str, sizeof(lon_offset_str),
+                                     corridor, sizeof(corridor),
+                                     &signpost_object,
+                                     signpost_str, sizeof(signpost_str),
+                                     &df_object, &omni_df, &beam_df,
+                                     df_shgd, sizeof(df_shgd),
+                                     bearing, sizeof(bearing),
+                                     NRQ, sizeof(NRQ),
+                                     &prob_circles,
+                                     prob_min, sizeof(prob_min),
+                                     prob_max, sizeof(prob_max)))
   {
-    char name[MAX_CALLSIGN+1];
-    char obj_group, obj_symbol;
-    char experimental_lat_str[MAX_LAT];
-    char experimental_lon_str[MAX_LONG];
-    char experimental_ext_lat_str[20];
-    char experimental_ext_lon_str[20];
-    char experimental_comment[43+1];
-    char experimental_course[MAX_COURSE+1];
-    char experimental_speed[MAX_SPEED+1];
-    char experimental_altitude[MAX_ALTITUDE];
-    int area_object, area_type,area_filled;
-    char area_color[3];
-    char lat_offset_str[5];
-    char lon_offset_str[5];
-    char corridor[4];
-    int signpost_object;
-    char signpost_str[4];
-    int df_object, omni_df, beam_df;
-    char df_shgd[MAX_POWERGAIN+1];
-    char bearing[MAX_COURSE+1];
-    char NRQ[MAX_COURSE+1];
-    int prob_circles;
-    char prob_min[10+1];
-    char prob_max[10+1];
-    DataRow *theDataRow;
-
-    if (Read_object_item_dialog_values(name, sizeof(name),
-                                       experimental_lat_str, sizeof(experimental_lat_str),
-                                       experimental_ext_lat_str, sizeof(experimental_ext_lat_str),
-                                       experimental_lon_str, sizeof(experimental_lon_str),
-                                       experimental_ext_lon_str, sizeof(experimental_ext_lon_str),
-                                       &obj_group, &obj_symbol,
-                                       experimental_comment, sizeof(experimental_comment),
-                                       experimental_course, sizeof(experimental_course),
-                                       experimental_speed, sizeof(experimental_speed),
-                                       experimental_altitude, sizeof(experimental_altitude),
-                                       &area_object, &area_type,
-                                       &area_filled,
-                                       area_color, sizeof(area_color),
-                                       lat_offset_str, sizeof(lat_offset_str),
-                                       lon_offset_str, sizeof(lon_offset_str),
-                                       corridor, sizeof(corridor),
-                                       &signpost_object,
-                                       signpost_str, sizeof(signpost_str),
-                                       &df_object, &omni_df, &beam_df,
-                                       df_shgd, sizeof(df_shgd),
-                                       bearing, sizeof(bearing),
-                                       NRQ, sizeof(NRQ),
-                                       &prob_circles,
-                                       prob_min, sizeof(prob_min),
-                                       prob_max, sizeof(prob_max)))
-    {
-      fprintf(stderr,"Yahoo!  We just read in ALL THE THINGS\n");
-      fprintf(stderr,"name: '%s'\n",name);
-      fprintf(stderr,"lat: '%s' (%s), lon '%s' (%s)\n",experimental_lat_str,
-              experimental_ext_lat_str, experimental_lon_str,
-              experimental_ext_lon_str);
-      fprintf(stderr,"symbol: '%c%c'\n",obj_group, obj_symbol);
-      fprintf(stderr,"Comment: '%s'\n",experimental_comment);
-      fprintf(stderr,"course: '%s'   speed: '%s'\n",experimental_course,
-              experimental_speed);
-      fprintf(stderr,"Altitude: '%s'\n",experimental_altitude);
-      fprintf(stderr,"area_obj: '%d'  area_type: '%d', area_filled: '%d'\n",
-              area_object, area_type, area_filled);
-      fprintf(stderr,"Area color: '%s'\n",area_color);
-      fprintf(stderr,"lat/lon offsets: '%s', '%s'\n",lat_offset_str, lon_offset_str);
-      fprintf(stderr,"corridor: '%s'\n",corridor);
-      fprintf(stderr,"signpost_object: '%d'\n",signpost_object);
-      fprintf(stderr,"signpost_str: '%s'\n",signpost_str);
-      fprintf(stderr,"df_object: '%d', omni_df: '%d', beam_df: '%d'\n",df_object, omni_df, beam_df);
-      fprintf(stderr,"df_shgd: '%s'\n",df_shgd);
-      fprintf(stderr,"bearing: '%s'\n",bearing);
-      fprintf(stderr,"NRQ: '%s'\n",NRQ);
-      fprintf(stderr,"prob_circles: '%d'\n",prob_circles);
-      fprintf(stderr,"prob_min: '%s'\n",prob_min);
-      fprintf(stderr,"prob_max: '%s'\n",prob_max);
-
-      if (p_station != NULL)
-      {
-        speed = atoi(p_station->speed);
-        if (speed > 0 && !doing_move_operation)
-        {
-          fprintf(stderr,"But hark!  we are given an exisiting record with as speed and we're not moving the station, so let's clobber lat/lon with dead reckoning!");
-          fetch_current_DR_strings(p_station,
-                                   experimental_lat_str,
-                                   experimental_lon_str,
-                                   experimental_ext_lat_str,
-                                   experimental_ext_lon_str);
-        }
-      }
-
-      fprintf(stderr,"Attempting to create data row...");
-      theDataRow=construct_object_item_data_row(name,
-                                                experimental_ext_lat_str,
-                                                experimental_ext_lon_str,
-                                                obj_group, obj_symbol,
-                                                experimental_comment,
-                                                experimental_course,
-                                                experimental_speed,
-                                                experimental_altitude,
-                                                area_object, area_type,
-                                                area_filled,
-                                                area_color,
-                                                lat_offset_str,
-                                                lon_offset_str,
-                                                corridor,
-                                                signpost_object,
-                                                signpost_str,
-                                                df_object, omni_df, beam_df,
-                                                df_shgd,
-                                                bearing, NRQ,
-                                                prob_circles,
-                                                prob_min, prob_max,
-                                                1, 0);
-      if (theDataRow)
-      {
-        fprintf(stderr,"BOOYAH!\n");
-        (void)Create_object_item_tx_string(theDataRow, experimental_line,
-                                           sizeof(experimental_line));
-        fprintf(stderr,"Would be transmitting '%s' from new method\n",
-                experimental_line);
-        destroy_object_item_data_row(theDataRow);
-      }
-      else
-      {
-        fprintf(stderr,"BOO!\n");
-      }
-    }
-  }
-  // If speed for the original object was non-zero, then we need
-  // to snag the updated DR'ed position for the object.  Snag the
-  // current DR position and build the strings we need // for
-  // position transmit.
-  //
-  if (p_station != NULL)
-  {
-
-    speed = atoi(p_station->speed);
-
-    if (speed > 0 && !doing_move_operation)
-    {
-
-      fetch_current_DR_strings(p_station,
-                               lat_str,
-                               lon_str,
-                               ext_lat_str,
-                               ext_lon_str);
-      DR++;   // Set the dead-reckoning flag
-    }
-
-    // Keep the time current for our own objects.
-    p_station->sec_heard = sec_now();
-    move_station_time(p_station,NULL);
-  }
-
-  temp_ptr = XmTextFieldGetString(object_name_data);
-  xastir_snprintf(line,
-                  line_length,
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
-
-  (void)remove_trailing_spaces(line);
-  //(void)to_upper(line);      Not per spec.  Don't use this.
-  if (!valid_object(line))
-  {
-    return(0);
-  }
-
-  // Copy object name into "last_object"
-  xastir_snprintf(last_object,
-                  sizeof(last_object),
-                  "%s",
-                  line);
-
-
-  if (!DR)    // We're not doing dead-reckoning, so proceed
-  {
-
-    temp_ptr = XmTextFieldGetString(object_lat_data_ns);
-    if((char)toupper((int)temp_ptr[0]) == 'S')
-    {
-      line[0] = 'S';
-    }
-    else
-    {
-      line[0] = 'N';
-    }
-    XtFree(temp_ptr);
-
-    // Check latitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
-
-    if ( (temp > 90) || (temp < 0) )
+    if (!valid_object(name))
     {
       return(0);
     }
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
+    xastir_snprintf(last_object,sizeof(last_object),"%s",name);
 
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
+    if (p_station != NULL)
     {
-      return(0);
+      object_speed = atoi(p_station->speed);
+      if (object_speed > 0 && !doing_move_operation)
+      {
+        fetch_current_DR_strings(p_station,
+                                 lat_str,
+                                 lon_str,
+                                 ext_lat_str,
+                                 ext_lon_str);
+      }
+      // Keep the time current for our own objects.
+      p_station->sec_heard = sec_now();
+      move_station_time(p_station,NULL);
     }
-    if ( (temp == 90) && (temp3 != 0.0) )
+
+    theDataRow=construct_object_item_data_row(name,
+                                              ext_lat_str,
+                                              ext_lon_str,
+                                              obj_group, obj_symbol,
+                                              comment,
+                                              course,
+                                              speed,
+                                              altitude,
+                                              area_object, area_type,
+                                              area_filled,
+                                              area_color,
+                                              lat_offset_str,
+                                              lon_offset_str,
+                                              corridor,
+                                              signpost_object,
+                                              signpost_str,
+                                              df_object, omni_df, beam_df,
+                                              df_shgd,
+                                              bearing, NRQ,
+                                              prob_circles,
+                                              prob_min, prob_max,
+                                              1, 0);
+    if (theDataRow)
     {
-      return(0);
-    }
-
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
-                    atoi(temp_ptr),
-// An attempt was made to round here, adding 0.001 to the minutes
-// value.  Problems arise if it goes above 59 minutes as the degrees
-// value would need to bump up also.  This then gets into problems
-// at 90.0 degrees.  The correct method would be to convert it to
-// decimal at a higher precision and then convert it back to DD
-// MM.MM format.
-//            atof(temp_ptr2) + 0.001,
-                    atof(temp_ptr2),
-                    line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
-
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
-                    atoi(temp_ptr),
-// An attempt was made to round here, adding 0.0001 to the minutes
-// value.  Problems arise if it goes above 59 minutes as the degrees
-// value would need to bump up also.  This then gets into problems
-// at 90.0 degrees.  The correct method would be to convert it to
-// decimal at a higher precision and then convert it back to DD
-// MM.MM format.
-//            atof(temp_ptr2) + 0.0001,
-                    atof(temp_ptr2),
-                    line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
-
-    temp_ptr = XmTextFieldGetString(object_lon_data_ew);
-    xastir_snprintf(line,
-                    line_length,
-                    "%s",
-                    temp_ptr);
-    XtFree(temp_ptr);
-
-    if((char)toupper((int)line[0]) == 'E')
-    {
-      line[0] = 'E';
+      (void)Create_object_item_tx_string(theDataRow, line,
+                                         line_length);
+      destroy_object_item_data_row(theDataRow);
     }
     else
     {
-      line[0] = 'W';
-    }
-
-    // Check longitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
-
-    if ( (temp > 180) || (temp < 0) )
-    {
-      return(0);
-    }
-
-    temp_ptr = XmTextFieldGetString(object_lon_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
-
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
-    {
-      return(0);
-    }
-
-    if ( (temp == 180) && (temp3 != 0.0) )
-    {
-      return(0);
-    }
-
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
-                    atoi(temp_ptr),
-// An attempt was made to round here, adding 0.001 to the minutes
-// value.  Problems arise if it goes above 59 minutes as the degrees
-// value would need to bump up also.  This then gets into problems
-// at 90.0 degrees.  The correct method would be to convert it to
-// decimal at a higher precision and then convert it back to DD
-// MM.MM format.
-//            atof(temp_ptr2) + 0.001,
-                    atof(temp_ptr2),
-                    line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
-
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
-                    atoi(temp_ptr),
-// An attempt was made to round here, adding 0.0001 to the minutes
-// value.  Problems arise if it goes above 59 minutes as the degrees
-// value would need to bump up also.  This then gets into problems
-// at 90.0 degrees.  The correct method would be to convert it to
-// decimal at a higher precision and then convert it back to DD
-// MM.MM format.
-//            atof(temp_ptr2) + 0.0001,
-                    atof(temp_ptr2),
-                    line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
-  }
-
-
-  temp_ptr = XmTextFieldGetString(object_group_data);
-  xastir_snprintf(line,
-                  line_length,
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
-
-  last_obj_grp = line[0];
-  if(isalpha((int)last_obj_grp))
-  {
-    last_obj_grp = toupper((int)line[0]);  // todo: toupper in dialog
-  }
-
-  // Check for overlay character
-  if (last_obj_grp != '/' && last_obj_grp != '\\')
-  {
-    // Found an overlay character.  Check that it's within the
-    // proper range
-    if ( (last_obj_grp >= '0' && last_obj_grp <= '9')
-         || (last_obj_grp >= 'A' && last_obj_grp <= 'Z') )
-    {
-      last_obj_overlay = last_obj_grp;
-      last_obj_grp = '\\';
-    }
-    else
-    {
-      last_obj_overlay = '\0';
+      // This can never happen, as the constructor will abort with a fatal
+      // error if it can't allocate data.
+      fprintf(stderr,"BOO!\n");
     }
   }
-  else
-  {
-    last_obj_overlay = '\0';
-  }
-
-  temp_ptr = XmTextFieldGetString(object_symbol_data);
-  xastir_snprintf(line,
-                  line_length,
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
-
-  last_obj_sym = line[0];
-
-  temp_ptr = XmTextFieldGetString(object_comment_data);
-  xastir_snprintf(comment,
-                  sizeof(comment),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
-
-  (void)remove_trailing_spaces(comment);
-  //fprintf(stderr,"Comment Field was: %s\n",comment);
-
-  sec = sec_now();
-  day_time = gmtime(&sec);
-  xastir_snprintf(time, sizeof(time), "%02d%02d%02dz", day_time->tm_mday, day_time->tm_hour,
-                  day_time->tm_min);
-
-  // Handle Generic Options
-
-  // Speed/Course Fields
-  temp_ptr = XmTextFieldGetString(ob_course_data);
-  xastir_snprintf(line, line_length, "%s", temp_ptr);
-  XtFree(temp_ptr);
-
-  xastir_snprintf(speed_course, sizeof(speed_course), "%s", ".../");
-  course = 0;
-  if (strlen(line) != 0)      // Course was entered
-  {
-    // Need to check for 1 to three digits only, and 001-360 degrees)
-    temp = atoi(line);
-    if ( (temp >= 1) && (temp <= 360) )
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "%03d/", temp);
-      course = temp;
-    }
-    else if (temp == 0)       // Spec says 001 to 360 degrees...
-    {
-      xastir_snprintf(speed_course, sizeof(speed_course), "%s", "360/");
-    }
-  }
-  temp_ptr = XmTextFieldGetString(ob_speed_data);
-  xastir_snprintf(line, line_length, "%s", temp_ptr);
-  XtFree(temp_ptr);
-
-  speed = 0;
-  if (strlen(line) != 0)   // Speed was entered (we only handle knots currently)
-  {
-    // Need to check for 1 to three digits, no alpha characters
-    temp = atoi(line);
-    if ( (temp >= 0) && (temp <= 999) )
-    {
-      xastir_snprintf(line, line_length, "%03d", temp);
-      strncat(speed_course,
-              line,
-              sizeof(speed_course) - 1 - strlen(speed_course));
-      speed = temp;
-    }
-    else
-    {
-      strncat(speed_course,
-              "...",
-              sizeof(speed_course) - 1 - strlen(speed_course));
-    }
-  }
-  else    // No speed entered, blank it out
-  {
-    strncat(speed_course,
-            "...",
-            sizeof(speed_course) - 1 - strlen(speed_course));
-  }
-  if ( (speed_course[0] == '.') && (speed_course[4] == '.') )
-  {
-    speed_course[0] = '\0'; // No speed or course entered, so blank it
-  }
-  if (Area_object_enabled)
-  {
-    speed_course[0] = '\0'; // Course/Speed not allowed if Area Object
-  }
-
-  // Altitude Field
-  temp_ptr = XmTextFieldGetString(ob_altitude_data);
-  xastir_snprintf(line, line_length, "%s", temp_ptr);
-  XtFree(temp_ptr);
-
-  //fprintf(stderr,"Altitude entered: %s\n", line);
-  altitude[0] = '\0'; // Start with empty string
-  if (strlen(line) != 0)     // Altitude was entered (we only handle feet currently)
-  {
-    // Need to check for all digits, and 1 to 6 digits
-    if (isdigit((int)line[0]))
-    {
-      temp2 = atoi(line);
-      if ( (temp2 >= 0) && (temp2 <= 999999) )
-      {
-        char temp_alt[20];
-        xastir_snprintf(temp_alt, sizeof(temp_alt), "/A=%06ld", temp2);
-        memcpy(altitude, temp_alt, sizeof(altitude));
-        altitude[sizeof(altitude)-1] = '\0';  // Terminate string
-        //fprintf(stderr,"Altitude string: %s\n",altitude);
-      }
-    }
-  }
-
-  // Handle Specific Options
-
-  // Area Objects
-  if (Area_object_enabled)
-  {
-    //fprintf(stderr,"Area_bright: %d\n", Area_bright);
-    //fprintf(stderr,"Area_filled: %d\n", Area_filled);
-    if (Area_bright)    // Bright color
-    {
-      xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%2s", Area_color);
-    }
-    else                  // Dim color
-    {
-      xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%02.0f",
-                      (float)(atoi(&Area_color[1]) + 8) );
-
-      if ( (Area_color[1] == '0') || (Area_color[1] == '1') )
-      {
-        complete_area_color[0] = '/';
-      }
-    }
-    if ( (Area_filled) && (Area_type != 1) && (Area_type != 6) )
-    {
-      complete_area_type = Area_type + 5;
-    }
-    else      // Can't fill in a line
-    {
-      complete_area_type = Area_type;
-    }
-    temp_ptr = XmTextFieldGetString(ob_lat_offset_data);
-    xastir_snprintf(line, line_length, "%s", temp_ptr);
-    XtFree(temp_ptr);
-
-    lat_offset = sqrt(atof(line));
-    if (lat_offset > 99)
-    {
-      lat_offset = 99;
-    }
-    //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
-
-    temp_ptr = XmTextFieldGetString(ob_lon_offset_data);
-    xastir_snprintf(line, line_length, "%s", temp_ptr);
-    XtFree(temp_ptr);
-
-    lon_offset = sqrt(atof(line));
-    if (lon_offset > 99)
-    {
-      lon_offset = 99;
-    }
-    //fprintf(stderr,"Line: %s\tlon_offset: %d\n", line, lon_offset);
-
-    //fprintf(stderr,"Corridor Field: %s\n", XmTextFieldGetString(ob_corridor_data) );
-    // Corridor
-    complete_corridor[0] = '\0';
-    if ( (Area_type == 1) || (Area_type == 6) )
-    {
-
-      temp_ptr = XmTextFieldGetString(ob_corridor_data);
-      xastir_snprintf(line, line_length, "%s", temp_ptr);
-      XtFree(temp_ptr);
-
-      if (strlen(line) != 0)      // We have a line and some corridor data
-      {
-        // Need to check for 1 to three digits only
-        temp = atoi(line);
-        if ( (temp > 0) && (temp <= 999) )
-        {
-          xastir_snprintf(complete_corridor, sizeof(complete_corridor), "{%d}", temp);
-          //fprintf(stderr,"%s\n",complete_corridor);
-        }
-      }
-    }
-
-    //fprintf(stderr,"Complete_corridor: %s\n", complete_corridor);
-
-    if (transmit_compressed_objects_items)
-    {
-      char temp_overlay = last_obj_overlay;
-
-
-// Need to compute "csT" at some point and add it to the object.
-// Until we do that we'll have no course/speed/altitude.  Looks like
-// we can have course/speed or altitude, but not both.  Must have to
-// add the "/A=000123" stuff to the end if we want both.
-//
-// If we have course and/or speed, use course/speed csT bytes.  If
-// no course/speed but we have altitude, use altitude csT bytes.  We
-// can cheat right now and just always use course/speed, adding
-// altitude with the altitude extension.  Not as efficient, but it
-// gets the job done.
-//
-// Later we should change compress_posit() to accept an altitude
-// parameter, and have it decide which csT set of bytes to add, and
-// whether to add altitude as an uncompressed extension if
-// necessary.
-
-
-      xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
-                      last_object,
-                      time,
-                      compress_posit(ext_lat_str,
-                                     (temp_overlay) ? temp_overlay : last_obj_grp,
-                                     ext_lon_str,
-                                     last_obj_sym,
-                                     course,
-                                     speed,  // In knots
-                                     ""),    // PHG, must be blank in this case
-                      complete_area_type, // In comment field
-                      lat_offset,         // In comment field
-                      complete_area_color,// In comment field
-                      lon_offset,         // In comment field
-                      speed_course,       // In comment field
-                      complete_corridor,  // In comment field
-                      altitude);          // In comment field
-
-      comment_field_used = strlen(line) - 31;
-
-    }
-    else
-    {
-
-      xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                      last_object,
-                      time,
-                      lat_str,
-                      last_obj_grp,
-                      lon_str,
-                      last_obj_sym,
-                      complete_area_type, // In comment field
-                      lat_offset,         // In comment field
-                      complete_area_color,// In comment field
-                      lon_offset,         // In comment field
-                      speed_course,       // In comment field
-                      complete_corridor,  // In comment field
-                      altitude);          // In comment field
-
-      comment_field_used = strlen(line) - 37;
-    }
-
-    //fprintf(stderr,"String is: %s\n", line);
-
-  }
-  else if (Signpost_object_enabled)
-  {
-    temp_ptr = XmTextFieldGetString(signpost_data);
-    xastir_snprintf(line, line_length, "%s", temp_ptr);
-    XtFree(temp_ptr);
-
-    //fprintf(stderr,"Signpost entered: %s\n", line);
-    if (strlen(line) != 0)     // Signpost data was entered
-    {
-      // Need to check for between one and three characters
-      temp = strlen(line);
-      if ( (temp >= 0) && (temp <= 3) )
-      {
-        xastir_snprintf(signpost, sizeof(signpost), "{%s}", line);
-      }
-      else
-      {
-        signpost[0] = '\0';
-      }
-    }
-    else      // No signpost data entered, blank it out
-    {
-      signpost[0] = '\0';
-    }
-
-
-    if (transmit_compressed_objects_items)
-    {
-      char temp_overlay = last_obj_overlay;
-
-
-// Need to compute "csT" at some point and add it to the object.
-// Until we do that we'll have no course/speed/altitude.  Looks like
-// we can have course/speed or altitude, but not both.  Must have to
-// add the "/A=000123" stuff to the end if we want both.
-//
-// If we have course and/or speed, use course/speed csT bytes.  If
-// no course/speed but we have altitude, use altitude csT bytes.  We
-// can cheat right now and just always use course/speed, adding
-// altitude with the altitude extension.  Not as efficient, but it
-// gets the job done.
-//
-// Later we should change compress_posit() to accept an altitude
-// parameter, and have it decide which csT set of bytes to add, and
-// whether to add altitude as an uncompressed extension if
-// necessary.
-
-
-      xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
-                      last_object,
-                      time,
-                      compress_posit(ext_lat_str,
-                                     (temp_overlay) ? temp_overlay : last_obj_grp,
-                                     ext_lon_str,
-                                     last_obj_sym,
-                                     course,
-                                     speed,  // In knots
-                                     ""),    // PHG, must be blank in this case
-                      altitude,
-                      signpost);
-
-      comment_field_used = strlen(line) - 31;
-
-    }
-    else
-    {
-
-      xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
-                      last_object,
-                      time,
-                      lat_str,
-                      last_obj_grp,
-                      lon_str,
-                      last_obj_sym,
-                      speed_course,
-                      altitude,
-                      signpost);
-
-      comment_field_used = strlen(line) - 37;
-    }
-
-  }
-  else if (DF_object_enabled)       // A DF'ing object of some type
-  {
-    if (Omni_antenna_enabled)
-    {
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_overlay = last_obj_overlay;
-
-
-// Need to compute "csT" at some point and add it to the object.
-// Until we do that we'll have no course/speed/altitude.  Looks like
-// we can have course/speed or altitude, but not both.  Must have to
-// add the "/A=000123" stuff to the end if we want both.
-//
-// If we have course and/or speed, use course/speed csT bytes.  If
-// no course/speed but we have altitude, use altitude csT bytes.  We
-// can cheat right now and just always use course/speed, adding
-// altitude with the altitude extension.  Not as efficient, but it
-// gets the job done.
-//
-// Later we should change compress_posit() to accept an altitude
-// parameter, and have it decide which csT set of bytes to add, and
-// whether to add altitude as an uncompressed extension if
-// necessary.
-
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%sDFS%s/%s%s",
-                        last_object,
-                        time,
-                        compress_posit(ext_lat_str,
-                                       (temp_overlay) ? temp_overlay : last_obj_grp,
-                                       ext_lon_str,
-                                       last_obj_sym,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank in this case
-                        object_shgd,
-                        speed_course,
-                        altitude);
-
-        comment_field_used = strlen(line) - 31;
-
-      }
-      else
-      {
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%cDFS%s/%s%s",
-                        last_object,
-                        time,
-                        lat_str,
-                        last_obj_grp,
-                        lon_str,
-                        last_obj_sym,
-                        object_shgd,
-                        speed_course,
-                        altitude);
-
-        comment_field_used = strlen(line) - 37;
-      }
-
-    }
-    else      // Beam Heading DFS object
-    {
-      if (strlen(speed_course) != 7)
-        xastir_snprintf(speed_course,
-                        sizeof(speed_course),
-                        "000/000");
-
-      temp_ptr = XmTextFieldGetString(ob_bearing_data);
-      bearing = atoi(temp_ptr);
-      XtFree(temp_ptr);
-
-      if ( (bearing < 1) || (bearing > 360) )
-      {
-        bearing = 360;
-      }
-
-      if (transmit_compressed_objects_items)
-      {
-        char temp_overlay = last_obj_overlay;
-
-
-// Need to compute "csT" at some point and add it to the object.
-// Until we do that we'll have no course/speed/altitude.  Looks like
-// we can have course/speed or altitude, but not both.  Must have to
-// add the "/A=000123" stuff to the end if we want both.
-//
-// If we have course and/or speed, use course/speed csT bytes.  If
-// no course/speed but we have altitude, use altitude csT bytes.  We
-// can cheat right now and just always use course/speed, adding
-// altitude with the altitude extension.  Not as efficient, but it
-// gets the job done.
-//
-// Later we should change compress_posit() to accept an altitude
-// parameter, and have it decide which csT set of bytes to add, and
-// whether to add altitude as an uncompressed extension if
-// necessary.
-
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
-                        last_object,
-                        time,
-                        compress_posit(ext_lat_str,
-                                       (temp_overlay) ? temp_overlay : last_obj_grp,
-                                       ext_lon_str,
-                                       last_obj_sym,
-                                       course,
-                                       speed,  // In knots
-                                       ""),    // PHG, must be blank in this case
-                        bearing,
-                        object_NRQ,
-                        altitude);
-
-        comment_field_used = strlen(line) - 31;
-
-      }
-      else
-      {
-
-
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
-                        last_object,
-                        time,
-                        lat_str,
-                        last_obj_grp,
-                        lon_str,
-                        last_obj_sym,
-                        speed_course,
-                        bearing,
-                        object_NRQ,
-                        altitude);
-
-        comment_field_used = strlen(line) - 37;
-      }
-
-    }
-  }
-  else      // Else it's a normal object
-  {
-
-    prob_min[0] = '\0';
-    prob_max[0] = '\0';
-
-    if (Probability_circles_enabled)
-    {
-
-      temp_ptr = XmTextFieldGetString(probability_data_min);
-      xastir_snprintf(line, line_length, "%s", temp_ptr);
-      XtFree(temp_ptr);
-
-      //fprintf(stderr,"Probability min circle entered: %s\n", line);
-      if (strlen(line) != 0)     // Probability circle data was entered
-      {
-        xastir_snprintf(prob_min, sizeof(prob_min), "Pmin%s,", line);
-      }
-
-      temp_ptr = XmTextFieldGetString(probability_data_max);
-      xastir_snprintf(line, line_length, "%s", temp_ptr);
-      XtFree(temp_ptr);
-
-      //fprintf(stderr,"Probability max circle entered: %s\n", line);
-      if (strlen(line) != 0)     // Probability circle data was entered
-      {
-        xastir_snprintf(prob_max, sizeof(prob_max), "Pmax%s,", line);
-      }
-    }
-
-    if (transmit_compressed_objects_items)
-    {
-      char temp_overlay = last_obj_overlay;
-
-
-// Need to compute "csT" at some point and add it to the object.
-// Until we do that we'll have no course/speed/altitude.  Looks like
-// we can have course/speed or altitude, but not both.  Must have to
-// add the "/A=000123" stuff to the end if we want both.
-//
-// If we have course and/or speed, use course/speed csT bytes.  If
-// no course/speed but we have altitude, use altitude csT bytes.  We
-// can cheat right now and just always use course/speed, adding
-// altitude with the altitude extension.  Not as efficient, but it
-// gets the job done.
-//
-// Later we should change compress_posit() to accept an altitude
-// parameter, and have it decide which csT set of bytes to add, and
-// whether to add altitude as an uncompressed extension if
-// necessary.
-
-
-      xastir_snprintf(line,
-                      line_length,
-                      ";%-9s*%s%s%s%s%s",
-                      last_object,
-                      time,
-                      compress_posit(ext_lat_str,
-                                     (temp_overlay) ? temp_overlay : last_obj_grp,
-                                     ext_lon_str,
-                                     last_obj_sym,
-                                     course,
-                                     speed,  // In knots
-                                     ""),    // PHG, must be blank in this case
-                      altitude,
-                      prob_min,
-                      prob_max);
-
-      comment_field_used = strlen(line) - 31;
-
-    }
-    else
-    {
-      xastir_snprintf(line,
-                      line_length,
-                      ";%-9s*%s%s%c%s%c%s%s%s%s",
-                      last_object,
-                      time,
-                      lat_str,
-                      last_obj_overlay ? last_obj_overlay : last_obj_grp,
-                      lon_str,
-                      last_obj_sym,
-                      speed_course,
-                      altitude,
-                      prob_min,
-                      prob_max);
-
-      comment_field_used = strlen(line) - 37;
-
-    }
-  }
-
-
-  // We need to tack the comment on the end, but need to make
-  // sure we don't go over the maximum length for an object.  The
-  // maximum comment field is 43 chars.  "comment_field_used"
-  // tells us how many chars of that field we've used up already
-  // with other parameters before adding the comment chars to the
-  // end.
-  //
-  //fprintf(stderr,"Comment: %s\n",comment);
-  if (strlen(comment) != 0)
-  {
-
-    if (comment[0] == '}')
-    {
-      // May be a multipoint polygon string at the start of
-      // the comment field.  Add a space before this special
-      // character as multipoints have to start with " }" to
-      // be valid.
-      line[strlen(line) + 1] = '\0';
-      line[strlen(line)] = ' ';
-
-      comment_field_used++;
-    }
-
-    temp = 0;
-//        while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
-    while ((comment_field_used < 43) && (temp < (int)strlen(comment)) )
-    {
-      //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
-      line[strlen(line) + 1] = '\0';
-      line[strlen(line)] = comment[temp++];
-      comment_field_used++;
-    }
-  }
-
-// NOTE:  Compressed mode will be shorter still.  Account
-// for that when compressed mode is implemented for objects.
-
-  fprintf(stderr,"But we transmit '%s' old way\n",line);
   return(1);
 }
 
