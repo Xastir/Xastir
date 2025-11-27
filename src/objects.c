@@ -1280,7 +1280,8 @@ DataRow *construct_object_item_data_row(char *name,
 
   // and finally, make sure we set the time we created this record,
   // or the attempts to DR are hosed.
-  theDataRow->sec_heard=sec_now();
+  if (theDataRow)
+    theDataRow->sec_heard=sec_now();
   return theDataRow;
 }
 //
