@@ -133,7 +133,8 @@ int Read_object_item_dialog_values(char *name, size_t name_size,
                                    char *prob_min, size_t prob_min_size,
                                    char *prob_max, size_t prob_max_size
                                    );
-
+int Setup_object_item_data(char *line, int line_length, DataRow *p_station,
+                           int is_object);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Init values for Objects dialog
@@ -279,119 +280,7 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
  */
 int Setup_object_data(char *line, int line_length, DataRow *p_station)
 {
-
-  char name[MAX_CALLSIGN+1];
-  char obj_group, obj_symbol;
-  char lat_str[MAX_LAT];
-  char lon_str[MAX_LONG];
-  char ext_lat_str[20];
-  char ext_lon_str[20];
-  char comment[43+1];
-  char course[MAX_COURSE+1];
-  char speed[MAX_SPEED+1];
-  char altitude[MAX_ALTITUDE];
-  int area_object, area_type,area_filled;
-  char area_color[3];
-  char lat_offset_str[5];
-  char lon_offset_str[5];
-  char corridor[4];
-  int signpost_object;
-  char signpost_str[4];
-  int df_object, omni_df, beam_df;
-  char df_shgd[MAX_POWERGAIN+1];
-  char bearing[MAX_COURSE+1];
-  char NRQ[MAX_COURSE+1];
-  int prob_circles;
-  char prob_min[10+1];
-  char prob_max[10+1];
-  DataRow *theDataRow;
-
-  int object_speed;
-  int retval=0;
-  if (Read_object_item_dialog_values(name, sizeof(name),
-                                     lat_str, sizeof(lat_str),
-                                     ext_lat_str, sizeof(ext_lat_str),
-                                     lon_str, sizeof(lon_str),
-                                     ext_lon_str, sizeof(ext_lon_str),
-                                     &obj_group, &obj_symbol,
-                                     comment, sizeof(comment),
-                                     course, sizeof(course),
-                                     speed, sizeof(speed),
-                                     altitude, sizeof(altitude),
-                                     &area_object, &area_type,
-                                     &area_filled,
-                                     area_color, sizeof(area_color),
-                                     lat_offset_str, sizeof(lat_offset_str),
-                                     lon_offset_str, sizeof(lon_offset_str),
-                                     corridor, sizeof(corridor),
-                                     &signpost_object,
-                                     signpost_str, sizeof(signpost_str),
-                                     &df_object, &omni_df, &beam_df,
-                                     df_shgd, sizeof(df_shgd),
-                                     bearing, sizeof(bearing),
-                                     NRQ, sizeof(NRQ),
-                                     &prob_circles,
-                                     prob_min, sizeof(prob_min),
-                                     prob_max, sizeof(prob_max)))
-  {
-    xastir_snprintf(last_object,sizeof(last_object),"%s",name);
-
-    if (p_station != NULL)
-    {
-      object_speed = atoi(p_station->speed);
-      if (object_speed > 0 && !doing_move_operation)
-      {
-        fetch_current_DR_strings(p_station,
-                                 lat_str,
-                                 lon_str,
-                                 ext_lat_str,
-                                 ext_lon_str);
-      }
-      // Keep the time current for our own objects.
-      p_station->sec_heard = sec_now();
-      move_station_time(p_station,NULL);
-    }
-
-    theDataRow=construct_object_item_data_row(name,
-                                              ext_lat_str,
-                                              ext_lon_str,
-                                              obj_group, obj_symbol,
-                                              comment,
-                                              course,
-                                              speed,
-                                              altitude,
-                                              area_object, area_type,
-                                              area_filled,
-                                              area_color,
-                                              lat_offset_str,
-                                              lon_offset_str,
-                                              corridor,
-                                              signpost_object,
-                                              signpost_str,
-                                              df_object, omni_df, beam_df,
-                                              df_shgd,
-                                              bearing, NRQ,
-                                              prob_circles,
-                                              prob_min, prob_max,
-                                              1, 0);
-    if (theDataRow)
-    {
-      retval=Create_object_item_tx_string(theDataRow, line, line_length);
-      destroy_object_item_data_row(theDataRow);
-    }
-    else
-    {
-      // This can never happen, as the constructor will abort with a fatal
-      // error if it can't allocate data.
-      fprintf(stderr,"BOO!\n");
-      retval=0;
-    }
-    return(retval);
-  }
-  else
-  {
-    return(0);
-  }
+  return(Setup_object_item_data(line, line_length, p_station, 1));
 }
 
 
@@ -416,6 +305,26 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
  * used by the caller
  */
 int Setup_item_data(char *line, int line_length, DataRow *p_station)
+{
+  return(Setup_object_item_data(line, line_length, p_station, 0));
+}
+
+
+
+/*
+ * Construct an object/item transmit data string from dialog box values
+ *
+ * This function consolidates the work of both Setup_object_data and
+ * Setup_item_data in a single place.
+ *
+ * Returns zero if unable to produce a transmit line (mainly due to invalid
+ * names).
+ *
+ * is_object should be 1 if we are asking to produce an object packet,
+ * and zero if it's an item.
+ */
+int Setup_object_item_data(char *line, int line_length, DataRow *p_station,
+                           int is_object)
 {
   char name[MAX_CALLSIGN+1];
   char obj_group, obj_symbol;
@@ -510,7 +419,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
                                               bearing, NRQ,
                                               prob_circles,
                                               prob_min, prob_max,
-                                              0, 0);
+                                              is_object, 0);
     if (theDataRow)
     {
       retval=Create_object_item_tx_string(theDataRow, line,line_length);
@@ -530,10 +439,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
     return(0);
   }
 }
-
-
-
-
 
 
 /*
