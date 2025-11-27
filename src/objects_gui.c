@@ -389,8 +389,12 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
       // error if it can't allocate data.
       fprintf(stderr,"BOO!\n");
     }
+    return(1);
   }
-  return(1);
+  else
+  {
+    return(0);
+  }
 }
 
 
