@@ -269,7 +269,11 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
  *
  * If we are passed a p_station, that means the modify dialog was called
  * and we're creating a new packet for an existing object.  But we still
- * create a new DataRow for our new packet.
+ * create a new DataRow for our new packet.  In this case, we discard
+ * any position entered in the modify dialog box and replace it with
+ * dead-reckoned position.  I'm not sure this is a desirable feature, but
+ * it was exactly what Xastir did before my refactor.
+ *
  */
 int Setup_object_data(char *line, int line_length, DataRow *p_station)
 {
