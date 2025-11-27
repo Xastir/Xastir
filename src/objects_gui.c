@@ -274,6 +274,8 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
  * dead-reckoned position.  I'm not sure this is a desirable feature, but
  * it was exactly what Xastir did before my refactor.
  *
+ * returns zero if an error occurred, in which case the line is not to be
+ * used by the caller
  */
 int Setup_object_data(char *line, int line_length, DataRow *p_station)
 {
@@ -305,7 +307,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
   DataRow *theDataRow;
 
   int object_speed;
-
+  int retval=0;
   if (Read_object_item_dialog_values(name, sizeof(name),
                                      lat_str, sizeof(lat_str),
                                      ext_lat_str, sizeof(ext_lat_str),
@@ -332,11 +334,6 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
                                      prob_min, sizeof(prob_min),
                                      prob_max, sizeof(prob_max)))
   {
-    if (!valid_object(name))
-    {
-      return(0);
-    }
-
     xastir_snprintf(last_object,sizeof(last_object),"%s",name);
 
     if (p_station != NULL)
@@ -379,8 +376,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
                                               1, 0);
     if (theDataRow)
     {
-      (void)Create_object_item_tx_string(theDataRow, line,
-                                         line_length);
+      retval=Create_object_item_tx_string(theDataRow, line, line_length);
       destroy_object_item_data_row(theDataRow);
     }
     else
@@ -388,8 +384,9 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
       // This can never happen, as the constructor will abort with a fatal
       // error if it can't allocate data.
       fprintf(stderr,"BOO!\n");
+      retval=0;
     }
-    return(1);
+    return(retval);
   }
   else
   {
@@ -415,11 +412,12 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station)
  * dead-reckoned position.  I'm not sure this is a desirable feature, but
  * it was exactly what Xastir did before my refactor.
  *
+ * returns zero if an error occurred, in which case the line is not to be
+ * used by the caller
  */
 int Setup_item_data(char *line, int line_length, DataRow *p_station)
 {
   char name[MAX_CALLSIGN+1];
-  char name_copy[MAX_CALLSIGN+1];
   char obj_group, obj_symbol;
   char lat_str[MAX_LAT];
   char lon_str[MAX_LONG];
@@ -446,7 +444,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
   DataRow *theDataRow;
 
   int object_speed;
-
+  int retval=0;
   if (Read_object_item_dialog_values(name, sizeof(name),
                                      lat_str, sizeof(lat_str),
                                      ext_lat_str, sizeof(ext_lat_str),
@@ -473,25 +471,6 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
                                      prob_min, sizeof(prob_min),
                                      prob_max, sizeof(prob_max)))
   {
-    (void)remove_trailing_spaces(name);
-
-    if (strlen(name) == 1)  // Add two spaces (to make 3 minimum chars)
-    {
-      xastir_snprintf(name_copy, sizeof(name_copy), "%s  ", name);
-      xastir_snprintf(name,sizeof(name),"%s",name_copy);
-    }
-
-    else if (strlen(name) == 2) // Add one space (to make 3 minimum chars)
-    {
-      xastir_snprintf(name_copy, sizeof(name_copy), "%s ", name);
-      xastir_snprintf(name,sizeof(name),"%s",name_copy);
-    }
-
-    if (!valid_item(name))
-    {
-      return(0);
-    }
-
     xastir_snprintf(last_object,sizeof(last_object),"%s",name);
 
     if (p_station != NULL)
@@ -534,8 +513,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
                                               0, 0);
     if (theDataRow)
     {
-      (void)Create_object_item_tx_string(theDataRow, line,
-                                         line_length);
+      retval=Create_object_item_tx_string(theDataRow, line,line_length);
       destroy_object_item_data_row(theDataRow);
     }
     else
@@ -543,8 +521,9 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station)
       // This can never happen, as the constructor will abort with a fatal
       // error if it can't allocate data.
       fprintf(stderr,"BOO!\n");
+      retval=0;
     }
-    return(1);
+    return(retval);
   }
   else
   {
