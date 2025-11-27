@@ -260,9 +260,8 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
 
 
 
-
 /*
- *  Setup APRS Information Field for Objects
+ *  Setup APRS Information Field for Objects and Items
  *
  * We do this by reading the dialog box, creating a DataRow from that
  * information, then formatting the packet exactly as we would do for
@@ -278,39 +277,6 @@ void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
  * returns zero if an error occurred, in which case the line is not to be
  * used by the caller
  */
-int Setup_object_data(char *line, int line_length, DataRow *p_station)
-{
-  return(Setup_object_item_data(line, line_length, p_station, 1));
-}
-
-
-
-
-
-/*
- *  Setup APRS Information Field for item
- *
- * We do this by reading the dialog box, creating a DataRow from that
- * information, then formatting the packet exactly as we would do for
- * an existing item packet by calling Create_object_item_tx_string.
- *
- * If we are passed a p_station, that means the modify dialog was called
- * and we're creating a new packet for an existing item.  But we still
- * create a new DataRow for our new packet.  In this case, we discard
- * any position entered in the modify dialog box and replace it with
- * dead-reckoned position.  I'm not sure this is a desirable feature, but
- * it was exactly what Xastir did before my refactor.
- *
- * returns zero if an error occurred, in which case the line is not to be
- * used by the caller
- */
-int Setup_item_data(char *line, int line_length, DataRow *p_station)
-{
-  return(Setup_object_item_data(line, line_length, p_station, 0));
-}
-
-
-
 /*
  * Construct an object/item transmit data string from dialog box values
  *
@@ -452,7 +418,7 @@ void Object_change_data_set(Widget widget, XtPointer clientData, XtPointer UNUSE
   //fprintf(stderr,"Object_change_data_set\n");
 
   // p_station will be NULL if the object is new.
-  if (Setup_object_data(line, sizeof(line), p_station))
+  if (Setup_object_item_data(line, sizeof(line), p_station,1))
   {
 
     // Update this object in our save file
@@ -517,7 +483,7 @@ void Item_change_data_set(Widget widget, XtPointer clientData, XtPointer UNUSED(
   DataRow *p_station = global_parameter1;
 
 
-  if (Setup_item_data(line,sizeof(line), p_station))
+  if (Setup_object_item_data(line,sizeof(line), p_station,0))
   {
 
     // Update this item in our save file
@@ -670,7 +636,7 @@ void Object_change_data_del(Widget widget, XtPointer clientData, XtPointer UNUSE
   DataRow *p_station = global_parameter1;
 
 
-  if (Setup_object_data(line, sizeof(line), p_station))
+  if (Setup_object_item_data(line, sizeof(line), p_station,1))
   {
 
     line[10] = '_';                         // mark as deleted object
@@ -715,7 +681,7 @@ void Item_change_data_del(Widget widget, XtPointer clientData, XtPointer UNUSED(
   DataRow *p_station = global_parameter1;
 
 
-  if (Setup_item_data(line,sizeof(line), p_station))
+  if (Setup_object_item_data(line,sizeof(line), p_station,0))
   {
 
     done = 0;
