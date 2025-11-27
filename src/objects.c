@@ -131,12 +131,6 @@ int valid_item(char *name)
 
 
 
-// We have a lot of code duplication between Setup_object_data,
-// Setup_item_data, and Create_object_item_tx_string.
-//
-// Make sure to look at the "transmit_compressed_objects_items"
-// variable
-// to decide whether to send a compressed packet.
 /*
  *  Create the transmit string for Objects/Items.
  *  Input is a DataRow struct, output is both an integer that says
