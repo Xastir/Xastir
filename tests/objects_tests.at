@@ -17,6 +17,18 @@ AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_object], [0
 ])
 AT_CLEANUP
 
+AT_SETUP([construct_object_item_data_row: returns good simple object with numeric overlay])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_object_numeric_overlay], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
+AT_SETUP([construct_object_item_data_row: returns good simple object with numeric overlay, compressed])
+AT_KEYWORDS([objects construct_object_item_data_row])
+AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_object_numeric_overlay_compressed], [0], [PASS: construct_object_item_data_row
+])
+AT_CLEANUP
+
 AT_SETUP([construct_object_item_data_row: returns good simple object truncating overlong name])
 AT_KEYWORDS([objects construct_object_item_data_row])
 AT_CHECK(["$abs_top_builddir/tests/test_objects"  constructor_simple_object_name_too_long], [0], [PASS: construct_object_item_data_row

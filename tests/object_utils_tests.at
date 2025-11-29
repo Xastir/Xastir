@@ -678,6 +678,18 @@ AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_
 ])
 AT_CLEANUP
 
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, overlay symbol])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_overlay], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
+AT_SETUP([format_normal_object_item_packet: object with no speed or altitude, overlay symbol, compressed])
+AT_KEYWORDS([object_utils normal_object_item_packet])
+AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_object_overlay_compressed], [0], [PASS: format_normal_object_item_packet produces correct result
+])
+AT_CLEANUP
+
 AT_SETUP([format_normal_object_item_packet: object with speed, no altitude, compressed])
 AT_KEYWORDS([object_utils normal_object_item_packet])
 AT_CHECK(["$abs_top_builddir/tests/test_object_utils" format_normal_object_item_packet_item_speed_noalt_comp], [0], [PASS: format_normal_object_item_packet produces correct result

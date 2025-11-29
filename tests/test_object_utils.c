@@ -1991,6 +1991,43 @@ int test_append_comment_to_object_item_packet_item_toolong(void)
   TEST_ASSERT(strlen(line) == 70, "length should be exactly 70 chars");
   TEST_PASS("append_comment_to_object_item_packet produces correct result");
 }
+
+// Test objects with overlay on symbol
+int test_format_normal_object_item_packet_object_overlay(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '5','0',
+                                   "111618z",
+                                   "3501.63N","10612.38W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,0);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618z3501.63N510612.38W0",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+int test_format_normal_object_item_packet_object_overlay_compressed(void)
+{
+  char line[256];
+  format_normal_object_item_packet(line, sizeof(line),
+                                   "obj",
+                                   '5','0',
+                                   "111618z",
+                                   "3501.631N","10612.385W",
+                                   "",                 // course/speed
+                                   "",                 // altitude
+                                   0,0,                // course, speed
+                                   1,1);               // is_object, compress
+  TEST_ASSERT_STR_EQ(";obj      *111618zf<he43\\7y0   ",
+                     line,
+                     "format_normal_object_item_packet produces correct result");
+  TEST_PASS("format_normal_object_item_packet produces correct result");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -2118,6 +2155,8 @@ int main(int argc, char *argv[])
     {"append_comment_to_object_item_packet_object_toolong",test_append_comment_to_object_item_packet_object_toolong},
     {"append_comment_to_object_item_packet_item_notlong",test_append_comment_to_object_item_packet_item_notlong},
     {"append_comment_to_object_item_packet_item_toolong",test_append_comment_to_object_item_packet_item_toolong},
+    {"format_normal_object_item_packet_object_overlay",test_format_normal_object_item_packet_object_overlay},
+    {"format_normal_object_item_packet_object_overlay_compressed",test_format_normal_object_item_packet_object_overlay_compressed},
     {NULL,NULL}
   };
 
