@@ -104,7 +104,22 @@ extern int npoints;        /* tsk tsk tsk -- globals */
 // Must be last include file
 #include "leak_detection.h"
 
-
+// forward declarations of functions
+void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
+void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
+dbfawk_sig_info *initialize_dbfawk_default_sig(void);
+awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
+                                           int *color, int *lanes,
+                                           char *name, size_t name_s,
+                                           char *key, size_t key_s,
+                                           char *sym, size_t sym_s,
+                                           int *filled,
+                                           int *fill_style,
+                                           int *fill_color, int *fill_stipple,
+                                           int *pattern, int *display_level,
+                                           int *label_level,
+                                           int *label_color,
+                                           int *font_size);
 
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
@@ -748,7 +763,7 @@ void draw_shapefile_map (Widget w,
   static int      color,lanes,filled,pattern,display_level,label_level;
   static int      fill_style,fill_color;
   static int      fill_stipple;
-  //static int layer;
+
   dbfawk_sig_info *sig_info = NULL;
   dbfawk_field_info *fld_info = NULL;
 
@@ -815,22 +830,7 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"DBFAWK signatures %sfound in %s.\n",
             (Dbf_sigs)?" ":"NOT ",get_data_base_dir("config"));
 
-  if (dbfawk_default_sig == NULL)
-  {
-    /* set up default dbfawk when no sig matches */
-    // This one is ok to leave allocated, as it gets malloc'ed
-    // once during each runtime and then gets left alone.  We
-    // don't need to free it.
-    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
-    CHECKMALLOC(dbfawk_default_sig);
-
-    // Calls awk_new_program which allocates memory.  Again, we
-    // don't need to free this one, as it gets allocated only
-    // once per runtime.
-    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
-  }
-
-  //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
+  dbfawk_default_sig = initialize_dbfawk_default_sig();
 
   // We don't draw the shapes if alert_color == -1
   if (alert_color != 0xff)
@@ -936,34 +936,22 @@ void draw_shapefile_map (Widget w,
     if (sig_info)           /* we've got a .dbfawk, so set up symtbl */
     {
 
-      if (!Symtbl)
-      {
-        Symtbl = awk_new_symtab();
-        awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
-        awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
-        awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
-        //awk_declare_sym(Symtbl,"layer",INT,&layer,sizeof(layer));
-        awk_declare_sym(Symtbl,"name",STRING,name,sizeof(name));
-        awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
-        awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
-        awk_declare_sym(Symtbl,"filled",INT,&filled,sizeof(filled));
-        awk_declare_sym(Symtbl,"fill_style",INT,&fill_style,sizeof(fill_style));
-        awk_declare_sym(Symtbl,"fill_color",INT,&fill_color,sizeof(fill_color));
-        awk_declare_sym(Symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));
-        awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
-        awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
-        awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
-        awk_declare_sym(Symtbl,"label_color",INT,&label_color,sizeof(label_color));
-        awk_declare_sym(Symtbl,"font_size",INT,&font_size,sizeof(font_size));
-      }
+      Symtbl = initialize_dbfawk_symbol_table(dbffields, sizeof(dbffields),
+                                              &color, &lanes,
+                                              name, sizeof(name),
+                                              key, sizeof(key),
+                                              sym, sizeof(sym),
+                                              &filled, &fill_style,
+                                              &fill_color, &fill_stipple,
+                                              &pattern, &display_level,
+                                              &label_level, &label_color,
+                                              &font_size);
+
       if (awk_compile_program(Symtbl,sig_info->prog) < 0)
       {
         fprintf(stderr,"Unable to compile .dbfawk program\n");
 
-        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-        {
-          dbfawk_free_sigs(sig_info);
-        }
+        free_dbfawk_sig_info(sig_info);
         return;
       }
       awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
@@ -1096,11 +1084,7 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
     DBFClose( hDBF );   // Clean up open file descriptors
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;
   }
@@ -1132,11 +1116,7 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return; // Done indexing this file
   }
@@ -1219,11 +1199,7 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-      dbfawk_free_info(fld_info);
-      if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-      {
-        dbfawk_free_sigs(sig_info);
-      }
+      free_dbfawk_infos(fld_info, sig_info);
 
       return; // Multipoint type.  Not implemented yet.
       break;
@@ -1232,11 +1208,7 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-      dbfawk_free_info(fld_info);
-      if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-      {
-        dbfawk_free_sigs(sig_info);
-      }
+      free_dbfawk_infos(fld_info, sig_info);
 
       return; // Unknown type.  Don't know how to process it.
       break;
@@ -1272,11 +1244,7 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;     // The file contains no shapes in our viewport
   }
@@ -1444,11 +1412,7 @@ void draw_shapefile_map (Widget w,
                     0,
                     0);
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;
   }
@@ -1538,11 +1502,7 @@ void draw_shapefile_map (Widget w,
                         (unsigned int)screen_height,
                         0,
                         0);
-        dbfawk_free_info(fld_info);
-        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-        {
-          dbfawk_free_sigs(sig_info);
-        }
+        free_dbfawk_infos(fld_info, sig_info);
         return;
       }
     }
@@ -3362,11 +3322,7 @@ void draw_shapefile_map (Widget w,
     }
   }
 
-  dbfawk_free_info(fld_info);
-  if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-  {
-    dbfawk_free_sigs(sig_info);
-  }
+  free_dbfawk_infos(fld_info, sig_info);
 
   DBFClose( hDBF );
   SHPClose( hSHP );
@@ -3402,8 +3358,88 @@ void clear_dbfawk_sigs(void)
   }
 }
 
+void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info)
+{
+  dbfawk_free_info(fld_info);
+  free_dbfawk_sig_info(sig_info);
+}
+
+void free_dbfawk_sig_info(dbfawk_sig_info *sig_info)
+{
+  if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
+  {
+    dbfawk_free_sigs(sig_info);
+  }
+}
 
 
+// Initializes the global "dbfawk_default_sig" if uninitialized.
+// do nothing if already initialized.
+// No matter what, return the pointer
+dbfawk_sig_info *initialize_dbfawk_default_sig(void)
+{
+  if (dbfawk_default_sig == NULL)
+  {
+    /* set up default dbfawk when no sig matches */
+    // This one is ok to leave allocated, as it gets malloc'ed
+    // once during each runtime and then gets left alone.  We
+    // don't need to free it.
+    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
+    CHECKMALLOC(dbfawk_default_sig);
+
+    // Calls awk_new_program which allocates memory.  Again, we
+    // don't need to free this one, as it gets allocated only
+    // once per runtime.
+    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
+  }
+
+  return dbfawk_default_sig;
+}
+
+
+// Allocate and set up a DBFAWK symbol table.
+// Note that the symbol table is allocated ONCE the very first time
+// any shapefile is rendered, and persists forever.  The pointers we
+// use to set up the table must therefore be static and never point to
+// a local variable.
+//
+// This function returns the pointer to the symbol table.
+// if it was already initialized, just return the pointer
+awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
+                                           int *color, int *lanes,
+                                           char *name, size_t name_s,
+                                           char *key, size_t key_s,
+                                           char *sym, size_t sym_s,
+                                           int *filled,
+                                           int *fill_style,
+                                           int *fill_color, int *fill_stipple,
+                                           int *pattern, int *display_level,
+                                           int *label_level,
+                                           int *label_color,
+                                           int *font_size)
+{
+  if (!Symtbl)
+  {
+    Symtbl = awk_new_symtab();
+    awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,dbffields_s);
+    awk_declare_sym(Symtbl,"color",INT,color,sizeof(*color));
+    awk_declare_sym(Symtbl,"lanes",INT,lanes,sizeof(*lanes));
+    awk_declare_sym(Symtbl,"name",STRING,name,name_s);
+    awk_declare_sym(Symtbl,"key",STRING,key,key_s);
+    awk_declare_sym(Symtbl,"symbol",STRING,sym,sym_s);
+    awk_declare_sym(Symtbl,"filled",INT,filled,sizeof(*filled));
+    awk_declare_sym(Symtbl,"fill_style",INT,fill_style,sizeof(*fill_style));
+    awk_declare_sym(Symtbl,"fill_color",INT,fill_color,sizeof(*fill_color));
+    awk_declare_sym(Symtbl,"fill_stipple",INT,fill_stipple,sizeof(*fill_stipple));
+    awk_declare_sym(Symtbl,"pattern",INT,pattern,sizeof(*pattern));
+    awk_declare_sym(Symtbl,"display_level",INT,display_level,sizeof(*display_level));
+    awk_declare_sym(Symtbl,"label_level",INT,label_level,sizeof(*label_level));
+    awk_declare_sym(Symtbl,"label_color",INT,label_color,sizeof(*label_color));
+    awk_declare_sym(Symtbl,"font_size",INT,font_size,sizeof(*font_size));
+  }
+
+  return (Symtbl);
+}
 #endif  // HAVE_LIBSHP
 
 
