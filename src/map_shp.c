@@ -933,39 +933,42 @@ void draw_shapefile_map (Widget w,
       fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
       sig_info = dbfawk_default_sig;
     }
-    if (sig_info)           /* we've got a .dbfawk, so set up symtbl */
+  }
+  else
+  {
+    sig_info = dbfawk_default_sig;
+  }
+
+  if (sig_info)           /* we've got a .dbfawk, so set up symtbl */
+  {
+
+    Symtbl = initialize_dbfawk_symbol_table(dbffields, sizeof(dbffields),
+                                            &color, &lanes,
+                                            name, sizeof(name),
+                                            key, sizeof(key),
+                                            sym, sizeof(sym),
+                                            &filled, &fill_style,
+                                            &fill_color, &fill_stipple,
+                                            &pattern, &display_level,
+                                            &label_level, &label_color,
+                                            &font_size);
+
+    if (awk_compile_program(Symtbl,sig_info->prog) < 0)
     {
+      fprintf(stderr,"Unable to compile .dbfawk program\n");
 
-      Symtbl = initialize_dbfawk_symbol_table(dbffields, sizeof(dbffields),
-                                              &color, &lanes,
-                                              name, sizeof(name),
-                                              key, sizeof(key),
-                                              sym, sizeof(sym),
-                                              &filled, &fill_style,
-                                              &fill_color, &fill_stipple,
-                                              &pattern, &display_level,
-                                              &label_level, &label_color,
-                                              &font_size);
-
-      if (awk_compile_program(Symtbl,sig_info->prog) < 0)
-      {
-        fprintf(stderr,"Unable to compile .dbfawk program\n");
-
-        free_dbfawk_sig_info(sig_info);
-        return;
-      }
-      awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
-
-      /* find out which dbf fields we care to read */
-      fld_info = dbfawk_field_list(hDBF, dbffields);
-
-    }
-    else                    /* should never be reached anymore! */
-    {
-      fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
-      //exit(1);  // Debug
+      free_dbfawk_sig_info(sig_info);
       return;
     }
+    awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
+
+    /* find out which dbf fields we care to read */
+    fld_info = dbfawk_field_list(hDBF, dbffields);
+  }
+  else                    /* should never be reached anymore! */
+  {
+    fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
+    return;
   }
   /*
    * Weather alert dbfawk files set the "key" variable to the
