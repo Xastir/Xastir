@@ -104,7 +104,22 @@ extern int npoints;        /* tsk tsk tsk -- globals */
 // Must be last include file
 #include "leak_detection.h"
 
-
+// forward declarations of functions
+void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
+void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
+dbfawk_sig_info *initialize_dbfawk_default_sig(void);
+awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
+                                           int *color, int *lanes,
+                                           char *name, size_t name_s,
+                                           char *key, size_t key_s,
+                                           char *sym, size_t sym_s,
+                                           int *filled,
+                                           int *fill_style,
+                                           int *fill_color, int *fill_stipple,
+                                           int *pattern, int *display_level,
+                                           int *label_level,
+                                           int *label_color,
+                                           int *font_size);
 
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
@@ -531,153 +546,31 @@ int shape_ring_direction ( SHPObject *psObject, int Ring )
  * extents) instead of drawing it.
  *
  * The current implementation can draw Polygon, PolyLine, and Point
- * Shapefiles, but only from a few sources (NOAA, Mapshots.com, and
- * ESRI/GeographyNetwork.com).  We don't handle some of the more
- * esoteric formats.  We now handle the "hole" drawing in polygon
- * shapefiles, where one direction around the ring means a fill, and
- * the other direction means a hole in the polygon.
+ * Shapefiles.  Rendering rules for any shapefile are provided by
+ * an associated "awk-like" DBFAWK file.
  *
- * Note that we must currently hard-code the file-recognition
- * portion and the file-drawing portion, because every new source of
- * Shapefiles has a different format, and the fields and field
- * definitions can all change between them.
+ * We handle the "hole" drawing in polygon shapefiles, where one
+ * direction around the ring means a fill, and the other direction
+ * means a hole in the polygon.
  *
  * If alert is NULL, draw every shape that fits the screen.  If
  * non-NULL, draw only the shape that matches the zone number.
  *
- * Here's what I get for the County_Warning_Area Shapefile:
- *
- *
- * Info for shapefiles/county_warning_areas/w_24ja01.shp
- * 4 Columns,  121 Records in file
- *            WFO          string  (3,0)
- *            CWA          string  (3,0)
- *            LON           float  (18,5)
- *            LAT           float  (18,5)
- * Info for shapefiles/county_warning_areas/w_24ja01.shp
- * Polygon(5), 121 Records in file
- * File Bounds: (              0,              0)
- *              (    179.7880249,    71.39809418)
- *
- * From the NOAA web pages:
 
- Zone Alert Maps: (polygon) (such as z_16mr01.shp)
- ----------------
- field name type   width,dec description
- STATE      character 2     [ss] State abbrev (US Postal Standard)
- ZONE       character 3     [zzz] Zone number, from WSOM C-11
- CWA        character 3     County Warning Area, from WSOM C-47
- NAME       character 254   Zone name, from WSOM C-11
- STATE_ZONE character 5     [sszzz] state+("00"+zone.trim).right(3))
- TIME_ZONE  character 2     [tt] Time Zone, 2 chars if split
- FE_AREA    character 2     [aa] Cardinal area of state (occasional)
- LON        numeric   10,5  Longitude of centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of centroid [decimal degrees]
+ * Weather alerts are handled by having a dbfawk file that defines a
+ * "key" variable.  The "key" matches a code in the DBF file that corresponds
+ * to the weather area to alert on.   Which field is used to construct
+ * the key depends on the file and whether NWS has changed the format.
+ * See DBFAWK files named "nws*.dbfawk" in the config directory.
 
+ * If we are processing a weather alert, we are getting passed an
+ * alert_entry that identifies which named shape to search for, and we
+ * find the shape in the dbf file that has a key that matches.
 
- NOTE:  APRS weather alerts have these sorts of codes in them:
-    AL_C001
-    AUTAUGACOUNTY
-    MS_C075
-    LAUDERDALE&NEWTONCOUNTIES
-    KY_C009
-    EDMONSON
-    MS_CLARKE
-    MS_C113
-    MN_Z076
-    PIKECOUNTY
-    ATTALACOUNTY
-    ST.LUCIECOUNTY
-    CW_AGLD
+ * The alert entries are created by alert_build_list.  If we're doing
+ * alerts, we're being called from load_alert_maps.
 
- The strings in the shapefiles are mixed-case, and it appears that the NAME field would
- have the county name, in case state_zone-number format was not used.  We can use the
- STATE_ZONE filed for a match unless it is a non-standard form, in which case we'll need
- to look through the NAME field, and perhaps chop off the "SS_" state portion first.
-
-
- County Warning Areas: (polygon)
- ---------------------
- field name type   width,dec description
- WFO        character 3     WFO Identifier (name of CWA)
- CWA        character 3     CWA Identifier (same as WFO)
- LON        numeric   10,5  Longitude of centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of centroid [decimal degrees]
-
- Coastal and Offshore Marine Areas: (polygon)
- ----------------------------------
- field name type   width,dec description
- ID         character 6     Marine Zone Identifier
- WFO        character 3     Assigned WFO (Office Identifier)
- NAME       character 250   Name of Marine Zone
- LON        numeric   10,5  Longitude of Centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of Centroid [decimal degrees]
- WFO_AREA   character 200   "Official Area of Responsibility", from WSOM D51/D52
-
- Road Maps: (polyline)
- ----------
- field name type     width,dec  description
- STFIPS     numeric     2,0     State FIPS Code
- CTFIPS     numeric     3,0     County FIPS Code
- MILES      numeric     6,2     length [mi]
- KILOMETERS numeric     6,2     length [km]
- TOLL       numeric     1,0
- SURFACE    numeric     1,0     Surface type
- LANES      numeric     2,0     Number of lanes
- FEAT_CLASS numeric     2,0
- CLASS      character   30
- SIGN1      character   6       Primary Sign Route
- SIGN2      character   6       Secondary Sign Route
- SIGN3      character   6       Alternate Sign Route
- DESCRIPT   character   35      Name of road (sparse)
- SPEEDLIM   numeric     16,0
- SECONDS    numeric     16,2
-
-Lakes (lk17de98.shp):
----------------------
-field name  type     width,dec  description
-NAME        string      (40,0)
-FEATURE     string      (40,0)
-LON         float       (10,5)
-LAT         float       (9,5)
-
-
-USGS Quads Overlay (24kgrid.shp) from
-http://data.geocomm.com/quadindex/
-----------------------------------
-field name  type     width,dec  Example
-NAME        string     (30,0)   Lummi Bay OE W
-STATE       string      (2,0)   WA
-LAT         string      (6,0)   48.750
-LON         string      (8,0)   -122.750
-MRC         string      (8,0)   48122-G7
-
-
-// Need to figure out which type of alert it is, select the corresponding shapefile,
-// then store the shapefile AND the alert_tag in the alert hash .filename list?
-// and draw the map.  Add an item to alert hash to keep track?
-
-// The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
-// Here's the old APRS-type map call:
-//map_search (w, alert_scan, alert, &alert_count,(int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
-
-// Check the zone name(s) to see which Shapefile(s) to use.
-
-            switch (zone[4]) {
-                case ('C'): // County File (c_16my01.shp)
-                    break;
-***             case ('A'): // County Warning File (w_24ja01.shp)
-                    break;
-                case ('Z'): // Zone File (z_16mr01.shp, z_16my01.shp, mz24ja01.shp, oz09de99.shp)
-                    break;
-                case ('F'): // Fire weather (fz_ddmmyy.shp)
-                    break;
-***             case ('A'): // Canadian Area (a_mmddyy.shp)
-                    break;
-                case ('R'): // Canadian Region (r_mmddyy.shp)
-                    break;
-            }
-
+ * If we're not given an alert_entry, then we're to draw the whole map.
 
  **********************************************************/
 
@@ -748,7 +641,7 @@ void draw_shapefile_map (Widget w,
   static int      color,lanes,filled,pattern,display_level,label_level;
   static int      fill_style,fill_color;
   static int      fill_stipple;
-  //static int layer;
+
   dbfawk_sig_info *sig_info = NULL;
   dbfawk_field_info *fld_info = NULL;
 
@@ -815,22 +708,7 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"DBFAWK signatures %sfound in %s.\n",
             (Dbf_sigs)?" ":"NOT ",get_data_base_dir("config"));
 
-  if (dbfawk_default_sig == NULL)
-  {
-    /* set up default dbfawk when no sig matches */
-    // This one is ok to leave allocated, as it gets malloc'ed
-    // once during each runtime and then gets left alone.  We
-    // don't need to free it.
-    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
-    CHECKMALLOC(dbfawk_default_sig);
-
-    // Calls awk_new_program which allocates memory.  Again, we
-    // don't need to free this one, as it gets allocated only
-    // once per runtime.
-    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
-  }
-
-  //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
+  dbfawk_default_sig = initialize_dbfawk_default_sig();
 
   // We don't draw the shapes if alert_color == -1
   if (alert_color != 0xff)
@@ -933,51 +811,42 @@ void draw_shapefile_map (Widget w,
       fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
       sig_info = dbfawk_default_sig;
     }
-    if (sig_info)           /* we've got a .dbfawk, so set up symtbl */
+  }
+  else
+  {
+    sig_info = dbfawk_default_sig;
+  }
+
+  if (sig_info)           /* we've got a .dbfawk, so set up symtbl */
+  {
+
+    Symtbl = initialize_dbfawk_symbol_table(dbffields, sizeof(dbffields),
+                                            &color, &lanes,
+                                            name, sizeof(name),
+                                            key, sizeof(key),
+                                            sym, sizeof(sym),
+                                            &filled, &fill_style,
+                                            &fill_color, &fill_stipple,
+                                            &pattern, &display_level,
+                                            &label_level, &label_color,
+                                            &font_size);
+
+    if (awk_compile_program(Symtbl,sig_info->prog) < 0)
     {
+      fprintf(stderr,"Unable to compile .dbfawk program\n");
 
-      if (!Symtbl)
-      {
-        Symtbl = awk_new_symtab();
-        awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
-        awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
-        awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
-        //awk_declare_sym(Symtbl,"layer",INT,&layer,sizeof(layer));
-        awk_declare_sym(Symtbl,"name",STRING,name,sizeof(name));
-        awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
-        awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
-        awk_declare_sym(Symtbl,"filled",INT,&filled,sizeof(filled));
-        awk_declare_sym(Symtbl,"fill_style",INT,&fill_style,sizeof(fill_style));
-        awk_declare_sym(Symtbl,"fill_color",INT,&fill_color,sizeof(fill_color));
-        awk_declare_sym(Symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));
-        awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
-        awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
-        awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
-        awk_declare_sym(Symtbl,"label_color",INT,&label_color,sizeof(label_color));
-        awk_declare_sym(Symtbl,"font_size",INT,&font_size,sizeof(font_size));
-      }
-      if (awk_compile_program(Symtbl,sig_info->prog) < 0)
-      {
-        fprintf(stderr,"Unable to compile .dbfawk program\n");
-
-        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-        {
-          dbfawk_free_sigs(sig_info);
-        }
-        return;
-      }
-      awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
-
-      /* find out which dbf fields we care to read */
-      fld_info = dbfawk_field_list(hDBF, dbffields);
-
-    }
-    else                    /* should never be reached anymore! */
-    {
-      fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
-      //exit(1);  // Debug
+      free_dbfawk_sig_info(sig_info);
       return;
     }
+    awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
+
+    /* find out which dbf fields we care to read */
+    fld_info = dbfawk_field_list(hDBF, dbffields);
+  }
+  else                    /* should never be reached anymore! */
+  {
+    fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
+    return;
   }
   /*
    * Weather alert dbfawk files set the "key" variable to the
@@ -1096,11 +965,7 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
     DBFClose( hDBF );   // Clean up open file descriptors
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;
   }
@@ -1132,11 +997,7 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return; // Done indexing this file
   }
@@ -1219,11 +1080,7 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-      dbfawk_free_info(fld_info);
-      if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-      {
-        dbfawk_free_sigs(sig_info);
-      }
+      free_dbfawk_infos(fld_info, sig_info);
 
       return; // Multipoint type.  Not implemented yet.
       break;
@@ -1232,11 +1089,7 @@ void draw_shapefile_map (Widget w,
       DBFClose( hDBF );   // Clean up open file descriptors
       SHPClose( hSHP );
 
-      dbfawk_free_info(fld_info);
-      if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-      {
-        dbfawk_free_sigs(sig_info);
-      }
+      free_dbfawk_infos(fld_info, sig_info);
 
       return; // Unknown type.  Don't know how to process it.
       break;
@@ -1272,11 +1125,7 @@ void draw_shapefile_map (Widget w,
     DBFClose( hDBF );   // Clean up open file descriptors
     SHPClose( hSHP );
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;     // The file contains no shapes in our viewport
   }
@@ -1444,11 +1293,7 @@ void draw_shapefile_map (Widget w,
                     0,
                     0);
 
-    dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
-      dbfawk_free_sigs(sig_info);
-    }
+    free_dbfawk_infos(fld_info, sig_info);
 
     return;
   }
@@ -1538,11 +1383,7 @@ void draw_shapefile_map (Widget w,
                         (unsigned int)screen_height,
                         0,
                         0);
-        dbfawk_free_info(fld_info);
-        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-        {
-          dbfawk_free_sigs(sig_info);
-        }
+        free_dbfawk_infos(fld_info, sig_info);
         return;
       }
     }
@@ -3362,11 +3203,7 @@ void draw_shapefile_map (Widget w,
     }
   }
 
-  dbfawk_free_info(fld_info);
-  if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-  {
-    dbfawk_free_sigs(sig_info);
-  }
+  free_dbfawk_infos(fld_info, sig_info);
 
   DBFClose( hDBF );
   SHPClose( hSHP );
@@ -3402,8 +3239,88 @@ void clear_dbfawk_sigs(void)
   }
 }
 
+void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info)
+{
+  dbfawk_free_info(fld_info);
+  free_dbfawk_sig_info(sig_info);
+}
+
+void free_dbfawk_sig_info(dbfawk_sig_info *sig_info)
+{
+  if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
+  {
+    dbfawk_free_sigs(sig_info);
+  }
+}
 
 
+// Initializes the global "dbfawk_default_sig" if uninitialized.
+// do nothing if already initialized.
+// No matter what, return the pointer
+dbfawk_sig_info *initialize_dbfawk_default_sig(void)
+{
+  if (dbfawk_default_sig == NULL)
+  {
+    /* set up default dbfawk when no sig matches */
+    // This one is ok to leave allocated, as it gets malloc'ed
+    // once during each runtime and then gets left alone.  We
+    // don't need to free it.
+    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
+    CHECKMALLOC(dbfawk_default_sig);
+
+    // Calls awk_new_program which allocates memory.  Again, we
+    // don't need to free this one, as it gets allocated only
+    // once per runtime.
+    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
+  }
+
+  return dbfawk_default_sig;
+}
+
+
+// Allocate and set up a DBFAWK symbol table.
+// Note that the symbol table is allocated ONCE the very first time
+// any shapefile is rendered, and persists forever.  The pointers we
+// use to set up the table must therefore be static and never point to
+// a local variable.
+//
+// This function returns the pointer to the symbol table.
+// if it was already initialized, just return the pointer
+awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
+                                           int *color, int *lanes,
+                                           char *name, size_t name_s,
+                                           char *key, size_t key_s,
+                                           char *sym, size_t sym_s,
+                                           int *filled,
+                                           int *fill_style,
+                                           int *fill_color, int *fill_stipple,
+                                           int *pattern, int *display_level,
+                                           int *label_level,
+                                           int *label_color,
+                                           int *font_size)
+{
+  if (!Symtbl)
+  {
+    Symtbl = awk_new_symtab();
+    awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,dbffields_s);
+    awk_declare_sym(Symtbl,"color",INT,color,sizeof(*color));
+    awk_declare_sym(Symtbl,"lanes",INT,lanes,sizeof(*lanes));
+    awk_declare_sym(Symtbl,"name",STRING,name,name_s);
+    awk_declare_sym(Symtbl,"key",STRING,key,key_s);
+    awk_declare_sym(Symtbl,"symbol",STRING,sym,sym_s);
+    awk_declare_sym(Symtbl,"filled",INT,filled,sizeof(*filled));
+    awk_declare_sym(Symtbl,"fill_style",INT,fill_style,sizeof(*fill_style));
+    awk_declare_sym(Symtbl,"fill_color",INT,fill_color,sizeof(*fill_color));
+    awk_declare_sym(Symtbl,"fill_stipple",INT,fill_stipple,sizeof(*fill_stipple));
+    awk_declare_sym(Symtbl,"pattern",INT,pattern,sizeof(*pattern));
+    awk_declare_sym(Symtbl,"display_level",INT,display_level,sizeof(*display_level));
+    awk_declare_sym(Symtbl,"label_level",INT,label_level,sizeof(*label_level));
+    awk_declare_sym(Symtbl,"label_color",INT,label_color,sizeof(*label_color));
+    awk_declare_sym(Symtbl,"font_size",INT,font_size,sizeof(*font_size));
+  }
+
+  return (Symtbl);
+}
 #endif  // HAVE_LIBSHP
 
 
