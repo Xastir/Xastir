@@ -2950,9 +2950,6 @@ void draw_shapefile_map (Widget w,
                 }
 
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-
-                // Draw a thicker border for city boundaries
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
                 (void)XDrawLines(XtDisplay(w),
