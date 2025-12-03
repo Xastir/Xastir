@@ -627,14 +627,12 @@ void draw_shapefile_map (Widget w,
   int             gps_flag = 0;
   char            gps_label[100];
   int             gps_color = 0x0c;
-  int             quad_overlay_flag = 0;
   int             weather_alert_flag = 0;
   char            *filename;  // filename itself w/o directory
   int             found_shape = -1;
   int             ok_to_draw = 0;
   int             high_water_mark_i = 0;
   int             high_water_mark_index = 0;
-  char            quad_label[100];
   char            status_text[MAX_FILENAME];
   /* these have to be static since I recycle Symtbl between calls */
   static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
@@ -2812,17 +2810,6 @@ void draw_shapefile_map (Widget w,
                                           CapButt,
                                           JoinMiter);
               }
-              else if (quad_overlay_flag)
-              {
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
-              }
-              /* old glacier, lake and river code was identical
-                 with the exception of what color to use! */
               else if (!weather_alert_flag)
               {
                 /* color is already set by dbfawk(?) */
@@ -2963,9 +2950,6 @@ void draw_shapefile_map (Widget w,
                 }
 
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-
-                // Draw a thicker border for city boundaries
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
                 (void)XDrawLines(XtDisplay(w),
@@ -3009,32 +2993,6 @@ void draw_shapefile_map (Widget w,
           // stippled along with polygons!
           XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
-          /* XXX - figure out how to set this from dbfawk: */
-          if (quad_overlay_flag)
-          {
-            if (fieldcount >= 5)
-            {
-              // Use just the last two characters of
-              // the quad index.  "44072-A3" converts
-              // to "A3"
-              temp = DBFReadStringAttribute( hDBF, structure, 4 );
-              xastir_snprintf(quad_label,
-                              sizeof(quad_label),
-                              "%s ",
-                              &temp[strlen(temp) - 2]);
-
-              // Append the name of the quad
-              temp = DBFReadStringAttribute( hDBF, structure, 0 );
-              strncat(quad_label,
-                      temp,
-                      sizeof(quad_label) - 1 - strlen(quad_label));
-            }
-            else
-            {
-              quad_label[0] = '\0';
-            }
-          }
-
           if ( (temp != NULL)
                && (strlen(temp) != 0)
                && map_labels
@@ -3049,64 +3007,12 @@ void draw_shapefile_map (Widget w,
             ok = 1;
 
             // Convert to Xastir coordinates:
-            // If quad overlay shapefile, need to
-            // snag the label coordinates from the DBF
-            // file instead.  Note that the coordinates
-            // are for the bottom right corner of the
-            // quad, so we need to shift it left by 7.5'
-            // to make the label appear inside the quad
-            // (attached to the bottom left corner in
-            // this case).
-            /* XXX - figure out how to do WITH_DBFAWK: */
-            if (quad_overlay_flag)
-            {
-              const char *dbf_temp;
-              float lat_f;
-              float lon_f;
-
-              if (fieldcount >= 4)
-              {
-                dbf_temp = DBFReadStringAttribute( hDBF, structure, 2 );
-                if (1 != sscanf(dbf_temp, "%f", &lat_f))
-                {
-                  fprintf(stderr,"draw_shapefile_map:sscanf parsing error\n");
-                }
-                dbf_temp = DBFReadStringAttribute( hDBF, structure, 3 );
-                if (1 != sscanf(dbf_temp, "%f", &lon_f))
-                {
-                  fprintf(stderr,"draw_shapefile_map:sscanf parsing error\n");
-                }
-                lon_f = lon_f - 0.125;
-              }
-              else
-              {
-                lat_f = 0.0;
-                lon_f = 0.0;
-              }
-
-              //fprintf(stderr,"Lat: %f, Lon: %f\t, Quad: %s\n", lat_f, lon_f, quad_label);
-
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)lon_f,
-                                                      (float)lat_f);
-            }
-            else    // Not quad overlay, use vertices
-            {
-              // XXX - todo: center large polygon labels in the center (e.g. county boundary)
-              /* center label in polygon bounding box */
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      ((float)(object->dfXMax + object->dfXMin))/2.0,
-                                                      ((float)(object->dfYMax + object->dfYMin))/2.0);
-#ifdef notdef
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)object->padfX[0],
-                                                      (float)object->padfY[0]);
-#endif  // notdef
-            }
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
+            // XXX - todo: center large polygon labels in the center (e.g. county boundary)
+            /* center label in polygon bounding box */
+            temp_ok = convert_to_xastir_coordinates(&my_long,
+                                                    &my_lat,
+                                                    ((float)(object->dfXMax + object->dfXMin))/2.0,
+                                                    ((float)(object->dfYMax + object->dfYMin))/2.0);
 
             if (!temp_ok)
             {
@@ -3130,43 +3036,20 @@ void draw_shapefile_map (Widget w,
 
               if (ok == 1 && ok_to_draw)
               {
-                if (quad_overlay_flag)
+                if (debug_level & 16)
                 {
-                  draw_nice_string(w,
-                                   pixmap,
-                                   0,
-                                   x+2,
-                                   y-1,
-                                   (char*)quad_label,
-                                   0xf,
-                                   0x10,
-                                   strlen(quad_label));
+                  fprintf(stderr,
+                          "  displaying label %s with color %x\n",
+                          temp,label_color);
                 }
-                else
-                {
-#ifdef notdef
-                  (void)draw_label_text ( w,
-                                          x,
-                                          y,
-                                          strlen(temp),
-                                          colors[label_color],
-                                          (char *)temp);
-#endif  // notdef
-                  if (debug_level & 16)
-                  {
-                    fprintf(stderr,
-                            "  displaying label %s with color %x\n",
-                            temp,label_color);
-                  }
-                  (void)draw_centered_label_text(w,
-                                                 -90,
-                                                 x,
-                                                 y,
-                                                 strlen(temp),
-                                                 colors[label_color],
-                                                 (char *)temp,
-                                                 font_size);
-                }
+                (void)draw_centered_label_text(w,
+                                               -90,
+                                               x,
+                                               y,
+                                               strlen(temp),
+                                               colors[label_color],
+                                               (char *)temp,
+                                               font_size);
               }
             }
           }
