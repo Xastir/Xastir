@@ -546,153 +546,31 @@ int shape_ring_direction ( SHPObject *psObject, int Ring )
  * extents) instead of drawing it.
  *
  * The current implementation can draw Polygon, PolyLine, and Point
- * Shapefiles, but only from a few sources (NOAA, Mapshots.com, and
- * ESRI/GeographyNetwork.com).  We don't handle some of the more
- * esoteric formats.  We now handle the "hole" drawing in polygon
- * shapefiles, where one direction around the ring means a fill, and
- * the other direction means a hole in the polygon.
+ * Shapefiles.  Rendering rules for any shapefile are provided by
+ * an associated "awk-like" DBFAWK file.
  *
- * Note that we must currently hard-code the file-recognition
- * portion and the file-drawing portion, because every new source of
- * Shapefiles has a different format, and the fields and field
- * definitions can all change between them.
+ * We handle the "hole" drawing in polygon shapefiles, where one
+ * direction around the ring means a fill, and the other direction
+ * means a hole in the polygon.
  *
  * If alert is NULL, draw every shape that fits the screen.  If
  * non-NULL, draw only the shape that matches the zone number.
  *
- * Here's what I get for the County_Warning_Area Shapefile:
- *
- *
- * Info for shapefiles/county_warning_areas/w_24ja01.shp
- * 4 Columns,  121 Records in file
- *            WFO          string  (3,0)
- *            CWA          string  (3,0)
- *            LON           float  (18,5)
- *            LAT           float  (18,5)
- * Info for shapefiles/county_warning_areas/w_24ja01.shp
- * Polygon(5), 121 Records in file
- * File Bounds: (              0,              0)
- *              (    179.7880249,    71.39809418)
- *
- * From the NOAA web pages:
 
- Zone Alert Maps: (polygon) (such as z_16mr01.shp)
- ----------------
- field name type   width,dec description
- STATE      character 2     [ss] State abbrev (US Postal Standard)
- ZONE       character 3     [zzz] Zone number, from WSOM C-11
- CWA        character 3     County Warning Area, from WSOM C-47
- NAME       character 254   Zone name, from WSOM C-11
- STATE_ZONE character 5     [sszzz] state+("00"+zone.trim).right(3))
- TIME_ZONE  character 2     [tt] Time Zone, 2 chars if split
- FE_AREA    character 2     [aa] Cardinal area of state (occasional)
- LON        numeric   10,5  Longitude of centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of centroid [decimal degrees]
+ * Weather alerts are handled by having a dbfawk file that defines a
+ * "key" variable.  The "key" matches a code in the DBF file that corresponds
+ * to the weather area to alert on.   Which field is used to construct
+ * the key depends on the file and whether NWS has changed the format.
+ * See DBFAWK files named "nws*.dbfawk" in the config directory.
 
+ * If we are processing a weather alert, we are getting passed an
+ * alert_entry that identifies which named shape to search for, and we
+ * find the shape in the dbf file that has a key that matches.
 
- NOTE:  APRS weather alerts have these sorts of codes in them:
-    AL_C001
-    AUTAUGACOUNTY
-    MS_C075
-    LAUDERDALE&NEWTONCOUNTIES
-    KY_C009
-    EDMONSON
-    MS_CLARKE
-    MS_C113
-    MN_Z076
-    PIKECOUNTY
-    ATTALACOUNTY
-    ST.LUCIECOUNTY
-    CW_AGLD
+ * The alert entries are created by alert_build_list.  If we're doing
+ * alerts, we're being called from load_alert_maps.
 
- The strings in the shapefiles are mixed-case, and it appears that the NAME field would
- have the county name, in case state_zone-number format was not used.  We can use the
- STATE_ZONE filed for a match unless it is a non-standard form, in which case we'll need
- to look through the NAME field, and perhaps chop off the "SS_" state portion first.
-
-
- County Warning Areas: (polygon)
- ---------------------
- field name type   width,dec description
- WFO        character 3     WFO Identifier (name of CWA)
- CWA        character 3     CWA Identifier (same as WFO)
- LON        numeric   10,5  Longitude of centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of centroid [decimal degrees]
-
- Coastal and Offshore Marine Areas: (polygon)
- ----------------------------------
- field name type   width,dec description
- ID         character 6     Marine Zone Identifier
- WFO        character 3     Assigned WFO (Office Identifier)
- NAME       character 250   Name of Marine Zone
- LON        numeric   10,5  Longitude of Centroid [decimal degrees]
- LAT        numeric   9,5   Latitude of Centroid [decimal degrees]
- WFO_AREA   character 200   "Official Area of Responsibility", from WSOM D51/D52
-
- Road Maps: (polyline)
- ----------
- field name type     width,dec  description
- STFIPS     numeric     2,0     State FIPS Code
- CTFIPS     numeric     3,0     County FIPS Code
- MILES      numeric     6,2     length [mi]
- KILOMETERS numeric     6,2     length [km]
- TOLL       numeric     1,0
- SURFACE    numeric     1,0     Surface type
- LANES      numeric     2,0     Number of lanes
- FEAT_CLASS numeric     2,0
- CLASS      character   30
- SIGN1      character   6       Primary Sign Route
- SIGN2      character   6       Secondary Sign Route
- SIGN3      character   6       Alternate Sign Route
- DESCRIPT   character   35      Name of road (sparse)
- SPEEDLIM   numeric     16,0
- SECONDS    numeric     16,2
-
-Lakes (lk17de98.shp):
----------------------
-field name  type     width,dec  description
-NAME        string      (40,0)
-FEATURE     string      (40,0)
-LON         float       (10,5)
-LAT         float       (9,5)
-
-
-USGS Quads Overlay (24kgrid.shp) from
-http://data.geocomm.com/quadindex/
-----------------------------------
-field name  type     width,dec  Example
-NAME        string     (30,0)   Lummi Bay OE W
-STATE       string      (2,0)   WA
-LAT         string      (6,0)   48.750
-LON         string      (8,0)   -122.750
-MRC         string      (8,0)   48122-G7
-
-
-// Need to figure out which type of alert it is, select the corresponding shapefile,
-// then store the shapefile AND the alert_tag in the alert hash .filename list?
-// and draw the map.  Add an item to alert hash to keep track?
-
-// The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
-// Here's the old APRS-type map call:
-//map_search (w, alert_scan, alert, &alert_count,(int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
-
-// Check the zone name(s) to see which Shapefile(s) to use.
-
-            switch (zone[4]) {
-                case ('C'): // County File (c_16my01.shp)
-                    break;
-***             case ('A'): // County Warning File (w_24ja01.shp)
-                    break;
-                case ('Z'): // Zone File (z_16mr01.shp, z_16my01.shp, mz24ja01.shp, oz09de99.shp)
-                    break;
-                case ('F'): // Fire weather (fz_ddmmyy.shp)
-                    break;
-***             case ('A'): // Canadian Area (a_mmddyy.shp)
-                    break;
-                case ('R'): // Canadian Region (r_mmddyy.shp)
-                    break;
-            }
-
+ * If we're not given an alert_entry, then we're to draw the whole map.
 
  **********************************************************/
 
