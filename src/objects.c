@@ -1105,9 +1105,17 @@ DataRow *construct_object_item_data_row(char *name,
     // Truncate name if necessary
     if (strlen(name) > sizeof(theDataRow->call_sign)-1)
     {
-      name[sizeof(theDataRow->call_sign)-1] = '\0';
+      char *copy_name;
+      copy_name=(char *)malloc(strlen(name)+1);
+      strncpy(copy_name,name,strlen(name));
+      copy_name[sizeof(theDataRow->call_sign)-1] = '\0';
+      strncpy(theDataRow->call_sign,copy_name,sizeof(theDataRow->call_sign)-1);
+      free(copy_name);
     }
-    strncpy(theDataRow->call_sign,name,sizeof(theDataRow->call_sign)-1);
+    else
+    {
+      strncpy(theDataRow->call_sign,name,sizeof(theDataRow->call_sign)-1);
+    }
 
     theDataRow->coord_lat = convert_lat_s2l(lat_str);
     theDataRow->coord_lon = convert_lon_s2l(lon_str);

@@ -230,8 +230,8 @@ int test_constructor_simple_object_name_too_long(void)
   long expect_lat = 90*60*60*100-(35*60+1.63)*60*100;
   long expect_lon = 180*60*60*100-(106*60+12.38)*60*100;
   char line[256];
-  char name[12]="TEST5678901";
-  theDataRow=construct_object_item_data_row(name,  // name
+
+  theDataRow=construct_object_item_data_row("TEST5678901",  // name
                                             "3501.63N",
                                             "10612.38W", // lat/lon
                                             '/','/',    // group, symbol
