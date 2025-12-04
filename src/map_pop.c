@@ -627,14 +627,7 @@ FINISH:
               fprintf(stderr,"%s\t%s\n", lat_str, long_str);
             }
 
-            // Convert to screen coordinates.  Careful
-            // here!  The format conversions you'll need
-            // if you try to compress this into two
-            // lines will get you into trouble.
-            x = coord_lon - NW_corner_longitude;
-            y = coord_lat - NW_corner_latitude;
-            x /= scale_x;
-            y /= scale_y;
+            convert_xastir_to_screen_coordinates(coord_lon, coord_lat, &x, &y);
 
             ok = 1;
 

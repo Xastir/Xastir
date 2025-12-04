@@ -1040,7 +1040,7 @@ void draw_point(Widget w,
                 int skip_duplicates)
 {
 
-  int x1i, y1i;
+  long x1i, y1i;
   static int last_x1i;
   static int last_y1i;
 
@@ -1063,15 +1063,7 @@ void draw_point(Widget w,
     return;
   }
 
-  // Convert to screen coordinates.  Careful here!
-  // The format conversions you'll need if you try to
-  // compress this into two lines will get you into
-  // trouble.
-  x1i = x1 - NW_corner_longitude;
-  x1i = x1i / scale_x;
-
-  y1i = y1 - NW_corner_latitude;
-  y1i = y1i / scale_y;
+  convert_xastir_to_screen_coordinates(x1, y1, &x1i, &y1i);
 
   if (skip_duplicates)
   {
@@ -1153,7 +1145,7 @@ void draw_vector(Widget w,
                  int skip_duplicates)
 {
 
-  int x1i, x2i, y1i, y2i;
+  long x1i, x2i, y1i, y2i;
   static int last_x1i, last_x2i, last_y1i, last_y2i;
 
 
@@ -1167,21 +1159,8 @@ void draw_vector(Widget w,
   }
   //fprintf(stderr,"%ld,%ld  %ld,%ld\n",x1,y1,x2,y2);
 
-  // Convert to screen coordinates.  Careful here!
-  // The format conversions you'll need if you try to
-  // compress this into two lines will get you into
-  // trouble.
-  x1i = x1 - NW_corner_longitude;
-  x1i = x1i / scale_x;
-
-  y1i = y1 - NW_corner_latitude;
-  y1i = y1i / scale_y;
-
-  x2i = x2 - NW_corner_longitude;
-  x2i = x2i / scale_x;
-
-  y2i = y2 - NW_corner_latitude;
-  y2i = y2i / scale_y;
+  convert_xastir_to_screen_coordinates(x1, y1, &x1i, &y1i);
+  convert_xastir_to_screen_coordinates(x2, y2, &x2i, &y2i);
 
   if (skip_duplicates)
   {
@@ -1234,7 +1213,7 @@ void draw_vector_ll(Widget w,
 {
 
   unsigned long x1L, x2L, y1L, y2L;
-  int x1i, x2i, y1i, y2i;
+  long x1i, x2i, y1i, y2i;
   static int last_x1i, last_x2i, last_y1i, last_y2i;
 
 
@@ -1260,21 +1239,8 @@ void draw_vector_ll(Widget w,
 
 //fprintf(stderr,"%ld,%ld  %ld,%ld\n",x1L,y1L,x2L,y2L);
 
-  // Convert to screen coordinates.  Careful here!
-  // The format conversions you'll need if you try to
-  // compress this into two lines will get you into
-  // trouble.
-  x1i = (int)(x1L - NW_corner_longitude);
-  x1i = x1i / scale_x;
-
-  y1i = (int)(y1L - NW_corner_latitude);
-  y1i = y1i / scale_y;
-
-  x2i = (int)(x2L - NW_corner_longitude);
-  x2i = x2i / scale_x;
-
-  y2i = (int)(y2L - NW_corner_latitude);
-  y2i = y2i / scale_y;
+  convert_xastir_to_screen_coordinates(x1L, y1L, &x1i, &y1i);
+  convert_xastir_to_screen_coordinates(x2L, y2L, &x2i, &y2i);
 
   if (skip_duplicates)
   {
