@@ -386,6 +386,7 @@ int main(int argc, char *argv[])
     {"convert_lat_s2l_basic_s",test_convert_lat_s2l_basic_s},
     {"convert_lon_s2l_basic_e",test_convert_lon_s2l_basic_e},
     {"s2l_l2s_consistency",test_s2l_l2s_consistency},
+    {"l2s_s2l_consistency",test_l2s_s2l_consistency},
     {"convert_screen_to_xastir_coordinates", test_convert_screen_to_xastir_coordinates},
     {"convert_xastir_to_screen_coordinates", test_convert_xastir_to_screen_coordinates},
     {NULL,NULL}

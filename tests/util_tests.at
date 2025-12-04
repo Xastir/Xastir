@@ -74,7 +74,7 @@ AT_CLEANUP
 
 AT_SETUP([convert_lat/lon_l2s -> convert_lat/lon_s2l round-trip consistency])
 AT_KEYWORDS([util convert_lon_s2l convert_lon_l2s convert_lat_s2l convert_lon_s2l])
-AT_CHECK(["$abs_top_builddir/tests/test_util" s2l_l2s_consistency], [0], [PASS: convert_lon_s2l and back: correct
+AT_CHECK(["$abs_top_builddir/tests/test_util" l2s_s2l_consistency], [0], [PASS: convert_lon_s2l and back: correct
 ])
 AT_CLEANUP
 
