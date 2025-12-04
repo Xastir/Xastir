@@ -91,3 +91,16 @@ AT_KEYWORDS([util convert_screen_to_xastir_coordinates])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_xastir_to_screen_coordinates], [0], [PASS: convert_xastir_to_screen_coordinates: works as expected
 ])
 AT_CLEANUP
+
+AT_BANNER([tests of filename shortener for status line])
+AT_SETUP([short_filename_for_status: short name not truncated])
+AT_KEYWORDS([util short_filename_for_status])
+AT_CHECK(["$abs_top_builddir/tests/test_util" short_filename_for_status_notrunc], [0], [PASS: short_filename_for_status
+])
+AT_CLEANUP
+
+AT_SETUP([short_filename_for_status: long name truncated])
+AT_KEYWORDS([util short_filename_for_status])
+AT_CHECK(["$abs_top_builddir/tests/test_util" short_filename_for_status_trunc], [0], [PASS: short_filename_for_status
+])
+AT_CLEANUP

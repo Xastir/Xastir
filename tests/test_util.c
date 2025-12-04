@@ -366,6 +366,27 @@ int test_convert_xastir_to_screen_coordinates(void)
   TEST_PASS("convert_xastir_to_screen_coordinates: works as expected");
 }
 
+int test_short_filename_for_status_notrunc(void)
+{
+  char filename[MAX_FILENAME]="this_is_short.shp";
+  char short_filename[MAX_FILENAME];
+
+  short_filename_for_status(filename, short_filename, sizeof(short_filename));
+
+  TEST_ASSERT_STR_EQ("this_is_short.shp", short_filename, "Name not truncated if already short enough");
+  TEST_PASS("short_filename_for_status");
+}
+int test_short_filename_for_status_trunc(void)
+{
+  char filename[MAX_FILENAME]="/a/long/path/with/lots/of/components/basename.shp";
+  char short_filename[MAX_FILENAME];
+
+  short_filename_for_status(filename, short_filename, sizeof(short_filename));
+
+  TEST_ASSERT_STR_EQ("..ots/of/components/basename.shp", short_filename, "Name truncated if long");
+  TEST_PASS("short_filename_for_status");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -389,6 +410,8 @@ int main(int argc, char *argv[])
     {"l2s_s2l_consistency",test_l2s_s2l_consistency},
     {"convert_screen_to_xastir_coordinates", test_convert_screen_to_xastir_coordinates},
     {"convert_xastir_to_screen_coordinates", test_convert_xastir_to_screen_coordinates},
+    {"short_filename_for_status_notrunc",test_short_filename_for_status_notrunc},
+    {"short_filename_for_status_trunc",test_short_filename_for_status_trunc},
     {NULL,NULL}
   };
 

@@ -4600,3 +4600,33 @@ char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
 }
 
 
+// This function is used by the map drawing functions to set a shorter
+// filename for use in the status line display.  If the file name is short
+// enough, just set the "short" filename to be a copy of the full name.
+// If it's too long, use only the final characters and preface with ".."
+//
+// The intent is that "Indexing " or "Loading " will appear before it,
+// so we leave enough space for that and the short filename in the status
+// line.
+
+void short_filename_for_status(char *filename, char *short_filename,
+                               size_t short_filename_size)
+{
+  if (strlen(filename) > (41 - 9))
+  {
+    int avail = 41 - 11;
+    int new_len = strlen(filename) - avail;
+
+    xastir_snprintf(short_filename,
+                    short_filename_size,
+                    "..%s",
+                    &filename[new_len]);
+  }
+  else
+  {
+    xastir_snprintf(short_filename,
+                    short_filename_size,
+                    "%s",
+                    filename);
+  }
+}
