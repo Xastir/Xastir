@@ -1158,26 +1158,8 @@ void draw_OSM_tiles (Widget w,
     serverURL[strlen(serverURL) - 1] = '\0';
   }
 
-  // Create a shorter filename for display (one that fits the
-  // status line more closely).  Allow space for the
-  // "Indexing " or "Loading " strings.
-  if (strlen(filenm) > (41 - 9))
-  {
-    int avail = 41 - 11;
-    int new_len = strlen(filenm) - avail;
-
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "..%s",
-                    &filenm[new_len]);
-  }
-  else
-  {
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "%s",
-                    filenm);
-  }
+  // Create a shorter filename for display
+  short_filename_for_status(filenm, short_filenm, sizeof(short_filenm));
 
   GetExceptionInfo(&exception);
 
@@ -1515,26 +1497,8 @@ void draw_OSM_map (Widget w,
   // initialize this
   local_filename[0]='\0';
 
-  // Create a shorter filename for display (one that fits the
-  // status line more closely).  Subtract the length of the
-  // "Indexing " and/or "Loading " strings as well.
-  if (strlen(filenm) > (41 - 9))
-  {
-    int avail = 41 - 11;
-    int new_len = strlen(filenm) - avail;
-
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "..%s",
-                    &filenm[new_len]);
-  }
-  else
-  {
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "%s",
-                    filenm);
-  }
+  // Create a shorter filename for display
+  short_filename_for_status(filenm, short_filenm, sizeof(short_filenm));
 
   xastir_snprintf(map_it,
                   sizeof(map_it),

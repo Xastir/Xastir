@@ -154,6 +154,8 @@ char * makeMultiline(int numPairs, double *lon, double *lat, char colorStyle,
                      int lineType, char* sqnc,
                      double *lonCentr, double *latCentr );
 
+void short_filename_for_status(char *filename, char *short_filename, size_t short_filename_size);
+
 #endif // __XASTIR_UTIL_H
 
 

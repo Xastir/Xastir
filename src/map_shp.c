@@ -717,28 +717,8 @@ void draw_shapefile_map (Widget w,
 
   xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
-  // Create a shorter filename for display (one that fits the
-  // status line more closely).  Subtract the length of the
-  // "Indexing " and/or "Loading " strings as well.
-  if (strlen(filenm) > (41 - 9))
-  {
-    int avail = 41 - 11;
-    int new_len = strlen(filenm) - avail;
-
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "..%s",
-                    &filenm[new_len]);
-  }
-  else
-  {
-    xastir_snprintf(short_filenm,
-                    sizeof(short_filenm),
-                    "%s",
-                    filenm);
-  }
-
-  //fprintf(stderr,"draw_shapefile_map:start:%s\n",file);
+  // Create a shorter filename for display
+  short_filename_for_status(filenm, short_filenm, sizeof(short_filenm));
 
   filename = filenm;
   i = strlen(filenm);
@@ -746,7 +726,6 @@ void draw_shapefile_map (Widget w,
   {
     filename = &filenm[i--];
   }
-  //fprintf(stderr,"draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);
 
   if (alert)
   {
@@ -755,7 +734,6 @@ void draw_shapefile_map (Widget w,
 
   // Check for ~/.xastir/tracklogs directory.  We set up the
   // labels and colors differently for these types of files.
-//    if (strstr(filenm,".xastir/tracklogs")) { // We're in the ~/.xastir/tracklogs directory
   if (strstr(filenm,"GPS"))   // We're in the maps/GPS directory
   {
     gps_flag++;
