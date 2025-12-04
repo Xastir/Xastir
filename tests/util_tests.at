@@ -80,8 +80,14 @@ AT_CLEANUP
 
 AT_BANNER([tests of screen coordinate converters])
 
-AT_SETUP([convert_screen_to_xastir corners, center and corners convert as expected])
+AT_SETUP([convert_screen_to_xastir: center and corners convert as expected])
 AT_KEYWORDS([util convert_screen_to_xastir_coordinates])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_screen_to_xastir_coordinates], [0], [PASS: convert_screen_to_xastir_coordinates: works as expected
+])
+AT_CLEANUP
+
+AT_SETUP([convert_xastir_to_screen: center and corners convert as expected])
+AT_KEYWORDS([util convert_screen_to_xastir_coordinates])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_xastir_to_screen_coordinates], [0], [PASS: convert_xastir_to_screen_coordinates: works as expected
 ])
 AT_CLEANUP
