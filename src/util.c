@@ -1808,7 +1808,20 @@ void convert_screen_to_xastir_coordinates(int x,
   }
 }
 
+// function to convert from Xastir (long, centi-seconds from 90N/180W) coords
+// to screen coordinates
 
+void convert_xastir_to_screen_coordinates(long lon, long lat, long *x, long *y)
+{
+  // Convert to screen coordinates.  Careful
+  // here!  The format conversions you'll need
+  // if you try to compress this into two
+  // lines will get you into trouble.
+  *x = lon - NW_corner_longitude;
+  *y = lat - NW_corner_latitude;
+  *x = (*x)/scale_x;
+  *y = (*y)/scale_y;
+}
 
 
 
