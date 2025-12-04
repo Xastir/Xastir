@@ -43,6 +43,8 @@ STUB_IMPL(search_station_name);
 int debug_level=0;
 long scale_x, scale_y;
 long center_longitude, center_latitude;
+long NW_corner_longitude, NW_corner_latitude;
+long SE_corner_longitude, SE_corner_latitude;
 char dangerous_operation[200];
 char my_long[MAX_LONG], my_lat[MAX_LAT];
 long screen_height, screen_width;
