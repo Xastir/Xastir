@@ -1599,14 +1599,7 @@ void draw_shapefile_map (Widget w,
             }
             else
             {
-              // Convert to screen coordinates.  Careful
-              // here!  The format conversions you'll need
-              // if you try to compress this into two
-              // lines will get you into trouble.
-              x = my_long - NW_corner_longitude;
-              y = my_lat - NW_corner_latitude;
-              x = x / scale_x;
-              y = y / scale_y;
+              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
             }
 
             if (ok == 1)
@@ -1791,15 +1784,7 @@ void draw_shapefile_map (Widget w,
               }
               else
               {
-                // Convert to screen coordinates.  Careful
-                // here!  The format conversions you'll need
-                // if you try to compress this into two
-                // lines will get you into trouble.
-                x = my_long - NW_corner_longitude;
-                y = my_lat - NW_corner_latitude;
-                x = x / scale_x;
-                y = y / scale_y;
-
+                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
 
                 // Save the endpoints of the first line
                 // segment for later use in label rotation
@@ -1885,14 +1870,9 @@ void draw_shapefile_map (Widget w,
             }
             else
             {
-              // Convert to screen coordinates.  Careful
-              // here!  The format conversions you'll need
-              // if you try to compress this into two
-              // lines will get you into trouble.
-              x = my_long - NW_corner_longitude;
-              y = my_lat - NW_corner_latitude;
-              x = l16(x / scale_x);
-              y = l16(y / scale_y);
+              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
+              x=l16(x);
+              y=l16(y);
             }
 
             if (ok == 1 && ok_to_draw)
@@ -2360,15 +2340,7 @@ void draw_shapefile_map (Widget w,
             }
             else
             {
-              // Convert to screen coordinates.  Careful
-              // here!  The format conversions you'll need
-              // if you try to compress this into two
-              // lines will get you into trouble.
-              x = my_long - NW_corner_longitude;
-              y = my_lat - NW_corner_latitude;
-              x = x / scale_x;
-              y = y / scale_y;
-
+              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
 
               // Here we check for really wacko points that will cause problems
               // with the X drawing routines, and fix them.
@@ -2406,14 +2378,7 @@ void draw_shapefile_map (Widget w,
             }
             else
             {
-              // Convert to screen coordinates.  Careful
-              // here!  The format conversions you'll need
-              // if you try to compress this into two
-              // lines will get you into trouble.
-              width = my_long - NW_corner_longitude;
-              height = my_lat - NW_corner_latitude;
-              width = width / scale_x;
-              height = height / scale_y;
+              convert_xastir_to_screen_coordinates(my_long, my_lat, &width, &height);
 
               // Here we check for really wacko points that will cause problems
               // with the X drawing routines, and fix them.
@@ -2531,18 +2496,7 @@ void draw_shapefile_map (Widget w,
                   }
                   else
                   {
-                    // Convert to screen coordinates.  Careful
-                    // here!  The format conversions you'll need
-                    // if you try to compress this into two
-                    // lines will get you into trouble.
-                    x = my_long - NW_corner_longitude;
-                    y = my_lat - NW_corner_latitude;
-                    x = x / scale_x;
-                    y = y / scale_y;
-
-
-                    //fprintf(stderr,"%ld %ld\t\t", x, y);
-
+                    convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
                     // Here we check for really
                     // wacko points that will
                     // cause problems with the X
@@ -2733,17 +2687,7 @@ void draw_shapefile_map (Widget w,
               }
               else
               {
-                // Convert to screen coordinates.  Careful
-                // here!  The format conversions you'll need
-                // if you try to compress this into two
-                // lines will get you into trouble.
-                x = my_long - NW_corner_longitude;
-                y = my_lat - NW_corner_latitude;
-                x = x / scale_x;
-                y = y / scale_y;
-
-
-                //fprintf(stderr,"%ld %ld\t\t", x, y);
+                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
 
                 // Here we check for really wacko points that will cause problems
                 // with the X drawing routines, and fix them.
@@ -3023,16 +2967,9 @@ void draw_shapefile_map (Widget w,
             }
             else
             {
-              // Convert to screen coordinates.  Careful
-              // here!  The format conversions you'll need
-              // if you try to compress this into two
-              // lines will get you into trouble.
-              x = my_long - NW_corner_longitude;
-              y = my_lat - NW_corner_latitude;
-              x = x / scale_x;
-              y = y / scale_y;
+              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
 
-// Labeling of polygons done here
+              // Labeling of polygons done here
 
               if (ok == 1 && ok_to_draw)
               {
