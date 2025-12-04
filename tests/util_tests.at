@@ -63,3 +63,17 @@ AT_KEYWORDS([util convert_lon_s2l])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_s2l_basic_e], [0], [PASS: convert_lon_s2l: correct
 ])
 AT_CLEANUP
+
+AT_BANNER([tests of round-trip conversion consistency])
+
+AT_SETUP([convert_lat/lon_s2l -> convert_lat/lon_l2s round-trip consistency])
+AT_KEYWORDS([util convert_lon_s2l convert_lon_l2s convert_lat_s2l convert_lon_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" s2l_l2s_consistency], [0], [PASS: convert_lon_s2l and back: correct
+])
+AT_CLEANUP
+
+AT_SETUP([convert_lat/lon_l2s -> convert_lat/lon_s2l round-trip consistency])
+AT_KEYWORDS([util convert_lon_s2l convert_lon_l2s convert_lat_s2l convert_lon_s2l])
+AT_CHECK(["$abs_top_builddir/tests/test_util" s2l_l2s_consistency], [0], [PASS: convert_lon_s2l and back: correct
+])
+AT_CLEANUP

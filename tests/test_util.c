@@ -149,6 +149,42 @@ int test_convert_lon_s2l_basic_e(void)
   TEST_PASS("convert_lon_s2l: correct");
 }
 
+// Check that s2l->l2s gives back what we started with.
+int test_s2l_l2s_consistency(void)
+{
+  long lon;
+  long lat;
+  char lon_s[10+1];
+  char lat_s[9+1];
+  lon=convert_lon_s2l("10612.385W");
+  lat=convert_lat_s2l("3501.631N");
+  convert_lon_l2s(lon,lon_s,sizeof(lon_s),CONVERT_HP_NOSP);
+  convert_lat_l2s(lat,lat_s,sizeof(lat_s),CONVERT_HP_NOSP);
+
+  TEST_ASSERT_STR_EQ("3501.631N",lat_s,"Round-trip latitude consistent");
+  TEST_ASSERT_STR_EQ("10612.385W",lon_s,"Round-trip longitude consistent");
+  TEST_PASS("convert_lon_s2l and back: correct");
+}
+// Check that l2s->s2l gives back what we started with.
+int test_l2s_s2l_consistency(void)
+{
+  long lon;
+  long lat;
+  long lon_return;
+  long lat_return;
+  char lon_s[10+1];
+  char lat_s[9+1];
+  lon = 180*60*60*100-(106*60+12.385)*60*100;
+  lat = 90*60*60*100-(35*60+1.631)*60*100;
+  convert_lon_l2s(lon,lon_s,sizeof(lon_s),CONVERT_HP_NOSP);
+  convert_lat_l2s(lat,lat_s,sizeof(lat_s),CONVERT_HP_NOSP);
+  lat_return = convert_lat_s2l(lat_s);
+  lon_return = convert_lon_s2l(lon_s);
+  TEST_ASSERT(lat==lat_return,"Round-trip latitude consistent");
+  TEST_ASSERT(lon==lon_return,"Round-trip longitude consistent");
+  TEST_PASS("convert_lon_s2l and back: correct");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -168,6 +204,7 @@ int main(int argc, char *argv[])
     {"convert_lon_s2l_basic",test_convert_lon_s2l_basic},
     {"convert_lat_s2l_basic_s",test_convert_lat_s2l_basic_s},
     {"convert_lon_s2l_basic_e",test_convert_lon_s2l_basic_e},
+    {"s2l_l2s_consistency",test_s2l_l2s_consistency},
     {NULL,NULL}
   };
 
