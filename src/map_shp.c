@@ -1038,11 +1038,6 @@ void draw_shapefile_map (Widget w,
     }
 
   } /* ...end if (weather_alert_flag) */
-  else   /* !weather_alert_flag */
-  {
-// Are these actually used anymore by the code?  Colors get set later
-// when we know more about what we're dealing with.
-  }
 
   // Now that we have the file open, we can read out the structures.
   // We can handle Point, PolyLine and Polygon shapefiles at the moment.
