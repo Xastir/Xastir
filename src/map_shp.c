@@ -126,6 +126,12 @@ void getViewportRect(struct Rect *viewportRect);
 char *getShapeTypeString(int nShapeType);
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
 
+// RTrees are used as a spatial index for shapefiles.  We can search them
+// for shapes that intersect our viewport, and only read those from the
+// file.
+// RTree_hitarray is filled in when we do an rtree search.  the index is used
+// to keep track of how many we've found so far while searching, or how
+// many total have been found after the search is done.
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
 int RTree_hitarray_index=0;
@@ -909,14 +915,17 @@ void draw_shapefile_map (Widget w,
                                    adfBndsMin[0],
                                    adfBndsMax[0]))
   {
+    // we keep a hash of all shapefiles encountered so far (and not purged
+    // due to inactivity.  Find the record of this shapefile in that
+    // hash if it's there.
     si = get_shp_from_hash(file);
     if (!si)
     {
       // we don't have what we need, so generate the index and make
       // the hashtable entry
       add_shp_to_hash(file,hSHP); // this will index all the shapes in
-      // an RTree and save the root in a
-      // shpinfo structure
+                                  // an RTree and save the root in a
+                                  // shpinfo structure
       si=get_shp_from_hash(file); // now get that structure
       if (!si)
       {
@@ -1092,11 +1101,16 @@ void draw_shapefile_map (Widget w,
   }
   else    // Draw an entire Shapefile map
   {
+    // if it isn't completely inside the viewport, select those shapes
+    // in the file that intersect the viewport.  si will be non null
+    // in this case.
     if (si)
     {
       RTree_hitarray_index=0;
       // the callback will be executed every time the search finds a
       // shape whose bounding box overlaps the viewport.
+      // RTree_hitarray will contain the shape numbers of every shape
+      // found, nhits will be how many there are.
       nhits = Xastir_RTreeSearch(si->root, &viewportRect,
                                  (void *)RTreeSearchCallback, 0);
     }
@@ -1147,6 +1161,9 @@ void draw_shapefile_map (Widget w,
       }
     }
 
+    // here's where we decide which shape number we're currently processing.
+    // We're either going through all of those found by an rtree search,
+    // the one that pertains to a weather alert, or all of them sequentially.
     if (si)
     {
       structure=RTree_hitarray[RTree_hitarray_index];
