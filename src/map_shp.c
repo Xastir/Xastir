@@ -122,6 +122,8 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *font_size);
 int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
                         dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
+void getViewportRect(struct Rect *viewportRect);
+char *getShapeTypeString(int nShapeType);
 
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
@@ -669,7 +671,6 @@ void draw_shapefile_map (Widget w,
   label_string *ptr2 = NULL;
 
   struct Rect viewportRect;
-  double rXmin, rYmin, rXmax,rYmax;
   shpinfo *si;
   int nhits;
 
@@ -924,58 +925,20 @@ void draw_shapefile_map (Widget w,
       }
     }
   }
+
   // we need this for the rtree search
-  get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
-  viewportRect.boundary[0] = (RectReal) rXmin;
-  viewportRect.boundary[1] = (RectReal) rYmin;
-  viewportRect.boundary[2] = (RectReal) rXmax;
-  viewportRect.boundary[3] = (RectReal) rYmax;
+  getViewportRect(&viewportRect);
 
-  switch ( nShapeType )
+  sType = getShapeTypeString(nShapeType);
+  if ((strcmp(sType, "Multipoint")== 0) || (strcmp(sType, "Unknown")==0))
   {
-    case SHPT_POINT:
-      sType = "Point";
-      break;
+    fprintf(stderr,"%s Shapefile format not implemented: %s\n",sType,file);
 
-    case SHPT_POINTZ:
-      sType = "3D Point";
-      break;
+    DBFClose( hDBF );   // Clean up open file descriptors
+    SHPClose( hSHP );
 
-    case SHPT_ARC:
-      sType = "Polyline";
-      break;
-
-    case SHPT_ARCZ:
-      sType = "3D Polyline";
-      break;
-
-    case SHPT_POLYGON:
-      sType = "Polygon";
-      break;
-
-    case SHPT_POLYGONZ:
-      sType = "3D Polygon";
-      break;
-
-    case SHPT_MULTIPOINT:
-      fprintf(stderr,"Multi-Point Shapefile format not implemented: %s\n",file);
-      sType = "MultiPoint";
-      DBFClose( hDBF );   // Clean up open file descriptors
-      SHPClose( hSHP );
-
-      free_dbfawk_infos(fld_info, sig_info);
-
-      return; // Multipoint type.  Not implemented yet.
-      break;
-
-    default:
-      DBFClose( hDBF );   // Clean up open file descriptors
-      SHPClose( hSHP );
-
-      free_dbfawk_infos(fld_info, sig_info);
-
-      return; // Unknown type.  Don't know how to process it.
-      break;
+    free_dbfawk_infos(fld_info, sig_info);
+    return;
   }
 
   if (debug_level & 16)
@@ -3137,6 +3100,61 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
   return (found_shape);
 }
 
+
+// this function fills in a Rect structure with the current viewport
+// info
+void getViewportRect(struct Rect *viewportRect)
+{
+  double rXmin, rYmin, rXmax,rYmax;
+  get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
+  viewportRect->boundary[0] = (RectReal) rXmin;
+  viewportRect->boundary[1] = (RectReal) rYmin;
+  viewportRect->boundary[2] = (RectReal) rXmax;
+  viewportRect->boundary[3] = (RectReal) rYmax;
+}
+
+
+// Return a string corresponding to the name of a shape type
+// This string is only used in debug output
+char *getShapeTypeString(int nShapeType)
+{
+  char *sType;
+  switch ( nShapeType )
+  {
+    case SHPT_POINT:
+      sType = "Point";
+      break;
+
+    case SHPT_POINTZ:
+      sType = "3D Point";
+      break;
+
+    case SHPT_ARC:
+      sType = "Polyline";
+      break;
+
+    case SHPT_ARCZ:
+      sType = "3D Polyline";
+      break;
+
+    case SHPT_POLYGON:
+      sType = "Polygon";
+      break;
+
+    case SHPT_POLYGONZ:
+      sType = "3D Polygon";
+      break;
+
+    case SHPT_MULTIPOINT:
+      sType = "MultiPoint";
+      break;
+
+    default:
+      sType = "Unknown";
+      break;
+  }
+  return (sType);
+}
 #endif  // HAVE_LIBSHP
 
 
