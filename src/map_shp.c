@@ -986,7 +986,7 @@ void draw_shapefile_map (Widget w,
   // NOTE: Setting the color here and in the "else" may not stick if we do more
   //       complex drawing further down like a SteelBlue lake with a black boundary,
   //       or if we have labels turned on which resets our color to black.
-  if (weather_alert_flag)     /* XXX */
+  if (weather_alert_flag)
   {
     char xbm_path[MAX_FILENAME];
     unsigned int _w, _h;
@@ -1284,7 +1284,7 @@ void draw_shapefile_map (Widget w,
         }
 
 
-        if (weather_alert_flag)   /* XXX will this fix WX alerts? */
+        if (weather_alert_flag)
         {
           fill_style = FillStippled;
         }
