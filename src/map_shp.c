@@ -124,6 +124,7 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
                         dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
 void getViewportRect(struct Rect *viewportRect);
 char *getShapeTypeString(int nShapeType);
+void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
 
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
@@ -991,94 +992,20 @@ void draw_shapefile_map (Widget w,
     unsigned int _w, _h;
     int _xh, _yh;
     int ret_val;
-    FILE *alert_fp = NULL;
-    char xbm_filename[MAX_FILENAME];
-
 
     // This GC is used for weather alerts (writing to the
     // pixmap: pixmap_alerts) and _was_ used for beam_heading
     // rays, but no longer is.
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
-    // N7TAP: No more tinting as that would change the color of the alert, losing that information.
+    // GXcopy used here because we have been using stippling for
+    // weather alerts since commit 88d579
     (void)XSetFunction(XtDisplay(w), gc_tint, GXcopy);
-    /*
-    Options are:
-        GXclear         0                       (Don't use)
-        GXand           src AND dst             (Darker colors, black can result from overlap)
-        GXandReverse    src AND (NOT dst)       (Darker colors)
-        GXcopy          src                     (Don't use)
-        GXandInverted   (NOT src) AND dst       (Pretty colors)
-        GXnoop          dst                     (Don't use)
-        GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-        GXor            src OR dst              (More pastel colors, too bright?)
-        GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-        GXequiv         (NOT src) XOR dst       (Bright, very readable)
-        GXinvert        (NOT dst)               (Don't use)
-        GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-        GXcopyInverted  (NOT src)               (Don't use)
-        GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-        GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-        GXset           1                       (Don't use)
-    */
 
+    // Get a pixmap that will be used to shade this alert area
+    get_alert_xbm_path(xbm_path, sizeof(xbm_path), alert);
 
-    // Note that we can define more alert files for other countries.  They just need to match
-    // the alert text that comes along in the NWS packet.
-    // Current alert files we have defined:
-    //      winter_storm.xbm *
-    //      snow.xbm
-    //      winter_weather.xbm *
-    //      flood.xbm
-    //      torndo.xbm *
-    //      red_flag.xbm
-    //      wind.xbm
-    //      alert.xbm (Used if no match to another filename)
-
-    // Alert texts we receive:
-    //      FLOOD
-    //      SNOW
-    //      TORNDO
-    //      WIND
-    //      WINTER_STORM
-    //      WINTER_WEATHER
-    //      RED_FLAG
-    //      SVRTSM (no file defined for this yet)
-    //      Many others.
-
-    // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
-    // to detect whether we have a matching filename for our alert text.
-    xastir_snprintf(xbm_filename, sizeof(xbm_filename), "%s", alert->alert_tag);
-
-    // Convert the filename to lower-case
-    to_lower(xbm_filename);
-
-    // Construct the complete path/filename
-    strcpy(xbm_path, SYMBOLS_DIR);
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, "/");
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, xbm_filename);
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, ".xbm");
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-
-    // Try opening the file
-    alert_fp = fopen(xbm_path, "rb");
-    if (alert_fp == NULL)
-    {
-      // Failed to find a matching file:  Instead use the "alert.xbm" file
-      xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
-    }
-    else
-    {
-      // Success:  Close the file pointer
-      fclose(alert_fp);
-    }
-
-    /* XXX - need to add SVRTSM */
-
-
+    // set the stipple GC to the pattern we found in the alert xbm
     (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
     XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
     ret_val = XReadBitmapFile(XtDisplay(w),
@@ -3154,6 +3081,62 @@ char *getShapeTypeString(int nShapeType)
       break;
   }
   return (sType);
+}
+
+// Find an xbm in our collection that matches the weather alert type.
+// Will use "alert.xbm" if we can't find a more appropriate one.
+//
+// Note that we can define more alert files for other countries.  They just need to match
+// the alert text that comes along in the NWS packet.
+// Current alert files we have defined:
+//      winter_storm.xbm *
+//      snow.xbm
+//      winter_weather.xbm *
+//      flood.xbm
+//      torndo.xbm *
+//      red_flag.xbm
+//      wind.xbm
+//      alert.xbm (Used if no match to another filename)
+
+// Alert texts we receive:
+//      FLOOD
+//      SNOW
+//      TORNDO
+//      WIND
+//      WINTER_STORM
+//      WINTER_WEATHER
+//      RED_FLAG
+//      SVRTSM (no file defined for this yet)
+//      Many others.
+
+
+void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert)
+{
+  // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
+  // to detect whether we have a matching filename for our alert text.
+  FILE *alert_fp = NULL;
+  char xbm_filename[MAX_FILENAME];
+
+  xastir_snprintf(xbm_filename, sizeof(xbm_filename), "%s", alert->alert_tag);
+
+  // Convert the filename to lower-case
+  to_lower(xbm_filename);
+
+  // Construct the complete path/filename
+  xastir_snprintf(xbm_path, xbm_path_size, "%s/%s.xbm",SYMBOLS_DIR, xbm_filename);
+
+  // Try opening the file
+  alert_fp = fopen(xbm_path, "rb");
+  if (alert_fp == NULL)
+  {
+    // Failed to find a matching file:  Instead use the "alert.xbm" file
+    xastir_snprintf(xbm_path, xbm_path_size, "%s/%s", SYMBOLS_DIR, "alert.xbm");
+  }
+  else
+  {
+    // Success:  Close the file pointer
+    fclose(alert_fp);
+  }
 }
 #endif  // HAVE_LIBSHP
 
