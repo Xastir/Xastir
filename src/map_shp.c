@@ -120,6 +120,8 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *label_level,
                                            int *label_color,
                                            int *font_size);
+int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
+                        dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
 
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
@@ -576,6 +578,14 @@ int shape_ring_direction ( SHPObject *psObject, int Ring )
 
 static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
+/* these have to be static since Symtbl is recycled between calls */
+/* used to be static inside draw_shapefile_map, but moved here
+   because they need to be shared among other functions */
+static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
+static int      color,lanes,filled,pattern,display_level,label_level;
+static int      fill_style,fill_color;
+static int      fill_stipple;
+
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] =
 {
@@ -634,11 +644,6 @@ void draw_shapefile_map (Widget w,
   int             high_water_mark_i = 0;
   int             high_water_mark_index = 0;
   char            status_text[MAX_FILENAME];
-  /* these have to be static since I recycle Symtbl between calls */
-  static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
-  static int      color,lanes,filled,pattern,display_level,label_level;
-  static int      fill_style,fill_color;
-  static int      fill_stipple;
 
   dbfawk_sig_info *sig_info = NULL;
   dbfawk_field_info *fld_info = NULL;
@@ -732,7 +737,7 @@ void draw_shapefile_map (Widget w,
     weather_alert_flag++;
   }
 
-  // Check for ~/.xastir/tracklogs directory.  We set up the
+  // Check for ~/.xastir/GPS directory.  We set up the
   // labels and colors differently for these types of files.
   if (strstr(filenm,"GPS"))   // We're in the maps/GPS directory
   {
@@ -824,109 +829,11 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
     return;
   }
-  /*
-   * Weather alert dbfawk files set the "key" variable to the
-   * appropriate search key for each record which is compared to the
-   * alert->title[].  Use the key to find the record we need to alert on.
-   */
 
-  // Search for specific record if we're doing alerts
-  if (weather_alert_flag && (alert->index == -1) )
-  {
-    int done = 0;
-
-    // Step through all records
-    for( i = 0; i < recordcount && !done; i++ )
-    {
-      int keylen;
-
-      if (sig_info)
-      {
-        char modified_title[50];
-
-        dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
-
-        keylen = strlen(key);
-        if (debug_level & 16)
-        {
-          static char old_key[4]; // Used to limit number of output lines in debug mode
-
-          if (strncmp(old_key, key, 4))
-          {
-            fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
-                    i,key);
-            memcpy(old_key, key, sizeof(old_key));
-          }
-        }
-
-        xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
-
-        // Tweak for RED_FLAG alerts:  If RED_FLAG alert
-        // we've changed the 'Z' to an 'F' in our
-        // alert->title already.  Change the 'F' back to a
-        // 'Z' temporarily (modified_title) for our
-        // compares.
-        //
-        if (modified_title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0)
-        {
-          modified_title[3] = 'Z';
-        }
-
-        // If match using keylen number of chars, try the
-        // same match but using titlelen number of chars
-        if (strncmp(modified_title,key,keylen) == 0)
-        {
-          int titlelen;
-
-          titlelen = strlen(modified_title);
-
-          // Try the same match with titlelen number of
-          // chars
-          if (strncmp(modified_title,key,titlelen) == 0)
-          {
-
-            found_shape = i;
-            done++;
-            if (debug_level & 16)
-            {
-              fprintf(stderr,"dbfawk alert found it: %d \n",i);
-              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
-
-            }
-          }
-          else
-          {
-            // Found a match using keylen number of
-            // characters, but it's not a match using
-            // titlelen number of characters.
-            if (debug_level & 16)
-            {
-              fprintf(stderr,
-                      "dbfawk alert: match w/keylen, not w/titlelen: %s=%d %s=%d\n",
-                      key,
-                      keylen,
-                      modified_title,
-                      titlelen);
-              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
-            }
-          }
-        }
-      }
-    }
-    alert->index = found_shape; // Fill it in 'cuz we just found it
-  } /* if (weather_alert_flag && alert_index == -1)... */
-  else if (weather_alert_flag)
-  {
-    // We've been here before and we already know the index into the
-    // file to fetch this particular shape.
-    found_shape = alert->index;
-    if (debug_level & 16)
-    {
-      fprintf(stderr,"wx_alert: found_shape = %d\n",found_shape);
-    }
-  }
-
-  //fprintf(stderr,"Found shape: %d\n", found_shape);
+  // Search for specific record if we're doing alerts (returns -1 if
+  // alert is null or the shape is not found)
+  found_shape = find_wx_alert_shape(alert, hDBF, recordcount,
+                                    sig_info,fld_info);
 
   if (debug_level & 16)
   {
@@ -3119,6 +3026,117 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
 
   return (Symtbl);
 }
+
+// We have an open DBF file (pointed to by hDBF), and we might be a
+// weather alert.  Try to find a shape in the dbf file that has a key
+// matching the alert's filename.
+//
+// returns -1 if shape not found or if passed a null alert pointer
+/*
+ * Weather alert dbfawk files set the "key" variable to the
+ * appropriate search key for each record which is compared to the
+ * alert->title[].  Use the key to find the record we need to alert on.
+ */
+int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
+                        dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info)
+{
+  int found_shape = -1;
+  if (alert)
+  {
+    if (alert->index== -1)
+    {
+      int done = 0;
+      int i;
+      // Step through all records
+      for( i = 0; i < recordcount && !done; i++ )
+      {
+        int keylen;
+        char modified_title[50];
+
+        dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
+
+        keylen = strlen(key);
+        if (debug_level & 16)
+        {
+          static char old_key[4]; // Used to limit number of output lines in debug mode
+
+          if (strncmp(old_key, key, 4))
+          {
+            fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
+                    i,key);
+            memcpy(old_key, key, sizeof(old_key));
+          }
+        }
+
+        xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
+
+        // Tweak for RED_FLAG alerts:  If RED_FLAG alert
+        // we've changed the 'Z' to an 'F' in our
+        // alert->title already.  Change the 'F' back to a
+        // 'Z' temporarily (modified_title) for our
+        // compares.
+        //
+        if (modified_title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0)
+        {
+          modified_title[3] = 'Z';
+        }
+
+        // If match using keylen number of chars, try the
+        // same match but using titlelen number of chars
+        if (strncmp(modified_title,key,keylen) == 0)
+        {
+          int titlelen;
+
+          titlelen = strlen(modified_title);
+
+          // Try the same match with titlelen number of
+          // chars
+          if (strncmp(modified_title,key,titlelen) == 0)
+          {
+
+            found_shape = i;
+            done++;
+            if (debug_level & 16)
+            {
+              fprintf(stderr,"dbfawk alert found it: %d \n",i);
+              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
+
+            }
+          }
+          else
+          {
+            // Found a match using keylen number of
+            // characters, but it's not a match using
+            // titlelen number of characters.
+            if (debug_level & 16)
+            {
+              fprintf(stderr,
+                      "dbfawk alert: match w/keylen, not w/titlelen: %s=%d %s=%d\n",
+                      key,
+                      keylen,
+                      modified_title,
+                      titlelen);
+              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
+            }
+          }
+        }
+      }
+      alert->index = found_shape; // Fill it in 'cuz we just found it
+    }
+    else
+    {
+      // We've been here before and we already know the index into the
+      // file to fetch this particular shape.
+      found_shape = alert->index;
+      if (debug_level & 16)
+      {
+        fprintf(stderr,"wx_alert: found_shape = %d\n",found_shape);
+      }
+    }
+  }
+  return (found_shape);
+}
+
 #endif  // HAVE_LIBSHP
 
 
