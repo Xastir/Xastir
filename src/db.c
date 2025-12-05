@@ -2937,12 +2937,15 @@ int ok_to_draw_station(DataRow *p_station)
       // We have weather data
 
       // Check whether it is a citizen's weather station.
-      // Note that a "CW" prefix is Uruguay and "DW" prefix is
-      // Philippines, so let's be careful how we filter here.
-      // All Cititzen's weather stations seen to date have had
-      // CW or DW and then four digits.
-      if ( (strncasecmp(p_station->call_sign,"CW",2) == 0)
-           || (strncasecmp(p_station->call_sign,"DW",2) == 0) )
+      // Note that there are quite a few countries with two-letter
+      // prefixes whose second letter is W, so let's be careful how we
+      // filter here.
+      // All Citizen's weather stations seen to date have had
+      // CW through GW and then four digits.  There will undoubtedly be
+      // more added in future years, so let's not be *too* restrictive,
+      // but let's not be too aggressive, either.
+      if ((p_station->call_sign[0] >= 'C' && p_station->call_sign[0] <= 'G')
+          && p_station->call_sign[1] == 'W' )
       {
         if ( is_num_chr(p_station->call_sign[2])
              && is_num_chr(p_station->call_sign[3])
