@@ -1068,53 +1068,44 @@ void draw_shapefile_map (Widget w,
 
   // Now instead of looping over all the shapes, search for the ones that
   // are in our viewport and only loop over those
-  //fprintf(stderr,"Deciding how to process this file...\n");
+
   if (weather_alert_flag)     // We're drawing _one_ weather alert shape
   {
-    //fprintf(stderr," weather alert flag set...\n");
     if (found_shape != -1)      // Found the record
     {
-      //fprintf(stderr,"  found_shape set...\n");
-      // just in case we haven't drawn any real maps yet...
+      // just in case we haven't drawn any real maps yet, allocate
+      // the RTree hit array and add our found_shape to it as if we
+      // had found it in an rtree...
       if (!RTree_hitarray)
       {
-        //fprintf(stderr,"   mallocing hitarray...\n");
         RTree_hitarray = (int *)malloc(sizeof(int)*1000);
         RTree_hitarray_size=1000;
       }
       CHECKMALLOC(RTree_hitarray);
       RTree_hitarray[0]=found_shape;
-      //fprintf(stderr," %s contains alert\n",file);
       nhits=1;
     }
     else    // Didn't find the record
     {
-      //fprintf(stderr,"   found_shape is -1...\n");
       nhits=0;
     }
   }
   else    // Draw an entire Shapefile map
   {
-    //fprintf(stderr,"   weather_alert_flag not set...\n");
     if (si)
     {
-      //fprintf(stderr,"   si is 0x%lx...\n",(unsigned long int) si);
       RTree_hitarray_index=0;
       // the callback will be executed every time the search finds a
       // shape whose bounding box overlaps the viewport.
       nhits = Xastir_RTreeSearch(si->root, &viewportRect,
                                  (void *)RTreeSearchCallback, 0);
-      //fprintf(stderr,"Found %d hits in %s\n",nhits,file);
     }
     else
     {
-      //fprintf(stderr,"   si not set ...\n");
       // we read the entire shapefile
       nhits=nEntities;
-      // fprintf(stderr," %s entirely in view, with %d shapes\n",file,nhits);
     }
   }
-  //fprintf(stderr," Done with decision, nhits is %d\n",nhits);
 
   // only iterate over the hits found by RTreeSearch, not all of them
   for (RTree_hitarray_index=0; RTree_hitarray_index<nhits;
@@ -1156,7 +1147,6 @@ void draw_shapefile_map (Widget w,
       }
     }
 
-
     if (si)
     {
       structure=RTree_hitarray[RTree_hitarray_index];
@@ -1170,13 +1160,7 @@ void draw_shapefile_map (Widget w,
       structure = RTree_hitarray_index;
     }
 
-    // Have had segfaults before at the SHPReadObject() call
-    // when the Shapefile was corrupted.
-    //fprintf(stderr,"Before SHPReadObject:%d\n",structure);
-
     object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
-
-    //fprintf(stderr,"After SHPReadObject\n");
 
     if (object == NULL)
     {
@@ -1197,10 +1181,6 @@ void draw_shapefile_map (Widget w,
 
     // Here we check the bounding box for this shape against our
     // current viewport.  If we can't see it, don't draw it.
-
-//        if (debug_level & 16)
-//            fprintf(stderr,"Calling map_visible_lat_lon on a shape\n");
-
     if ( map_visible_lat_lon( object->dfYMin,   // Bottom
                               object->dfYMax,   // Top
                               object->dfXMin,   // Left
