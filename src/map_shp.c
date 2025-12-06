@@ -1320,9 +1320,8 @@ void draw_shapefile_map (Widget w,
 
         case SHPT_POINT:
         case SHPT_POINTZ:
-          // We hit this case once for each point shape in
-          // the file, iff that shape is within our
-          // viewport.
+          // We hit this case once for each point shape in the file,
+          // iff that shape is within our viewport.
 
 
           if (debug_level & 16)
@@ -1330,18 +1329,8 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Point Shapefile\n");
           }
 
-          // Read each point, place a label there, and an optional symbol
-          //object->padfX
-          //object->padfY
-          //object->padfZ
-
-//                    if (    mapshots_labels_flag
-//                            && map_labels
-//                            && (fieldcount >= 3) ) {
-
-          if (!skip_it)      // Need a bracket so we can define
+          if (!skip_it)
           {
-            // some local variables.
             const char *temp = NULL;
             int ok = 1;
             int temp_ok;
@@ -1355,7 +1344,6 @@ void draw_shapefile_map (Widget w,
                                                     &my_lat,
                                                     (float)object->padfX[0],
                                                     (float)object->padfY[0]);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
             if (!temp_ok)
             {
@@ -1371,31 +1359,28 @@ void draw_shapefile_map (Widget w,
 
             if (ok == 1)
             {
+              // default symbol if dbfawk doesn't set it
               char symbol_table = '/';
               char symbol_id = '.'; /* small x */
               char symbol_over = ' ';
 
-              // Fine-tuned the location here so that
-              // the middle of the 'X' would be at the
-              // proper pixel.
-              if (*sym)
+              if (*sym)  // got the symbol from dbfawk
               {
                 symbol(w,0,sym[0],sym[1],sym[2],pixmap,1,x-10,y-10,' ');
               }
               else
               {
+                // Fine-tuned the location here so that the middle of
+                // the 'X' would be at the proper pixel.
                 symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
               }
 
-              // Fine-tuned this string so that it is
-              // to the right of the 'X' and aligned
-              // nicely.
+              // Labeling of points done here
+              // Fine-tuned this string so that it is to the right of
+              // the 'X' and aligned nicely.
               if (map_labels && !skip_label)
               {
-// Labeling of points done here
                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
-                //(void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
-                //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[label_color], (char *)temp);
               }
             }
           }
