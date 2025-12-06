@@ -2574,8 +2574,13 @@ void draw_shapefile_map (Widget w,
               }
               else if (weather_alert_flag)
               {
+                // If we're a weather alert, we're assuming the shape
+                // is simple with no holes.  Draw the filled polygon
+                // and the polygon border, all of which will be
+                // stippled with an alert pattern because we already
+                // set that up in gc_tint.
+
                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-// We skip the hole/fill thing for these?
 
                 if (i >= 3)
                 {
