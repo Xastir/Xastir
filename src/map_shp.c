@@ -120,7 +120,18 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *label_level,
                                            int *label_color,
                                            int *font_size);
+int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
+                        dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
+void getViewportRect(struct Rect *viewportRect);
+char *getShapeTypeString(int nShapeType);
+void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
 
+// RTrees are used as a spatial index for shapefiles.  We can search them
+// for shapes that intersect our viewport, and only read those from the
+// file.
+// RTree_hitarray is filled in when we do an rtree search.  the index is used
+// to keep track of how many we've found so far while searching, or how
+// many total have been found after the search is done.
 static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
 int RTree_hitarray_index=0;
@@ -576,6 +587,14 @@ int shape_ring_direction ( SHPObject *psObject, int Ring )
 
 static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
+/* these have to be static since Symtbl is recycled between calls */
+/* used to be static inside draw_shapefile_map, but moved here
+   because they need to be shared among other functions */
+static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
+static int      color,lanes,filled,pattern,display_level,label_level;
+static int      fill_style,fill_color;
+static int      fill_stipple;
+
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] =
 {
@@ -634,11 +653,6 @@ void draw_shapefile_map (Widget w,
   int             high_water_mark_i = 0;
   int             high_water_mark_index = 0;
   char            status_text[MAX_FILENAME];
-  /* these have to be static since I recycle Symtbl between calls */
-  static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
-  static int      color,lanes,filled,pattern,display_level,label_level;
-  static int      fill_style,fill_color;
-  static int      fill_stipple;
 
   dbfawk_sig_info *sig_info = NULL;
   dbfawk_field_info *fld_info = NULL;
@@ -664,7 +678,6 @@ void draw_shapefile_map (Widget w,
   label_string *ptr2 = NULL;
 
   struct Rect viewportRect;
-  double rXmin, rYmin, rXmax,rYmax;
   shpinfo *si;
   int nhits;
 
@@ -732,7 +745,7 @@ void draw_shapefile_map (Widget w,
     weather_alert_flag++;
   }
 
-  // Check for ~/.xastir/tracklogs directory.  We set up the
+  // Check for ~/.xastir/GPS directory.  We set up the
   // labels and colors differently for these types of files.
   if (strstr(filenm,"GPS"))   // We're in the maps/GPS directory
   {
@@ -824,109 +837,11 @@ void draw_shapefile_map (Widget w,
     fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
     return;
   }
-  /*
-   * Weather alert dbfawk files set the "key" variable to the
-   * appropriate search key for each record which is compared to the
-   * alert->title[].  Use the key to find the record we need to alert on.
-   */
 
-  // Search for specific record if we're doing alerts
-  if (weather_alert_flag && (alert->index == -1) )
-  {
-    int done = 0;
-
-    // Step through all records
-    for( i = 0; i < recordcount && !done; i++ )
-    {
-      int keylen;
-
-      if (sig_info)
-      {
-        char modified_title[50];
-
-        dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
-
-        keylen = strlen(key);
-        if (debug_level & 16)
-        {
-          static char old_key[4]; // Used to limit number of output lines in debug mode
-
-          if (strncmp(old_key, key, 4))
-          {
-            fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
-                    i,key);
-            memcpy(old_key, key, sizeof(old_key));
-          }
-        }
-
-        xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
-
-        // Tweak for RED_FLAG alerts:  If RED_FLAG alert
-        // we've changed the 'Z' to an 'F' in our
-        // alert->title already.  Change the 'F' back to a
-        // 'Z' temporarily (modified_title) for our
-        // compares.
-        //
-        if (modified_title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0)
-        {
-          modified_title[3] = 'Z';
-        }
-
-        // If match using keylen number of chars, try the
-        // same match but using titlelen number of chars
-        if (strncmp(modified_title,key,keylen) == 0)
-        {
-          int titlelen;
-
-          titlelen = strlen(modified_title);
-
-          // Try the same match with titlelen number of
-          // chars
-          if (strncmp(modified_title,key,titlelen) == 0)
-          {
-
-            found_shape = i;
-            done++;
-            if (debug_level & 16)
-            {
-              fprintf(stderr,"dbfawk alert found it: %d \n",i);
-              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
-
-            }
-          }
-          else
-          {
-            // Found a match using keylen number of
-            // characters, but it's not a match using
-            // titlelen number of characters.
-            if (debug_level & 16)
-            {
-              fprintf(stderr,
-                      "dbfawk alert: match w/keylen, not w/titlelen: %s=%d %s=%d\n",
-                      key,
-                      keylen,
-                      modified_title,
-                      titlelen);
-              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
-            }
-          }
-        }
-      }
-    }
-    alert->index = found_shape; // Fill it in 'cuz we just found it
-  } /* if (weather_alert_flag && alert_index == -1)... */
-  else if (weather_alert_flag)
-  {
-    // We've been here before and we already know the index into the
-    // file to fetch this particular shape.
-    found_shape = alert->index;
-    if (debug_level & 16)
-    {
-      fprintf(stderr,"wx_alert: found_shape = %d\n",found_shape);
-    }
-  }
-
-  //fprintf(stderr,"Found shape: %d\n", found_shape);
+  // Search for specific record if we're doing alerts (returns -1 if
+  // alert is null or the shape is not found)
+  found_shape = find_wx_alert_shape(alert, hDBF, recordcount,
+                                    sig_info,fld_info);
 
   if (debug_level & 16)
   {
@@ -1000,14 +915,17 @@ void draw_shapefile_map (Widget w,
                                    adfBndsMin[0],
                                    adfBndsMax[0]))
   {
+    // we keep a hash of all shapefiles encountered so far (and not purged
+    // due to inactivity).  Find the record of this shapefile in that
+    // hash if it's there.
     si = get_shp_from_hash(file);
     if (!si)
     {
       // we don't have what we need, so generate the index and make
       // the hashtable entry
       add_shp_to_hash(file,hSHP); // this will index all the shapes in
-      // an RTree and save the root in a
-      // shpinfo structure
+                                  // an RTree and save the root in a
+                                  // shpinfo structure
       si=get_shp_from_hash(file); // now get that structure
       if (!si)
       {
@@ -1017,58 +935,20 @@ void draw_shapefile_map (Widget w,
       }
     }
   }
+
   // we need this for the rtree search
-  get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
-  viewportRect.boundary[0] = (RectReal) rXmin;
-  viewportRect.boundary[1] = (RectReal) rYmin;
-  viewportRect.boundary[2] = (RectReal) rXmax;
-  viewportRect.boundary[3] = (RectReal) rYmax;
+  getViewportRect(&viewportRect);
 
-  switch ( nShapeType )
+  sType = getShapeTypeString(nShapeType);
+  if ((strcmp(sType, "Multipoint")== 0) || (strcmp(sType, "Unknown")==0))
   {
-    case SHPT_POINT:
-      sType = "Point";
-      break;
+    fprintf(stderr,"%s Shapefile format not implemented: %s\n",sType,file);
 
-    case SHPT_POINTZ:
-      sType = "3D Point";
-      break;
+    DBFClose( hDBF );   // Clean up open file descriptors
+    SHPClose( hSHP );
 
-    case SHPT_ARC:
-      sType = "Polyline";
-      break;
-
-    case SHPT_ARCZ:
-      sType = "3D Polyline";
-      break;
-
-    case SHPT_POLYGON:
-      sType = "Polygon";
-      break;
-
-    case SHPT_POLYGONZ:
-      sType = "3D Polygon";
-      break;
-
-    case SHPT_MULTIPOINT:
-      fprintf(stderr,"Multi-Point Shapefile format not implemented: %s\n",file);
-      sType = "MultiPoint";
-      DBFClose( hDBF );   // Clean up open file descriptors
-      SHPClose( hSHP );
-
-      free_dbfawk_infos(fld_info, sig_info);
-
-      return; // Multipoint type.  Not implemented yet.
-      break;
-
-    default:
-      DBFClose( hDBF );   // Clean up open file descriptors
-      SHPClose( hSHP );
-
-      free_dbfawk_infos(fld_info, sig_info);
-
-      return; // Unknown type.  Don't know how to process it.
-      break;
+    free_dbfawk_infos(fld_info, sig_info);
+    return;
   }
 
   if (debug_level & 16)
@@ -1115,100 +995,26 @@ void draw_shapefile_map (Widget w,
   // NOTE: Setting the color here and in the "else" may not stick if we do more
   //       complex drawing further down like a SteelBlue lake with a black boundary,
   //       or if we have labels turned on which resets our color to black.
-  if (weather_alert_flag)     /* XXX */
+  if (weather_alert_flag)
   {
     char xbm_path[MAX_FILENAME];
     unsigned int _w, _h;
     int _xh, _yh;
     int ret_val;
-    FILE *alert_fp = NULL;
-    char xbm_filename[MAX_FILENAME];
-
 
     // This GC is used for weather alerts (writing to the
     // pixmap: pixmap_alerts) and _was_ used for beam_heading
     // rays, but no longer is.
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
-    // N7TAP: No more tinting as that would change the color of the alert, losing that information.
+    // GXcopy used here because we have been using stippling for
+    // weather alerts since commit 88d579
     (void)XSetFunction(XtDisplay(w), gc_tint, GXcopy);
-    /*
-    Options are:
-        GXclear         0                       (Don't use)
-        GXand           src AND dst             (Darker colors, black can result from overlap)
-        GXandReverse    src AND (NOT dst)       (Darker colors)
-        GXcopy          src                     (Don't use)
-        GXandInverted   (NOT src) AND dst       (Pretty colors)
-        GXnoop          dst                     (Don't use)
-        GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-        GXor            src OR dst              (More pastel colors, too bright?)
-        GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-        GXequiv         (NOT src) XOR dst       (Bright, very readable)
-        GXinvert        (NOT dst)               (Don't use)
-        GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-        GXcopyInverted  (NOT src)               (Don't use)
-        GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-        GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-        GXset           1                       (Don't use)
-    */
 
+    // Get a pixmap that will be used to shade this alert area
+    get_alert_xbm_path(xbm_path, sizeof(xbm_path), alert);
 
-    // Note that we can define more alert files for other countries.  They just need to match
-    // the alert text that comes along in the NWS packet.
-    // Current alert files we have defined:
-    //      winter_storm.xbm *
-    //      snow.xbm
-    //      winter_weather.xbm *
-    //      flood.xbm
-    //      torndo.xbm *
-    //      red_flag.xbm
-    //      wind.xbm
-    //      alert.xbm (Used if no match to another filename)
-
-    // Alert texts we receive:
-    //      FLOOD
-    //      SNOW
-    //      TORNDO
-    //      WIND
-    //      WINTER_STORM
-    //      WINTER_WEATHER
-    //      RED_FLAG
-    //      SVRTSM (no file defined for this yet)
-    //      Many others.
-
-    // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
-    // to detect whether we have a matching filename for our alert text.
-    xastir_snprintf(xbm_filename, sizeof(xbm_filename), "%s", alert->alert_tag);
-
-    // Convert the filename to lower-case
-    to_lower(xbm_filename);
-
-    // Construct the complete path/filename
-    strcpy(xbm_path, SYMBOLS_DIR);
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, "/");
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, xbm_filename);
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-    strcat(xbm_path, ".xbm");
-    xbm_path[sizeof(xbm_path)-1] = '\0';  // Terminate string
-
-    // Try opening the file
-    alert_fp = fopen(xbm_path, "rb");
-    if (alert_fp == NULL)
-    {
-      // Failed to find a matching file:  Instead use the "alert.xbm" file
-      xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
-    }
-    else
-    {
-      // Success:  Close the file pointer
-      fclose(alert_fp);
-    }
-
-    /* XXX - need to add SVRTSM */
-
-
+    // set the stipple GC to the pattern we found in the alert xbm
     (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
     XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
     ret_val = XReadBitmapFile(XtDisplay(w),
@@ -1241,11 +1047,6 @@ void draw_shapefile_map (Widget w,
     }
 
   } /* ...end if (weather_alert_flag) */
-  else   /* !weather_alert_flag */
-  {
-// Are these actually used anymore by the code?  Colors get set later
-// when we know more about what we're dealing with.
-  }
 
   // Now that we have the file open, we can read out the structures.
   // We can handle Point, PolyLine and Polygon shapefiles at the moment.
@@ -1276,53 +1077,49 @@ void draw_shapefile_map (Widget w,
 
   // Now instead of looping over all the shapes, search for the ones that
   // are in our viewport and only loop over those
-  //fprintf(stderr,"Deciding how to process this file...\n");
+
   if (weather_alert_flag)     // We're drawing _one_ weather alert shape
   {
-    //fprintf(stderr," weather alert flag set...\n");
     if (found_shape != -1)      // Found the record
     {
-      //fprintf(stderr,"  found_shape set...\n");
-      // just in case we haven't drawn any real maps yet...
+      // just in case we haven't drawn any real maps yet, allocate
+      // the RTree hit array and add our found_shape to it as if we
+      // had found it in an rtree...
       if (!RTree_hitarray)
       {
-        //fprintf(stderr,"   mallocing hitarray...\n");
         RTree_hitarray = (int *)malloc(sizeof(int)*1000);
         RTree_hitarray_size=1000;
       }
       CHECKMALLOC(RTree_hitarray);
       RTree_hitarray[0]=found_shape;
-      //fprintf(stderr," %s contains alert\n",file);
       nhits=1;
     }
     else    // Didn't find the record
     {
-      //fprintf(stderr,"   found_shape is -1...\n");
       nhits=0;
     }
   }
   else    // Draw an entire Shapefile map
   {
-    //fprintf(stderr,"   weather_alert_flag not set...\n");
+    // if it isn't completely inside the viewport, select those shapes
+    // in the file that intersect the viewport.  si will be non null
+    // in this case.
     if (si)
     {
-      //fprintf(stderr,"   si is 0x%lx...\n",(unsigned long int) si);
       RTree_hitarray_index=0;
       // the callback will be executed every time the search finds a
       // shape whose bounding box overlaps the viewport.
+      // RTree_hitarray will contain the shape numbers of every shape
+      // found, nhits will be how many there are.
       nhits = Xastir_RTreeSearch(si->root, &viewportRect,
                                  (void *)RTreeSearchCallback, 0);
-      //fprintf(stderr,"Found %d hits in %s\n",nhits,file);
     }
     else
     {
-      //fprintf(stderr,"   si not set ...\n");
       // we read the entire shapefile
       nhits=nEntities;
-      // fprintf(stderr," %s entirely in view, with %d shapes\n",file,nhits);
     }
   }
-  //fprintf(stderr," Done with decision, nhits is %d\n",nhits);
 
   // only iterate over the hits found by RTreeSearch, not all of them
   for (RTree_hitarray_index=0; RTree_hitarray_index<nhits;
@@ -1364,7 +1161,9 @@ void draw_shapefile_map (Widget w,
       }
     }
 
-
+    // here's where we decide which shape number we're currently processing.
+    // We're either going through all of those found by an rtree search,
+    // the one that pertains to a weather alert, or all of them sequentially.
     if (si)
     {
       structure=RTree_hitarray[RTree_hitarray_index];
@@ -1378,13 +1177,7 @@ void draw_shapefile_map (Widget w,
       structure = RTree_hitarray_index;
     }
 
-    // Have had segfaults before at the SHPReadObject() call
-    // when the Shapefile was corrupted.
-    //fprintf(stderr,"Before SHPReadObject:%d\n",structure);
-
     object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
-
-    //fprintf(stderr,"After SHPReadObject\n");
 
     if (object == NULL)
     {
@@ -1405,10 +1198,6 @@ void draw_shapefile_map (Widget w,
 
     // Here we check the bounding box for this shape against our
     // current viewport.  If we can't see it, don't draw it.
-
-//        if (debug_level & 16)
-//            fprintf(stderr,"Calling map_visible_lat_lon on a shape\n");
-
     if ( map_visible_lat_lon( object->dfYMin,   // Bottom
                               object->dfYMax,   // Top
                               object->dfXMin,   // Left
@@ -1512,7 +1301,7 @@ void draw_shapefile_map (Widget w,
         }
 
 
-        if (weather_alert_flag)   /* XXX will this fix WX alerts? */
+        if (weather_alert_flag)
         {
           fill_style = FillStippled;
         }
@@ -1531,9 +1320,8 @@ void draw_shapefile_map (Widget w,
 
         case SHPT_POINT:
         case SHPT_POINTZ:
-          // We hit this case once for each point shape in
-          // the file, iff that shape is within our
-          // viewport.
+          // We hit this case once for each point shape in the file,
+          // iff that shape is within our viewport.
 
 
           if (debug_level & 16)
@@ -1541,18 +1329,8 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Point Shapefile\n");
           }
 
-          // Read each point, place a label there, and an optional symbol
-          //object->padfX
-          //object->padfY
-          //object->padfZ
-
-//                    if (    mapshots_labels_flag
-//                            && map_labels
-//                            && (fieldcount >= 3) ) {
-
-          if (!skip_it)      // Need a bracket so we can define
+          if (!skip_it)
           {
-            // some local variables.
             const char *temp = NULL;
             int ok = 1;
             int temp_ok;
@@ -1566,7 +1344,6 @@ void draw_shapefile_map (Widget w,
                                                     &my_lat,
                                                     (float)object->padfX[0],
                                                     (float)object->padfY[0]);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
 
             if (!temp_ok)
             {
@@ -1582,31 +1359,28 @@ void draw_shapefile_map (Widget w,
 
             if (ok == 1)
             {
+              // default symbol if dbfawk doesn't set it
               char symbol_table = '/';
               char symbol_id = '.'; /* small x */
               char symbol_over = ' ';
 
-              // Fine-tuned the location here so that
-              // the middle of the 'X' would be at the
-              // proper pixel.
-              if (*sym)
+              if (*sym)  // got the symbol from dbfawk
               {
                 symbol(w,0,sym[0],sym[1],sym[2],pixmap,1,x-10,y-10,' ');
               }
               else
               {
+                // Fine-tuned the location here so that the middle of
+                // the 'X' would be at the proper pixel.
                 symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
               }
 
-              // Fine-tuned this string so that it is
-              // to the right of the 'X' and aligned
-              // nicely.
+              // Labeling of points done here
+              // Fine-tuned this string so that it is to the right of
+              // the 'X' and aligned nicely.
               if (map_labels && !skip_label)
               {
-// Labeling of points done here
                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
-                //(void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
-                //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[label_color], (char *)temp);
               }
             }
           }
@@ -2800,8 +2574,13 @@ void draw_shapefile_map (Widget w,
               }
               else if (weather_alert_flag)
               {
+                // If we're a weather alert, we're assuming the shape
+                // is simple with no holes.  Draw the filled polygon
+                // and the polygon border, all of which will be
+                // stippled with an alert pattern because we already
+                // set that up in gc_tint.
+
                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-// We skip the hole/fill thing for these?
 
                 if (i >= 3)
                 {
@@ -3118,6 +2897,228 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
   }
 
   return (Symtbl);
+}
+
+// We have an open DBF file (pointed to by hDBF), and we might be a
+// weather alert.  Try to find a shape in the dbf file that has a key
+// matching the alert's filename.
+//
+// returns -1 if shape not found or if passed a null alert pointer
+/*
+ * Weather alert dbfawk files set the "key" variable to the
+ * appropriate search key for each record which is compared to the
+ * alert->title[].  Use the key to find the record we need to alert on.
+ */
+int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
+                        dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info)
+{
+  int found_shape = -1;
+  if (alert)
+  {
+    if (alert->index== -1)
+    {
+      int done = 0;
+      int i;
+      // Step through all records
+      for( i = 0; i < recordcount && !done; i++ )
+      {
+        int keylen;
+        char modified_title[50];
+
+        dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
+
+        keylen = strlen(key);
+        if (debug_level & 16)
+        {
+          static char old_key[4]; // Used to limit number of output lines in debug mode
+
+          if (strncmp(old_key, key, 4))
+          {
+            fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
+                    i,key);
+            memcpy(old_key, key, sizeof(old_key));
+          }
+        }
+
+        xastir_snprintf(modified_title, sizeof(modified_title), "%s", alert->title);
+
+        // Tweak for RED_FLAG alerts:  If RED_FLAG alert
+        // we've changed the 'Z' to an 'F' in our
+        // alert->title already.  Change the 'F' back to a
+        // 'Z' temporarily (modified_title) for our
+        // compares.
+        //
+        if (modified_title[3] == 'F' && strncmp(alert->filename, "fz", 2) == 0)
+        {
+          modified_title[3] = 'Z';
+        }
+
+        // If match using keylen number of chars, try the
+        // same match but using titlelen number of chars
+        if (strncmp(modified_title,key,keylen) == 0)
+        {
+          int titlelen;
+
+          titlelen = strlen(modified_title);
+
+          // Try the same match with titlelen number of
+          // chars
+          if (strncmp(modified_title,key,titlelen) == 0)
+          {
+
+            found_shape = i;
+            done++;
+            if (debug_level & 16)
+            {
+              fprintf(stderr,"dbfawk alert found it: %d \n",i);
+              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
+
+            }
+          }
+          else
+          {
+            // Found a match using keylen number of
+            // characters, but it's not a match using
+            // titlelen number of characters.
+            if (debug_level & 16)
+            {
+              fprintf(stderr,
+                      "dbfawk alert: match w/keylen, not w/titlelen: %s=%d %s=%d\n",
+                      key,
+                      keylen,
+                      modified_title,
+                      titlelen);
+              fprintf(stderr,"Title %s, key %s\n",modified_title,key);
+            }
+          }
+        }
+      }
+      alert->index = found_shape; // Fill it in 'cuz we just found it
+    }
+    else
+    {
+      // We've been here before and we already know the index into the
+      // file to fetch this particular shape.
+      found_shape = alert->index;
+      if (debug_level & 16)
+      {
+        fprintf(stderr,"wx_alert: found_shape = %d\n",found_shape);
+      }
+    }
+  }
+  return (found_shape);
+}
+
+
+// this function fills in a Rect structure with the current viewport
+// info
+void getViewportRect(struct Rect *viewportRect)
+{
+  double rXmin, rYmin, rXmax,rYmax;
+  get_viewport_lat_lon(&rXmin, &rYmin, &rXmax, &rYmax);
+  viewportRect->boundary[0] = (RectReal) rXmin;
+  viewportRect->boundary[1] = (RectReal) rYmin;
+  viewportRect->boundary[2] = (RectReal) rXmax;
+  viewportRect->boundary[3] = (RectReal) rYmax;
+}
+
+
+// Return a string corresponding to the name of a shape type
+// This string is only used in debug output
+char *getShapeTypeString(int nShapeType)
+{
+  char *sType;
+  switch ( nShapeType )
+  {
+    case SHPT_POINT:
+      sType = "Point";
+      break;
+
+    case SHPT_POINTZ:
+      sType = "3D Point";
+      break;
+
+    case SHPT_ARC:
+      sType = "Polyline";
+      break;
+
+    case SHPT_ARCZ:
+      sType = "3D Polyline";
+      break;
+
+    case SHPT_POLYGON:
+      sType = "Polygon";
+      break;
+
+    case SHPT_POLYGONZ:
+      sType = "3D Polygon";
+      break;
+
+    case SHPT_MULTIPOINT:
+      sType = "MultiPoint";
+      break;
+
+    default:
+      sType = "Unknown";
+      break;
+  }
+  return (sType);
+}
+
+// Find an xbm in our collection that matches the weather alert type.
+// Will use "alert.xbm" if we can't find a more appropriate one.
+//
+// Note that we can define more alert files for other countries.  They just need to match
+// the alert text that comes along in the NWS packet.
+// Current alert files we have defined:
+//      winter_storm.xbm *
+//      snow.xbm
+//      winter_weather.xbm *
+//      flood.xbm
+//      torndo.xbm *
+//      red_flag.xbm
+//      wind.xbm
+//      alert.xbm (Used if no match to another filename)
+
+// Alert texts we receive:
+//      FLOOD
+//      SNOW
+//      TORNDO
+//      WIND
+//      WINTER_STORM
+//      WINTER_WEATHER
+//      RED_FLAG
+//      SVRTSM (no file defined for this yet)
+//      Many others.
+
+
+void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert)
+{
+  // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
+  // to detect whether we have a matching filename for our alert text.
+  FILE *alert_fp = NULL;
+  char xbm_filename[MAX_FILENAME];
+
+  xastir_snprintf(xbm_filename, sizeof(xbm_filename), "%s", alert->alert_tag);
+
+  // Convert the filename to lower-case
+  to_lower(xbm_filename);
+
+  // Construct the complete path/filename
+  xastir_snprintf(xbm_path, xbm_path_size, "%s/%s.xbm",SYMBOLS_DIR, xbm_filename);
+
+  // Try opening the file
+  alert_fp = fopen(xbm_path, "rb");
+  if (alert_fp == NULL)
+  {
+    // Failed to find a matching file:  Instead use the "alert.xbm" file
+    xastir_snprintf(xbm_path, xbm_path_size, "%s/%s", SYMBOLS_DIR, "alert.xbm");
+  }
+  else
+  {
+    // Success:  Close the file pointer
+    fclose(alert_fp);
+  }
 }
 #endif  // HAVE_LIBSHP
 
