@@ -916,7 +916,7 @@ void draw_shapefile_map (Widget w,
                                    adfBndsMax[0]))
   {
     // we keep a hash of all shapefiles encountered so far (and not purged
-    // due to inactivity.  Find the record of this shapefile in that
+    // due to inactivity).  Find the record of this shapefile in that
     // hash if it's there.
     si = get_shp_from_hash(file);
     if (!si)
