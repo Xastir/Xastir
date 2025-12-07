@@ -140,6 +140,7 @@ int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
 int select_arc_label_mod(void);
 int check_label_skip(label_string **label_hash, const char *label_text,
                      int mod_number, int *skip_label);
+float get_label_angle(int x0, int x1, int y0, int y1);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -1516,63 +1517,20 @@ void draw_shapefile_map (Widget w,
 
               if (!skip_label)    // Draw the string
               {
-
                 // Compute the label rotation angle
-                float diff_X = (int)x1 - x0;
-                float diff_Y = (int)y1 - y0;
-                float angle = 0.0;  // Angle for the beginning of this polyline
+                float angle = (gps_flag)?(-90):get_label_angle(x0,x1,y0,y1);
+                int color_to_use=(gps_flag)?gps_color:label_color;
 
-                if (diff_X == 0.0)    // Avoid divide by zero errors
-                {
-                  diff_X = 0.0000001;
-                }
-                angle = atan( diff_X / diff_Y );    // Compute in radians
-                // Convert to degrees
-                angle = angle / (2.0 * M_PI );
-                angle = angle * 360.0;
+                // Labeling of polylines done here
+                (void)draw_rotated_label_text(w,
+                                              (int)angle,
+                                              x,
+                                              y,
+                                              strlen(temp),
+                                              colors[color_to_use],
+                                              (char *)temp,
+                                              font_size);
 
-                // Change to fit our rotate label function's idea of angle
-                angle = 360.0 - angle;
-
-                //fprintf(stderr,"Y: %f\tX: %f\tAngle: %f ==> ",diff_Y,diff_X,angle);
-
-                if ( angle > 90.0 )
-                {
-                  angle += 180.0;
-                }
-                if ( angle >= 360.0 )
-                {
-                  angle -= 360.0;
-                }
-
-                //fprintf(stderr,"%f\t%s\n",angle,temp);
-
-// Labeling of polylines done here
-
-//                              (void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
-                if (gps_flag)
-                {
-                  (void)draw_rotated_label_text (w,
-                                                 //(int)angle,
-                                                 -90,    // Horizontal, easiest to read
-                                                 x,
-                                                 y,
-                                                 strlen(temp),
-                                                 colors[gps_color],
-                                                 (char *)temp,
-                                                 font_size);
-                }
-                else
-                {
-                  (void)draw_rotated_label_text(w,
-                                                (int)angle,
-                                                x,
-                                                y,
-                                                strlen(temp),
-                                                colors[label_color],
-                                                (char *)temp,
-                                                font_size);
-                }
               }
 
               if (new_label)
@@ -3188,6 +3146,41 @@ int check_label_skip(label_string **label_hash, const char *label_text,
     }
   }
   return (new_label);
+}
+
+
+
+
+// Compute the rotation angle for label text based on two endpoints of a line
+float get_label_angle(int x0, int x1, int y0, int y1)
+{
+  float diff_X = (int)x1 - x0;
+  float diff_Y = (int)y1 - y0;
+  float angle = 0.0;  // Angle for the beginning of this polyline
+
+  if (diff_X == 0.0)    // Avoid divide by zero errors
+  {
+    diff_X = 0.0000001;
+  }
+  angle = atan( diff_X / diff_Y );    // Compute in radians
+  // Convert to degrees
+  angle = angle / (2.0 * M_PI );
+  angle = angle * 360.0;
+
+  // Change to fit our rotate label function's idea of angle
+  angle = 360.0 - angle;
+
+
+  if ( angle > 90.0 )
+  {
+    angle += 180.0;
+  }
+  if ( angle >= 360.0 )
+  {
+    angle -= 360.0;
+  }
+
+  return (angle);
 }
 #endif  // HAVE_LIBSHP
 
