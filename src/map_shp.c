@@ -129,6 +129,7 @@ void get_gps_color_and_label(char *filename, char *gps_label,
                              size_t gps_label_size, int *gps_color);
 int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
 int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
+int select_arc_label_mod(void);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -1478,30 +1479,8 @@ void draw_shapefile_map (Widget w,
                && !skip_it
                && !skip_label )
           {
-            int temp_ok;
-
-            ok = 1;
-
-            // Convert to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    (float)object->padfX[0],
-                                                    (float)object->padfY[0]);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map3: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-              x=l16(x);
-              y=l16(y);
-            }
+            // why is this not just x0, y0?
+            ok = get_vertex_screen_coords(object, 0, &x, &y);
 
             if (ok == 1 && ok_to_draw)
             {
@@ -1513,48 +1492,7 @@ void draw_shapefile_map (Widget w,
               // below to determine how many of each
               // identical label are skipped at each
               // zoom level.
-
-// The goal here is to have one complete label visible on the screen
-// for each road.  We end up skipping labels based on zoom level,
-// which, if the road doesn't have very many segments, may end up
-// drawing one label almost entirely off-screen.  :-(
-
-// If we could check the first line segment to see if the label
-// would be drawn off-screen, perhaps we could start drawing at
-// segment #2?  We'd have to check whether there is a segment #2.
-// Another possibility would be to shift the label on-screen.  Would
-// this work for twisty/turny roads though?  I suppose, 'cuz they'd
-// end up with more line segments and we could just draw at segment
-// #2 in that case instead of shifting.
-
-              if      (scale_y == 1)
-              {
-                mod_number = 1;
-              }
-              else if (scale_y <= 2)
-              {
-                mod_number = 1;
-              }
-              else if (scale_y <= 4)
-              {
-                mod_number = 2;
-              }
-              else if (scale_y <= 8)
-              {
-                mod_number = 4;
-              }
-              else if (scale_y <= 16)
-              {
-                mod_number = 8;
-              }
-              else if (scale_y <= 32)
-              {
-                mod_number = 16;
-              }
-              else
-              {
-                mod_number = (int)(scale_y);
-              }
+              mod_number = select_arc_label_mod();
 
               // Check whether we've written out this string
               // already:  Look for a match in our linked list
@@ -3168,6 +3106,60 @@ int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
 
 
   return ok;
+}
+
+
+
+// Select a "mod" number based on the y pixel scale that will be used to
+// reduce the clutter of SHPT_ARC labels.
+//
+// Original comments:
+// The goal here is to have one complete label visible on the screen
+// for each road.  We end up skipping labels based on zoom level,
+// which, if the road doesn't have very many segments, may end up
+// drawing one label almost entirely off-screen.  :-(
+
+// If we could check the first line segment to see if the label
+// would be drawn off-screen, perhaps we could start drawing at
+// segment #2?  We'd have to check whether there is a segment #2.
+// Another possibility would be to shift the label on-screen.  Would
+// this work for twisty/turny roads though?  I suppose, 'cuz they'd
+// end up with more line segments and we could just draw at segment
+// #2 in that case instead of shifting.
+
+// Takes no arguments, because scale_y is a global variable
+int select_arc_label_mod(void)
+{
+  int mod_number;
+  if (scale_y == 1)
+  {
+    mod_number = 1;
+  }
+  else if (scale_y <= 2)
+  {
+    mod_number = 1;
+  }
+  else if (scale_y <= 4)
+  {
+    mod_number = 2;
+  }
+  else if (scale_y <= 8)
+  {
+    mod_number = 4;
+  }
+  else if (scale_y <= 16)
+  {
+    mod_number = 8;
+  }
+  else if (scale_y <= 32)
+  {
+    mod_number = 16;
+  }
+  else
+  {
+    mod_number = (int)(scale_y);
+  }
+  return (mod_number);
 }
 #endif  // HAVE_LIBSHP
 
