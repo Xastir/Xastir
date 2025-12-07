@@ -140,6 +140,7 @@ int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
 int select_arc_label_mod(void);
 int check_label_skip(label_string **label_hash, const char *label_text,
                      int mod_number, int *skip_label);
+void add_label_to_label_hash(label_string **label_hash, const char *label_text);
 float get_label_angle(int x0, int x1, int y0, int y1);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
@@ -681,9 +682,6 @@ void draw_shapefile_map (Widget w,
 
   // Define hash table for label pointers
   label_string *label_hash[256];
-  // And the index into it
-  uint8_t hash_index = 0;
-
   label_string *ptr2 = NULL;
 
   struct Rect viewportRect;
@@ -1403,12 +1401,6 @@ void draw_shapefile_map (Widget w,
           // in the file, iff at least part of that shape
           // is within our viewport.
 
-
-          if (debug_level & 16)
-          {
-            fprintf(stderr,"Found Polylines\n");
-          }
-
           // Default in case we forget to set the line
           // width later:
           (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -1430,7 +1422,7 @@ void draw_shapefile_map (Widget w,
             get_gps_color_and_label(filename, gps_label, sizeof(gps_label),
                                     &gps_color);
 
-            // Set the color for the arc's
+            // Set the color for the arc
             (void)XSetForeground(XtDisplay(w), gc, colors[gps_color]);
 
             // Make the track nice and wide: Easy to see.
@@ -1483,7 +1475,7 @@ void draw_shapefile_map (Widget w,
                && !skip_it
                && !skip_label )
           {
-            // why is this not just x0, y0?
+            // why is this not just points[0].x and points[0].y?
             ok = get_vertex_screen_coords(object, 0, &x, &y);
 
             if (ok == 1 && ok_to_draw)
@@ -1534,29 +1526,7 @@ void draw_shapefile_map (Widget w,
               }
 
               if (new_label)
-              {
-
-                // Create a new record for this string
-                // and add it to the head of the list.
-                // Make sure to "free" this linked
-                // list.
-                //fprintf(stderr,"Creating a new record: %s\n",temp);
-                ptr2 = (label_string *)malloc(sizeof(label_string));
-                CHECKMALLOC(ptr2);
-
-                memcpy(ptr2->label, temp, sizeof(ptr2->label));
-                ptr2->label[sizeof(ptr2->label)-1] = '\0';  // Terminate string
-                ptr2->found = 1;
-
-                // We use first character of string
-                // as our hash index.
-                hash_index = temp[0];
-
-                ptr2->next = label_hash[hash_index];
-                label_hash[hash_index] = ptr2;
-                //if (label_hash[hash_index]->next == NULL)
-                //    fprintf(stderr,"only one record\n");
-              }
+                add_label_to_label_hash(label_hash, temp);
             }
           }
           break;
@@ -2501,7 +2471,6 @@ void draw_shapefile_map (Widget w,
     while (ptr2 != NULL)
     {
       label_hash[i] = ptr2->next;
-      //fprintf(stderr,"free: %s\n",ptr2->label);
       free(ptr2);
       ptr2 = label_hash[i];
     }
@@ -3182,6 +3151,33 @@ float get_label_angle(int x0, int x1, int y0, int y1)
 
   return (angle);
 }
+
+
+void add_label_to_label_hash(label_string **label_hash, const char *label_text)
+{
+  uint8_t hash_index = 0;
+  label_string *ptr2 = NULL;
+
+  // Create a new record for this string
+  // and add it to the head of the list.
+  // Make sure to "free" this linked
+  // list.
+
+  ptr2 = (label_string *)malloc(sizeof(label_string));
+  CHECKMALLOC(ptr2);
+
+  memcpy(ptr2->label, label_text, sizeof(ptr2->label));
+  ptr2->label[sizeof(ptr2->label)-1] = '\0';  // Terminate string
+  ptr2->found = 1;
+
+  // We use first character of string
+  // as our hash index.
+  hash_index = label_text[0];
+
+  ptr2->next = label_hash[hash_index];
+  label_hash[hash_index] = ptr2;
+}
+
 #endif  // HAVE_LIBSHP
 
 
