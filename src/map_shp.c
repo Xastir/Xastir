@@ -127,6 +127,7 @@ char *getShapeTypeString(int nShapeType);
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
 void get_gps_color_and_label(char *filename, char *gps_label,
                              size_t gps_label_size, int *gps_color);
+int get_vertex_screen_coords(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -1443,67 +1444,16 @@ void draw_shapefile_map (Widget w,
 
             for (ring = 0; ring < object->nVertices; ring++ )
             {
-              int temp_ok;
+              index = get_vertex_screen_coords(object, ring, points, index, &high_water_mark_index);
 
-              ok = 1;
+              // Save the endpoints of the first line segment for
+              // later use in label rotation
+              x0=points[0].x;
+              y0=points[0].y;
+              x1=points[1].x;
+              y1=points[1].y;
+            }
 
-              // Convert to Xastir coordinates
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    (float)object->padfX[ring],
-                                                    (float)object->padfY[ring]);
-
-              if (!temp_ok)
-              {
-                fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
-                ok = 0;
-                x = 0;
-                y = 0;
-              }
-              else
-              {
-                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-                // Save the endpoints of the first line segment for
-                // later use in label rotation
-                if (ring == 0)
-                {
-                  // Save the first set of screen coordinates
-                  x0 = (int)x;
-                  y0 = (int)y;
-                }
-                else if (ring == 1)
-                {
-                  // Save the second set of screen coordinates
-                  x1 = (int)x;
-                  y1 = (int)y;
-                }
-              }
-
-              if (ok == 1)
-              {
-                // XDrawLines uses 16-bit unsigned integers (shorts).
-                // Make sure we stay within the limits.
-                points[index].x = l16(x);
-                points[index].y = l16(y);
-                index++;
-              }
-              if (index > high_water_mark_index)
-              {
-                high_water_mark_index = index;
-              }
-
-              if (index >= MAX_MAP_POINTS)
-              {
-                index = MAX_MAP_POINTS - 1;
-                fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
-              }
-            }   // End of "for" loop for polyline points
-          }
-
-
-          if (ok_to_draw && !skip_it)
-          {
             (void)XDrawLines(XtDisplay(w),
                              pixmap,
                              gc,
@@ -3147,6 +3097,66 @@ void get_gps_color_and_label(char *filename, char *gps_label,
   {
     *gps_color = 0x0c; // Red
   }
+}
+
+
+
+
+// This function extracts a single vertex from a shapefile object given
+// its index in the vertex list of the SHPObject
+// They will be deposited in the array of XPoints, converted to screen
+// coordinates, at index given
+// high_water_mark_index will be updated if needed
+// we return the index of the next point that should be stored.
+// This will not necessarily be one more than what we were given, if doing
+// so would overrun the points array.
+int get_vertex_screen_coords(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index)
+{
+  int temp_ok;
+  int ok;
+  unsigned long my_lat, my_long;
+  long x, y;
+
+  ok = 1;
+
+  // Convert to Xastir coordinates
+  temp_ok = convert_to_xastir_coordinates(&my_long,
+                                          &my_lat,
+                                          (float)object->padfX[vertex],
+                                          (float)object->padfY[vertex]);
+
+  if (!temp_ok)
+  {
+    fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
+    ok = 0;
+    x = 0;
+    y = 0;
+  }
+  else
+  {
+    convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
+  }
+
+  if (ok == 1)
+  {
+    // XDrawLines uses 16-bit unsigned integers (shorts).
+    // Make sure we stay within the limits.
+    points[index].x = l16(x);
+    points[index].y = l16(y);
+    index++;
+  }
+  if (index > *high_water_mark_index)
+  {
+    *high_water_mark_index = index;
+  }
+
+  if (index >= MAX_MAP_POINTS)
+  {
+    index = MAX_MAP_POINTS - 1;
+    fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
+  }
+
+  return index;
 }
 #endif  // HAVE_LIBSHP
 
