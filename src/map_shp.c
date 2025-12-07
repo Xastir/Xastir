@@ -104,6 +104,14 @@ extern int npoints;        /* tsk tsk tsk -- globals */
 // Must be last include file
 #include "leak_detection.h"
 
+// typedef needed in forward decls
+typedef struct _label_string
+{
+  char   label[50];
+  int    found;
+  struct _label_string *next;
+} label_string;
+
 // forward declarations of functions local to this file
 void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
 void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
@@ -130,6 +138,8 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
 int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
 int select_arc_label_mod(void);
+int check_label_skip(label_string **label_hash, const char *label_text,
+                     int mod_number, int *skip_label);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -667,13 +677,6 @@ void draw_shapefile_map (Widget w,
   int draw_filled;
   static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
   static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
-
-  typedef struct _label_string
-  {
-    char   label[50];
-    int    found;
-    struct _label_string *next;
-  } label_string;
 
   // Define hash table for label pointers
   label_string *label_hash[256];
@@ -1495,69 +1498,21 @@ void draw_shapefile_map (Widget w,
               mod_number = select_arc_label_mod();
 
               // Check whether we've written out this string
-              // already:  Look for a match in our linked list
+              // already.
 
-// The problem with this method is that we might get strings
-// "written" at the extreme top or right edge of the display, which
-// means the strings wouldn't be visible, but Xastir thinks that it
-// wrote the string out visibly.  To partially counteract this I've
-// set it up to write only some of the identical strings.  This
-// still doesn't help in the cases where a street only comes in from
-// the top or right and doesn't have an intersection with another
-// street (and therefore another label) within the view.
+              // The problem with this method is that we might get
+              // strings "written" at the extreme top or right edge of
+              // the display, which means the strings wouldn't be
+              // visible, but Xastir thinks that it wrote the string
+              // out visibly.  To partially counteract this I've set
+              // it up to write only some of the identical strings.
+              // This still doesn't help in the cases where a street
+              // only comes in from the top or right and doesn't have
+              // an intersection with another street (and therefore
+              // another label) within the view.
+              new_label = check_label_skip(label_hash, temp,
+                                           mod_number, &skip_label);
 
-              // Hash index is just the first
-              // character.  Tried using lower 6 bits
-              // of first two chars and lower 7 bits
-              // of first two chars but the result was
-              // slower than just using the first
-              // character.
-              hash_index = (uint8_t)(temp[0]);
-
-              ptr2 = label_hash[hash_index];
-              while (ptr2 != NULL)     // Step through the list
-              {
-                // Check 2nd character (fast!)
-                if ( (uint8_t)(ptr2->label[1]) == (uint8_t)(temp[1]) )
-                {
-                  if (strcasecmp(ptr2->label,temp) == 0)      // Found a match
-                  {
-                    //fprintf(stderr,"Found a match!\t%s\n",temp);
-                    new_label = 0;
-                    ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
-
-// We change this "mod" number based on zoom level, so that long
-// strings don't overwrite each other, and so that we don't get too
-// many or too few labels drawn.  This will cause us to skip
-// intersections (the tiger files appear to have a label at each
-// intersection).  Between rural and urban areas, this method might
-// not work well.  Urban areas have few intersections, so we'll get
-// fewer labels drawn.
-// A better method might be to check the screen location for each
-// one and only write the strings if they are far enough apart, and
-// only count a string as written if the start of it is onscreen and
-// the angle is correct for it to be written on the screen.
-
-                    // Draw a number of labels
-                    // appropriate for the zoom
-                    // level.
-// Labeling: Skip label logic
-                    if ( ((ptr2->found - 1) % mod_number) != 0)
-                    {
-                      skip_label++;
-                    }
-                    ptr2 = NULL; // End the loop
-                  }
-                  else
-                  {
-                    ptr2 = ptr2->next;
-                  }
-                }
-                else
-                {
-                  ptr2 = ptr2->next;
-                }
-              }
 
               if (!skip_label)    // Draw the string
               {
@@ -3160,6 +3115,79 @@ int select_arc_label_mod(void)
     mod_number = (int)(scale_y);
   }
   return (mod_number);
+}
+
+
+
+
+// This function gives a yes/no answer to "should we show this label?"
+// We search a label hash for a string, if we find a record and it's
+// been "found" recently (per mod_number), skip it.
+// returns 1 if this is a new label (not found in hash)
+// increments skip_label if we determine we should skip
+//
+// We do it this way because the caller actually already has a skip_label
+// variable that might already be 1, and we don't want to clobber
+// it with a 0.
+int check_label_skip(label_string **label_hash, const char *label_text,
+                     int mod_number, int *skip_label)
+
+{
+  uint8_t hash_index = 0;
+  label_string *ptr2 = NULL;
+  int new_label = 1;
+
+  // Hash index is just the first
+  // character.  Tried using lower 6 bits
+  // of first two chars and lower 7 bits
+  // of first two chars but the result was
+  // slower than just using the first
+  // character.
+  hash_index = (uint8_t)(label_text[0]);
+
+  ptr2 = label_hash[hash_index];
+  while (ptr2 != NULL)     // Step through the list
+  {
+    // Check 2nd character (fast!)
+    if ( (uint8_t)(ptr2->label[1]) == (uint8_t)(label_text[1]) )
+    {
+      if (strcasecmp(ptr2->label,label_text) == 0)      // Found a match
+      {
+        new_label = 0;
+        ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
+
+        // We change this "mod" number based on zoom level, so that
+        // long strings don't overwrite each other, and so that we
+        // don't get too many or too few labels drawn.  This will
+        // cause us to skip intersections (the tiger files appear to
+        // have a label at each intersection).  Between rural and
+        // urban areas, this method might not work well.  Urban areas
+        // have few intersections, so we'll get fewer labels drawn.  A
+        // better method might be to check the screen location for
+        // each one and only write the strings if they are far enough
+        // apart, and only count a string as written if the start of
+        // it is onscreen and the angle is correct for it to be
+        // written on the screen.
+
+        // Draw a number of labels appropriate for the zoom level.
+        // Labeling: Skip label logic
+        if ( ((ptr2->found - 1) % mod_number) != 0)
+        {
+          (*skip_label)++;
+        }
+        ptr2 = NULL; // End the loop
+      }
+      else
+      {
+        ptr2 = ptr2->next;
+      }
+    }
+    else
+    {
+      ptr2 = ptr2->next;
+    }
+  }
+  return (new_label);
 }
 #endif  // HAVE_LIBSHP
 
