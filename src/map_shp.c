@@ -104,7 +104,7 @@ extern int npoints;        /* tsk tsk tsk -- globals */
 // Must be last include file
 #include "leak_detection.h"
 
-// forward declarations of functions
+// forward declarations of functions local to this file
 void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
 void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
 dbfawk_sig_info *initialize_dbfawk_default_sig(void);
@@ -125,6 +125,8 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
 void getViewportRect(struct Rect *viewportRect);
 char *getShapeTypeString(int nShapeType);
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
+void get_gps_color_and_label(char *filename, char *gps_label,
+                             size_t gps_label_size, int *gps_color);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -1400,8 +1402,6 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Polylines\n");
           }
 
-// Draw the PolyLines themselves:
-
           // Default in case we forget to set the line
           // width later:
           (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -1416,96 +1416,24 @@ void draw_shapefile_map (Widget w,
                                      CapButt,JoinMiter);
           }
 
-//WE7U
-// I'd like to be able to change the color of each GPS track for
-// each team in the field.  It'll help to differentiate the tracks
-// where they happen to cross.
-          /* XXX - WITH_DBFAWK should handle this case too.  Need to add a color
-             attribute to the generated dbf file */
+          // gps files in the GPS directory are treated specially to
+          // handle an old pre-dbfawk use case.
           if (gps_flag)
           {
-            int jj;
-            int done = 0;
-
-
-            // Fill in the label we'll use later
-            xastir_snprintf(gps_label,
-                            sizeof(gps_label), "%s",
-                            filename);
-
-            // Knock off the "_Color.shp" portion of the
-            // label.  Find the last underline character
-            // and change it to an end-of-string.
-            jj = strlen(gps_label);
-            while ( !done && (jj > 0) )
-            {
-              if (gps_label[jj] == '_')
-              {
-                gps_label[jj] = '\0';   // Terminate it here
-                done++;
-              }
-              jj--;
-            }
-
-
-            // Check for a color in the filename: i.e.
-            // "Team2_Track_Red.shp"
-            if (strstr(filenm,"_Red.shp"))
-            {
-              gps_color = 0x0c; // Red
-            }
-            else if (strstr(filenm,"_Green.shp"))
-            {
-//                            gps_color = 0x64; // ForestGreen
-              gps_color = 0x23; // Area Green Hi
-            }
-            else if (strstr(filenm,"_Black.shp"))
-            {
-              gps_color = 0x08; // black
-            }
-            else if (strstr(filenm,"_White.shp"))
-            {
-              gps_color = 0x0f; // white
-            }
-            else if (strstr(filenm,"_Orange.shp"))
-            {
-//                            gps_color = 0x06; // orange
-//                            gps_color = 0x19; // orange2
-//                            gps_color = 0x41; // DarkOrange3 (good medium orange)
-              gps_color = 0x62; // orange3 (brighter)
-            }
-            else if (strstr(filenm,"_Blue.shp"))
-            {
-              gps_color = 0x03; // cyan
-            }
-            else if (strstr(filenm,"_Yellow.shp"))
-            {
-              gps_color = 0x0e; // yellow
-            }
-            else if (strstr(filenm,"_Purple.shp"))
-            {
-              gps_color = 0x0b; // mediumorchid
-            }
-            else    // Default color
-            {
-              gps_color = 0x0c; // Red
-            }
+            get_gps_color_and_label(filename, gps_label, sizeof(gps_label),
+                                    &gps_color);
 
             // Set the color for the arc's
             (void)XSetForeground(XtDisplay(w), gc, colors[gps_color]);
 
-            // Make the track nice and wide: Easy to
-            // see.
-//                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineSolid, CapButt,JoinMiter);
-            (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash, CapButt,JoinMiter);
-//                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineDoubleDash, CapButt,JoinMiter);
-
+            // Make the track nice and wide: Easy to see.
+            (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash,
+                                      CapButt,JoinMiter);
           }   // End of gps flag portion
 
 
           index = 0;  // Index into our own points array.
-          // Tells how many points we've
-          // collected so far.
+                      // Tells how many points we've  collected so far.
 
 
           if (ok_to_draw && !skip_it)
@@ -1519,13 +1447,11 @@ void draw_shapefile_map (Widget w,
 
               ok = 1;
 
-              //fprintf(stderr,"\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
               // Convert to Xastir coordinates
               temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)object->padfX[ring],
-                                                      (float)object->padfY[ring]);
-              //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
+                                                    &my_lat,
+                                                    (float)object->padfX[ring],
+                                                    (float)object->padfY[ring]);
 
               if (!temp_ok)
               {
@@ -1538,8 +1464,8 @@ void draw_shapefile_map (Widget w,
               {
                 convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
 
-                // Save the endpoints of the first line
-                // segment for later use in label rotation
+                // Save the endpoints of the first line segment for
+                // later use in label rotation
                 if (ring == 0)
                 {
                   // Save the first set of screen coordinates
@@ -1556,12 +1482,10 @@ void draw_shapefile_map (Widget w,
 
               if (ok == 1)
               {
-                // XDrawLines uses 16-bit unsigned
-                // integers (shorts).  Make sure we
-                // stay within the limits.
+                // XDrawLines uses 16-bit unsigned integers (shorts).
+                // Make sure we stay within the limits.
                 points[index].x = l16(x);
                 points[index].y = l16(y);
-                //fprintf(stderr,"%d %d\t", points[index].x, points[index].y);
                 index++;
               }
               if (index > high_water_mark_index)
@@ -2802,8 +2726,6 @@ void draw_shapefile_map (Widget w,
 
 
 
-
-
 // This function will delete any pre-loaded dbfawk sigs and clear Dbf_sigs
 // This will trigger a  reload the first time a shapfile is redisplayed
 void clear_dbfawk_sigs(void)
@@ -2831,6 +2753,8 @@ void free_dbfawk_sig_info(dbfawk_sig_info *sig_info)
 }
 
 
+
+
 // Initializes the global "dbfawk_default_sig" if uninitialized.
 // do nothing if already initialized.
 // No matter what, return the pointer
@@ -2853,6 +2777,8 @@ dbfawk_sig_info *initialize_dbfawk_default_sig(void)
 
   return dbfawk_default_sig;
 }
+
+
 
 
 // Allocate and set up a DBFAWK symbol table.
@@ -2898,6 +2824,9 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
 
   return (Symtbl);
 }
+
+
+
 
 // We have an open DBF file (pointed to by hDBF), and we might be a
 // weather alert.  Try to find a shape in the dbf file that has a key
@@ -3010,6 +2939,8 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
 }
 
 
+
+
 // this function fills in a Rect structure with the current viewport
 // info
 void getViewportRect(struct Rect *viewportRect)
@@ -3021,6 +2952,8 @@ void getViewportRect(struct Rect *viewportRect)
   viewportRect->boundary[2] = (RectReal) rXmax;
   viewportRect->boundary[3] = (RectReal) rYmax;
 }
+
+
 
 
 // Return a string corresponding to the name of a shape type
@@ -3065,6 +2998,9 @@ char *getShapeTypeString(int nShapeType)
   return (sType);
 }
 
+
+
+
 // Find an xbm in our collection that matches the weather alert type.
 // Will use "alert.xbm" if we can't find a more appropriate one.
 //
@@ -3090,8 +3026,6 @@ char *getShapeTypeString(int nShapeType)
 //      RED_FLAG
 //      SVRTSM (no file defined for this yet)
 //      Many others.
-
-
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert)
 {
   // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
@@ -3118,6 +3052,100 @@ void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert
   {
     // Success:  Close the file pointer
     fclose(alert_fp);
+  }
+}
+
+
+
+
+// If the file we're processing is in the GPS directory and has
+// a color indicated in the file name, set gps_color to that.  Also
+// set a label string based on the file name with the color stripped off.
+// arguments:
+//     filename: the base name of the file with all directory paths stripped
+//               off.
+//  the rest speak for themselves.
+//
+// This technique exists because WE7U said:
+//   I'd like to be able to change the color of each GPS track for
+//  each team in the field.  It'll help to differentiate the tracks
+//   where they happen to cross.
+//
+// Alan Crosswell later wrote:
+//    WITH_DBFAWK should handle this case too.  Need to add a color
+//             attribute to the generated dbf file
+//
+// But these GPS tracks were generally downloaded from GPSMan, and so
+// we had no control over the attributes in the dbf file, so Alan's
+// suggestion wouldn't work unless we used shapelib code to modify it after
+// the fact.
+//
+// Since commit 6bc21a, however, Xastir creates a per-file dbfawk file
+// to go with every shapefile it creates from GPS data, so this
+// filename-based technique is not really the recommended practice
+// anymore.  Now, the recommended technique is to move the files
+// out of the GPS directory where they got dumped and edit the per-file
+// dbfawk to change color and other rendering details like labeling.
+
+void get_gps_color_and_label(char *filename, char *gps_label,
+                             size_t gps_label_size, int *gps_color)
+{
+  int jj;
+  int done = 0;
+
+  // Fill in the label we'll use later
+  xastir_snprintf(gps_label, gps_label_size, "%s", filename);
+
+  // Knock off the "_Color.shp" portion of the label.  Find the last
+  // underline character and change it to an end-of-string.
+  jj = strlen(gps_label);
+  while ( !done && (jj > 0) )
+  {
+    if (gps_label[jj] == '_')
+    {
+      gps_label[jj] = '\0';   // Terminate it here
+      done++;
+    }
+    jj--;
+  }
+
+
+  // Check for a color in the filename: i.e.  "Team2_Track_Red.shp"
+  if (strstr(filename,"_Red.shp"))
+  {
+    *gps_color = 0x0c; // Red
+  }
+  else if (strstr(filename,"_Green.shp"))
+  {
+    *gps_color = 0x23; // Area Green Hi
+  }
+  else if (strstr(filename,"_Black.shp"))
+  {
+    *gps_color = 0x08; // black
+  }
+  else if (strstr(filename,"_White.shp"))
+  {
+    *gps_color = 0x0f; // white
+  }
+  else if (strstr(filename,"_Orange.shp"))
+  {
+    *gps_color = 0x62; // orange3 (brighter)
+  }
+  else if (strstr(filename,"_Blue.shp"))
+  {
+    *gps_color = 0x03; // cyan
+  }
+  else if (strstr(filename,"_Yellow.shp"))
+  {
+    *gps_color = 0x0e; // yellow
+  }
+  else if (strstr(filename,"_Purple.shp"))
+  {
+    *gps_color = 0x0b; // mediumorchid
+  }
+  else    // Default color
+  {
+    *gps_color = 0x0c; // Red
   }
 }
 #endif  // HAVE_LIBSHP
