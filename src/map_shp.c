@@ -644,7 +644,7 @@ void draw_shapefile_map (Widget w,
   static XPoint   points[MAX_MAP_POINTS];
   char            file[MAX_FILENAME];  /* Complete path/name of image file */
   char            short_filenm[MAX_FILENAME];
-  int             i, fieldcount, recordcount, structure, ring;
+  int             i, fieldcount, recordcount, structure, ring, vertex;
   SHPHandle       hSHP;
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
@@ -1440,10 +1440,10 @@ void draw_shapefile_map (Widget w,
 
             // Read the vertices for each vector now
 
-            for (ring = 0; ring < object->nVertices; ring++ )
+            for (vertex = 0; vertex < object->nVertices; vertex++ )
             {
               index = get_vertex_screen_coords_XPoint(
-                         object, ring, points, index, &high_water_mark_index);
+                         object, vertex, points, index, &high_water_mark_index);
 
               // Save the endpoints of the first line segment for
               // later use in label rotation
