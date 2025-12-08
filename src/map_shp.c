@@ -1314,29 +1314,13 @@ void draw_shapefile_map (Widget w,
           {
             const char *temp = NULL;
             int ok = 1;
-            int temp_ok;
 
             if (map_labels)
             {
               temp = name;
             }
             // Convert point to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    (float)object->padfX[0],
-                                                    (float)object->padfY[0]);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map1: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-            }
+            ok = get_vertex_screen_coords(object, 0, &x, &y);
 
             if (ok == 1)
             {
