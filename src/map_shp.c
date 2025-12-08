@@ -1462,11 +1462,7 @@ void draw_shapefile_map (Widget w,
           }
 
 
-// Figure out and draw the labels for PolyLines.  Note that we later
-// determine whether we want to draw the label at all.  Move all
-// code possible below that decision point to keep everything fast.
-// Don't do unnecessary calculations if we're not going to draw the
-// label.
+          // Figure out and draw the labels for SHPT_ARC
 
           temp = (gps_flag)?gps_label:name;
           if ( (temp != NULL)
@@ -1484,14 +1480,12 @@ void draw_shapefile_map (Widget w,
               int new_label = 1;
               int mod_number;
 
-              // Set up the mod_number, which is used
-              // below to determine how many of each
-              // identical label are skipped at each
-              // zoom level.
+              // Set up the mod_number, which is used below to
+              // determine how many of each identical label are
+              // skipped at each zoom level.
               mod_number = select_arc_label_mod();
 
-              // Check whether we've written out this string
-              // already.
+              // Check whether we've written out this string already.
 
               // The problem with this method is that we might get
               // strings "written" at the extreme top or right edge of
