@@ -1520,114 +1520,8 @@ void draw_shapefile_map (Widget w,
           // User requested filled polygons with stippling.
           // Set the stipple now.  need to do here, because if
           // done earlier the labels get stippled, too.
-          (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
-
-          if (draw_filled != 0 && fill_style == FillStippled)
-          {
-
-
-            switch (fill_stipple)
-            {
-              case 0:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_13pct_stipple);
-                break;
-              case 1:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_25pct_stipple);
-                break;
-              default:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_25pct_stipple);
-                break;
-            }
-          }
-
-          // Each polygon can be made up of multiple
-          // rings, and each ring has multiple points that
-          // define it.  We hit this case once for each
-          // polygon shape in the file, iff at least part
-          // of that shape is within our viewport.
-
-// We now handle the "hole" drawing in polygon shapefiles, where
-// clockwise direction around the ring means a fill, and CCW means a
-// hole in the polygon.
-//
-// Possible implementations:
-//
-// 1) Snag an algorithm for a polygon "fill" function from
-// somewhere, but add a piece that will check for being inside a
-// "hole" polygon and just not draw while traversing it (change the
-// pen color to transparent over the holes?).
-// SUMMARY: How to do this?
-//
-// 2) Draw to another layer, then copy only the filled pixels to
-// their final destination pixmap.
-// SUMMARY: Draw polygons once, then a copy operation.
-//
-// 3) Separate area:  Draw polygon.  Copy from other map layer into
-// holes, then copy the result back.
-// SUMMARY:  How to determine outline?
-//
-// 4) Use clip-masks to prevent drawing over the hole areas:  Draw
-// to another 1-bit pixmap or region.  This area can be the size of
-// the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
-// as a clip-mask to draw the polygons again onto the final pixmap.
-// SUMMARY: We end up drawing the shape twice!
-//
-// MODIFICATION:  Draw a filled rectangle onto the map pixmap using
-// the clip-mask to control where it actually gets drawn.
-// SUMMARY: Only end up drawing the shape once.
-//
-// 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
-// Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
-// the holes and use GXinvert to draw zero's to the mask where the
-// holes go.  Use this as a clip-mask to draw the filled areas of
-// the polygon to the map pixmap.
-// SUMMARY: Faster than methods 1-4?
-//
-// 6) Use Regions to do the same method as #5 but with more ease.
-// Create a polygon Region, then create a Region for each hole and
-// subtract the hole from the polygon Region.  Once we have a
-// complete polygon + holes, use that as the clip-mask for drawing
-// the real polygon.  Use XSetRegion() on the GC to set this up.  We
-// might have to do offsets as well so that the region maps properly
-// to our map pixmap when we draw the final polygon to it.
-// SUMMARY:  Should be faster than methods 1-5.
-//
-// 7) Do method 6 but instead of drawing a polygon region, draw a
-// rectangle region first, then knock holes in it.  Use that region
-// as the clip-mask for the XFillPolygon() later by calling
-// XSetRegion() on the GC.  We don't really need a polygon region
-// for a clip-mask.  A rectangle with holes in it will work just as
-// well and should be faster overall.  We might have to do offsets
-// as well so that the region maps properly to our map pixmap when
-// we draw the final polygon to it.
-// SUMMARY:  This might be the fastest method of the ones listed, if
-// drawing a rectangle region is faster than drawing a polygon
-// region.  We draw the polygon once here instead of twice, and each
-// hole only once.  The only added drawing time would be the
-// creation of the rectangle region, which should be fairly fast,
-// and the subtracting of the hole regions from it.
-//
-//
-// Shapefiles also allow identical points to be next to each other
-// in the vertice list.  We should look for that and get rid of
-// duplicate vertices.
-
-
-//if (object->nParts > 1)
-//fprintf(stderr,"Number of parts: %d\n", object->nParts);
-
-
-// Unfortunately, for Polygon shapes we must make one pass through
-// the entire set of rings to see if we have any "hole" rings (as
-// opposed to "fill" rings).  If we have any "hole" rings, we must
-// handle the drawing of the Shape quite differently.
-//
-// Read the vertices for each ring in the Shape.  Test whether we
-// have a hole ring.  If so, save the ring index away for the next
-// step when we actually draw the shape.
+          set_shpt_polygon_fill_stipple(w, fill_style, fill_stipple,
+                                        draw_filled);
 
           polygon_hole_flag = 0;
 
@@ -1637,56 +1531,15 @@ void draw_shapefile_map (Widget w,
           polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
           CHECKMALLOC(polygon_hole_storage);
 
-// Run through the entire shape (all rings of it) once.  Create an
-// array of flags that specify whether each ring is a fill or a
-// hole.  If any holes found, set the global polygon_hole_flag as
-// well.
-
-          for (ring = 0; ring < object->nParts; ring++ )
-          {
-
-            // Testing for fill or hole ring.  This will
-            // determine how we ultimately draw the
-            // entire shape.
-            //
-            switch ( shape_ring_direction( object, ring) )
-            {
-              case  0:    // Error in trying to compute whether fill or hole
-                fprintf(stderr,"Error in computing fill/hole ring\n");
-              /* Falls through. */
-              case  1:    // It's a fill ring
-                // Do nothing for these two cases
-                // except clear the flag in our
-                // storage
-                polygon_hole_storage[ring] = 0;
-                break;
-              case -1:    // It's a hole ring
-                // Add it to our list of hole rings
-                // here and set a flag.  That way we
-                // won't have to run through
-                // SHPRingDir_2d again in the next
-                // loop.
-                polygon_hole_flag++;
-                polygon_hole_storage[ring] = 1;
-//                                fprintf(stderr, "Ring %d/%d is a polygon hole\n",
-//                                    ring,
-//                                    object->nParts);
-                break;
-            }
-          }
-// We're done with the initial run through the vertices of all
-// rings.  We now know which rings are fills and which are holes and
-// have recorded the data.
-
-// Speedup:  Only loop through the vertices once, by determining
-// hole/fill polygons as we go.
+          // Determine whether we have any holes, and set flags in
+          // polygon_hole_storage for ring that is a hole:
+          polygon_hole_flag = preprocess_shp_polygon_holes(object,
+                                                        polygon_hole_storage);
 
 
-//WE7U3
-          // Speedup:  If not draw_filled, then don't go
-          // through the math and region code.  Set the
-          // flag to zero so that we won't do all the math
-          // and the regions.
+
+          // reset polygon hole flag if we aren't actually going to need
+          // to go through the hole math and clip region setting
           if (!map_color_fill || !draw_filled)
           {
             polygon_hole_flag = 0;
@@ -2908,6 +2761,9 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 // we return the index of the next point that should be stored.
 // This will not necessarily be one more than what we were given, if doing
 // so would overrun the points array.
+//
+// high_water_mark represents the most points we've read in this file.  It
+// is used only for debugging output.
 int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index)
 {
   int ok;
@@ -2961,7 +2817,6 @@ int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
   {
     convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
   }
-
 
   return ok;
 }
@@ -3167,6 +3022,154 @@ void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
                            CapButt,JoinMiter);
 }
 
+// Set the fill style and stipple pattern used for filled polygons
+void set_shpt_polygon_fill_stipple(Widget w, int fill_style, int fill_stipple,
+                               int draw_filled)
+{
+  (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
+
+  if (draw_filled != 0 && fill_style == FillStippled)
+  {
+
+
+    switch (fill_stipple)
+    {
+      case 0:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_13pct_stipple);
+        break;
+      case 1:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_25pct_stipple);
+        break;
+      default:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_25pct_stipple);
+        break;
+    }
+  }
+
+}
+
+// Run through all the polygons in the object, return 1 if there are
+// any rings that are "holes" (rings running counterclockwise).
+// Fill polygon_hole_storage with 1 if the ring is clockwise (not a hole)
+// or -1 if it's counterclockwise (a hole)
+//
+// This code was preceded by the following comment when it still lived
+// in draw_shapefile_map (TL;DR:  We are using option 7 below):
+//
+// --------------------------
+// We now handle the "hole" drawing in polygon shapefiles, where
+// clockwise direction around the ring means a fill, and CCW means a
+// hole in the polygon.
+//
+// Possible implementations:
+//
+// 1) Snag an algorithm for a polygon "fill" function from
+// somewhere, but add a piece that will check for being inside a
+// "hole" polygon and just not draw while traversing it (change the
+// pen color to transparent over the holes?).
+// SUMMARY: How to do this?
+//
+// 2) Draw to another layer, then copy only the filled pixels to
+// their final destination pixmap.
+// SUMMARY: Draw polygons once, then a copy operation.
+//
+// 3) Separate area:  Draw polygon.  Copy from other map layer into
+// holes, then copy the result back.
+// SUMMARY:  How to determine outline?
+//
+// 4) Use clip-masks to prevent drawing over the hole areas:  Draw
+// to another 1-bit pixmap or region.  This area can be the size of
+// the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
+// as a clip-mask to draw the polygons again onto the final pixmap.
+// SUMMARY: We end up drawing the shape twice!
+//
+// MODIFICATION:  Draw a filled rectangle onto the map pixmap using
+// the clip-mask to control where it actually gets drawn.
+// SUMMARY: Only end up drawing the shape once.
+//
+// 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
+// Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
+// the holes and use GXinvert to draw zero's to the mask where the
+// holes go.  Use this as a clip-mask to draw the filled areas of
+// the polygon to the map pixmap.
+// SUMMARY: Faster than methods 1-4?
+//
+// 6) Use Regions to do the same method as #5 but with more ease.
+// Create a polygon Region, then create a Region for each hole and
+// subtract the hole from the polygon Region.  Once we have a
+// complete polygon + holes, use that as the clip-mask for drawing
+// the real polygon.  Use XSetRegion() on the GC to set this up.  We
+// might have to do offsets as well so that the region maps properly
+// to our map pixmap when we draw the final polygon to it.
+// SUMMARY:  Should be faster than methods 1-5.
+//
+// 7) Do method 6 but instead of drawing a polygon region, draw a
+// rectangle region first, then knock holes in it.  Use that region
+// as the clip-mask for the XFillPolygon() later by calling
+// XSetRegion() on the GC.  We don't really need a polygon region
+// for a clip-mask.  A rectangle with holes in it will work just as
+// well and should be faster overall.  We might have to do offsets
+// as well so that the region maps properly to our map pixmap when
+// we draw the final polygon to it.
+// SUMMARY:  This might be the fastest method of the ones listed, if
+// drawing a rectangle region is faster than drawing a polygon
+// region.  We draw the polygon once here instead of twice, and each
+// hole only once.  The only added drawing time would be the
+// creation of the rectangle region, which should be fairly fast,
+// and the subtracting of the hole regions from it.
+// Shapefiles also allow identical points to be next to each other
+// in the vertice list.  We should look for that and get rid of
+// duplicate vertices.
+//
+// Unfortunately, for Polygon shapes we must make one pass through
+// the entire set of rings to see if we have any "hole" rings (as
+// opposed to "fill" rings).  If we have any "hole" rings, we must
+// handle the drawing of the Shape quite differently.
+//
+// Speedup:  Only loop through the vertices once, by determining
+// hole/fill polygons as we go.
+// --------------------------
+int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage)
+{
+  int ring;
+  int polygon_hole_flag = 0;
+
+  // Run through the entire shape (all rings of it) once.  Create an
+  // array of flags that specify whether each ring is a fill or a
+  // hole.  If any holes found, set the global polygon_hole_flag as
+  // well.
+
+  for (ring = 0; ring < object->nParts; ring++ )
+  {
+
+    // Testing for fill or hole ring.  This will
+    // determine how we ultimately draw the
+    // entire shape.
+    //
+    switch ( shape_ring_direction( object, ring) )
+    {
+      case  0:    // Error in trying to compute whether fill or hole
+        fprintf(stderr,"Error in computing fill/hole ring\n");
+        /* Falls through. */
+      case  1:
+        // It's a fill ring.  Do nothing for these two cases except
+        // clear the flag in our storage
+        polygon_hole_storage[ring] = 0;
+        break;
+      case -1:
+        // It's a hole ring Add it to our list of hole rings here and
+        // set a flag.  That way we won't have to run through
+        // SHPRingDir_2d again in the next loop.
+        polygon_hole_flag++;
+        polygon_hole_storage[ring] = 1;
+        break;
+    }
+  }
+  return (polygon_hole_flag);
+}
 #endif  // HAVE_LIBSHP
 
 

@@ -46,10 +46,13 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
                         dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
 void getViewportRect(struct Rect *viewportRect);
 char *getShapeTypeString(int nShapeType);
-void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
+void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size,
+                        alert_entry *alert);
 void get_gps_color_and_label(char *filename, char *gps_label,
                              size_t gps_label_size, int *gps_color);
-int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
+int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex,
+                                    XPoint *points, int index,
+                                    int *high_water_mark_index);
 int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
 int select_arc_label_mod(void);
 int check_label_skip(label_string **label_hash, const char *label_text,
@@ -57,3 +60,6 @@ int check_label_skip(label_string **label_hash, const char *label_text,
 void add_label_to_label_hash(label_string **label_hash, const char *label_text);
 float get_label_angle(int x0, int x1, int y0, int y1);
 void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern);
+void set_shpt_polygon_fill_stipple(Widget w, int fill_style, int fill_stipple,
+                                   int draw_filled);
+int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage);
