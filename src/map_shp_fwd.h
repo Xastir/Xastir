@@ -50,6 +50,7 @@ void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size,
                         alert_entry *alert);
 void get_gps_color_and_label(char *filename, char *gps_label,
                              size_t gps_label_size, int *gps_color);
+int convert_ll_to_screen_coords(long *x, long *y, float lon, float lat);
 int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex,
                                     XPoint *points, int index,
                                     int *high_water_mark_index);

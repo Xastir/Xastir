@@ -2752,7 +2752,37 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 
 
 
+// This function converts a lat/lon pair to screen coordinates
+// It probably belongs in util.c
 
+int convert_ll_to_screen_coords(long *x, long *y, float lon, float lat)
+{
+  int temp_ok;
+  int ok;
+  unsigned long my_lat, my_long;
+
+  ok = 1;
+
+  // Convert to Xastir coordinates
+  temp_ok = convert_to_xastir_coordinates(&my_long,
+                                          &my_lat,
+                                          lon,
+                                          lat);
+
+  if (!temp_ok)
+  {
+    fprintf(stderr,"convert_ll_to_screen_coordinates: Problem converting from lat/lon\n");
+    ok = 0;
+    *x = 0;
+    *y = 0;
+  }
+  else
+  {
+    convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
+  }
+
+  return ok;
+}
 // This function extracts a single vertex from a shapefile object given
 // its index in the vertex list of the SHPObject
 // They will be deposited in the array of XPoints, converted to screen
@@ -2794,31 +2824,9 @@ int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *point
 // this function gets a vertex's screen coordinates into variables x and y
 int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
 {
-  int temp_ok;
-  int ok;
-  unsigned long my_lat, my_long;
-
-  ok = 1;
-
-  // Convert to Xastir coordinates
-  temp_ok = convert_to_xastir_coordinates(&my_long,
-                                          &my_lat,
-                                          (float)object->padfX[vertex],
-                                          (float)object->padfY[vertex]);
-
-  if (!temp_ok)
-  {
-    fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
-    ok = 0;
-    x = 0;
-    y = 0;
-  }
-  else
-  {
-    convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
-  }
-
-  return ok;
+  return(convert_ll_to_screen_coords(x,y,
+                                     object->padfX[vertex],
+                                     object->padfY[vertex]));
 }
 
 
