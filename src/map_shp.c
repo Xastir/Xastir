@@ -104,7 +104,15 @@ extern int npoints;        /* tsk tsk tsk -- globals */
 // Must be last include file
 #include "leak_detection.h"
 
-// forward declarations of functions
+// typedef needed in forward decls
+typedef struct _label_string
+{
+  char   label[50];
+  int    found;
+  struct _label_string *next;
+} label_string;
+
+// forward declarations of functions local to this file
 void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
 void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
 dbfawk_sig_info *initialize_dbfawk_default_sig(void);
@@ -125,6 +133,15 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
 void getViewportRect(struct Rect *viewportRect);
 char *getShapeTypeString(int nShapeType);
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
+void get_gps_color_and_label(char *filename, char *gps_label,
+                             size_t gps_label_size, int *gps_color);
+int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
+int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
+int select_arc_label_mod(void);
+int check_label_skip(label_string **label_hash, const char *label_text,
+                     int mod_number, int *skip_label);
+void add_label_to_label_hash(label_string **label_hash, const char *label_text);
+float get_label_angle(int x0, int x1, int y0, int y1);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -627,7 +644,7 @@ void draw_shapefile_map (Widget w,
   static XPoint   points[MAX_MAP_POINTS];
   char            file[MAX_FILENAME];  /* Complete path/name of image file */
   char            short_filenm[MAX_FILENAME];
-  int             i, fieldcount, recordcount, structure, ring;
+  int             i, fieldcount, recordcount, structure, ring, vertex;
   SHPHandle       hSHP;
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
@@ -663,18 +680,8 @@ void draw_shapefile_map (Widget w,
   static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
   static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
 
-  typedef struct _label_string
-  {
-    char   label[50];
-    int    found;
-    struct _label_string *next;
-  } label_string;
-
   // Define hash table for label pointers
   label_string *label_hash[256];
-  // And the index into it
-  uint8_t hash_index = 0;
-
   label_string *ptr2 = NULL;
 
   struct Rect viewportRect;
@@ -1394,14 +1401,6 @@ void draw_shapefile_map (Widget w,
           // in the file, iff at least part of that shape
           // is within our viewport.
 
-
-          if (debug_level & 16)
-          {
-            fprintf(stderr,"Found Polylines\n");
-          }
-
-// Draw the PolyLines themselves:
-
           // Default in case we forget to set the line
           // width later:
           (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -1416,96 +1415,24 @@ void draw_shapefile_map (Widget w,
                                      CapButt,JoinMiter);
           }
 
-//WE7U
-// I'd like to be able to change the color of each GPS track for
-// each team in the field.  It'll help to differentiate the tracks
-// where they happen to cross.
-          /* XXX - WITH_DBFAWK should handle this case too.  Need to add a color
-             attribute to the generated dbf file */
+          // gps files in the GPS directory are treated specially to
+          // handle an old pre-dbfawk use case.
           if (gps_flag)
           {
-            int jj;
-            int done = 0;
+            get_gps_color_and_label(filename, gps_label, sizeof(gps_label),
+                                    &gps_color);
 
-
-            // Fill in the label we'll use later
-            xastir_snprintf(gps_label,
-                            sizeof(gps_label), "%s",
-                            filename);
-
-            // Knock off the "_Color.shp" portion of the
-            // label.  Find the last underline character
-            // and change it to an end-of-string.
-            jj = strlen(gps_label);
-            while ( !done && (jj > 0) )
-            {
-              if (gps_label[jj] == '_')
-              {
-                gps_label[jj] = '\0';   // Terminate it here
-                done++;
-              }
-              jj--;
-            }
-
-
-            // Check for a color in the filename: i.e.
-            // "Team2_Track_Red.shp"
-            if (strstr(filenm,"_Red.shp"))
-            {
-              gps_color = 0x0c; // Red
-            }
-            else if (strstr(filenm,"_Green.shp"))
-            {
-//                            gps_color = 0x64; // ForestGreen
-              gps_color = 0x23; // Area Green Hi
-            }
-            else if (strstr(filenm,"_Black.shp"))
-            {
-              gps_color = 0x08; // black
-            }
-            else if (strstr(filenm,"_White.shp"))
-            {
-              gps_color = 0x0f; // white
-            }
-            else if (strstr(filenm,"_Orange.shp"))
-            {
-//                            gps_color = 0x06; // orange
-//                            gps_color = 0x19; // orange2
-//                            gps_color = 0x41; // DarkOrange3 (good medium orange)
-              gps_color = 0x62; // orange3 (brighter)
-            }
-            else if (strstr(filenm,"_Blue.shp"))
-            {
-              gps_color = 0x03; // cyan
-            }
-            else if (strstr(filenm,"_Yellow.shp"))
-            {
-              gps_color = 0x0e; // yellow
-            }
-            else if (strstr(filenm,"_Purple.shp"))
-            {
-              gps_color = 0x0b; // mediumorchid
-            }
-            else    // Default color
-            {
-              gps_color = 0x0c; // Red
-            }
-
-            // Set the color for the arc's
+            // Set the color for the arc
             (void)XSetForeground(XtDisplay(w), gc, colors[gps_color]);
 
-            // Make the track nice and wide: Easy to
-            // see.
-//                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineSolid, CapButt,JoinMiter);
-            (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash, CapButt,JoinMiter);
-//                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineDoubleDash, CapButt,JoinMiter);
-
+            // Make the track nice and wide: Easy to see.
+            (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash,
+                                      CapButt,JoinMiter);
           }   // End of gps flag portion
 
 
           index = 0;  // Index into our own points array.
-          // Tells how many points we've
-          // collected so far.
+                      // Tells how many points we've  collected so far.
 
 
           if (ok_to_draw && !skip_it)
@@ -1513,73 +1440,19 @@ void draw_shapefile_map (Widget w,
 
             // Read the vertices for each vector now
 
-            for (ring = 0; ring < object->nVertices; ring++ )
+            for (vertex = 0; vertex < object->nVertices; vertex++ )
             {
-              int temp_ok;
+              index = get_vertex_screen_coords_XPoint(
+                         object, vertex, points, index, &high_water_mark_index);
 
-              ok = 1;
+              // Save the endpoints of the first line segment for
+              // later use in label rotation
+              x0=points[0].x;
+              y0=points[0].y;
+              x1=points[1].x;
+              y1=points[1].y;
+            }
 
-              //fprintf(stderr,"\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
-              // Convert to Xastir coordinates
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)object->padfX[ring],
-                                                      (float)object->padfY[ring]);
-              //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-              if (!temp_ok)
-              {
-                fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
-                ok = 0;
-                x = 0;
-                y = 0;
-              }
-              else
-              {
-                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-                // Save the endpoints of the first line
-                // segment for later use in label rotation
-                if (ring == 0)
-                {
-                  // Save the first set of screen coordinates
-                  x0 = (int)x;
-                  y0 = (int)y;
-                }
-                else if (ring == 1)
-                {
-                  // Save the second set of screen coordinates
-                  x1 = (int)x;
-                  y1 = (int)y;
-                }
-              }
-
-              if (ok == 1)
-              {
-                // XDrawLines uses 16-bit unsigned
-                // integers (shorts).  Make sure we
-                // stay within the limits.
-                points[index].x = l16(x);
-                points[index].y = l16(y);
-                //fprintf(stderr,"%d %d\t", points[index].x, points[index].y);
-                index++;
-              }
-              if (index > high_water_mark_index)
-              {
-                high_water_mark_index = index;
-              }
-
-              if (index >= MAX_MAP_POINTS)
-              {
-                index = MAX_MAP_POINTS - 1;
-                fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
-              }
-            }   // End of "for" loop for polyline points
-          }
-
-
-          if (ok_to_draw && !skip_it)
-          {
             (void)XDrawLines(XtDisplay(w),
                              pixmap,
                              gc,
@@ -1589,11 +1462,7 @@ void draw_shapefile_map (Widget w,
           }
 
 
-// Figure out and draw the labels for PolyLines.  Note that we later
-// determine whether we want to draw the label at all.  Move all
-// code possible below that decision point to keep everything fast.
-// Don't do unnecessary calculations if we're not going to draw the
-// label.
+          // Figure out and draw the labels for SHPT_ARC
 
           temp = (gps_flag)?gps_label:name;
           if ( (temp != NULL)
@@ -1602,30 +1471,8 @@ void draw_shapefile_map (Widget w,
                && !skip_it
                && !skip_label )
           {
-            int temp_ok;
-
-            ok = 1;
-
-            // Convert to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    (float)object->padfX[0],
-                                                    (float)object->padfY[0]);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map3: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-              x=l16(x);
-              y=l16(y);
-            }
+            // why is this not just points[0].x and points[0].y?
+            ok = get_vertex_screen_coords(object, 0, &x, &y);
 
             if (ok == 1 && ok_to_draw)
             {
@@ -1633,203 +1480,47 @@ void draw_shapefile_map (Widget w,
               int new_label = 1;
               int mod_number;
 
-              // Set up the mod_number, which is used
-              // below to determine how many of each
-              // identical label are skipped at each
-              // zoom level.
+              // Set up the mod_number, which is used below to
+              // determine how many of each identical label are
+              // skipped at each zoom level.
+              mod_number = select_arc_label_mod();
 
-// The goal here is to have one complete label visible on the screen
-// for each road.  We end up skipping labels based on zoom level,
-// which, if the road doesn't have very many segments, may end up
-// drawing one label almost entirely off-screen.  :-(
+              // Check whether we've written out this string already.
 
-// If we could check the first line segment to see if the label
-// would be drawn off-screen, perhaps we could start drawing at
-// segment #2?  We'd have to check whether there is a segment #2.
-// Another possibility would be to shift the label on-screen.  Would
-// this work for twisty/turny roads though?  I suppose, 'cuz they'd
-// end up with more line segments and we could just draw at segment
-// #2 in that case instead of shifting.
+              // The problem with this method is that we might get
+              // strings "written" at the extreme top or right edge of
+              // the display, which means the strings wouldn't be
+              // visible, but Xastir thinks that it wrote the string
+              // out visibly.  To partially counteract this I've set
+              // it up to write only some of the identical strings.
+              // This still doesn't help in the cases where a street
+              // only comes in from the top or right and doesn't have
+              // an intersection with another street (and therefore
+              // another label) within the view.
+              new_label = check_label_skip(label_hash, temp,
+                                           mod_number, &skip_label);
 
-              if      (scale_y == 1)
-              {
-                mod_number = 1;
-              }
-              else if (scale_y <= 2)
-              {
-                mod_number = 1;
-              }
-              else if (scale_y <= 4)
-              {
-                mod_number = 2;
-              }
-              else if (scale_y <= 8)
-              {
-                mod_number = 4;
-              }
-              else if (scale_y <= 16)
-              {
-                mod_number = 8;
-              }
-              else if (scale_y <= 32)
-              {
-                mod_number = 16;
-              }
-              else
-              {
-                mod_number = (int)(scale_y);
-              }
-
-              // Check whether we've written out this string
-              // already:  Look for a match in our linked list
-
-// The problem with this method is that we might get strings
-// "written" at the extreme top or right edge of the display, which
-// means the strings wouldn't be visible, but Xastir thinks that it
-// wrote the string out visibly.  To partially counteract this I've
-// set it up to write only some of the identical strings.  This
-// still doesn't help in the cases where a street only comes in from
-// the top or right and doesn't have an intersection with another
-// street (and therefore another label) within the view.
-
-              // Hash index is just the first
-              // character.  Tried using lower 6 bits
-              // of first two chars and lower 7 bits
-              // of first two chars but the result was
-              // slower than just using the first
-              // character.
-              hash_index = (uint8_t)(temp[0]);
-
-              ptr2 = label_hash[hash_index];
-              while (ptr2 != NULL)     // Step through the list
-              {
-                // Check 2nd character (fast!)
-                if ( (uint8_t)(ptr2->label[1]) == (uint8_t)(temp[1]) )
-                {
-                  if (strcasecmp(ptr2->label,temp) == 0)      // Found a match
-                  {
-                    //fprintf(stderr,"Found a match!\t%s\n",temp);
-                    new_label = 0;
-                    ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
-
-// We change this "mod" number based on zoom level, so that long
-// strings don't overwrite each other, and so that we don't get too
-// many or too few labels drawn.  This will cause us to skip
-// intersections (the tiger files appear to have a label at each
-// intersection).  Between rural and urban areas, this method might
-// not work well.  Urban areas have few intersections, so we'll get
-// fewer labels drawn.
-// A better method might be to check the screen location for each
-// one and only write the strings if they are far enough apart, and
-// only count a string as written if the start of it is onscreen and
-// the angle is correct for it to be written on the screen.
-
-                    // Draw a number of labels
-                    // appropriate for the zoom
-                    // level.
-// Labeling: Skip label logic
-                    if ( ((ptr2->found - 1) % mod_number) != 0)
-                    {
-                      skip_label++;
-                    }
-                    ptr2 = NULL; // End the loop
-                  }
-                  else
-                  {
-                    ptr2 = ptr2->next;
-                  }
-                }
-                else
-                {
-                  ptr2 = ptr2->next;
-                }
-              }
 
               if (!skip_label)    // Draw the string
               {
-
                 // Compute the label rotation angle
-                float diff_X = (int)x1 - x0;
-                float diff_Y = (int)y1 - y0;
-                float angle = 0.0;  // Angle for the beginning of this polyline
+                float angle = (gps_flag)?(-90):get_label_angle(x0,x1,y0,y1);
+                int color_to_use=(gps_flag)?gps_color:label_color;
 
-                if (diff_X == 0.0)    // Avoid divide by zero errors
-                {
-                  diff_X = 0.0000001;
-                }
-                angle = atan( diff_X / diff_Y );    // Compute in radians
-                // Convert to degrees
-                angle = angle / (2.0 * M_PI );
-                angle = angle * 360.0;
+                // Labeling of polylines done here
+                (void)draw_rotated_label_text(w,
+                                              (int)angle,
+                                              x,
+                                              y,
+                                              strlen(temp),
+                                              colors[color_to_use],
+                                              (char *)temp,
+                                              font_size);
 
-                // Change to fit our rotate label function's idea of angle
-                angle = 360.0 - angle;
-
-                //fprintf(stderr,"Y: %f\tX: %f\tAngle: %f ==> ",diff_Y,diff_X,angle);
-
-                if ( angle > 90.0 )
-                {
-                  angle += 180.0;
-                }
-                if ( angle >= 360.0 )
-                {
-                  angle -= 360.0;
-                }
-
-                //fprintf(stderr,"%f\t%s\n",angle,temp);
-
-// Labeling of polylines done here
-
-//                              (void)draw_label_text ( w, x, y, strlen(temp), colors[label_color], (char *)temp);
-                if (gps_flag)
-                {
-                  (void)draw_rotated_label_text (w,
-                                                 //(int)angle,
-                                                 -90,    // Horizontal, easiest to read
-                                                 x,
-                                                 y,
-                                                 strlen(temp),
-                                                 colors[gps_color],
-                                                 (char *)temp,
-                                                 font_size);
-                }
-                else
-                {
-                  (void)draw_rotated_label_text(w,
-                                                (int)angle,
-                                                x,
-                                                y,
-                                                strlen(temp),
-                                                colors[label_color],
-                                                (char *)temp,
-                                                font_size);
-                }
               }
 
               if (new_label)
-              {
-
-                // Create a new record for this string
-                // and add it to the head of the list.
-                // Make sure to "free" this linked
-                // list.
-                //fprintf(stderr,"Creating a new record: %s\n",temp);
-                ptr2 = (label_string *)malloc(sizeof(label_string));
-                CHECKMALLOC(ptr2);
-
-                memcpy(ptr2->label, temp, sizeof(ptr2->label));
-                ptr2->label[sizeof(ptr2->label)-1] = '\0';  // Terminate string
-                ptr2->found = 1;
-
-                // We use first character of string
-                // as our hash index.
-                hash_index = temp[0];
-
-                ptr2->next = label_hash[hash_index];
-                label_hash[hash_index] = ptr2;
-                //if (label_hash[hash_index]->next == NULL)
-                //    fprintf(stderr,"only one record\n");
-              }
+                add_label_to_label_hash(label_hash, temp);
             }
           }
           break;
@@ -2774,7 +2465,6 @@ void draw_shapefile_map (Widget w,
     while (ptr2 != NULL)
     {
       label_hash[i] = ptr2->next;
-      //fprintf(stderr,"free: %s\n",ptr2->label);
       free(ptr2);
       ptr2 = label_hash[i];
     }
@@ -2798,8 +2488,6 @@ void draw_shapefile_map (Widget w,
   XSetFillStyle(XtDisplay(w), gc, FillSolid);
 }
 // End of draw_shapefile_map()
-
-
 
 
 
@@ -2831,6 +2519,8 @@ void free_dbfawk_sig_info(dbfawk_sig_info *sig_info)
 }
 
 
+
+
 // Initializes the global "dbfawk_default_sig" if uninitialized.
 // do nothing if already initialized.
 // No matter what, return the pointer
@@ -2853,6 +2543,8 @@ dbfawk_sig_info *initialize_dbfawk_default_sig(void)
 
   return dbfawk_default_sig;
 }
+
+
 
 
 // Allocate and set up a DBFAWK symbol table.
@@ -2898,6 +2590,9 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
 
   return (Symtbl);
 }
+
+
+
 
 // We have an open DBF file (pointed to by hDBF), and we might be a
 // weather alert.  Try to find a shape in the dbf file that has a key
@@ -3010,6 +2705,8 @@ int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
 }
 
 
+
+
 // this function fills in a Rect structure with the current viewport
 // info
 void getViewportRect(struct Rect *viewportRect)
@@ -3021,6 +2718,8 @@ void getViewportRect(struct Rect *viewportRect)
   viewportRect->boundary[2] = (RectReal) rXmax;
   viewportRect->boundary[3] = (RectReal) rYmax;
 }
+
+
 
 
 // Return a string corresponding to the name of a shape type
@@ -3065,6 +2764,9 @@ char *getShapeTypeString(int nShapeType)
   return (sType);
 }
 
+
+
+
 // Find an xbm in our collection that matches the weather alert type.
 // Will use "alert.xbm" if we can't find a more appropriate one.
 //
@@ -3090,8 +2792,6 @@ char *getShapeTypeString(int nShapeType)
 //      RED_FLAG
 //      SVRTSM (no file defined for this yet)
 //      Many others.
-
-
 void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert)
 {
   // Attempt to open the alert filename:  <alert_tag>.xbm (lower-case alert text)
@@ -3120,6 +2820,358 @@ void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert
     fclose(alert_fp);
   }
 }
+
+
+
+
+// If the file we're processing is in the GPS directory and has
+// a color indicated in the file name, set gps_color to that.  Also
+// set a label string based on the file name with the color stripped off.
+// arguments:
+//     filename: the base name of the file with all directory paths stripped
+//               off.
+//  the rest speak for themselves.
+//
+// This technique exists because WE7U said:
+//   I'd like to be able to change the color of each GPS track for
+//  each team in the field.  It'll help to differentiate the tracks
+//   where they happen to cross.
+//
+// Alan Crosswell later wrote:
+//    WITH_DBFAWK should handle this case too.  Need to add a color
+//             attribute to the generated dbf file
+//
+// But these GPS tracks were generally downloaded from GPSMan, and so
+// we had no control over the attributes in the dbf file, so Alan's
+// suggestion wouldn't work unless we used shapelib code to modify it after
+// the fact.
+//
+// Since commit 6bc21a, however, Xastir creates a per-file dbfawk file
+// to go with every shapefile it creates from GPS data, so this
+// filename-based technique is not really the recommended practice
+// anymore.  Now, the recommended technique is to move the files
+// out of the GPS directory where they got dumped and edit the per-file
+// dbfawk to change color and other rendering details like labeling.
+
+void get_gps_color_and_label(char *filename, char *gps_label,
+                             size_t gps_label_size, int *gps_color)
+{
+  int jj;
+  int done = 0;
+
+  // Fill in the label we'll use later
+  xastir_snprintf(gps_label, gps_label_size, "%s", filename);
+
+  // Knock off the "_Color.shp" portion of the label.  Find the last
+  // underline character and change it to an end-of-string.
+  jj = strlen(gps_label);
+  while ( !done && (jj > 0) )
+  {
+    if (gps_label[jj] == '_')
+    {
+      gps_label[jj] = '\0';   // Terminate it here
+      done++;
+    }
+    jj--;
+  }
+
+
+  // Check for a color in the filename: i.e.  "Team2_Track_Red.shp"
+  if (strstr(filename,"_Red.shp"))
+  {
+    *gps_color = 0x0c; // Red
+  }
+  else if (strstr(filename,"_Green.shp"))
+  {
+    *gps_color = 0x23; // Area Green Hi
+  }
+  else if (strstr(filename,"_Black.shp"))
+  {
+    *gps_color = 0x08; // black
+  }
+  else if (strstr(filename,"_White.shp"))
+  {
+    *gps_color = 0x0f; // white
+  }
+  else if (strstr(filename,"_Orange.shp"))
+  {
+    *gps_color = 0x62; // orange3 (brighter)
+  }
+  else if (strstr(filename,"_Blue.shp"))
+  {
+    *gps_color = 0x03; // cyan
+  }
+  else if (strstr(filename,"_Yellow.shp"))
+  {
+    *gps_color = 0x0e; // yellow
+  }
+  else if (strstr(filename,"_Purple.shp"))
+  {
+    *gps_color = 0x0b; // mediumorchid
+  }
+  else    // Default color
+  {
+    *gps_color = 0x0c; // Red
+  }
+}
+
+
+
+
+// This function extracts a single vertex from a shapefile object given
+// its index in the vertex list of the SHPObject
+// They will be deposited in the array of XPoints, converted to screen
+// coordinates, at index given
+// high_water_mark_index will be updated if needed
+// we return the index of the next point that should be stored.
+// This will not necessarily be one more than what we were given, if doing
+// so would overrun the points array.
+int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index)
+{
+  int ok;
+  long x, y;
+  ok = get_vertex_screen_coords(object, vertex, &x, &y);
+  if (ok == 1)
+  {
+    // XDrawLines uses 16-bit unsigned integers (shorts).
+    // Make sure we stay within the limits.
+    points[index].x = l16(x);
+    points[index].y = l16(y);
+    index++;
+  }
+  if (index > *high_water_mark_index)
+  {
+    *high_water_mark_index = index;
+  }
+
+  if (index >= MAX_MAP_POINTS)
+  {
+    index = MAX_MAP_POINTS - 1;
+    fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
+  }
+  return index;
+}
+
+
+// this function gets a vertex's screen coordinates into variables x and y
+int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
+{
+  int temp_ok;
+  int ok;
+  unsigned long my_lat, my_long;
+
+  ok = 1;
+
+  // Convert to Xastir coordinates
+  temp_ok = convert_to_xastir_coordinates(&my_long,
+                                          &my_lat,
+                                          (float)object->padfX[vertex],
+                                          (float)object->padfY[vertex]);
+
+  if (!temp_ok)
+  {
+    fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
+    ok = 0;
+    x = 0;
+    y = 0;
+  }
+  else
+  {
+    convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
+  }
+
+
+  return ok;
+}
+
+
+
+// Select a "mod" number based on the y pixel scale that will be used to
+// reduce the clutter of SHPT_ARC labels.
+//
+// Original comments:
+// The goal here is to have one complete label visible on the screen
+// for each road.  We end up skipping labels based on zoom level,
+// which, if the road doesn't have very many segments, may end up
+// drawing one label almost entirely off-screen.  :-(
+
+// If we could check the first line segment to see if the label
+// would be drawn off-screen, perhaps we could start drawing at
+// segment #2?  We'd have to check whether there is a segment #2.
+// Another possibility would be to shift the label on-screen.  Would
+// this work for twisty/turny roads though?  I suppose, 'cuz they'd
+// end up with more line segments and we could just draw at segment
+// #2 in that case instead of shifting.
+
+// Takes no arguments, because scale_y is a global variable
+int select_arc_label_mod(void)
+{
+  int mod_number;
+  if (scale_y == 1)
+  {
+    mod_number = 1;
+  }
+  else if (scale_y <= 2)
+  {
+    mod_number = 1;
+  }
+  else if (scale_y <= 4)
+  {
+    mod_number = 2;
+  }
+  else if (scale_y <= 8)
+  {
+    mod_number = 4;
+  }
+  else if (scale_y <= 16)
+  {
+    mod_number = 8;
+  }
+  else if (scale_y <= 32)
+  {
+    mod_number = 16;
+  }
+  else
+  {
+    mod_number = (int)(scale_y);
+  }
+  return (mod_number);
+}
+
+
+
+
+// This function gives a yes/no answer to "should we show this label?"
+// We search a label hash for a string, if we find a record and it's
+// been "found" recently (per mod_number), skip it.
+// returns 1 if this is a new label (not found in hash)
+// increments skip_label if we determine we should skip
+//
+// We do it this way because the caller actually already has a skip_label
+// variable that might already be 1, and we don't want to clobber
+// it with a 0.
+int check_label_skip(label_string **label_hash, const char *label_text,
+                     int mod_number, int *skip_label)
+
+{
+  uint8_t hash_index = 0;
+  label_string *ptr2 = NULL;
+  int new_label = 1;
+
+  // Hash index is just the first
+  // character.  Tried using lower 6 bits
+  // of first two chars and lower 7 bits
+  // of first two chars but the result was
+  // slower than just using the first
+  // character.
+  hash_index = (uint8_t)(label_text[0]);
+
+  ptr2 = label_hash[hash_index];
+  while (ptr2 != NULL)     // Step through the list
+  {
+    // Check 2nd character (fast!)
+    if ( (uint8_t)(ptr2->label[1]) == (uint8_t)(label_text[1]) )
+    {
+      if (strcasecmp(ptr2->label,label_text) == 0)      // Found a match
+      {
+        new_label = 0;
+        ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
+
+        // We change this "mod" number based on zoom level, so that
+        // long strings don't overwrite each other, and so that we
+        // don't get too many or too few labels drawn.  This will
+        // cause us to skip intersections (the tiger files appear to
+        // have a label at each intersection).  Between rural and
+        // urban areas, this method might not work well.  Urban areas
+        // have few intersections, so we'll get fewer labels drawn.  A
+        // better method might be to check the screen location for
+        // each one and only write the strings if they are far enough
+        // apart, and only count a string as written if the start of
+        // it is onscreen and the angle is correct for it to be
+        // written on the screen.
+
+        // Draw a number of labels appropriate for the zoom level.
+        // Labeling: Skip label logic
+        if ( ((ptr2->found - 1) % mod_number) != 0)
+        {
+          (*skip_label)++;
+        }
+        ptr2 = NULL; // End the loop
+      }
+      else
+      {
+        ptr2 = ptr2->next;
+      }
+    }
+    else
+    {
+      ptr2 = ptr2->next;
+    }
+  }
+  return (new_label);
+}
+
+
+
+
+// Compute the rotation angle for label text based on two endpoints of a line
+float get_label_angle(int x0, int x1, int y0, int y1)
+{
+  float diff_X = (int)x1 - x0;
+  float diff_Y = (int)y1 - y0;
+  float angle = 0.0;  // Angle for the beginning of this polyline
+
+  if (diff_X == 0.0)    // Avoid divide by zero errors
+  {
+    diff_X = 0.0000001;
+  }
+  angle = atan( diff_X / diff_Y );    // Compute in radians
+  // Convert to degrees
+  angle = angle / (2.0 * M_PI );
+  angle = angle * 360.0;
+
+  // Change to fit our rotate label function's idea of angle
+  angle = 360.0 - angle;
+
+
+  if ( angle > 90.0 )
+  {
+    angle += 180.0;
+  }
+  if ( angle >= 360.0 )
+  {
+    angle -= 360.0;
+  }
+
+  return (angle);
+}
+
+
+void add_label_to_label_hash(label_string **label_hash, const char *label_text)
+{
+  uint8_t hash_index = 0;
+  label_string *ptr2 = NULL;
+
+  // Create a new record for this string
+  // and add it to the head of the list.
+  // Make sure to "free" this linked
+  // list.
+
+  ptr2 = (label_string *)malloc(sizeof(label_string));
+  CHECKMALLOC(ptr2);
+
+  memcpy(ptr2->label, label_text, sizeof(ptr2->label));
+  ptr2->label[sizeof(ptr2->label)-1] = '\0';  // Terminate string
+  ptr2->found = 1;
+
+  // We use first character of string
+  // as our hash index.
+  hash_index = label_text[0];
+
+  ptr2->next = label_hash[hash_index];
+  label_hash[hash_index] = ptr2;
+}
+
 #endif  // HAVE_LIBSHP
 
 
