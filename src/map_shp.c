@@ -1459,23 +1459,19 @@ void draw_shapefile_map (Widget w,
                              points,
                              l16(index),
                              CoordModeOrigin);
-          }
 
 
-          // Figure out and draw the labels for SHPT_ARC
 
-          temp = (gps_flag)?gps_label:name;
-          if ( (temp != NULL)
-               && (strlen(temp) != 0)
-               && map_labels
-               && !skip_it
-               && !skip_label )
-          {
-            // why is this not just points[0].x and points[0].y?
-            ok = get_vertex_screen_coords(object, 0, &x, &y);
+            // draw a label
 
-            if (ok == 1 && ok_to_draw)
+            temp = (gps_flag)?gps_label:name;
+            if ( (temp != NULL)
+                 && (strlen(temp) != 0)
+                 && map_labels
+                 && !skip_label )
             {
+              x=points[0].x;
+              y=points[0].y;
 
               int new_label = 1;
               int mod_number;
