@@ -1854,32 +1854,29 @@ void draw_shapefile_map (Widget w,
 
 
           // Read the vertices for each ring in this Shape
+          // NOTE:  nParts can be zero, which is the same as nParts=1,
+          // but panPartStart will be null.  This loop is structured
+          // such that shapes with nParts==0 will just be skipped, which
+          // is a bug.
           for (ring = 0; ring < object->nParts; ring++ )
           {
-            int endpoint;
-            //fprintf(stderr,"Ring: %d\t\t", ring);
-
+            int nVertices;
             if ( (ring+1) < object->nParts)
             {
-              endpoint = object->panPartStart[ring+1];
+              nVertices = object->panPartStart[ring+1]
+                - object->panPartStart[ring];
             }
-            //else endpoint = object->nVertices;
             else
             {
-              endpoint = object->panPartStart[0] + object->nVertices;
+              nVertices= object->nVertices-object->panPartStart[ring];
             }
 
-            //fprintf(stderr,"Endpoint %d\n", endpoint);
-            //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
-
-            i = 0;  // i = Number of points to draw for one ring
-                    // index = ptr into the shapefile's array of points
-            for (index = object->panPartStart[ring]; index < endpoint; index++)
-            {
-
-              i = get_vertex_screen_coords_XPoint(object, index, points, i,
-                                                  &high_water_mark_index);
-            }
+            // i = Number of points to draw for one ring
+            i=get_vertices_screen_coords_XPoints(object,
+                                                 object->panPartStart[ring],
+                                                 nVertices,
+                                                 points,
+                                                 &high_water_mark_index);
 
             if ( (i >= 3)
                  && (ok_to_draw && !skip_it)
