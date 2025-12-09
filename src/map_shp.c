@@ -142,6 +142,7 @@ int check_label_skip(label_string **label_hash, const char *label_text,
                      int mod_number, int *skip_label);
 void add_label_to_label_hash(label_string **label_hash, const char *label_text);
 float get_label_angle(int x0, int x1, int y0, int y1);
+void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern);
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -1406,121 +1407,129 @@ void draw_shapefile_map (Widget w,
           (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 
 
-          if (!skip_it)
-          {
-            (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-            (void)XSetLineAttributes(XtDisplay (w), gc,
-                                     (lanes)?lanes:1,
-                                     pattern,
-                                     CapButt,JoinMiter);
-          }
-
           // gps files in the GPS directory are treated specially to
           // handle an old pre-dbfawk use case.
           if (gps_flag)
-          {
             get_gps_color_and_label(filename, gps_label, sizeof(gps_label),
                                     &gps_color);
 
-            // Set the color for the arc
-            (void)XSetForeground(XtDisplay(w), gc, colors[gps_color]);
-
-            // Make the track nice and wide: Easy to see.
-            (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash,
-                                      CapButt,JoinMiter);
-          }   // End of gps flag portion
-
-
-          index = 0;  // Index into our own points array.
-                      // Tells how many points we've  collected so far.
-
+          // these will be used to determine if we label this feature
+          int new_label = 1;
+          int mod_number;
 
           if (ok_to_draw && !skip_it)
           {
 
+            int nParts = object->nParts;
+
+            if (nParts==0)
+              nParts=1;     // but don't try to read panPartStart!
+
             // Read the vertices for each vector now
-
-            for (vertex = 0; vertex < object->nVertices; vertex++ )
+            for (int part=0; part < nParts; part++)
             {
-              index = get_vertex_screen_coords_XPoint(
-                         object, vertex, points, index, &high_water_mark_index);
-
-              // Save the endpoints of the first line segment for
-              // later use in label rotation
-              x0=points[0].x;
-              y0=points[0].y;
-              x1=points[1].x;
-              y1=points[1].y;
-            }
-
-            (void)XDrawLines(XtDisplay(w),
-                             pixmap,
-                             gc,
-                             points,
-                             l16(index),
-                             CoordModeOrigin);
-          }
-
-
-          // Figure out and draw the labels for SHPT_ARC
-
-          temp = (gps_flag)?gps_label:name;
-          if ( (temp != NULL)
-               && (strlen(temp) != 0)
-               && map_labels
-               && !skip_it
-               && !skip_label )
-          {
-            // why is this not just points[0].x and points[0].y?
-            ok = get_vertex_screen_coords(object, 0, &x, &y);
-
-            if (ok == 1 && ok_to_draw)
-            {
-
-              int new_label = 1;
-              int mod_number;
-
-              // Set up the mod_number, which is used below to
-              // determine how many of each identical label are
-              // skipped at each zoom level.
-              mod_number = select_arc_label_mod();
-
-              // Check whether we've written out this string already.
-
-              // The problem with this method is that we might get
-              // strings "written" at the extreme top or right edge of
-              // the display, which means the strings wouldn't be
-              // visible, but Xastir thinks that it wrote the string
-              // out visibly.  To partially counteract this I've set
-              // it up to write only some of the identical strings.
-              // This still doesn't help in the cases where a street
-              // only comes in from the top or right and doesn't have
-              // an intersection with another street (and therefore
-              // another label) within the view.
-              new_label = check_label_skip(label_hash, temp,
-                                           mod_number, &skip_label);
-
-
-              if (!skip_label)    // Draw the string
+              int nVertices;
+              int partStart;
+              index = 0;  // Index into our own points array.
+                         // Tells how many points we've  collected so far.
+              if (nParts == 1)
               {
-                // Compute the label rotation angle
-                float angle = (gps_flag)?(-90):get_label_angle(x0,x1,y0,y1);
-                int color_to_use=(gps_flag)?gps_color:label_color;
-
-                // Labeling of polylines done here
-                (void)draw_rotated_label_text(w,
-                                              (int)angle,
-                                              x,
-                                              y,
-                                              strlen(temp),
-                                              colors[color_to_use],
-                                              (char *)temp,
-                                              font_size);
-
+                nVertices =object->nVertices;
+                partStart = 0;
+              }
+              else if (part < nParts-1)
+              {
+                partStart = object->panPartStart[part];
+                nVertices = object->panPartStart[part+1] - partStart;
+              }
+              else
+              {
+                partStart = object->panPartStart[part];
+                nVertices = object->nVertices - partStart;
               }
 
-              if (new_label)
-                add_label_to_label_hash(label_hash, temp);
+              for (vertex = 0; vertex < nVertices; vertex++ )
+              {
+                index = get_vertex_screen_coords_XPoint(
+                                           object, vertex+partStart, points,
+                                           index, &high_water_mark_index);
+
+                // Save the endpoints of the first line segment for
+                // later use in label rotation
+                x0=points[0].x;
+                y0=points[0].y;
+                x1=points[1].x;
+                y1=points[1].y;
+              }
+              // Reset these for each part, because we might have changed
+              // them for the labels of the last part.
+              set_shpt_arc_attributes(w, (gps_flag)?gps_color:color,
+                                      (gps_flag)?3:((lanes)?lanes:1),
+                                      (gps_flag)?LineOnOffDash:pattern);
+              (void)XDrawLines(XtDisplay(w),
+                               pixmap,
+                               gc,
+                               points,
+                               l16(index),
+                               CoordModeOrigin);
+
+
+
+              // draw a label
+
+              temp = (gps_flag)?gps_label:name;
+              if ( (temp != NULL)
+                   && (strlen(temp) != 0)
+                   && map_labels
+                   && !skip_label )
+              {
+                x=points[0].x;
+                y=points[0].y;
+
+                // We only do this determination for the first part of
+                // each arc.  If we label one part, we label them all.
+                if (part == 0)
+                {
+                  // Set up the mod_number, which is used below to
+                  // determine how many of each identical label are
+                  // skipped at each zoom level.
+                  mod_number = select_arc_label_mod();
+                  // Check whether we've written out this string already.
+                  // The problem with this method is that we might get
+                  // strings "written" at the extreme top or right edge of
+                  // the display, which means the strings wouldn't be
+                  // visible, but Xastir thinks that it wrote the string
+                  // out visibly.  To partially counteract this I've set
+                  // it up to write only some of the identical strings.
+                  // This still doesn't help in the cases where a street
+                  // only comes in from the top or right and doesn't have
+                  // an intersection with another street (and therefore
+                  // another label) within the view.
+                  new_label = check_label_skip(label_hash, temp,
+                                               mod_number, &skip_label);
+                }
+
+                if (!skip_label)    // Draw the string
+                {
+                  // Compute the label rotation angle
+                  float angle = (gps_flag)?(-90):get_label_angle(x0,x1,y0,y1);
+                  int color_to_use=(gps_flag)?gps_color:label_color;
+
+                  // Labeling of polylines done here
+                  (void)draw_rotated_label_text(w,
+                                                (int)angle,
+                                                x,
+                                                y,
+                                                strlen(temp),
+                                                colors[color_to_use],
+                                                (char *)temp,
+                                                font_size);
+
+                }
+
+                if (new_label)
+                  add_label_to_label_hash(label_hash, temp);
+              }
             }
           }
           break;
@@ -3170,6 +3179,19 @@ void add_label_to_label_hash(label_string **label_hash, const char *label_text)
 
   ptr2->next = label_hash[hash_index];
   label_hash[hash_index] = ptr2;
+}
+
+
+
+// When we're doing SHPT_ARC we wind up switching back and forth between
+// line color and label color.  Consolidate that in one spot.
+void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
+{
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  (void)XSetLineAttributes(XtDisplay (w), gc,
+                           (lanes)?lanes:1,
+                           pattern,
+                           CapButt,JoinMiter);
 }
 
 #endif  // HAVE_LIBSHP
