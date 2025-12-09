@@ -2820,21 +2820,18 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   // work properly.
 
 
-  // Create three regions and rotate between
-  // them, due to the XSubtractRegion()
-  // needing three parameters.  If we later
-  // find that two of the parameters can be
-  // repeated, we can simplify our code.
-  // We'll rotate through them mod 3.
+  // Create three regions and rotate between them, due to the
+  // XSubtractRegion() needing three parameters.  If we later find
+  // that two of the parameters can be repeated, we can simplify our
+  // code.  We'll rotate through them mod 3.
 
   temp_region1 = 0;
 
   // Create empty region
   region[temp_region1] = XCreateRegion();
 
-  // Draw a rectangular clip-mask inside the
-  // Region.  Use the same extents as the full
-  // Shape.
+  // Draw a rectangular clip-mask inside the Region.  Use the same
+  // extents as the full Shape.
 
   // Set up the real sizes from the Shape
   // extents.
@@ -2905,8 +2902,6 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   rectangle.width  = (unsigned short) width;
   rectangle.height = (unsigned short) height;
 
-  //fprintf(stderr,"*** Rectangle: %d,%d %dx%d\n", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
   // Create the initial region containing a
   // filled rectangle.
   XUnionRectWithRegion(&rectangle,
@@ -2928,10 +2923,6 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
       // It's a hole polygon.  Cut the
       // hole out of our rectangle region.
       int num_vertices = 0;
-      //                              int nVertStart;
-
-
-      //                              nVertStart = object->panPartStart[ring];
 
       if( ring == object->nParts-1 )
         num_vertices = object->nVertices
@@ -2960,14 +2951,13 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
       {
         endpoint = object->panPartStart[0] + object->nVertices;
       }
-      //fprintf(stderr,"Endpoint %d\n", endpoint);
-      //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
 
       i = 0;  // i = Number of points to draw for one ring
       on_screen = 0;
 
       // index = ptr into the shapefile's array of points
-      for (index = object->panPartStart[ring]; index < endpoint; )
+      // i = the index into our XPoint array
+      for (index = object->panPartStart[ring]; index < endpoint; index++)
       {
 
         ok = get_vertex_screen_coords(object, index, &x,&y);
@@ -3006,27 +2996,14 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
           points[i].x = l16(x);
           points[i].y = l16(y);
 
-          if (on_screen)
-          {
-            //    fprintf(stderr,"%d x:%d y:%d\n",
-            //        i,
-            //        points[i].x,
-            //        points[i].y);
-          }
           i++;
         }
-        index++;
 
-        if (index > *high_water_mark_index)
+        if (i > *high_water_mark_index)
         {
-          *high_water_mark_index = index;
+          *high_water_mark_index = i;
         }
 
-        if (index > endpoint)
-        {
-          index = endpoint;
-          fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
-        }
       }   // End of converting vertices for a ring
 
 
@@ -3079,10 +3056,6 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   // the regions, but we'll need it when we draw the filled polygons
   // onto the map pixmap using the final region as a clip-mask.
 
-  // Offsets?
-  // XOffsetRegion
-
-  //                        gc_temp_values.function = GXcopy;
   gc_temp = XCreateGC(XtDisplay(w),
                       XtWindow(w),
                       0,
