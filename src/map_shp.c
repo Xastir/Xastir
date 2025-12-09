@@ -966,10 +966,6 @@ void draw_shapefile_map (Widget w,
   // be modified for particular maps in later code.
   (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
 
-
-  // NOTE: Setting the color here and in the "else" may not stick if we do more
-  //       complex drawing further down like a SteelBlue lake with a black boundary,
-  //       or if we have labels turned on which resets our color to black.
   if (weather_alert_flag)
   {
     char xbm_path[MAX_FILENAME];
@@ -978,8 +974,7 @@ void draw_shapefile_map (Widget w,
     int ret_val;
 
     // This GC is used for weather alerts (writing to the
-    // pixmap: pixmap_alerts) and _was_ used for beam_heading
-    // rays, but no longer is.
+    // pixmap: pixmap_alerts)
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
     // GXcopy used here because we have been using stippling for
@@ -1286,9 +1281,6 @@ void draw_shapefile_map (Widget w,
 
       }
 
-      /* This case statement is a mess.  Lots of common code could be
-         used before the case but currently isn't */
-
       switch ( nShapeType )
       {
 
@@ -1532,9 +1524,6 @@ void draw_shapefile_map (Widget w,
                                                 polygon_hole_storage,
                                                 &high_water_mark_index);
           }
-//WE7U3
-////////////////////////////////////////////////////////////////////////
-
 
           // Read the vertices for each ring in this Shape
           int nParts = object->nParts;
@@ -1573,7 +1562,6 @@ void draw_shapefile_map (Widget w,
                  && ( !draw_filled || !map_color_fill || (draw_filled && polygon_hole_storage[ring] == 0) ) )
             {
               // We have a polygon to draw!
-//WE7U3
               if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1)
               {
                 // We have a hole drawn as unfilled.
@@ -1581,6 +1569,8 @@ void draw_shapefile_map (Widget w,
               }
               else if (!weather_alert_flag)
               {
+                // it's not a weather alert, so draw it, filling if
+                // necessary and taking into account any holes.
                 draw_filled_polygon(w,
                                     (polygon_hole_flag)?gc_temp:gc,
                                     points, i, color, fill_color,
@@ -1617,13 +1607,15 @@ void draw_shapefile_map (Widget w,
           }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Done with drawing shapes, now draw labels
-////////////////////////////////////////////////////////////////////////////////////////////////////
+          // Done with drawing shapes, now draw labels
 
           temp = name;
-          // Set fill style back to defaults, or labels will get
-          // stippled along with polygons!
+
+          // Set fill style back to defaults, or labels would get
+          // stippled along with polygons if we haven't already reset it.
+          // At the moment, draw_filled_polygon *does* reset it, and
+          // draw_wx_polygon only frobs gc_tint, but it doesn't hurt to
+          // make sure.
           XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
           if ( (temp != NULL)
@@ -2142,9 +2134,9 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 
 
 
+
 // This function converts a lat/lon pair to screen coordinates
 // It probably belongs in util.c
-
 int convert_ll_to_screen_coords(long *x, long *y, float lon, float lat)
 {
   int temp_ok;
@@ -2197,6 +2189,7 @@ int get_vertices_screen_coords_XPoints(SHPObject *object, int partStart,
 
 
 
+
 // This function extracts a single vertex from a shapefile object given
 // its index in the vertex list of the SHPObject
 // They will be deposited in the array of XPoints, converted to screen
@@ -2242,6 +2235,7 @@ int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
                                      object->padfX[vertex],
                                      object->padfY[vertex]));
 }
+
 
 
 
@@ -2406,6 +2400,11 @@ float get_label_angle(int x0, int x1, int y0, int y1)
 }
 
 
+
+
+// we keep a hash of labels we've found and how many shapes of this
+// shapefile have been drawn since the same label was last found.  When
+// we encounter a label we haven't found before, we add it to the hash.
 void add_label_to_label_hash(label_string **label_hash, const char *label_text)
 {
   uint8_t hash_index = 0;
@@ -2433,6 +2432,7 @@ void add_label_to_label_hash(label_string **label_hash, const char *label_text)
 
 
 
+
 // When we're doing SHPT_ARC we wind up switching back and forth between
 // line color and label color.  Consolidate that in one spot.
 void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
@@ -2443,6 +2443,9 @@ void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
                            pattern,
                            CapButt,JoinMiter);
 }
+
+
+
 
 // Set the fill style and stipple pattern used for filled polygons
 void set_shpt_polygon_fill_stipple(Widget w, int fill_style, int fill_stipple,
