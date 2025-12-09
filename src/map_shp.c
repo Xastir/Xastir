@@ -1578,92 +1578,15 @@ void draw_shapefile_map (Widget w,
               if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1)
               {
                 // We have a hole drawn as unfilled.
-                // Draw as a black dashed line.
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                (void)XSetLineAttributes (XtDisplay (w),
-                                          gc,
-                                          0,
-                                          LineOnOffDash,
-                                          CapButt,
-                                          JoinMiter);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
-                (void)XSetLineAttributes (XtDisplay (w),
-                                          gc,
-                                          0,
-                                          LineSolid,
-                                          CapButt,
-                                          JoinMiter);
+                draw_polygon_boundary_dashed(w,color,points,i);
               }
               else if (!weather_alert_flag)
               {
-                /* color is already set by dbfawk(?) */
-                /* And so are lanes and pattern.  Let's
-                   use what was specified. */
-                (void)XSetLineAttributes(XtDisplay(w),
-                                         gc,
-                                         (lanes)?lanes:1,
-                                         pattern,
-                                         CapButt,
-                                         JoinMiter);
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                if (map_color_fill && draw_filled)
-                {
-                  if (polygon_hole_flag)
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-                    if (i >= 3)
-                    {
-                      (void)XFillPolygon(XtDisplay(w),
-                                         pixmap,
-                                         gc_temp,
-                                         points,
-                                         i,
-                                         Nonconvex,
-                                         CoordModeOrigin);
-                    }
-                    else
-                    {
-                      fprintf(stderr,
-                              "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                              npoints);
-                    }
-                  }
-                  else   /* no holes in this polygon */
-                  {
-                    if (i >= 3)
-                    {
-                      /* draw the filled polygon */
-                      (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-                      (void)XFillPolygon(XtDisplay(w),
-                                         pixmap,
-                                         gc,
-                                         points,
-                                         i,
-                                         Nonconvex,
-                                         CoordModeOrigin);
-                    }
-                    else
-                    {
-                      fprintf(stderr,
-                              "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                              npoints);
-                    }
-                  }
-                }
-                /* draw the polygon border */
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                draw_filled_polygon(w,
+                                    (polygon_hole_flag)?gc_temp:gc,
+                                    points, i, color, fill_color,
+                                    lanes, pattern,
+                                    (map_color_fill && draw_filled));
               }
               else if (weather_alert_flag)
               {
@@ -1672,89 +1595,25 @@ void draw_shapefile_map (Widget w,
                 // and the polygon border, all of which will be
                 // stippled with an alert pattern because we already
                 // set that up in gc_tint.
-
-                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-
-                if (i >= 3)
-                {
-                  (void)XFillPolygon(XtDisplay(w),
-                                     pixmap_alerts,
-                                     gc_tint,
-                                     points,
-                                     i,
-                                     Nonconvex,
-                                     CoordModeOrigin);
-                }
-                else
-                {
-                  fprintf(stderr,
-                          "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                          npoints);
-                }
-
-                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap_alerts,
-                                 gc_tint,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                draw_wx_polygon(w, points, i);
               }
-              else if (map_color_fill && draw_filled)    // Land masses?
+              else if (map_color_fill && draw_filled)
               {
-                if (polygon_hole_flag)
-                {
-                  (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-                  if (i >= 3)
-                  {
-                    (void)XFillPolygon(XtDisplay(w),
-                                       pixmap,
-                                       gc_temp,
-                                       points,
-                                       i,
-                                       Nonconvex,
-                                       CoordModeOrigin);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                            npoints);
-                  }
-                }
-                else   /* no polygon hole */
-                {
-                  (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-                  if (i >= 3)
-                  {
-                    (void)XFillPolygon(XtDisplay (w),
-                                       pixmap,
-                                       gc,
-                                       points,
-                                       i,
-                                       Nonconvex,
-                                       CoordModeOrigin);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                            npoints);
-                  }
-                }
-
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                // Just a cotton-pickin' minute... how is this ever reached?
+                // the last two elses were !weather_alert and weather_alert,
+                // which must mean all possible conditions have been
+                // take care of already.
+                fprintf(stderr,"How have we gotten here?!?\n");
+                draw_filled_polygon(w,
+                                    (polygon_hole_flag)?gc_temp:gc,
+                                    points, i, color, fill_color,
+                                    lanes, pattern,
+                                    1);
               }
               else    // Use whatever color is defined by this point.
               {
+                // and again, this else and the previous seem impossible
+                fprintf(stderr,"How have we gotten to this strange place?\n");
                 (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
                 (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
                 (void)XDrawLines(XtDisplay(w),
@@ -3060,6 +2919,92 @@ int clip_x_y_pair(long *x, long *y, long x_min, long x_max, long y_min, long y_m
   return (on_screen);
 }
 
+
+
+
+// draw an unfilled polygon with dashed boundary in given color.
+void draw_polygon_boundary_dashed(Widget w, int color, XPoint *points,
+                                  int numPoints)
+{
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,
+                            JoinMiter);
+  (void)XDrawLines(XtDisplay(w), pixmap, gc, points, l16(numPoints),
+                   CoordModeOrigin);
+
+  // reset back to solid
+  (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid,
+                            CapButt, JoinMiter);
+}
+
+
+
+
+// draw a (possibly) filled polygon using the specified graphics
+// context into the specified pixmap out of XPoint array of size
+// numPoints, in specified boundary and fill colors and with specified
+// line width and pattern.
+//
+//
+// The graphics context passed in is either the normal one or the one
+// that does polygon hole clipping.
+//
+// "do_the_fill" determines whether we should do the fill or not.
+//
+void draw_filled_polygon(Widget w, GC theGC, XPoint *points, int numPoints,
+                         int color, int fill_color, int lanes, int pattern,
+                         int do_the_fill)
+{
+  (void)XSetLineAttributes(XtDisplay(w), theGC, (lanes)?lanes:1,
+                           pattern, CapButt, JoinMiter);
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  if (do_the_fill)
+  {
+    (void)XSetForeground(XtDisplay(w), theGC, colors[fill_color]);
+    if (numPoints >3)
+    {
+      (void)XFillPolygon(XtDisplay(w), pixmap, theGC, points, numPoints,
+                         Nonconvex, CoordModeOrigin);
+    }
+    else
+    {
+      fprintf(stderr,"draw_filled_polygon: too few points: %d, Skipping XFillPolygon()\n",numPoints);
+    }
+  }
+
+  // Draw the border
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
+  (void)XDrawLines(XtDisplay(w), pixmap, gc, points, l16(numPoints),
+                   CoordModeOrigin);
+}
+
+
+
+
+// The wx alerts get drawn in a way almost, but not quite, like others,
+// but into a different graphics context that already has its attributes
+// set.  So we have a second polygon drawing routine.
+void draw_wx_polygon(Widget w, XPoint *points, int numPoints)
+{
+  (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
+
+  if (numPoints >= 3)
+  {
+    (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, numPoints,
+                       Nonconvex, CoordModeOrigin);
+  }
+  else
+  {
+    fprintf(stderr,
+            "draw_wx_polygon:Too few points:%d, Skipping XFillPolygon()",
+            numPoints);
+  }
+
+  (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
+  (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint,
+                   points, l16(numPoints), CoordModeOrigin);
+}
 #endif  // HAVE_LIBSHP
 
 

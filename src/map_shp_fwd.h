@@ -71,3 +71,10 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
                              int *polygon_hole_storage,
                              int *high_water_mark_index);
 int clip_x_y_pair(long *x, long *y, long x_min, long x_max, long y_min, long y_max);
+void draw_polygon_boundary_dashed(Widget w, int color, XPoint *points,
+                                  int numPoints);
+void draw_filled_polygon(Widget w, GC theGC, XPoint *points, int numPoints,
+                         int color, int fill_color, int lanes, int pattern,
+                         int do_the_fill);
+void draw_wx_polygon(Widget w, XPoint *points, int numPoints);
+
