@@ -1534,7 +1534,6 @@ void draw_shapefile_map (Widget w,
             XRectangle rectangle;
             long width, height;
             double top_ll, left_ll, bottom_ll, right_ll;
-            int temp_ok;
 
 
 //                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
@@ -1586,24 +1585,11 @@ void draw_shapefile_map (Widget w,
             bottom_ll = object->dfYMin;
             right_ll  = object->dfXMax;
 
-            // Convert point to Xastir coordinates:
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    left_ll,
-                                                    top_ll);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
+            // Convert point to screen coordinates:
+            ok = convert_ll_to_screen_coords(&x, &y, left_ll, top_ll);
 
-            if (!temp_ok)
+            if (ok)
             {
-              fprintf(stderr,"draw_shapefile_map4: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
               // Here we check for really wacko points that will cause problems
               // with the X drawing routines, and fix them.
               if (x > 1700l)
@@ -1624,24 +1610,11 @@ void draw_shapefile_map (Widget w,
               }
             }
 
-            // Convert points to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    right_ll,
-                                                    bottom_ll);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-            if (!temp_ok)
+            // Convert point to screen coordinates
+            ok = convert_ll_to_screen_coords(&width, &height,
+                                             right_ll, bottom_ll);
+            if (ok)
             {
-              fprintf(stderr,"draw_shapefile_map5: Problem converting from lat/lon\n");
-              ok = 0;
-              width = 0;
-              height = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &width, &height);
-
               // Here we check for really wacko points that will cause problems
               // with the X drawing routines, and fix them.
               if (width  > 1700l)
@@ -1738,35 +1711,14 @@ void draw_shapefile_map (Widget w,
                 // index = ptr into the shapefile's array of points
                 for (index = object->panPartStart[ring]; index < endpoint; )
                 {
-                  int temp_ok;
 
-
-                  // Get vertice and convert to Xastir coordinates
-                  temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                          &my_lat,
-                                                          (float)object->padfX[index],
-                                                          (float)object->padfY[index]);
-
-                  //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
-
-                  if (!temp_ok)
+                  ok = get_vertex_screen_coords(object, index, &x,&y);
+                  if (ok)
                   {
-                    fprintf(stderr,"draw_shapefile_map6: Problem converting from lat/lon\n");
-                    ok = 0;
-                    x = 0;
-                    y = 0;
-                  }
-                  else
-                  {
-                    convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-                    // Here we check for really
-                    // wacko points that will
-                    // cause problems with the X
-                    // drawing routines, and fix
-                    // them.  Increment
-                    // on_screen if any of the
-                    // points might be on
-                    // screen.
+                    // Here we check for really wacko points that will
+                    // cause problems with the X drawing routines, and
+                    // fix them.  Increment on_screen if any of the
+                    // points might be on screen.
                     if (x >  1700l)
                     {
                       x =  1700l;
@@ -1922,68 +1874,12 @@ void draw_shapefile_map (Widget w,
             //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
 
             i = 0;  // i = Number of points to draw for one ring
-            // index = ptr into the shapefile's array of points
-            for (index = object->panPartStart[ring]; index < endpoint; )
+                    // index = ptr into the shapefile's array of points
+            for (index = object->panPartStart[ring]; index < endpoint; index++)
             {
-              int temp_ok;
 
-              ok = 1;
-
-              //fprintf(stderr,"\t%d:%g %g\t", index, object->padfX[index], object->padfY[index] );
-
-              // Get vertice and convert to Xastir coordinates
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)object->padfX[index],
-                                                      (float)object->padfY[index]);
-
-              //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
-
-              if (!temp_ok)
-              {
-                fprintf(stderr,"draw_shapefile_map7: Problem converting from lat/lon\n");
-                ok = 0;
-                x = 0;
-                y = 0;
-                index++;
-              }
-              else
-              {
-                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-                // Here we check for really wacko points that will cause problems
-                // with the X drawing routines, and fix them.
-                points[i].x = l16(x);
-                points[i].y = l16(y);
-                i++;    // Number of points to draw
-
-                if (i > high_water_mark_i)
-                {
-                  high_water_mark_i = i;
-                }
-
-
-                if (i >= MAX_MAP_POINTS)
-                {
-                  i = MAX_MAP_POINTS - 1;
-                  fprintf(stderr,"Trying to run past the end of our internal points array: i=%d\n",i);
-                }
-
-                //fprintf(stderr,"%d %d\t", points[i].x, points[i].y);
-
-                index++;
-
-                if (index > high_water_mark_index)
-                {
-                  high_water_mark_index = index;
-                }
-
-                if (index > endpoint)
-                {
-                  index = endpoint;
-                  fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
-                }
-              }
+              i = get_vertex_screen_coords_XPoint(object, index, points, i,
+                                                  &high_water_mark_index);
             }
 
             if ( (i >= 3)
