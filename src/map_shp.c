@@ -1411,13 +1411,13 @@ void draw_shapefile_map (Widget w,
                                            object, vertex+partStart, points,
                                            index, &high_water_mark_index);
 
-                // Save the endpoints of the first line segment for
-                // later use in label rotation
-                x0=points[0].x;
-                y0=points[0].y;
-                x1=points[1].x;
-                y1=points[1].y;
               }
+              // Save the endpoints of the first line segment for
+              // later use in label rotation
+              x0=points[0].x;
+              y0=points[0].y;
+              x1=points[1].x;
+              y1=points[1].y;
               // Reset these for each part, because we might have changed
               // them for the labels of the last part.
               set_shpt_arc_attributes(w, (gps_flag)?gps_color:color,
