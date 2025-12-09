@@ -629,11 +629,6 @@ void draw_shapefile_map (Widget w,
   int             polygon_hole_flag;
   int             *polygon_hole_storage;
   GC              gc_temp = NULL;
-  XGCValues       gc_temp_values;
-  Region          region[3];
-  int             temp_region1;
-  int             temp_region2;
-  int             temp_region3;
   int             gps_flag = 0;
   char            gps_label[100];
   int             gps_color = 0x0c;
@@ -1530,324 +1525,13 @@ void draw_shapefile_map (Widget w,
 
           if (polygon_hole_flag)
           {
-            XRectangle rectangle;
-            long width, height;
-            double top_ll, left_ll, bottom_ll, right_ll;
-
-
-//                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
-//                            file,
-//                            polygon_hole_flag,
-//                            structure);
-
-//WE7U3
-////////////////////////////////////////////////////////////////////////
-
-// Now that we know which are fill/hole rings, worry about drawing
-// each ring of the Shape:
-//
-// 1) Create a filled rectangle region, probably the size of the
-// Shape extents, and at the same screen coordinates as the entire
-// shape would normally be drawn.
-//
-// 2) Create a region for each hole ring and subtract these new
-// regions one at a time from the rectangle region created above.
-//
-// 3) When the "swiss-cheese" rectangle region is complete, draw
-// only the filled polygons onto the map pixmap using the
-// swiss-cheese rectangle region as the clip-mask.  Use a temporary
-// GC for this operation, as I can't find a way to remove a
-// clip-mask from a GC.  We may have to use offsets to make this
-// work properly.
-
-
-            // Create three regions and rotate between
-            // them, due to the XSubtractRegion()
-            // needing three parameters.  If we later
-            // find that two of the parameters can be
-            // repeated, we can simplify our code.
-            // We'll rotate through them mod 3.
-
-            temp_region1 = 0;
-
-            // Create empty region
-            region[temp_region1] = XCreateRegion();
-
-            // Draw a rectangular clip-mask inside the
-            // Region.  Use the same extents as the full
-            // Shape.
-
-            // Set up the real sizes from the Shape
-            // extents.
-            top_ll    = object->dfYMax;
-            left_ll   = object->dfXMin;
-            bottom_ll = object->dfYMin;
-            right_ll  = object->dfXMax;
-
-            // Convert point to screen coordinates:
-            ok = convert_ll_to_screen_coords(&x, &y, left_ll, top_ll);
-
-            if (ok)
-            {
-              // Here we check for really wacko points that will cause problems
-              // with the X drawing routines, and fix them.
-              if (x > 1700l)
-              {
-                x = 1700l;
-              }
-              if (x <    0l)
-              {
-                x =    0l;
-              }
-              if (y > 1700l)
-              {
-                y = 1700l;
-              }
-              if (y <    0l)
-              {
-                y =    0l;
-              }
-            }
-
-            // Convert point to screen coordinates
-            ok = convert_ll_to_screen_coords(&width, &height,
-                                             right_ll, bottom_ll);
-            if (ok)
-            {
-              // Here we check for really wacko points that will cause problems
-              // with the X drawing routines, and fix them.
-              if (width  > 1700l)
-              {
-                width  = 1700l;
-              }
-              if (width  <    1l)
-              {
-                width  =    1l;
-              }
-              if (height > 1700l)
-              {
-                height = 1700l;
-              }
-              if (height <    1l)
-              {
-                height =    1l;
-              }
-            }
-
-//TODO
-// We can run into trouble here because we only have 16-bit values
-// to work with.  If we're zoomed in and the Shape is large in
-// comparison to the screen, we'll easily exceed these numbers.
-// Perhaps we'll need to work with something other than screen
-// coordinates?  Perhaps truncating the values will be adequate.
-
-            rectangle.x      = (short) x;
-            rectangle.y      = (short) y;
-            rectangle.width  = (unsigned short) width;
-            rectangle.height = (unsigned short) height;
-
-//fprintf(stderr,"*** Rectangle: %d,%d %dx%d\n", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-            // Create the initial region containing a
-            // filled rectangle.
-            XUnionRectWithRegion(&rectangle,
-                                 region[temp_region1],
-                                 region[temp_region1]);
-
-            // Create a region for each set of hole
-            // vertices (CCW rotation of the vertices)
-            // and subtract each from the rectangle
-            // region.
-            for (ring = 0; ring < object->nParts; ring++ )
-            {
-              int endpoint;
-              int on_screen;
-
-
-              if (polygon_hole_storage[ring] == 1)
-              {
-                // It's a hole polygon.  Cut the
-                // hole out of our rectangle region.
-                int num_vertices = 0;
-//                              int nVertStart;
-
-
-//                              nVertStart = object->panPartStart[ring];
-
-                if( ring == object->nParts-1 )
-                  num_vertices = object->nVertices
-                                 - object->panPartStart[ring];
-                else
-                  num_vertices = object->panPartStart[ring+1]
-                                 - object->panPartStart[ring];
-
-//TODO
-// Snag the vertices and put them into the "points" array,
-// converting to screen coordinates as we go, then subtracting the
-// starting point, so that the regions remain small?
-//
-// We could either subtract the starting point of each shape from
-// each point, or take the hit on region size and just use the full
-// screen size (or whatever part of it the shape required plus the
-// area from the starting point to 0,0).
-
-
-                if ( (ring+1) < object->nParts)
-                {
-                  endpoint = object->panPartStart[ring+1];
-                }
-                //else endpoint = object->nVertices;
-                else
-                {
-                  endpoint = object->panPartStart[0] + object->nVertices;
-                }
-                //fprintf(stderr,"Endpoint %d\n", endpoint);
-                //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
-
-                i = 0;  // i = Number of points to draw for one ring
-                on_screen = 0;
-
-                // index = ptr into the shapefile's array of points
-                for (index = object->panPartStart[ring]; index < endpoint; )
-                {
-
-                  ok = get_vertex_screen_coords(object, index, &x,&y);
-                  if (ok)
-                  {
-                    // Here we check for really wacko points that will
-                    // cause problems with the X drawing routines, and
-                    // fix them.  Increment on_screen if any of the
-                    // points might be on screen.
-                    if (x >  1700l)
-                    {
-                      x =  1700l;
-                    }
-                    else if (x < 0l)
-                    {
-                      x = 0l;
-                    }
-                    else
-                    {
-                      on_screen++;
-                    }
-
-                    if (y >  1700l)
-                    {
-                      y =  1700l;
-                    }
-                    else if (y < 0l)
-                    {
-                      y = 0l;
-                    }
-                    else
-                    {
-                      on_screen++;
-                    }
-
-                    points[i].x = l16(x);
-                    points[i].y = l16(y);
-
-                    if (on_screen)
-                    {
-//    fprintf(stderr,"%d x:%d y:%d\n",
-//        i,
-//        points[i].x,
-//        points[i].y);
-                    }
-                    i++;
-                  }
-                  index++;
-
-                  if (index > high_water_mark_index)
-                  {
-                    high_water_mark_index = index;
-                  }
-
-                  if (index > endpoint)
-                  {
-                    index = endpoint;
-                    fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
-                  }
-                }   // End of converting vertices for a ring
-
-
-                // Create and subtract the region
-                // only if it might be on screen.
-                if (on_screen)
-                {
-                  temp_region2 = (temp_region1 + 1) % 3;
-                  temp_region3 = (temp_region1 + 2) % 3;
-
-                  // Create empty regions.
-                  region[temp_region2] = XCreateRegion();
-                  region[temp_region3] = XCreateRegion();
-
-                  // Draw the hole polygon
-                  if (num_vertices >= 3)
-                  {
-                    XDestroyRegion(region[temp_region2]); // Release the old
-                    region[temp_region2] = XPolygonRegion(points,
-                                                          num_vertices,
-                                                          WindingRule);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:XPolygonRegion with too few vertices:%d\n",
-                            num_vertices);
-                  }
-
-                  // Subtract region2 from region1 and
-                  // put the result into region3.
-//fprintf(stderr, "Subtracting region\n");
-                  XSubtractRegion(region[temp_region1],
-                                  region[temp_region2],
-                                  region[temp_region3]);
-
-                  // Get rid of the two regions we no
-                  // longer need
-                  XDestroyRegion(region[temp_region1]);
-                  XDestroyRegion(region[temp_region2]);
-
-                  // Indicate the final result region for
-                  // the next iteration or the exit of the
-                  // loop.
-                  temp_region1 = temp_region3;
-                }
-              }
-            }
-
-            // region[temp_region1] now contains a
-            // clip-mask of the original polygon with
-            // holes cut out of it (swiss-cheese
-            // rectangle).
-
-            // Create temporary GC.  It looks like we
-            // don't need this to create the regions,
-            // but we'll need it when we draw the filled
-            // polygons onto the map pixmap using the
-            // final region as a clip-mask.
-
-// Offsets?
-// XOffsetRegion
-
-//                        gc_temp_values.function = GXcopy;
-            gc_temp = XCreateGC(XtDisplay(w),
-                                XtWindow(w),
-                                0,
-                                &gc_temp_values);
-            // now copy the fill style and stipple from gc.
-            XCopyGC(XtDisplay(w),
-                    gc,
-                    (GCFillStyle|GCStipple),
-                    gc_temp);
-
-            // Set the clip-mask into the GC.  This GC
-            // is now ruined for other purposes, so
-            // destroy it when we're done drawing this
-            // one shape.
-            XSetRegion(XtDisplay(w), gc_temp, region[temp_region1]);
-            XDestroyRegion(region[temp_region1]);
+            // set up a graphics context that has a "swiss cheese"
+            // rectangle with all the holes cut out of it as its clipping
+            // mask.  We'll draw our filled polygons in that GC and the holes
+            // won't get filled
+            gc_temp = get_hole_clipping_context(w,object,
+                                                polygon_hole_storage,
+                                                &high_water_mark_index);
           }
 //WE7U3
 ////////////////////////////////////////////////////////////////////////
@@ -3085,6 +2769,340 @@ int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage)
   }
   return (polygon_hole_flag);
 }
+
+
+
+
+// This function takes a SHPT_POLYGON object and a vector of ints of length
+// equal to the number of parts in the polygon and returns a graphics context
+// with a clipping region set to mask out the holes.
+//
+// high_water_mark_index is used for debugging and marks the maximum number
+// of points we've ever encountered in a shape.
+GC get_hole_clipping_context(Widget w, SHPObject *object,
+                             int *polygon_hole_storage,
+                             int *high_water_mark_index)
+{
+  XRectangle rectangle;
+  long width, height;
+  double top_ll, left_ll, bottom_ll, right_ll;
+  Region region[3];
+  int temp_region1;
+  int temp_region2;
+  int temp_region3;
+  long x,y;
+  int ok;
+  int ring;
+  int index;
+  int i;
+  XPoint points[MAX_MAP_POINTS];
+  GC gc_temp = NULL;
+  XGCValues gc_temp_values;
+
+  //WE7U3
+  ////////////////////////////////////////////////////////////////////////
+
+  // Now that we know which are fill/hole rings, worry about drawing
+  // each ring of the Shape:
+  //
+  // 1) Create a filled rectangle region, probably the size of the
+  // Shape extents, and at the same screen coordinates as the entire
+  // shape would normally be drawn.
+  //
+  // 2) Create a region for each hole ring and subtract these new
+  // regions one at a time from the rectangle region created above.
+  //
+  // 3) When the "swiss-cheese" rectangle region is complete, draw
+  // only the filled polygons onto the map pixmap using the
+  // swiss-cheese rectangle region as the clip-mask.  Use a temporary
+  // GC for this operation, as I can't find a way to remove a
+  // clip-mask from a GC.  We may have to use offsets to make this
+  // work properly.
+
+
+  // Create three regions and rotate between
+  // them, due to the XSubtractRegion()
+  // needing three parameters.  If we later
+  // find that two of the parameters can be
+  // repeated, we can simplify our code.
+  // We'll rotate through them mod 3.
+
+  temp_region1 = 0;
+
+  // Create empty region
+  region[temp_region1] = XCreateRegion();
+
+  // Draw a rectangular clip-mask inside the
+  // Region.  Use the same extents as the full
+  // Shape.
+
+  // Set up the real sizes from the Shape
+  // extents.
+  top_ll    = object->dfYMax;
+  left_ll   = object->dfXMin;
+  bottom_ll = object->dfYMin;
+  right_ll  = object->dfXMax;
+
+  // Convert point to screen coordinates:
+  ok = convert_ll_to_screen_coords(&x, &y, left_ll, top_ll);
+
+  if (ok)
+  {
+    // Here we check for really wacko points that will cause problems
+    // with the X drawing routines, and fix them.
+    if (x > 1700l)
+    {
+      x = 1700l;
+    }
+    if (x <    0l)
+    {
+      x =    0l;
+    }
+    if (y > 1700l)
+    {
+      y = 1700l;
+    }
+    if (y <    0l)
+    {
+      y =    0l;
+    }
+  }
+
+  // Convert point to screen coordinates
+  ok = convert_ll_to_screen_coords(&width, &height,
+                                   right_ll, bottom_ll);
+  if (ok)
+  {
+    // Here we check for really wacko points that will cause problems
+    // with the X drawing routines, and fix them.
+    if (width  > 1700l)
+    {
+      width  = 1700l;
+    }
+    if (width  <    1l)
+    {
+      width  =    1l;
+    }
+    if (height > 1700l)
+    {
+      height = 1700l;
+    }
+    if (height <    1l)
+    {
+      height =    1l;
+    }
+  }
+
+  //TODO
+  // We can run into trouble here because we only have 16-bit values
+  // to work with.  If we're zoomed in and the Shape is large in
+  // comparison to the screen, we'll easily exceed these numbers.
+  // Perhaps we'll need to work with something other than screen
+  // coordinates?  Perhaps truncating the values will be adequate.
+
+  rectangle.x      = (short) x;
+  rectangle.y      = (short) y;
+  rectangle.width  = (unsigned short) width;
+  rectangle.height = (unsigned short) height;
+
+  //fprintf(stderr,"*** Rectangle: %d,%d %dx%d\n", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+  // Create the initial region containing a
+  // filled rectangle.
+  XUnionRectWithRegion(&rectangle,
+                       region[temp_region1],
+                       region[temp_region1]);
+
+  // Create a region for each set of hole
+  // vertices (CCW rotation of the vertices)
+  // and subtract each from the rectangle
+  // region.
+  for (ring = 0; ring < object->nParts; ring++ )
+  {
+    int endpoint;
+    int on_screen;
+
+
+    if (polygon_hole_storage[ring] == 1)
+    {
+      // It's a hole polygon.  Cut the
+      // hole out of our rectangle region.
+      int num_vertices = 0;
+      //                              int nVertStart;
+
+
+      //                              nVertStart = object->panPartStart[ring];
+
+      if( ring == object->nParts-1 )
+        num_vertices = object->nVertices
+          - object->panPartStart[ring];
+      else
+        num_vertices = object->panPartStart[ring+1]
+          - object->panPartStart[ring];
+
+      //TODO
+      // Snag the vertices and put them into the "points" array,
+      // converting to screen coordinates as we go, then subtracting the
+      // starting point, so that the regions remain small?
+      //
+      // We could either subtract the starting point of each shape from
+      // each point, or take the hit on region size and just use the full
+      // screen size (or whatever part of it the shape required plus the
+      // area from the starting point to 0,0).
+
+
+      if ( (ring+1) < object->nParts)
+      {
+        endpoint = object->panPartStart[ring+1];
+      }
+      //else endpoint = object->nVertices;
+      else
+      {
+        endpoint = object->panPartStart[0] + object->nVertices;
+      }
+      //fprintf(stderr,"Endpoint %d\n", endpoint);
+      //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
+
+      i = 0;  // i = Number of points to draw for one ring
+      on_screen = 0;
+
+      // index = ptr into the shapefile's array of points
+      for (index = object->panPartStart[ring]; index < endpoint; )
+      {
+
+        ok = get_vertex_screen_coords(object, index, &x,&y);
+        if (ok)
+        {
+          // Here we check for really wacko points that will
+          // cause problems with the X drawing routines, and
+          // fix them.  Increment on_screen if any of the
+          // points might be on screen.
+          if (x >  1700l)
+          {
+            x =  1700l;
+          }
+          else if (x < 0l)
+          {
+            x = 0l;
+          }
+          else
+          {
+            on_screen++;
+          }
+
+          if (y >  1700l)
+          {
+            y =  1700l;
+          }
+          else if (y < 0l)
+          {
+            y = 0l;
+          }
+          else
+          {
+            on_screen++;
+          }
+
+          points[i].x = l16(x);
+          points[i].y = l16(y);
+
+          if (on_screen)
+          {
+            //    fprintf(stderr,"%d x:%d y:%d\n",
+            //        i,
+            //        points[i].x,
+            //        points[i].y);
+          }
+          i++;
+        }
+        index++;
+
+        if (index > *high_water_mark_index)
+        {
+          *high_water_mark_index = index;
+        }
+
+        if (index > endpoint)
+        {
+          index = endpoint;
+          fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
+        }
+      }   // End of converting vertices for a ring
+
+
+      // Create and subtract the region only if it might be on screen.
+      if (on_screen)
+      {
+        temp_region2 = (temp_region1 + 1) % 3;
+        temp_region3 = (temp_region1 + 2) % 3;
+
+        // Create empty regions.
+        region[temp_region2] = XCreateRegion();
+        region[temp_region3] = XCreateRegion();
+
+        // Draw the hole polygon
+        if (num_vertices >= 3)
+        {
+          XDestroyRegion(region[temp_region2]); // Release the old
+          region[temp_region2] = XPolygonRegion(points,
+                                                num_vertices,
+                                                WindingRule);
+        }
+        else
+        {
+          fprintf(stderr,
+                  "draw_shapefile_map:XPolygonRegion with too few vertices:%d\n",
+                  num_vertices);
+        }
+
+        // Subtract region2 from region1 and put the result into
+        // region3.
+        XSubtractRegion(region[temp_region1],
+                        region[temp_region2],
+                        region[temp_region3]);
+
+        // Get rid of the two regions we no longer need
+        XDestroyRegion(region[temp_region1]);
+        XDestroyRegion(region[temp_region2]);
+
+        // Indicate the final result region for the next iteration or
+        // the exit of the loop.
+        temp_region1 = temp_region3;
+      }
+    }
+  }
+
+  // region[temp_region1] now contains a clip-mask of the original
+  // polygon with holes cut out of it (swiss-cheese rectangle).
+
+  // Create temporary GC.  It looks like we don't need this to create
+  // the regions, but we'll need it when we draw the filled polygons
+  // onto the map pixmap using the final region as a clip-mask.
+
+  // Offsets?
+  // XOffsetRegion
+
+  //                        gc_temp_values.function = GXcopy;
+  gc_temp = XCreateGC(XtDisplay(w),
+                      XtWindow(w),
+                      0,
+                      &gc_temp_values);
+  // now copy the fill style and stipple from gc.
+  XCopyGC(XtDisplay(w),
+          gc,
+          (GCFillStyle|GCStipple),
+          gc_temp);
+
+  // Set the clip-mask into the GC.  This GC
+  // is now ruined for other purposes, so
+  // destroy it when we're done drawing this
+  // one shape.
+  XSetRegion(XtDisplay(w), gc_temp, region[temp_region1]);
+  XDestroyRegion(region[temp_region1]);
+
+  return (gc_temp);
+}
+
 #endif  // HAVE_LIBSHP
 
 

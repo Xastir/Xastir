@@ -67,3 +67,6 @@ void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern);
 void set_shpt_polygon_fill_stipple(Widget w, int fill_style, int fill_stipple,
                                    int draw_filled);
 int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage);
+GC get_hole_clipping_context(Widget w, SHPObject *object,
+                             int *polygon_hole_storage,
+                             int *high_water_mark_index);
