@@ -623,7 +623,6 @@ void draw_shapefile_map (Widget w,
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
   char            *sType;
-  unsigned long   my_lat, my_long;
   long            x,y;
   int             ok, index;
   int             polygon_hole_flag;
@@ -1632,7 +1631,7 @@ void draw_shapefile_map (Widget w,
                && map_labels
                && !skip_label )
           {
-            int temp_ok;
+            float label_lon, label_lat;
 
             if (debug_level & 16)
             {
@@ -1640,44 +1639,28 @@ void draw_shapefile_map (Widget w,
             }
             ok = 1;
 
-            // Convert to Xastir coordinates:
-            // XXX - todo: center large polygon labels in the center (e.g. county boundary)
-            /* center label in polygon bounding box */
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    ((float)(object->dfXMax + object->dfXMin))/2.0,
-                                                    ((float)(object->dfYMax + object->dfYMin))/2.0);
-
-            if (!temp_ok)
+            /* TODO:  consider other label point options */
+            /* for now, this function just gives us the center of the
+             * bounding box
+             */
+            choose_polygon_label_point(object,&label_lon, &label_lat);
+            ok=convert_ll_to_screen_coords(&x, &y, label_lon, label_lat);
+            if (ok == 1 && ok_to_draw)
             {
-              fprintf(stderr,"draw_shapefile_map8: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-              // Labeling of polygons done here
-
-              if (ok == 1 && ok_to_draw)
+              if (debug_level & 16)
               {
-                if (debug_level & 16)
-                {
-                  fprintf(stderr,
-                          "  displaying label %s with color %x\n",
-                          temp,label_color);
-                }
-                (void)draw_centered_label_text(w,
-                                               -90,
-                                               x,
-                                               y,
-                                               strlen(temp),
-                                               colors[label_color],
-                                               (char *)temp,
-                                               font_size);
+                fprintf(stderr,
+                        "  displaying label %s with color %x\n",
+                        temp,label_color);
               }
+              (void)draw_centered_label_text(w,
+                                             -90,
+                                             x,
+                                             y,
+                                             strlen(temp),
+                                             colors[label_color],
+                                             (char *)temp,
+                                             font_size);
             }
           }
           break;
@@ -2986,6 +2969,19 @@ void draw_wx_polygon(Widget w, XPoint *points, int numPoints)
   (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint,
                    points, l16(numPoints), CoordModeOrigin);
 }
+
+
+
+// This function selects a point at which to display a shape's label.
+// Right now it ONLY returns the center of the shape's label, but
+// we probably need to explore other options, so I'm breaking this out
+// into a function.
+void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
+{
+  *lon = (float) (object->dfXMax + object->dfXMin)/2.0;
+  *lat = (float) (object->dfYMax + object->dfYMin)/2.0;
+}
+
 #endif  // HAVE_LIBSHP
 
 

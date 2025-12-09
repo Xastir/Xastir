@@ -77,4 +77,4 @@ void draw_filled_polygon(Widget w, GC theGC, XPoint *points, int numPoints,
                          int color, int fill_color, int lanes, int pattern,
                          int do_the_fill);
 void draw_wx_polygon(Widget w, XPoint *points, int numPoints);
-
+void choose_polygon_label_point(SHPObject *object, float *lon, float *lat);
