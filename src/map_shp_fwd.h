@@ -70,3 +70,4 @@ int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage);
 GC get_hole_clipping_context(Widget w, SHPObject *object,
                              int *polygon_hole_storage,
                              int *high_water_mark_index);
+int clip_x_y_pair(long *x, long *y, long x_min, long x_max, long y_min, long y_max);

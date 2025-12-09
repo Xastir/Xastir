@@ -2847,22 +2847,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   {
     // Here we check for really wacko points that will cause problems
     // with the X drawing routines, and fix them.
-    if (x > 1700l)
-    {
-      x = 1700l;
-    }
-    if (x <    0l)
-    {
-      x =    0l;
-    }
-    if (y > 1700l)
-    {
-      y = 1700l;
-    }
-    if (y <    0l)
-    {
-      y =    0l;
-    }
+    (void) clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
   }
 
   // Convert point to screen coordinates
@@ -2872,22 +2857,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   {
     // Here we check for really wacko points that will cause problems
     // with the X drawing routines, and fix them.
-    if (width  > 1700l)
-    {
-      width  = 1700l;
-    }
-    if (width  <    1l)
-    {
-      width  =    1l;
-    }
-    if (height > 1700l)
-    {
-      height = 1700l;
-    }
-    if (height <    1l)
-    {
-      height =    1l;
-    }
+    (void) clip_x_y_pair(&width, &height, 1l, 1700l, 1l, 1700l);
   }
 
   //TODO
@@ -2902,16 +2872,13 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   rectangle.width  = (unsigned short) width;
   rectangle.height = (unsigned short) height;
 
-  // Create the initial region containing a
-  // filled rectangle.
+  // Create the initial region containing a filled rectangle.
   XUnionRectWithRegion(&rectangle,
                        region[temp_region1],
                        region[temp_region1]);
 
-  // Create a region for each set of hole
-  // vertices (CCW rotation of the vertices)
-  // and subtract each from the rectangle
-  // region.
+  // Create a region for each set of hole vertices (CCW rotation of
+  // the vertices) and subtract each from the rectangle region.
   for (ring = 0; ring < object->nParts; ring++ )
   {
     int endpoint;
@@ -2967,31 +2934,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
           // cause problems with the X drawing routines, and
           // fix them.  Increment on_screen if any of the
           // points might be on screen.
-          if (x >  1700l)
-          {
-            x =  1700l;
-          }
-          else if (x < 0l)
-          {
-            x = 0l;
-          }
-          else
-          {
-            on_screen++;
-          }
-
-          if (y >  1700l)
-          {
-            y =  1700l;
-          }
-          else if (y < 0l)
-          {
-            y = 0l;
-          }
-          else
-          {
-            on_screen++;
-          }
+          on_screen += clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
 
           points[i].x = l16(x);
           points[i].y = l16(y);
@@ -3034,8 +2977,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
 
         // Subtract region2 from region1 and put the result into
         // region3.
-        XSubtractRegion(region[temp_region1],
-                        region[temp_region2],
+        XSubtractRegion(region[temp_region1], region[temp_region2],
                         region[temp_region3]);
 
         // Get rid of the two regions we no longer need
@@ -3074,6 +3016,48 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   XDestroyRegion(region[temp_region1]);
 
   return (gc_temp);
+}
+
+
+
+// This function clips an x/y pair to the bounding rectangle specified
+// by the min/max values passed in.
+//
+// it returns 1 if we didn't clip and 0 if we did.
+int clip_x_y_pair(long *x, long *y, long x_min, long x_max, long y_min, long y_max)
+{
+  int on_screen=0;
+  // Here we check for really wacko points that will
+  // cause problems with the X drawing routines, and
+  // fix them.  Increment on_screen if any of the
+  // points might be on screen.
+  if (*x >  x_max)
+  {
+    *x =  x_max;
+  }
+  else if (*x < x_min)
+  {
+    *x = x_min;
+  }
+  else
+  {
+    on_screen++;
+  }
+
+  if (*y >  y_max)
+  {
+    *y =  y_max;
+  }
+  else if (*y < y_min)
+  {
+    *y = y_min;
+  }
+  else
+  {
+    on_screen++;
+  }
+
+  return (on_screen);
 }
 
 #endif  // HAVE_LIBSHP
