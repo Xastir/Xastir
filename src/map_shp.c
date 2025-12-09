@@ -1597,31 +1597,12 @@ void draw_shapefile_map (Widget w,
                 // set that up in gc_tint.
                 draw_wx_polygon(w, points, i);
               }
-              else if (map_color_fill && draw_filled)
+              else
               {
-                // Just a cotton-pickin' minute... how is this ever reached?
-                // the last two elses were !weather_alert and weather_alert,
-                // which must mean all possible conditions have been
-                // take care of already.
-                fprintf(stderr,"How have we gotten here?!?\n");
-                draw_filled_polygon(w,
-                                    (polygon_hole_flag)?gc_temp:gc,
-                                    points, i, color, fill_color,
-                                    lanes, pattern,
-                                    1);
-              }
-              else    // Use whatever color is defined by this point.
-              {
-                // and again, this else and the previous seem impossible
+                // the last two elseifs cover all cases not covered by
+                // the first if, and therefore this is unreachable
+                // and ought to be removed
                 fprintf(stderr,"How have we gotten to this strange place?\n");
-                (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
               }
             }
           }
