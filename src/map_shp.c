@@ -618,7 +618,7 @@ void draw_shapefile_map (Widget w,
   static XPoint   points[MAX_MAP_POINTS];
   char            file[MAX_FILENAME];  /* Complete path/name of image file */
   char            short_filenm[MAX_FILENAME];
-  int             i, fieldcount, recordcount, structure, ring, vertex;
+  int             i, fieldcount, recordcount, structure, ring;
   SHPHandle       hSHP;
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
@@ -1405,13 +1405,12 @@ void draw_shapefile_map (Widget w,
                 nVertices = object->nVertices - partStart;
               }
 
-              for (vertex = 0; vertex < nVertices; vertex++ )
-              {
-                index = get_vertex_screen_coords_XPoint(
-                                           object, vertex+partStart, points,
-                                           index, &high_water_mark_index);
+              // index winds up being the number of points we read into
+              // the points array
+              index = get_vertices_screen_coords_XPoints(object, partStart,
+                                                 nVertices, points,
+                                                 &high_water_mark_index);
 
-              }
               // Save the endpoints of the first line segment for
               // later use in label rotation
               x0=points[0].x;
@@ -2663,6 +2662,30 @@ int convert_ll_to_screen_coords(long *x, long *y, float lon, float lat)
 
   return ok;
 }
+
+
+
+
+// This function extracts all of the vertices from a shapefile object
+// given a starting point and a number of vertices, and deposits them
+// into the provided XPoint array.
+// Returns the number of points converted
+int get_vertices_screen_coords_XPoints(SHPObject *object, int partStart,
+                                        int nVertices, XPoint *points,
+                                        int *high_water_mark_index)
+{
+  int index = 0;
+  for (int vertex = 0 ; vertex < nVertices; vertex++)
+  {
+    index = get_vertex_screen_coords_XPoint(
+                                            object, vertex+partStart, points,
+                                            index, high_water_mark_index);
+  }
+  return (index);
+}
+
+
+
 // This function extracts a single vertex from a shapefile object given
 // its index in the vertex list of the SHPObject
 // They will be deposited in the array of XPoints, converted to screen
