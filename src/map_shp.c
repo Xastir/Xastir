@@ -1854,29 +1854,36 @@ void draw_shapefile_map (Widget w,
 
 
           // Read the vertices for each ring in this Shape
-          // NOTE:  nParts can be zero, which is the same as nParts=1,
-          // but panPartStart will be null.  This loop is structured
-          // such that shapes with nParts==0 will just be skipped, which
-          // is a bug.
-          for (ring = 0; ring < object->nParts; ring++ )
+          int nParts = object->nParts;
+          if (nParts == 0)
+          {
+            nParts = 1;  // but panPartStart is null, so don't read it!
+          }
+          for (ring = 0; ring < nParts; ring++ )
           {
             int nVertices;
-            if ( (ring+1) < object->nParts)
+            int partStart;
+            if (nParts == 1)
             {
-              nVertices = object->panPartStart[ring+1]
-                - object->panPartStart[ring];
+              nVertices = object->nVertices;
+              partStart = 0;
+            }
+            else if ( (ring+1) < object->nParts)
+            {
+              partStart = object->panPartStart[ring];
+              nVertices = object->panPartStart[ring+1] - partStart;
             }
             else
             {
-              nVertices= object->nVertices-object->panPartStart[ring];
+              partStart = object->panPartStart[ring];
+              nVertices = object->nVertices-partStart;
             }
 
             // i = Number of points to draw for one ring
-            i=get_vertices_screen_coords_XPoints(object,
-                                                 object->panPartStart[ring],
-                                                 nVertices,
-                                                 points,
-                                                 &high_water_mark_index);
+            i = get_vertices_screen_coords_XPoints(object,
+                                                   partStart, nVertices,
+                                                   points,
+                                                   &high_water_mark_index);
 
             if ( (i >= 3)
                  && (ok_to_draw && !skip_it)
