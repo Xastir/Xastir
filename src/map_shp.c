@@ -96,8 +96,6 @@
   #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
 
-extern int npoints;        /* tsk tsk tsk -- globals */
-
 #include <rtree/index.h>
 #include "shp_hash.h"
 
