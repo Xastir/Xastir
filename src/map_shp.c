@@ -113,36 +113,9 @@ typedef struct _label_string
 } label_string;
 
 // forward declarations of functions local to this file
-void free_dbfawk_infos(dbfawk_field_info *fld_info, dbfawk_sig_info *sig_info);
-void free_dbfawk_sig_info(dbfawk_sig_info *sig_info);
-dbfawk_sig_info *initialize_dbfawk_default_sig(void);
-awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
-                                           int *color, int *lanes,
-                                           char *name, size_t name_s,
-                                           char *key, size_t key_s,
-                                           char *sym, size_t sym_s,
-                                           int *filled,
-                                           int *fill_style,
-                                           int *fill_color, int *fill_stipple,
-                                           int *pattern, int *display_level,
-                                           int *label_level,
-                                           int *label_color,
-                                           int *font_size);
-int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
-                        dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
-void getViewportRect(struct Rect *viewportRect);
-char *getShapeTypeString(int nShapeType);
-void get_alert_xbm_path(char *xbm_path, size_t xbm_path_size, alert_entry *alert);
-void get_gps_color_and_label(char *filename, char *gps_label,
-                             size_t gps_label_size, int *gps_color);
-int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index);
-int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y);
-int select_arc_label_mod(void);
-int check_label_skip(label_string **label_hash, const char *label_text,
-                     int mod_number, int *skip_label);
-void add_label_to_label_hash(label_string **label_hash, const char *label_text);
-float get_label_angle(int x0, int x1, int y0, int y1);
-void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern);
+// It's OK for this to appear *after* "leak_detection.h" because
+// it contains nothing that interferes with that file.
+#include "map_shp_fwd.h"
 
 // RTrees are used as a spatial index for shapefiles.  We can search them
 // for shapes that intersect our viewport, and only read those from the
@@ -645,22 +618,16 @@ void draw_shapefile_map (Widget w,
   static XPoint   points[MAX_MAP_POINTS];
   char            file[MAX_FILENAME];  /* Complete path/name of image file */
   char            short_filenm[MAX_FILENAME];
-  int             i, fieldcount, recordcount, structure, ring, vertex;
+  int             i, fieldcount, recordcount, structure, ring;
   SHPHandle       hSHP;
   int             nShapeType, nEntities;
   double          adfBndsMin[4], adfBndsMax[4];
   char            *sType;
-  unsigned long   my_lat, my_long;
   long            x,y;
   int             ok, index;
   int             polygon_hole_flag;
   int             *polygon_hole_storage;
   GC              gc_temp = NULL;
-  XGCValues       gc_temp_values;
-  Region          region[3];
-  int             temp_region1;
-  int             temp_region2;
-  int             temp_region3;
   int             gps_flag = 0;
   char            gps_label[100];
   int             gps_color = 0x0c;
@@ -999,10 +966,6 @@ void draw_shapefile_map (Widget w,
   // be modified for particular maps in later code.
   (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
 
-
-  // NOTE: Setting the color here and in the "else" may not stick if we do more
-  //       complex drawing further down like a SteelBlue lake with a black boundary,
-  //       or if we have labels turned on which resets our color to black.
   if (weather_alert_flag)
   {
     char xbm_path[MAX_FILENAME];
@@ -1011,8 +974,7 @@ void draw_shapefile_map (Widget w,
     int ret_val;
 
     // This GC is used for weather alerts (writing to the
-    // pixmap: pixmap_alerts) and _was_ used for beam_heading
-    // rays, but no longer is.
+    // pixmap: pixmap_alerts)
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
     // GXcopy used here because we have been using stippling for
@@ -1319,9 +1281,6 @@ void draw_shapefile_map (Widget w,
 
       }
 
-      /* This case statement is a mess.  Lots of common code could be
-         used before the case but currently isn't */
-
       switch ( nShapeType )
       {
 
@@ -1341,29 +1300,13 @@ void draw_shapefile_map (Widget w,
           {
             const char *temp = NULL;
             int ok = 1;
-            int temp_ok;
 
             if (map_labels)
             {
               temp = name;
             }
             // Convert point to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    (float)object->padfX[0],
-                                                    (float)object->padfY[0]);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map1: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-            }
+            ok = get_vertex_screen_coords(object, 0, &x, &y);
 
             if (ok == 1)
             {
@@ -1448,19 +1391,18 @@ void draw_shapefile_map (Widget w,
                 nVertices = object->nVertices - partStart;
               }
 
-              for (vertex = 0; vertex < nVertices; vertex++ )
-              {
-                index = get_vertex_screen_coords_XPoint(
-                                           object, vertex+partStart, points,
-                                           index, &high_water_mark_index);
+              // index winds up being the number of points we read into
+              // the points array
+              index = get_vertices_screen_coords_XPoints(object, partStart,
+                                                 nVertices, points,
+                                                 &high_water_mark_index);
 
-                // Save the endpoints of the first line segment for
-                // later use in label rotation
-                x0=points[0].x;
-                y0=points[0].y;
-                x1=points[1].x;
-                y1=points[1].y;
-              }
+              // Save the endpoints of the first line segment for
+              // later use in label rotation
+              x0=points[0].x;
+              y0=points[0].y;
+              x1=points[1].x;
+              y1=points[1].y;
               // Reset these for each part, because we might have changed
               // them for the labels of the last part.
               set_shpt_arc_attributes(w, (gps_flag)?gps_color:color,
@@ -1547,114 +1489,8 @@ void draw_shapefile_map (Widget w,
           // User requested filled polygons with stippling.
           // Set the stipple now.  need to do here, because if
           // done earlier the labels get stippled, too.
-          (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
-
-          if (draw_filled != 0 && fill_style == FillStippled)
-          {
-
-
-            switch (fill_stipple)
-            {
-              case 0:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_13pct_stipple);
-                break;
-              case 1:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_25pct_stipple);
-                break;
-              default:
-                (void)XSetStipple(XtDisplay(w), gc,
-                                  pixmap_25pct_stipple);
-                break;
-            }
-          }
-
-          // Each polygon can be made up of multiple
-          // rings, and each ring has multiple points that
-          // define it.  We hit this case once for each
-          // polygon shape in the file, iff at least part
-          // of that shape is within our viewport.
-
-// We now handle the "hole" drawing in polygon shapefiles, where
-// clockwise direction around the ring means a fill, and CCW means a
-// hole in the polygon.
-//
-// Possible implementations:
-//
-// 1) Snag an algorithm for a polygon "fill" function from
-// somewhere, but add a piece that will check for being inside a
-// "hole" polygon and just not draw while traversing it (change the
-// pen color to transparent over the holes?).
-// SUMMARY: How to do this?
-//
-// 2) Draw to another layer, then copy only the filled pixels to
-// their final destination pixmap.
-// SUMMARY: Draw polygons once, then a copy operation.
-//
-// 3) Separate area:  Draw polygon.  Copy from other map layer into
-// holes, then copy the result back.
-// SUMMARY:  How to determine outline?
-//
-// 4) Use clip-masks to prevent drawing over the hole areas:  Draw
-// to another 1-bit pixmap or region.  This area can be the size of
-// the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
-// as a clip-mask to draw the polygons again onto the final pixmap.
-// SUMMARY: We end up drawing the shape twice!
-//
-// MODIFICATION:  Draw a filled rectangle onto the map pixmap using
-// the clip-mask to control where it actually gets drawn.
-// SUMMARY: Only end up drawing the shape once.
-//
-// 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
-// Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
-// the holes and use GXinvert to draw zero's to the mask where the
-// holes go.  Use this as a clip-mask to draw the filled areas of
-// the polygon to the map pixmap.
-// SUMMARY: Faster than methods 1-4?
-//
-// 6) Use Regions to do the same method as #5 but with more ease.
-// Create a polygon Region, then create a Region for each hole and
-// subtract the hole from the polygon Region.  Once we have a
-// complete polygon + holes, use that as the clip-mask for drawing
-// the real polygon.  Use XSetRegion() on the GC to set this up.  We
-// might have to do offsets as well so that the region maps properly
-// to our map pixmap when we draw the final polygon to it.
-// SUMMARY:  Should be faster than methods 1-5.
-//
-// 7) Do method 6 but instead of drawing a polygon region, draw a
-// rectangle region first, then knock holes in it.  Use that region
-// as the clip-mask for the XFillPolygon() later by calling
-// XSetRegion() on the GC.  We don't really need a polygon region
-// for a clip-mask.  A rectangle with holes in it will work just as
-// well and should be faster overall.  We might have to do offsets
-// as well so that the region maps properly to our map pixmap when
-// we draw the final polygon to it.
-// SUMMARY:  This might be the fastest method of the ones listed, if
-// drawing a rectangle region is faster than drawing a polygon
-// region.  We draw the polygon once here instead of twice, and each
-// hole only once.  The only added drawing time would be the
-// creation of the rectangle region, which should be fairly fast,
-// and the subtracting of the hole regions from it.
-//
-//
-// Shapefiles also allow identical points to be next to each other
-// in the vertice list.  We should look for that and get rid of
-// duplicate vertices.
-
-
-//if (object->nParts > 1)
-//fprintf(stderr,"Number of parts: %d\n", object->nParts);
-
-
-// Unfortunately, for Polygon shapes we must make one pass through
-// the entire set of rings to see if we have any "hole" rings (as
-// opposed to "fill" rings).  If we have any "hole" rings, we must
-// handle the drawing of the Shape quite differently.
-//
-// Read the vertices for each ring in the Shape.  Test whether we
-// have a hole ring.  If so, save the ring index away for the next
-// step when we actually draw the shape.
+          set_shpt_polygon_fill_stipple(w, fill_style, fill_stipple,
+                                        draw_filled);
 
           polygon_hole_flag = 0;
 
@@ -1664,56 +1500,15 @@ void draw_shapefile_map (Widget w,
           polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
           CHECKMALLOC(polygon_hole_storage);
 
-// Run through the entire shape (all rings of it) once.  Create an
-// array of flags that specify whether each ring is a fill or a
-// hole.  If any holes found, set the global polygon_hole_flag as
-// well.
-
-          for (ring = 0; ring < object->nParts; ring++ )
-          {
-
-            // Testing for fill or hole ring.  This will
-            // determine how we ultimately draw the
-            // entire shape.
-            //
-            switch ( shape_ring_direction( object, ring) )
-            {
-              case  0:    // Error in trying to compute whether fill or hole
-                fprintf(stderr,"Error in computing fill/hole ring\n");
-              /* Falls through. */
-              case  1:    // It's a fill ring
-                // Do nothing for these two cases
-                // except clear the flag in our
-                // storage
-                polygon_hole_storage[ring] = 0;
-                break;
-              case -1:    // It's a hole ring
-                // Add it to our list of hole rings
-                // here and set a flag.  That way we
-                // won't have to run through
-                // SHPRingDir_2d again in the next
-                // loop.
-                polygon_hole_flag++;
-                polygon_hole_storage[ring] = 1;
-//                                fprintf(stderr, "Ring %d/%d is a polygon hole\n",
-//                                    ring,
-//                                    object->nParts);
-                break;
-            }
-          }
-// We're done with the initial run through the vertices of all
-// rings.  We now know which rings are fills and which are holes and
-// have recorded the data.
-
-// Speedup:  Only loop through the vertices once, by determining
-// hole/fill polygons as we go.
+          // Determine whether we have any holes, and set flags in
+          // polygon_hole_storage for ring that is a hole:
+          polygon_hole_flag = preprocess_shp_polygon_holes(object,
+                                                        polygon_hole_storage);
 
 
-//WE7U3
-          // Speedup:  If not draw_filled, then don't go
-          // through the math and region code.  Set the
-          // flag to zero so that we won't do all the math
-          // and the regions.
+
+          // reset polygon hole flag if we aren't actually going to need
+          // to go through the hole math and clip region setting
           if (!map_color_fill || !draw_filled)
           {
             polygon_hole_flag = 0;
@@ -1721,556 +1516,66 @@ void draw_shapefile_map (Widget w,
 
           if (polygon_hole_flag)
           {
-            XRectangle rectangle;
-            long width, height;
-            double top_ll, left_ll, bottom_ll, right_ll;
-            int temp_ok;
-
-
-//                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
-//                            file,
-//                            polygon_hole_flag,
-//                            structure);
-
-//WE7U3
-////////////////////////////////////////////////////////////////////////
-
-// Now that we know which are fill/hole rings, worry about drawing
-// each ring of the Shape:
-//
-// 1) Create a filled rectangle region, probably the size of the
-// Shape extents, and at the same screen coordinates as the entire
-// shape would normally be drawn.
-//
-// 2) Create a region for each hole ring and subtract these new
-// regions one at a time from the rectangle region created above.
-//
-// 3) When the "swiss-cheese" rectangle region is complete, draw
-// only the filled polygons onto the map pixmap using the
-// swiss-cheese rectangle region as the clip-mask.  Use a temporary
-// GC for this operation, as I can't find a way to remove a
-// clip-mask from a GC.  We may have to use offsets to make this
-// work properly.
-
-
-            // Create three regions and rotate between
-            // them, due to the XSubtractRegion()
-            // needing three parameters.  If we later
-            // find that two of the parameters can be
-            // repeated, we can simplify our code.
-            // We'll rotate through them mod 3.
-
-            temp_region1 = 0;
-
-            // Create empty region
-            region[temp_region1] = XCreateRegion();
-
-            // Draw a rectangular clip-mask inside the
-            // Region.  Use the same extents as the full
-            // Shape.
-
-            // Set up the real sizes from the Shape
-            // extents.
-            top_ll    = object->dfYMax;
-            left_ll   = object->dfXMin;
-            bottom_ll = object->dfYMin;
-            right_ll  = object->dfXMax;
-
-            // Convert point to Xastir coordinates:
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    left_ll,
-                                                    top_ll);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map4: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-              // Here we check for really wacko points that will cause problems
-              // with the X drawing routines, and fix them.
-              if (x > 1700l)
-              {
-                x = 1700l;
-              }
-              if (x <    0l)
-              {
-                x =    0l;
-              }
-              if (y > 1700l)
-              {
-                y = 1700l;
-              }
-              if (y <    0l)
-              {
-                y =    0l;
-              }
-            }
-
-            // Convert points to Xastir coordinates
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    right_ll,
-                                                    bottom_ll);
-            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-            if (!temp_ok)
-            {
-              fprintf(stderr,"draw_shapefile_map5: Problem converting from lat/lon\n");
-              ok = 0;
-              width = 0;
-              height = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &width, &height);
-
-              // Here we check for really wacko points that will cause problems
-              // with the X drawing routines, and fix them.
-              if (width  > 1700l)
-              {
-                width  = 1700l;
-              }
-              if (width  <    1l)
-              {
-                width  =    1l;
-              }
-              if (height > 1700l)
-              {
-                height = 1700l;
-              }
-              if (height <    1l)
-              {
-                height =    1l;
-              }
-            }
-
-//TODO
-// We can run into trouble here because we only have 16-bit values
-// to work with.  If we're zoomed in and the Shape is large in
-// comparison to the screen, we'll easily exceed these numbers.
-// Perhaps we'll need to work with something other than screen
-// coordinates?  Perhaps truncating the values will be adequate.
-
-            rectangle.x      = (short) x;
-            rectangle.y      = (short) y;
-            rectangle.width  = (unsigned short) width;
-            rectangle.height = (unsigned short) height;
-
-//fprintf(stderr,"*** Rectangle: %d,%d %dx%d\n", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-            // Create the initial region containing a
-            // filled rectangle.
-            XUnionRectWithRegion(&rectangle,
-                                 region[temp_region1],
-                                 region[temp_region1]);
-
-            // Create a region for each set of hole
-            // vertices (CCW rotation of the vertices)
-            // and subtract each from the rectangle
-            // region.
-            for (ring = 0; ring < object->nParts; ring++ )
-            {
-              int endpoint;
-              int on_screen;
-
-
-              if (polygon_hole_storage[ring] == 1)
-              {
-                // It's a hole polygon.  Cut the
-                // hole out of our rectangle region.
-                int num_vertices = 0;
-//                              int nVertStart;
-
-
-//                              nVertStart = object->panPartStart[ring];
-
-                if( ring == object->nParts-1 )
-                  num_vertices = object->nVertices
-                                 - object->panPartStart[ring];
-                else
-                  num_vertices = object->panPartStart[ring+1]
-                                 - object->panPartStart[ring];
-
-//TODO
-// Snag the vertices and put them into the "points" array,
-// converting to screen coordinates as we go, then subtracting the
-// starting point, so that the regions remain small?
-//
-// We could either subtract the starting point of each shape from
-// each point, or take the hit on region size and just use the full
-// screen size (or whatever part of it the shape required plus the
-// area from the starting point to 0,0).
-
-
-                if ( (ring+1) < object->nParts)
-                {
-                  endpoint = object->panPartStart[ring+1];
-                }
-                //else endpoint = object->nVertices;
-                else
-                {
-                  endpoint = object->panPartStart[0] + object->nVertices;
-                }
-                //fprintf(stderr,"Endpoint %d\n", endpoint);
-                //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
-
-                i = 0;  // i = Number of points to draw for one ring
-                on_screen = 0;
-
-                // index = ptr into the shapefile's array of points
-                for (index = object->panPartStart[ring]; index < endpoint; )
-                {
-                  int temp_ok;
-
-
-                  // Get vertice and convert to Xastir coordinates
-                  temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                          &my_lat,
-                                                          (float)object->padfX[index],
-                                                          (float)object->padfY[index]);
-
-                  //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
-
-                  if (!temp_ok)
-                  {
-                    fprintf(stderr,"draw_shapefile_map6: Problem converting from lat/lon\n");
-                    ok = 0;
-                    x = 0;
-                    y = 0;
-                  }
-                  else
-                  {
-                    convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-                    // Here we check for really
-                    // wacko points that will
-                    // cause problems with the X
-                    // drawing routines, and fix
-                    // them.  Increment
-                    // on_screen if any of the
-                    // points might be on
-                    // screen.
-                    if (x >  1700l)
-                    {
-                      x =  1700l;
-                    }
-                    else if (x < 0l)
-                    {
-                      x = 0l;
-                    }
-                    else
-                    {
-                      on_screen++;
-                    }
-
-                    if (y >  1700l)
-                    {
-                      y =  1700l;
-                    }
-                    else if (y < 0l)
-                    {
-                      y = 0l;
-                    }
-                    else
-                    {
-                      on_screen++;
-                    }
-
-                    points[i].x = l16(x);
-                    points[i].y = l16(y);
-
-                    if (on_screen)
-                    {
-//    fprintf(stderr,"%d x:%d y:%d\n",
-//        i,
-//        points[i].x,
-//        points[i].y);
-                    }
-                    i++;
-                  }
-                  index++;
-
-                  if (index > high_water_mark_index)
-                  {
-                    high_water_mark_index = index;
-                  }
-
-                  if (index > endpoint)
-                  {
-                    index = endpoint;
-                    fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
-                  }
-                }   // End of converting vertices for a ring
-
-
-                // Create and subtract the region
-                // only if it might be on screen.
-                if (on_screen)
-                {
-                  temp_region2 = (temp_region1 + 1) % 3;
-                  temp_region3 = (temp_region1 + 2) % 3;
-
-                  // Create empty regions.
-                  region[temp_region2] = XCreateRegion();
-                  region[temp_region3] = XCreateRegion();
-
-                  // Draw the hole polygon
-                  if (num_vertices >= 3)
-                  {
-                    XDestroyRegion(region[temp_region2]); // Release the old
-                    region[temp_region2] = XPolygonRegion(points,
-                                                          num_vertices,
-                                                          WindingRule);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:XPolygonRegion with too few vertices:%d\n",
-                            num_vertices);
-                  }
-
-                  // Subtract region2 from region1 and
-                  // put the result into region3.
-//fprintf(stderr, "Subtracting region\n");
-                  XSubtractRegion(region[temp_region1],
-                                  region[temp_region2],
-                                  region[temp_region3]);
-
-                  // Get rid of the two regions we no
-                  // longer need
-                  XDestroyRegion(region[temp_region1]);
-                  XDestroyRegion(region[temp_region2]);
-
-                  // Indicate the final result region for
-                  // the next iteration or the exit of the
-                  // loop.
-                  temp_region1 = temp_region3;
-                }
-              }
-            }
-
-            // region[temp_region1] now contains a
-            // clip-mask of the original polygon with
-            // holes cut out of it (swiss-cheese
-            // rectangle).
-
-            // Create temporary GC.  It looks like we
-            // don't need this to create the regions,
-            // but we'll need it when we draw the filled
-            // polygons onto the map pixmap using the
-            // final region as a clip-mask.
-
-// Offsets?
-// XOffsetRegion
-
-//                        gc_temp_values.function = GXcopy;
-            gc_temp = XCreateGC(XtDisplay(w),
-                                XtWindow(w),
-                                0,
-                                &gc_temp_values);
-            // now copy the fill style and stipple from gc.
-            XCopyGC(XtDisplay(w),
-                    gc,
-                    (GCFillStyle|GCStipple),
-                    gc_temp);
-
-            // Set the clip-mask into the GC.  This GC
-            // is now ruined for other purposes, so
-            // destroy it when we're done drawing this
-            // one shape.
-            XSetRegion(XtDisplay(w), gc_temp, region[temp_region1]);
-            XDestroyRegion(region[temp_region1]);
+            // set up a graphics context that has a "swiss cheese"
+            // rectangle with all the holes cut out of it as its clipping
+            // mask.  We'll draw our filled polygons in that GC and the holes
+            // won't get filled
+            gc_temp = get_hole_clipping_context(w,object,
+                                                polygon_hole_storage,
+                                                &high_water_mark_index);
           }
-//WE7U3
-////////////////////////////////////////////////////////////////////////
-
 
           // Read the vertices for each ring in this Shape
-          for (ring = 0; ring < object->nParts; ring++ )
+          int nParts = object->nParts;
+          if (nParts == 0)
           {
-            int endpoint;
-            //fprintf(stderr,"Ring: %d\t\t", ring);
-
-            if ( (ring+1) < object->nParts)
+            nParts = 1;  // but panPartStart is null, so don't read it!
+          }
+          for (ring = 0; ring < nParts; ring++ )
+          {
+            int nVertices;
+            int partStart;
+            if (nParts == 1)
             {
-              endpoint = object->panPartStart[ring+1];
+              nVertices = object->nVertices;
+              partStart = 0;
             }
-            //else endpoint = object->nVertices;
+            else if ( (ring+1) < object->nParts)
+            {
+              partStart = object->panPartStart[ring];
+              nVertices = object->panPartStart[ring+1] - partStart;
+            }
             else
             {
-              endpoint = object->panPartStart[0] + object->nVertices;
+              partStart = object->panPartStart[ring];
+              nVertices = object->nVertices-partStart;
             }
 
-            //fprintf(stderr,"Endpoint %d\n", endpoint);
-            //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
-
-            i = 0;  // i = Number of points to draw for one ring
-            // index = ptr into the shapefile's array of points
-            for (index = object->panPartStart[ring]; index < endpoint; )
-            {
-              int temp_ok;
-
-              ok = 1;
-
-              //fprintf(stderr,"\t%d:%g %g\t", index, object->padfX[index], object->padfY[index] );
-
-              // Get vertice and convert to Xastir coordinates
-              temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                      &my_lat,
-                                                      (float)object->padfX[index],
-                                                      (float)object->padfY[index]);
-
-              //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
-
-              if (!temp_ok)
-              {
-                fprintf(stderr,"draw_shapefile_map7: Problem converting from lat/lon\n");
-                ok = 0;
-                x = 0;
-                y = 0;
-                index++;
-              }
-              else
-              {
-                convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-                // Here we check for really wacko points that will cause problems
-                // with the X drawing routines, and fix them.
-                points[i].x = l16(x);
-                points[i].y = l16(y);
-                i++;    // Number of points to draw
-
-                if (i > high_water_mark_i)
-                {
-                  high_water_mark_i = i;
-                }
-
-
-                if (i >= MAX_MAP_POINTS)
-                {
-                  i = MAX_MAP_POINTS - 1;
-                  fprintf(stderr,"Trying to run past the end of our internal points array: i=%d\n",i);
-                }
-
-                //fprintf(stderr,"%d %d\t", points[i].x, points[i].y);
-
-                index++;
-
-                if (index > high_water_mark_index)
-                {
-                  high_water_mark_index = index;
-                }
-
-                if (index > endpoint)
-                {
-                  index = endpoint;
-                  fprintf(stderr,"Trying to run past the end of shapefile array: index=%d\n",index);
-                }
-              }
-            }
+            // i = Number of points to draw for one ring
+            i = get_vertices_screen_coords_XPoints(object,
+                                                   partStart, nVertices,
+                                                   points,
+                                                   &high_water_mark_index);
 
             if ( (i >= 3)
                  && (ok_to_draw && !skip_it)
                  && ( !draw_filled || !map_color_fill || (draw_filled && polygon_hole_storage[ring] == 0) ) )
             {
               // We have a polygon to draw!
-//WE7U3
               if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1)
               {
                 // We have a hole drawn as unfilled.
-                // Draw as a black dashed line.
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                (void)XSetLineAttributes (XtDisplay (w),
-                                          gc,
-                                          0,
-                                          LineOnOffDash,
-                                          CapButt,
-                                          JoinMiter);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
-                (void)XSetLineAttributes (XtDisplay (w),
-                                          gc,
-                                          0,
-                                          LineSolid,
-                                          CapButt,
-                                          JoinMiter);
+                draw_polygon_boundary_dashed(w,color,points,i);
               }
               else if (!weather_alert_flag)
               {
-                /* color is already set by dbfawk(?) */
-                /* And so are lanes and pattern.  Let's
-                   use what was specified. */
-                (void)XSetLineAttributes(XtDisplay(w),
-                                         gc,
-                                         (lanes)?lanes:1,
-                                         pattern,
-                                         CapButt,
-                                         JoinMiter);
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                if (map_color_fill && draw_filled)
-                {
-                  if (polygon_hole_flag)
-                  {
-                    (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-                    if (i >= 3)
-                    {
-                      (void)XFillPolygon(XtDisplay(w),
-                                         pixmap,
-                                         gc_temp,
-                                         points,
-                                         i,
-                                         Nonconvex,
-                                         CoordModeOrigin);
-                    }
-                    else
-                    {
-                      fprintf(stderr,
-                              "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                              npoints);
-                    }
-                  }
-                  else   /* no holes in this polygon */
-                  {
-                    if (i >= 3)
-                    {
-                      /* draw the filled polygon */
-                      (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-                      (void)XFillPolygon(XtDisplay(w),
-                                         pixmap,
-                                         gc,
-                                         points,
-                                         i,
-                                         Nonconvex,
-                                         CoordModeOrigin);
-                    }
-                    else
-                    {
-                      fprintf(stderr,
-                              "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                              npoints);
-                    }
-                  }
-                }
-                /* draw the polygon border */
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                // it's not a weather alert, so draw it, filling if
+                // necessary and taking into account any holes.
+                draw_filled_polygon(w,
+                                    (polygon_hole_flag)?gc_temp:gc,
+                                    points, i, color, fill_color,
+                                    lanes, pattern,
+                                    (map_color_fill && draw_filled));
               }
               else if (weather_alert_flag)
               {
@@ -2279,97 +1584,14 @@ void draw_shapefile_map (Widget w,
                 // and the polygon border, all of which will be
                 // stippled with an alert pattern because we already
                 // set that up in gc_tint.
-
-                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
-
-                if (i >= 3)
-                {
-                  (void)XFillPolygon(XtDisplay(w),
-                                     pixmap_alerts,
-                                     gc_tint,
-                                     points,
-                                     i,
-                                     Nonconvex,
-                                     CoordModeOrigin);
-                }
-                else
-                {
-                  fprintf(stderr,
-                          "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                          npoints);
-                }
-
-                (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap_alerts,
-                                 gc_tint,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                draw_wx_polygon(w, points, i);
               }
-              else if (map_color_fill && draw_filled)    // Land masses?
+              else
               {
-                if (polygon_hole_flag)
-                {
-                  (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
-                  if (i >= 3)
-                  {
-                    (void)XFillPolygon(XtDisplay(w),
-                                       pixmap,
-                                       gc_temp,
-                                       points,
-                                       i,
-                                       Nonconvex,
-                                       CoordModeOrigin);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                            npoints);
-                  }
-                }
-                else   /* no polygon hole */
-                {
-                  (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
-                  if (i >= 3)
-                  {
-                    (void)XFillPolygon(XtDisplay (w),
-                                       pixmap,
-                                       gc,
-                                       points,
-                                       i,
-                                       Nonconvex,
-                                       CoordModeOrigin);
-                  }
-                  else
-                  {
-                    fprintf(stderr,
-                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                            npoints);
-                  }
-                }
-
-                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
-              }
-              else    // Use whatever color is defined by this point.
-              {
-                (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
-                (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
-                (void)XDrawLines(XtDisplay(w),
-                                 pixmap,
-                                 gc,
-                                 points,
-                                 l16(i),
-                                 CoordModeOrigin);
+                // the last two elseifs cover all cases not covered by
+                // the first if, and therefore this is unreachable
+                // and ought to be removed
+                fprintf(stderr,"How have we gotten to this strange place?\n");
               }
             }
           }
@@ -2385,13 +1607,15 @@ void draw_shapefile_map (Widget w,
           }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Done with drawing shapes, now draw labels
-////////////////////////////////////////////////////////////////////////////////////////////////////
+          // Done with drawing shapes, now draw labels
 
           temp = name;
-          // Set fill style back to defaults, or labels will get
-          // stippled along with polygons!
+
+          // Set fill style back to defaults, or labels would get
+          // stippled along with polygons if we haven't already reset it.
+          // At the moment, draw_filled_polygon *does* reset it, and
+          // draw_wx_polygon only frobs gc_tint, but it doesn't hurt to
+          // make sure.
           XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
           if ( (temp != NULL)
@@ -2399,7 +1623,7 @@ void draw_shapefile_map (Widget w,
                && map_labels
                && !skip_label )
           {
-            int temp_ok;
+            float label_lon, label_lat;
 
             if (debug_level & 16)
             {
@@ -2407,44 +1631,28 @@ void draw_shapefile_map (Widget w,
             }
             ok = 1;
 
-            // Convert to Xastir coordinates:
-            // XXX - todo: center large polygon labels in the center (e.g. county boundary)
-            /* center label in polygon bounding box */
-            temp_ok = convert_to_xastir_coordinates(&my_long,
-                                                    &my_lat,
-                                                    ((float)(object->dfXMax + object->dfXMin))/2.0,
-                                                    ((float)(object->dfYMax + object->dfYMin))/2.0);
-
-            if (!temp_ok)
+            /* TODO:  consider other label point options */
+            /* for now, this function just gives us the center of the
+             * bounding box
+             */
+            choose_polygon_label_point(object,&label_lon, &label_lat);
+            ok=convert_ll_to_screen_coords(&x, &y, label_lon, label_lat);
+            if (ok == 1 && ok_to_draw)
             {
-              fprintf(stderr,"draw_shapefile_map8: Problem converting from lat/lon\n");
-              ok = 0;
-              x = 0;
-              y = 0;
-            }
-            else
-            {
-              convert_xastir_to_screen_coordinates(my_long, my_lat, &x, &y);
-
-              // Labeling of polygons done here
-
-              if (ok == 1 && ok_to_draw)
+              if (debug_level & 16)
               {
-                if (debug_level & 16)
-                {
-                  fprintf(stderr,
-                          "  displaying label %s with color %x\n",
-                          temp,label_color);
-                }
-                (void)draw_centered_label_text(w,
-                                               -90,
-                                               x,
-                                               y,
-                                               strlen(temp),
-                                               colors[label_color],
-                                               (char *)temp,
-                                               font_size);
+                fprintf(stderr,
+                        "  displaying label %s with color %x\n",
+                        temp,label_color);
               }
+              (void)draw_centered_label_text(w,
+                                             -90,
+                                             x,
+                                             y,
+                                             strlen(temp),
+                                             colors[label_color],
+                                             (char *)temp,
+                                             font_size);
             }
           }
           break;
@@ -2927,6 +2135,61 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 
 
 
+// This function converts a lat/lon pair to screen coordinates
+// It probably belongs in util.c
+int convert_ll_to_screen_coords(long *x, long *y, float lon, float lat)
+{
+  int temp_ok;
+  int ok;
+  unsigned long my_lat, my_long;
+
+  ok = 1;
+
+  // Convert to Xastir coordinates
+  temp_ok = convert_to_xastir_coordinates(&my_long,
+                                          &my_lat,
+                                          lon,
+                                          lat);
+
+  if (!temp_ok)
+  {
+    fprintf(stderr,"convert_ll_to_screen_coordinates: Problem converting from lat/lon\n");
+    ok = 0;
+    *x = 0;
+    *y = 0;
+  }
+  else
+  {
+    convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
+  }
+
+  return ok;
+}
+
+
+
+
+// This function extracts all of the vertices from a shapefile object
+// given a starting point and a number of vertices, and deposits them
+// into the provided XPoint array.
+// Returns the number of points converted
+int get_vertices_screen_coords_XPoints(SHPObject *object, int partStart,
+                                        int nVertices, XPoint *points,
+                                        int *high_water_mark_index)
+{
+  int index = 0;
+  for (int vertex = 0 ; vertex < nVertices; vertex++)
+  {
+    index = get_vertex_screen_coords_XPoint(
+                                            object, vertex+partStart, points,
+                                            index, high_water_mark_index);
+  }
+  return (index);
+}
+
+
+
+
 // This function extracts a single vertex from a shapefile object given
 // its index in the vertex list of the SHPObject
 // They will be deposited in the array of XPoints, converted to screen
@@ -2935,6 +2198,9 @@ void get_gps_color_and_label(char *filename, char *gps_label,
 // we return the index of the next point that should be stored.
 // This will not necessarily be one more than what we were given, if doing
 // so would overrun the points array.
+//
+// high_water_mark represents the most points we've read in this file.  It
+// is used only for debugging output.
 int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *points, int index, int *high_water_mark_index)
 {
   int ok;
@@ -2965,33 +2231,11 @@ int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *point
 // this function gets a vertex's screen coordinates into variables x and y
 int get_vertex_screen_coords(SHPObject *object, int vertex, long *x, long *y)
 {
-  int temp_ok;
-  int ok;
-  unsigned long my_lat, my_long;
-
-  ok = 1;
-
-  // Convert to Xastir coordinates
-  temp_ok = convert_to_xastir_coordinates(&my_long,
-                                          &my_lat,
-                                          (float)object->padfX[vertex],
-                                          (float)object->padfY[vertex]);
-
-  if (!temp_ok)
-  {
-    fprintf(stderr,"draw_shapefile_map2: Problem converting from lat/lon\n");
-    ok = 0;
-    x = 0;
-    y = 0;
-  }
-  else
-  {
-    convert_xastir_to_screen_coordinates(my_long, my_lat, x, y);
-  }
-
-
-  return ok;
+  return(convert_ll_to_screen_coords(x,y,
+                                     object->padfX[vertex],
+                                     object->padfY[vertex]));
 }
+
 
 
 
@@ -3156,6 +2400,11 @@ float get_label_angle(int x0, int x1, int y0, int y1)
 }
 
 
+
+
+// we keep a hash of labels we've found and how many shapes of this
+// shapefile have been drawn since the same label was last found.  When
+// we encounter a label we haven't found before, we add it to the hash.
 void add_label_to_label_hash(label_string **label_hash, const char *label_text)
 {
   uint8_t hash_index = 0;
@@ -3183,6 +2432,7 @@ void add_label_to_label_hash(label_string **label_hash, const char *label_text)
 
 
 
+
 // When we're doing SHPT_ARC we wind up switching back and forth between
 // line color and label color.  Consolidate that in one spot.
 void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
@@ -3192,6 +2442,547 @@ void set_shpt_arc_attributes(Widget w, int color, int lanes, int pattern)
                            (lanes)?lanes:1,
                            pattern,
                            CapButt,JoinMiter);
+}
+
+
+
+
+// Set the fill style and stipple pattern used for filled polygons
+void set_shpt_polygon_fill_stipple(Widget w, int fill_style, int fill_stipple,
+                               int draw_filled)
+{
+  (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
+
+  if (draw_filled != 0 && fill_style == FillStippled)
+  {
+
+
+    switch (fill_stipple)
+    {
+      case 0:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_13pct_stipple);
+        break;
+      case 1:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_25pct_stipple);
+        break;
+      default:
+        (void)XSetStipple(XtDisplay(w), gc,
+                          pixmap_25pct_stipple);
+        break;
+    }
+  }
+
+}
+
+// Run through all the polygons in the object, return 1 if there are
+// any rings that are "holes" (rings running counterclockwise).
+// Fill polygon_hole_storage with 1 if the ring is clockwise (not a hole)
+// or -1 if it's counterclockwise (a hole)
+//
+// This code was preceded by the following comment when it still lived
+// in draw_shapefile_map (TL;DR:  We are using option 7 below):
+//
+// --------------------------
+// We now handle the "hole" drawing in polygon shapefiles, where
+// clockwise direction around the ring means a fill, and CCW means a
+// hole in the polygon.
+//
+// Possible implementations:
+//
+// 1) Snag an algorithm for a polygon "fill" function from
+// somewhere, but add a piece that will check for being inside a
+// "hole" polygon and just not draw while traversing it (change the
+// pen color to transparent over the holes?).
+// SUMMARY: How to do this?
+//
+// 2) Draw to another layer, then copy only the filled pixels to
+// their final destination pixmap.
+// SUMMARY: Draw polygons once, then a copy operation.
+//
+// 3) Separate area:  Draw polygon.  Copy from other map layer into
+// holes, then copy the result back.
+// SUMMARY:  How to determine outline?
+//
+// 4) Use clip-masks to prevent drawing over the hole areas:  Draw
+// to another 1-bit pixmap or region.  This area can be the size of
+// the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
+// as a clip-mask to draw the polygons again onto the final pixmap.
+// SUMMARY: We end up drawing the shape twice!
+//
+// MODIFICATION:  Draw a filled rectangle onto the map pixmap using
+// the clip-mask to control where it actually gets drawn.
+// SUMMARY: Only end up drawing the shape once.
+//
+// 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
+// Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
+// the holes and use GXinvert to draw zero's to the mask where the
+// holes go.  Use this as a clip-mask to draw the filled areas of
+// the polygon to the map pixmap.
+// SUMMARY: Faster than methods 1-4?
+//
+// 6) Use Regions to do the same method as #5 but with more ease.
+// Create a polygon Region, then create a Region for each hole and
+// subtract the hole from the polygon Region.  Once we have a
+// complete polygon + holes, use that as the clip-mask for drawing
+// the real polygon.  Use XSetRegion() on the GC to set this up.  We
+// might have to do offsets as well so that the region maps properly
+// to our map pixmap when we draw the final polygon to it.
+// SUMMARY:  Should be faster than methods 1-5.
+//
+// 7) Do method 6 but instead of drawing a polygon region, draw a
+// rectangle region first, then knock holes in it.  Use that region
+// as the clip-mask for the XFillPolygon() later by calling
+// XSetRegion() on the GC.  We don't really need a polygon region
+// for a clip-mask.  A rectangle with holes in it will work just as
+// well and should be faster overall.  We might have to do offsets
+// as well so that the region maps properly to our map pixmap when
+// we draw the final polygon to it.
+// SUMMARY:  This might be the fastest method of the ones listed, if
+// drawing a rectangle region is faster than drawing a polygon
+// region.  We draw the polygon once here instead of twice, and each
+// hole only once.  The only added drawing time would be the
+// creation of the rectangle region, which should be fairly fast,
+// and the subtracting of the hole regions from it.
+// Shapefiles also allow identical points to be next to each other
+// in the vertice list.  We should look for that and get rid of
+// duplicate vertices.
+//
+// Unfortunately, for Polygon shapes we must make one pass through
+// the entire set of rings to see if we have any "hole" rings (as
+// opposed to "fill" rings).  If we have any "hole" rings, we must
+// handle the drawing of the Shape quite differently.
+//
+// Speedup:  Only loop through the vertices once, by determining
+// hole/fill polygons as we go.
+// --------------------------
+int preprocess_shp_polygon_holes(SHPObject *object, int *polygon_hole_storage)
+{
+  int ring;
+  int polygon_hole_flag = 0;
+
+  // Run through the entire shape (all rings of it) once.  Create an
+  // array of flags that specify whether each ring is a fill or a
+  // hole.  If any holes found, set the global polygon_hole_flag as
+  // well.
+
+  for (ring = 0; ring < object->nParts; ring++ )
+  {
+
+    // Testing for fill or hole ring.  This will
+    // determine how we ultimately draw the
+    // entire shape.
+    //
+    switch ( shape_ring_direction( object, ring) )
+    {
+      case  0:    // Error in trying to compute whether fill or hole
+        fprintf(stderr,"Error in computing fill/hole ring\n");
+        /* Falls through. */
+      case  1:
+        // It's a fill ring.  Do nothing for these two cases except
+        // clear the flag in our storage
+        polygon_hole_storage[ring] = 0;
+        break;
+      case -1:
+        // It's a hole ring Add it to our list of hole rings here and
+        // set a flag.  That way we won't have to run through
+        // SHPRingDir_2d again in the next loop.
+        polygon_hole_flag++;
+        polygon_hole_storage[ring] = 1;
+        break;
+    }
+  }
+  return (polygon_hole_flag);
+}
+
+
+
+
+// This function takes a SHPT_POLYGON object and a vector of ints of length
+// equal to the number of parts in the polygon and returns a graphics context
+// with a clipping region set to mask out the holes.
+//
+// high_water_mark_index is used for debugging and marks the maximum number
+// of points we've ever encountered in a shape.
+GC get_hole_clipping_context(Widget w, SHPObject *object,
+                             int *polygon_hole_storage,
+                             int *high_water_mark_index)
+{
+  XRectangle rectangle;
+  long width, height;
+  double top_ll, left_ll, bottom_ll, right_ll;
+  Region region[3];
+  int temp_region1;
+  int temp_region2;
+  int temp_region3;
+  long x,y;
+  int ok;
+  int ring;
+  int index;
+  int i;
+  XPoint points[MAX_MAP_POINTS];
+  GC gc_temp = NULL;
+  XGCValues gc_temp_values;
+
+  //WE7U3
+  ////////////////////////////////////////////////////////////////////////
+
+  // Now that we know which are fill/hole rings, worry about drawing
+  // each ring of the Shape:
+  //
+  // 1) Create a filled rectangle region, probably the size of the
+  // Shape extents, and at the same screen coordinates as the entire
+  // shape would normally be drawn.
+  //
+  // 2) Create a region for each hole ring and subtract these new
+  // regions one at a time from the rectangle region created above.
+  //
+  // 3) When the "swiss-cheese" rectangle region is complete, draw
+  // only the filled polygons onto the map pixmap using the
+  // swiss-cheese rectangle region as the clip-mask.  Use a temporary
+  // GC for this operation, as I can't find a way to remove a
+  // clip-mask from a GC.  We may have to use offsets to make this
+  // work properly.
+
+
+  // Create three regions and rotate between them, due to the
+  // XSubtractRegion() needing three parameters.  If we later find
+  // that two of the parameters can be repeated, we can simplify our
+  // code.  We'll rotate through them mod 3.
+
+  temp_region1 = 0;
+
+  // Create empty region
+  region[temp_region1] = XCreateRegion();
+
+  // Draw a rectangular clip-mask inside the Region.  Use the same
+  // extents as the full Shape.
+
+  // Set up the real sizes from the Shape
+  // extents.
+  top_ll    = object->dfYMax;
+  left_ll   = object->dfXMin;
+  bottom_ll = object->dfYMin;
+  right_ll  = object->dfXMax;
+
+  // Convert point to screen coordinates:
+  ok = convert_ll_to_screen_coords(&x, &y, left_ll, top_ll);
+
+  if (ok)
+  {
+    // Here we check for really wacko points that will cause problems
+    // with the X drawing routines, and fix them.
+    (void) clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
+  }
+
+  // Convert point to screen coordinates
+  ok = convert_ll_to_screen_coords(&width, &height,
+                                   right_ll, bottom_ll);
+  if (ok)
+  {
+    // Here we check for really wacko points that will cause problems
+    // with the X drawing routines, and fix them.
+    (void) clip_x_y_pair(&width, &height, 1l, 1700l, 1l, 1700l);
+  }
+
+  //TODO
+  // We can run into trouble here because we only have 16-bit values
+  // to work with.  If we're zoomed in and the Shape is large in
+  // comparison to the screen, we'll easily exceed these numbers.
+  // Perhaps we'll need to work with something other than screen
+  // coordinates?  Perhaps truncating the values will be adequate.
+
+  rectangle.x      = (short) x;
+  rectangle.y      = (short) y;
+  rectangle.width  = (unsigned short) width;
+  rectangle.height = (unsigned short) height;
+
+  // Create the initial region containing a filled rectangle.
+  XUnionRectWithRegion(&rectangle,
+                       region[temp_region1],
+                       region[temp_region1]);
+
+  // Create a region for each set of hole vertices (CCW rotation of
+  // the vertices) and subtract each from the rectangle region.
+  for (ring = 0; ring < object->nParts; ring++ )
+  {
+    int endpoint;
+    int on_screen;
+
+
+    if (polygon_hole_storage[ring] == 1)
+    {
+      // It's a hole polygon.  Cut the
+      // hole out of our rectangle region.
+      int num_vertices = 0;
+
+      if( ring == object->nParts-1 )
+        num_vertices = object->nVertices
+          - object->panPartStart[ring];
+      else
+        num_vertices = object->panPartStart[ring+1]
+          - object->panPartStart[ring];
+
+      //TODO
+      // Snag the vertices and put them into the "points" array,
+      // converting to screen coordinates as we go, then subtracting the
+      // starting point, so that the regions remain small?
+      //
+      // We could either subtract the starting point of each shape from
+      // each point, or take the hit on region size and just use the full
+      // screen size (or whatever part of it the shape required plus the
+      // area from the starting point to 0,0).
+
+
+      if ( (ring+1) < object->nParts)
+      {
+        endpoint = object->panPartStart[ring+1];
+      }
+      //else endpoint = object->nVertices;
+      else
+      {
+        endpoint = object->panPartStart[0] + object->nVertices;
+      }
+
+      i = 0;  // i = Number of points to draw for one ring
+      on_screen = 0;
+
+      // index = ptr into the shapefile's array of points
+      // i = the index into our XPoint array
+      for (index = object->panPartStart[ring]; index < endpoint; index++)
+      {
+
+        ok = get_vertex_screen_coords(object, index, &x,&y);
+        if (ok)
+        {
+          // Here we check for really wacko points that will
+          // cause problems with the X drawing routines, and
+          // fix them.  Increment on_screen if any of the
+          // points might be on screen.
+          on_screen += clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
+
+          points[i].x = l16(x);
+          points[i].y = l16(y);
+
+          i++;
+        }
+
+        if (i > *high_water_mark_index)
+        {
+          *high_water_mark_index = i;
+        }
+
+      }   // End of converting vertices for a ring
+
+
+      // Create and subtract the region only if it might be on screen.
+      if (on_screen)
+      {
+        temp_region2 = (temp_region1 + 1) % 3;
+        temp_region3 = (temp_region1 + 2) % 3;
+
+        // Create empty regions.
+        region[temp_region2] = XCreateRegion();
+        region[temp_region3] = XCreateRegion();
+
+        // Draw the hole polygon
+        if (num_vertices >= 3)
+        {
+          XDestroyRegion(region[temp_region2]); // Release the old
+          region[temp_region2] = XPolygonRegion(points,
+                                                num_vertices,
+                                                WindingRule);
+        }
+        else
+        {
+          fprintf(stderr,
+                  "draw_shapefile_map:XPolygonRegion with too few vertices:%d\n",
+                  num_vertices);
+        }
+
+        // Subtract region2 from region1 and put the result into
+        // region3.
+        XSubtractRegion(region[temp_region1], region[temp_region2],
+                        region[temp_region3]);
+
+        // Get rid of the two regions we no longer need
+        XDestroyRegion(region[temp_region1]);
+        XDestroyRegion(region[temp_region2]);
+
+        // Indicate the final result region for the next iteration or
+        // the exit of the loop.
+        temp_region1 = temp_region3;
+      }
+    }
+  }
+
+  // region[temp_region1] now contains a clip-mask of the original
+  // polygon with holes cut out of it (swiss-cheese rectangle).
+
+  // Create temporary GC.  It looks like we don't need this to create
+  // the regions, but we'll need it when we draw the filled polygons
+  // onto the map pixmap using the final region as a clip-mask.
+
+  gc_temp = XCreateGC(XtDisplay(w),
+                      XtWindow(w),
+                      0,
+                      &gc_temp_values);
+  // now copy the fill style and stipple from gc.
+  XCopyGC(XtDisplay(w),
+          gc,
+          (GCFillStyle|GCStipple),
+          gc_temp);
+
+  // Set the clip-mask into the GC.  This GC
+  // is now ruined for other purposes, so
+  // destroy it when we're done drawing this
+  // one shape.
+  XSetRegion(XtDisplay(w), gc_temp, region[temp_region1]);
+  XDestroyRegion(region[temp_region1]);
+
+  return (gc_temp);
+}
+
+
+
+// This function clips an x/y pair to the bounding rectangle specified
+// by the min/max values passed in.
+//
+// it returns 1 if we didn't clip and 0 if we did.
+int clip_x_y_pair(long *x, long *y, long x_min, long x_max, long y_min, long y_max)
+{
+  int on_screen=0;
+  // Here we check for really wacko points that will
+  // cause problems with the X drawing routines, and
+  // fix them.  Increment on_screen if any of the
+  // points might be on screen.
+  if (*x >  x_max)
+  {
+    *x =  x_max;
+  }
+  else if (*x < x_min)
+  {
+    *x = x_min;
+  }
+  else
+  {
+    on_screen++;
+  }
+
+  if (*y >  y_max)
+  {
+    *y =  y_max;
+  }
+  else if (*y < y_min)
+  {
+    *y = y_min;
+  }
+  else
+  {
+    on_screen++;
+  }
+
+  return (on_screen);
+}
+
+
+
+
+// draw an unfilled polygon with dashed boundary in given color.
+void draw_polygon_boundary_dashed(Widget w, int color, XPoint *points,
+                                  int numPoints)
+{
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,
+                            JoinMiter);
+  (void)XDrawLines(XtDisplay(w), pixmap, gc, points, l16(numPoints),
+                   CoordModeOrigin);
+
+  // reset back to solid
+  (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid,
+                            CapButt, JoinMiter);
+}
+
+
+
+
+// draw a (possibly) filled polygon using the specified graphics
+// context into the specified pixmap out of XPoint array of size
+// numPoints, in specified boundary and fill colors and with specified
+// line width and pattern.
+//
+//
+// The graphics context passed in is either the normal one or the one
+// that does polygon hole clipping.
+//
+// "do_the_fill" determines whether we should do the fill or not.
+//
+void draw_filled_polygon(Widget w, GC theGC, XPoint *points, int numPoints,
+                         int color, int fill_color, int lanes, int pattern,
+                         int do_the_fill)
+{
+  (void)XSetLineAttributes(XtDisplay(w), theGC, (lanes)?lanes:1,
+                           pattern, CapButt, JoinMiter);
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  if (do_the_fill)
+  {
+    (void)XSetForeground(XtDisplay(w), theGC, colors[fill_color]);
+    if (numPoints >3)
+    {
+      (void)XFillPolygon(XtDisplay(w), pixmap, theGC, points, numPoints,
+                         Nonconvex, CoordModeOrigin);
+    }
+    else
+    {
+      fprintf(stderr,"draw_filled_polygon: too few points: %d, Skipping XFillPolygon()\n",numPoints);
+    }
+  }
+
+  // Draw the border
+  (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+  (void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
+  (void)XDrawLines(XtDisplay(w), pixmap, gc, points, l16(numPoints),
+                   CoordModeOrigin);
+}
+
+
+
+
+// The wx alerts get drawn in a way almost, but not quite, like others,
+// but into a different graphics context that already has its attributes
+// set.  So we have a second polygon drawing routine.
+void draw_wx_polygon(Widget w, XPoint *points, int numPoints)
+{
+  (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
+
+  if (numPoints >= 3)
+  {
+    (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, numPoints,
+                       Nonconvex, CoordModeOrigin);
+  }
+  else
+  {
+    fprintf(stderr,
+            "draw_wx_polygon:Too few points:%d, Skipping XFillPolygon()",
+            numPoints);
+  }
+
+  (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
+  (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint,
+                   points, l16(numPoints), CoordModeOrigin);
+}
+
+
+
+// This function selects a point at which to display a shape's label.
+// Right now it ONLY returns the center of the shape's label, but
+// we probably need to explore other options, so I'm breaking this out
+// into a function.
+void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
+{
+  *lon = (float) (object->dfXMax + object->dfXMin)/2.0;
+  *lat = (float) (object->dfYMax + object->dfYMin)/2.0;
 }
 
 #endif  // HAVE_LIBSHP
