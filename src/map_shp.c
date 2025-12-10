@@ -585,6 +585,8 @@ static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
 static int      color,lanes,filled,pattern,display_level,label_level;
 static int      fill_style,fill_color;
 static int      fill_stipple;
+static int label_color = 8;
+static int font_size = FONT_DEFAULT;
 
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] =
@@ -645,8 +647,6 @@ void draw_shapefile_map (Widget w,
 
   int draw_filled_orig;
   int draw_filled;
-  static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
-  static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
 
   // Define hash table for label pointers
   label_string *label_hash[256];
@@ -670,20 +670,9 @@ void draw_shapefile_map (Widget w,
   // on, but we have to check --- save this!
   draw_filled_orig=draw_filled;
 
-  // Re-initialize these static variables every time through here.
-  // Otherwise, if a dbfawk file forgets to set one, we'd use what the
-  // last map used.  Sometimes that's ugly.
-  color=8;
-  lanes=1;
-  filled=0;
-  fill_style=0;
-  fill_color=13;
-  fill_stipple=0;
-  pattern=0;
-  display_level=INT_MAX;
-  label_level=0;
-  label_color=8;
-  font_size=FONT_DEFAULT;
+  // Re-initialize all static render-control variables every time
+  // through here.
+  initialize_rendering_variables();
 
   if (Dbf_sigs == NULL)
   {
@@ -1429,17 +1418,8 @@ void draw_shapefile_map (Widget w,
                   // determine how many of each identical label are
                   // skipped at each zoom level.
                   mod_number = select_arc_label_mod();
-                  // Check whether we've written out this string already.
-                  // The problem with this method is that we might get
-                  // strings "written" at the extreme top or right edge of
-                  // the display, which means the strings wouldn't be
-                  // visible, but Xastir thinks that it wrote the string
-                  // out visibly.  To partially counteract this I've set
-                  // it up to write only some of the identical strings.
-                  // This still doesn't help in the cases where a street
-                  // only comes in from the top or right and doesn't have
-                  // an intersection with another street (and therefore
-                  // another label) within the view.
+
+                  // Check whether we've written out this string recently.
                   new_label = check_label_skip(label_hash, temp,
                                                mod_number, &skip_label);
                 }
@@ -2290,6 +2270,15 @@ int select_arc_label_mod(void)
 // We do it this way because the caller actually already has a skip_label
 // variable that might already be 1, and we don't want to clobber
 // it with a 0.
+//
+// The problem with this method is that we might get strings "written"
+// at the extreme top or right edge of the display, which means the
+// strings wouldn't be visible, but Xastir thinks that it wrote the
+// string out visibly.  To partially counteract this I've set it up to
+// write only some of the identical strings.  This still doesn't help
+// in the cases where a street only comes in from the top or right and
+// doesn't have an intersection with another street (and therefore
+// another label) within the view.
 int check_label_skip(label_string **label_hash, const char *label_text,
                      int mod_number, int *skip_label)
 
@@ -2972,6 +2961,28 @@ void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
   *lat = (float) (object->dfYMax + object->dfYMin)/2.0;
 }
 
+
+
+
+// We have a slew of variables that control shapefile rendering.  They are all
+// static variables in this file and therefore need to be initialized every
+// time draw_shapefile_map is called, lest unset variables in this shapefiles's
+// dbfawk file remain at non-default values set by the previously rendered
+// shapefile's.
+void initialize_rendering_variables(void)
+{
+  color=8;
+  lanes=1;
+  filled=0;
+  fill_style=0;
+  fill_color=13;
+  fill_stipple=0;
+  pattern=0;
+  display_level=INT_MAX;
+  label_level=0;
+  label_color=8;
+  font_size=FONT_DEFAULT;
+}
 #endif  // HAVE_LIBSHP
 
 
