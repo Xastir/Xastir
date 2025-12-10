@@ -624,7 +624,8 @@ void draw_shapefile_map (Widget w,
   double          adfBndsMin[4], adfBndsMax[4];
   char            *sType;
   long            x,y;
-  int             ok, index;
+  int             ok;
+  int             numXPoints;
   int             polygon_hole_flag;
   int             *polygon_hole_storage;
   GC              gc_temp = NULL;
@@ -635,7 +636,6 @@ void draw_shapefile_map (Widget w,
   char            *filename;  // filename itself w/o directory
   int             found_shape = -1;
   int             ok_to_draw = 0;
-  int             high_water_mark_i = 0;
   int             high_water_mark_index = 0;
   char            status_text[MAX_FILENAME];
 
@@ -708,6 +708,7 @@ void draw_shapefile_map (Widget w,
   // Create a shorter filename for display
   short_filename_for_status(filenm, short_filenm, sizeof(short_filenm));
 
+  // filename is the base name of filenm (path stripped off)
   filename = filenm;
   i = strlen(filenm);
   while ( (i >= 0) && (filenm[i] != '/') )
@@ -1288,9 +1289,7 @@ void draw_shapefile_map (Widget w,
         case SHPT_POINT:
         case SHPT_POINTZ:
           // We hit this case once for each point shape in the file,
-          // iff that shape is within our viewport.
-
-
+          // if that shape is within our viewport.
           if (debug_level & 16)
           {
             fprintf(stderr,"Found Point Shapefile\n");
@@ -1315,20 +1314,20 @@ void draw_shapefile_map (Widget w,
               char symbol_id = '.'; /* small x */
               char symbol_over = ' ';
 
-              if (*sym)  // got the symbol from dbfawk
+              // Use symbol from dbfawk if given
+              if (*sym)
               {
-                symbol(w,0,sym[0],sym[1],sym[2],pixmap,1,x-10,y-10,' ');
+                symbol_table = sym[0];
+                symbol_id = sym[1];
+                symbol_over = sym[2];
               }
-              else
-              {
-                // Fine-tuned the location here so that the middle of
-                // the 'X' would be at the proper pixel.
-                symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
-              }
+              // Fine-tuned the location here so that the middle of
+              // the symbol would be at the proper pixel.
+              symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
 
               // Labeling of points done here
               // Fine-tuned this string so that it is to the right of
-              // the 'X' and aligned nicely.
+              // the symbol and aligned nicely.
               if (map_labels && !skip_label)
               {
                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
@@ -1341,13 +1340,13 @@ void draw_shapefile_map (Widget w,
 
         case SHPT_ARC:
         case SHPT_ARCZ:
-          // We hit this case once for each polyline shape
-          // in the file, iff at least part of that shape
-          // is within our viewport.
+          // We hit this case once for each polyline shape in the
+          // file, if at least part of that shape is within our
+          // viewport.
 
-          // Default in case we forget to set the line
-          // width later:
-          (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+          // Default in case we forget to set the line width later:
+          (void)XSetLineAttributes (XtDisplay (w), gc, 0,
+                                    LineSolid, CapButt,JoinMiter);
 
 
           // gps files in the GPS directory are treated specially to
@@ -1369,12 +1368,12 @@ void draw_shapefile_map (Widget w,
               nParts=1;     // but don't try to read panPartStart!
 
             // Read the vertices for each vector now
+            // vectors may have multiple parts, draw them separately
             for (int part=0; part < nParts; part++)
             {
               int nVertices;
               int partStart;
-              index = 0;  // Index into our own points array.
-                         // Tells how many points we've  collected so far.
+              numXPoints = 0;
               if (nParts == 1)
               {
                 nVertices =object->nVertices;
@@ -1391,9 +1390,9 @@ void draw_shapefile_map (Widget w,
                 nVertices = object->nVertices - partStart;
               }
 
-              // index winds up being the number of points we read into
+              // numXPoints winds up being the number of points we read into
               // the points array
-              index = get_vertices_screen_coords_XPoints(object, partStart,
+              numXPoints = get_vertices_screen_coords_XPoints(object, partStart,
                                                  nVertices, points,
                                                  &high_water_mark_index);
 
@@ -1408,17 +1407,11 @@ void draw_shapefile_map (Widget w,
               set_shpt_arc_attributes(w, (gps_flag)?gps_color:color,
                                       (gps_flag)?3:((lanes)?lanes:1),
                                       (gps_flag)?LineOnOffDash:pattern);
-              (void)XDrawLines(XtDisplay(w),
-                               pixmap,
-                               gc,
-                               points,
-                               l16(index),
+              (void)XDrawLines(XtDisplay(w), pixmap, gc,
+                               points, l16(numXPoints),
                                CoordModeOrigin);
 
-
-
               // draw a label
-
               temp = (gps_flag)?gps_label:name;
               if ( (temp != NULL)
                    && (strlen(temp) != 0)
@@ -1453,15 +1446,11 @@ void draw_shapefile_map (Widget w,
 
                 if (!skip_label)    // Draw the string
                 {
-                  // Compute the label rotation angle
+                  // Compute the label rotation angle, select color
                   float angle = (gps_flag)?(-90):get_label_angle(x0,x1,y0,y1);
                   int color_to_use=(gps_flag)?gps_color:label_color;
 
-                  // Labeling of polylines done here
-                  (void)draw_rotated_label_text(w,
-                                                (int)angle,
-                                                x,
-                                                y,
+                  (void)draw_rotated_label_text(w, (int)angle, x, y,
                                                 strlen(temp),
                                                 colors[color_to_use],
                                                 (char *)temp,
@@ -1509,6 +1498,9 @@ void draw_shapefile_map (Widget w,
 
           // reset polygon hole flag if we aren't actually going to need
           // to go through the hole math and clip region setting
+          // But we still use the poly_hole_storage, because we'll draw
+          // the holes with dashed lines if we're not filling the polygons,
+          // so we do the hole determination regardless of fill settings.
           if (!map_color_fill || !draw_filled)
           {
             polygon_hole_flag = 0;
@@ -1551,13 +1543,12 @@ void draw_shapefile_map (Widget w,
               nVertices = object->nVertices-partStart;
             }
 
-            // i = Number of points to draw for one ring
-            i = get_vertices_screen_coords_XPoints(object,
+            numXPoints = get_vertices_screen_coords_XPoints(object,
                                                    partStart, nVertices,
                                                    points,
                                                    &high_water_mark_index);
 
-            if ( (i >= 3)
+            if ( (numXPoints >= 3)
                  && (ok_to_draw && !skip_it)
                  && ( !draw_filled || !map_color_fill || (draw_filled && polygon_hole_storage[ring] == 0) ) )
             {
@@ -1565,7 +1556,7 @@ void draw_shapefile_map (Widget w,
               if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1)
               {
                 // We have a hole drawn as unfilled.
-                draw_polygon_boundary_dashed(w,color,points,i);
+                draw_polygon_boundary_dashed(w,color,points,numXPoints);
               }
               else if (!weather_alert_flag)
               {
@@ -1573,7 +1564,7 @@ void draw_shapefile_map (Widget w,
                 // necessary and taking into account any holes.
                 draw_filled_polygon(w,
                                     (polygon_hole_flag)?gc_temp:gc,
-                                    points, i, color, fill_color,
+                                    points, numXPoints, color, fill_color,
                                     lanes, pattern,
                                     (map_color_fill && draw_filled));
               }
@@ -1584,7 +1575,7 @@ void draw_shapefile_map (Widget w,
                 // and the polygon border, all of which will be
                 // stippled with an alert pattern because we already
                 // set that up in gc_tint.
-                draw_wx_polygon(w, points, i);
+                draw_wx_polygon(w, points, numXPoints);
               }
               else
               {
@@ -1609,8 +1600,6 @@ void draw_shapefile_map (Widget w,
 
           // Done with drawing shapes, now draw labels
 
-          temp = name;
-
           // Set fill style back to defaults, or labels would get
           // stippled along with polygons if we haven't already reset it.
           // At the moment, draw_filled_polygon *does* reset it, and
@@ -1618,8 +1607,7 @@ void draw_shapefile_map (Widget w,
           // make sure.
           XSetFillStyle(XtDisplay(w), gc, FillSolid);
 
-          if ( (temp != NULL)
-               && (strlen(temp) != 0)
+          if ( (strlen(name) != 0)
                && map_labels
                && !skip_label )
           {
@@ -1643,15 +1631,15 @@ void draw_shapefile_map (Widget w,
               {
                 fprintf(stderr,
                         "  displaying label %s with color %x\n",
-                        temp,label_color);
+                        name,label_color);
               }
               (void)draw_centered_label_text(w,
                                              -90,
                                              x,
                                              y,
-                                             strlen(temp),
+                                             strlen(name),
                                              colors[label_color],
-                                             (char *)temp,
+                                             (char *)name,
                                              font_size);
             }
           }
@@ -1696,9 +1684,8 @@ void draw_shapefile_map (Widget w,
 
   if (debug_level & 16)
   {
-    fprintf(stderr,"High-Mark Index:%d,\tHigh-Mark i:%d\n",
-            high_water_mark_index,
-            high_water_mark_i);
+    fprintf(stderr,"High-Mark Index:%d\n",
+            high_water_mark_index);
   }
 
   // Set fill style back to defaults
@@ -2222,7 +2209,7 @@ int get_vertex_screen_coords_XPoint(SHPObject *object, int vertex, XPoint *point
   if (index >= MAX_MAP_POINTS)
   {
     index = MAX_MAP_POINTS - 1;
-    fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
+    fprintf(stderr,"Trying to overrun the XPoints array handling a shapefile, index=%d, dropping points to prevent overrun\n",index);
   }
   return index;
 }
