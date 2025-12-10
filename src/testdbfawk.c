@@ -207,7 +207,8 @@ int main(int argc, char *argv[])
   awk_declare_sym(symtbl,"filled",INT,&filled,sizeof(filled));
   awk_declare_sym(symtbl,"fill_style",INT,&fill_style,sizeof(fill_style));
   awk_declare_sym(symtbl,"fill_color",INT,&fill_color,sizeof(fill_color));
-  awk_declare_sym(symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));  awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
+  awk_declare_sym(symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));
+  awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
   awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
   awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
   awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
