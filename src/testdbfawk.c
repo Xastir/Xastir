@@ -138,19 +138,21 @@ int main(int argc, char *argv[])
   //    int args;
   awk_symtab *symtbl;
   /* variables to bind to: */
-  int color = 0;
-  int lanes = 0;
-  int font_size = 0;
   char dbfinfo[1024];        /* list of DBF field names */
   char dbffields[1024];    /* subset we want to read */
   char name[128];
   char key[128];
   char symbol[4];
+  int color = 0;
+  int lanes = 0;
   int filled = 5;
   int pattern=0;
   int display_level = 1234;
   int label_level = 9;
+  int fill_style, fill_color;
+  int fill_stipple;
   int label_color = 8;
+  int font_size = 0;
   char *dir = NULL,*file = NULL,*dfile = NULL;
   dbfawk_sig_info *si = NULL, *sigs = NULL;
 
@@ -203,7 +205,9 @@ int main(int argc, char *argv[])
   awk_declare_sym(symtbl,"key",STRING,key,sizeof(key));
   awk_declare_sym(symtbl,"symbol",STRING,symbol,sizeof(symbol));
   awk_declare_sym(symtbl,"filled",INT,&filled,sizeof(filled));
-  awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
+  awk_declare_sym(symtbl,"fill_style",INT,&fill_style,sizeof(fill_style));
+  awk_declare_sym(symtbl,"fill_color",INT,&fill_color,sizeof(fill_color));
+  awk_declare_sym(symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));  awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
   awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
   awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
   awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
@@ -264,6 +268,9 @@ int main(int argc, char *argv[])
       fprintf(stderr,"color=%d, ", color);
       fprintf(stderr,"lanes=%d, ", lanes);
       fprintf(stderr,"filled=%d, ",filled);
+      fprintf(stderr,"fill_style=%d ",fill_style);
+      fprintf(stderr,"fill_color=%d ",fill_color);
+      fprintf(stderr,"fill_stipple=%d ",fill_stipple);
       fprintf(stderr,"pattern=%d, ",pattern);
       fprintf(stderr,"display_level=%d, ",display_level);
       fprintf(stderr,"font_size=%d, ", font_size);
