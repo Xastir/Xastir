@@ -144,7 +144,6 @@ int RTreeSearchCallback(int id, void* UNUSED(arg) )
     CHECKREALLOC(ptr);  // fatal error if we can't get 'em :-(
     RTree_hitarray=ptr;
     RTree_hitarray_size += 1000;
-    //fprintf(stderr,"Hitarray now at %d\n",RTree_hitarray_size);
   }
 
 
@@ -1214,7 +1213,6 @@ void draw_shapefile_map (Widget w,
           fprintf(stderr,"display_level=%d ",display_level);
           fprintf(stderr,"label_level=%d ",label_level);
           fprintf(stderr,"label_color=%d\n",label_color);
-          // fprintf(stderr,"layer=%d\n",layer);
         }
         /* set attributes */
         (void)XSetForeground(XtDisplay(w), gc, colors[color]);
@@ -1680,7 +1678,6 @@ void draw_shapefile_map (Widget w,
 // This will trigger a  reload the first time a shapfile is redisplayed
 void clear_dbfawk_sigs(void)
 {
-  //    fprintf(stderr,"Clearing signatures.\n");
   if (Dbf_sigs )
   {
     dbfawk_free_sigs(Dbf_sigs);
@@ -2969,6 +2966,12 @@ void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
 // time draw_shapefile_map is called, lest unset variables in this shapefiles's
 // dbfawk file remain at non-default values set by the previously rendered
 // shapefile's.
+//
+// Note that these are intended to match the defaults set in
+// dbfawk_default_rules, but because INT_MAX and FONT_DEFAULT can't be
+// embedded in in that default rule, the former is hard coded over there,
+// and the default font isn't set at all.  Since we set it here, there's no
+// problem.
 void initialize_rendering_variables(void)
 {
   color=8;
