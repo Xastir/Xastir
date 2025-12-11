@@ -148,6 +148,7 @@ int main(int argc, char *argv[])
   int filled = 5;
   int pattern=0;
   int display_level = 1234;
+  int min_display_level = 0;
   int label_level = 9;
   int fill_style, fill_color;
   int fill_stipple;
@@ -214,6 +215,7 @@ int main(int argc, char *argv[])
   awk_declare_sym(symtbl,"fill_stipple",INT,&fill_stipple,sizeof(fill_stipple));
   awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
   awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
+  awk_declare_sym(symtbl,"min_display_level",INT,&min_display_level,sizeof(min_display_level));
   awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
   awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
   awk_declare_sym(symtbl,"font_size",INT,&font_size,sizeof(font_size));
@@ -281,6 +283,7 @@ int main(int argc, char *argv[])
       fprintf(stderr,"fill_stipple=%d ",fill_stipple);
       fprintf(stderr,"pattern=%d, ",pattern);
       fprintf(stderr,"display_level=%d, ",display_level);
+      fprintf(stderr,"min_display_level=%d, ",min_display_level);
       fprintf(stderr,"font_size=%d, ", font_size);
       fprintf(stderr,"label_level=%d, ",label_level);
       fprintf(stderr,"label_color=%d, ",label_color);
