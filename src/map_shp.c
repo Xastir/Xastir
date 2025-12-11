@@ -2977,7 +2977,7 @@ void draw_wx_polygon(Widget w, XPoint *points, int numPoints)
 // otherwise use the center of the shape's bounding box.
 void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
 {
-  if (label_method == 1 && label_lat != 0.0 && label_lon != 0.0)
+  if (label_method == 1 && (label_lat != 0.0 || label_lon != 0.0))
   {
     *lon = label_lon;
     *lat = label_lat;
