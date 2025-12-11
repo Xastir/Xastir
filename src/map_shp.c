@@ -1452,6 +1452,13 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Polygons\n");
           }
 
+          // Set the stipple now.  need to do here, because if
+          // done earlier the labels get stippled, too, and if only done
+          // right when we draw the polygon, single-part shapes with holes
+          // won't stippled properly, because this stipple applies to that
+          // GC.
+          set_shpt_polygon_fill_stipple(w, fill_style, fill_stipple,
+                                        draw_filled);
           polygon_hole_flag = 0;
 
           // Allocate storage for a flag for each ring in
