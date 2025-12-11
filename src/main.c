@@ -10996,8 +10996,6 @@ void create_gc(Widget w)
 
   colors[0x52] = GetPixelByName(w,"LimeGreen");  // PHG, symbols
 
-  colors[0xfe] = GetPixelByName(w,"pink");
-
   // map solid colors
   colors[0x60] = GetPixelByName(w,"HotPink");
   colors[0x61] = GetPixelByName(w,"RoyalBlue");
@@ -11042,6 +11040,8 @@ void create_gc(Widget w)
   colors[0x85] = GetPixelByName(w,"set1_7");
   colors[0x86] = GetPixelByName(w,"set1_8");
   colors[0x87] = GetPixelByName(w,"set1_9");
+
+  colors[0xfe] = GetPixelByName(w,"pink");
 
   // tracking trail colors
   // set color for your own station with  #define MY_TRAIL_COLOR  in db.c
