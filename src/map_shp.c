@@ -579,7 +579,7 @@ static awk_symtab *Symtbl = NULL;
 /* used to be static inside draw_shapefile_map, but moved here
    because they need to be shared among other functions */
 static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
-static int      color,lanes,filled,pattern,display_level,label_level;
+static int      color,lanes,filled,pattern,display_level,min_display_level,label_level;
 static int      fill_style,fill_color;
 static int      fill_stipple;
 static int label_color = 8;
@@ -598,7 +598,7 @@ static awk_rule dbfawk_default_rules[] =
     NULL,
     0,
     0,
-    "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=2147483647; label_level=0",
+    "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=2147483647; min_display_level=0; label_level=0",
     0,
     0
   },
@@ -782,6 +782,7 @@ void draw_shapefile_map (Widget w,
                                             &filled, &fill_style,
                                             &fill_color, &fill_stipple,
                                             &pattern, &display_level,
+                                            &min_display_level,
                                             &label_level, &label_color,
                                             &font_size, &label_method,
                                             &label_lon, &label_lat);
@@ -1214,6 +1215,7 @@ void draw_shapefile_map (Widget w,
           fprintf(stderr,"fill_stipple=%d ",fill_stipple);
           fprintf(stderr,"pattern=%d ",pattern);
           fprintf(stderr,"display_level=%d ",display_level);
+          fprintf(stderr,"min_display_level=%d ",min_display_level);
           fprintf(stderr,"label_level=%d ",label_level);
           fprintf(stderr,"label_color=%d\n",label_color);
         }
@@ -1267,7 +1269,7 @@ void draw_shapefile_map (Widget w,
           fill_style = FillStippled;
         }
 
-        skip_it = (map_color_levels && (scale_y > display_level));
+        skip_it = (map_color_levels && ((scale_y > display_level) || (scale_y < min_display_level)));
         skip_label = (map_color_levels && (scale_y > label_level));
 
       }
@@ -1756,6 +1758,7 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *fill_style,
                                            int *fill_color, int *fill_stipple,
                                            int *pattern, int *display_level,
+                                           int *min_display_level,
                                            int *label_level,
                                            int *label_color,
                                            int *font_size,
@@ -1778,6 +1781,7 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
     awk_declare_sym(Symtbl,"fill_stipple",INT,fill_stipple,sizeof(*fill_stipple));
     awk_declare_sym(Symtbl,"pattern",INT,pattern,sizeof(*pattern));
     awk_declare_sym(Symtbl,"display_level",INT,display_level,sizeof(*display_level));
+    awk_declare_sym(Symtbl,"min_display_level",INT,min_display_level,sizeof(*min_display_level));
     awk_declare_sym(Symtbl,"label_level",INT,label_level,sizeof(*label_level));
     awk_declare_sym(Symtbl,"label_color",INT,label_color,sizeof(*label_color));
     awk_declare_sym(Symtbl,"font_size",INT,font_size,sizeof(*font_size));
@@ -3009,6 +3013,7 @@ void initialize_rendering_variables(void)
   fill_stipple=0;
   pattern=0;
   display_level=INT_MAX;
+  min_display_level=0;
   label_level=0;
   label_color=8;
   font_size=FONT_DEFAULT;
