@@ -584,6 +584,9 @@ static int      fill_style,fill_color;
 static int      fill_stipple;
 static int label_color = 8;
 static int font_size = FONT_DEFAULT;
+static int label_method=0;
+static double label_lon=0.0;
+static double label_lat=0.0;
 
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] =
@@ -780,7 +783,8 @@ void draw_shapefile_map (Widget w,
                                             &fill_color, &fill_stipple,
                                             &pattern, &display_level,
                                             &label_level, &label_color,
-                                            &font_size);
+                                            &font_size, &label_method,
+                                            &label_lon, &label_lat);
 
     if (awk_compile_program(Symtbl,sig_info->prog) < 0)
     {
@@ -1754,7 +1758,10 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *pattern, int *display_level,
                                            int *label_level,
                                            int *label_color,
-                                           int *font_size)
+                                           int *font_size,
+                                           int *label_method,
+                                           double *label_lon,
+                                           double *label_lat)
 {
   if (!Symtbl)
   {
@@ -1774,6 +1781,9 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
     awk_declare_sym(Symtbl,"label_level",INT,label_level,sizeof(*label_level));
     awk_declare_sym(Symtbl,"label_color",INT,label_color,sizeof(*label_color));
     awk_declare_sym(Symtbl,"font_size",INT,font_size,sizeof(*font_size));
+    awk_declare_sym(Symtbl,"label_method",INT,label_method,sizeof(label_method));
+    awk_declare_sym(Symtbl,"label_lon",FLOAT,label_lon,sizeof(*label_lon));
+    awk_declare_sym(Symtbl,"label_lat",FLOAT,label_lat,sizeof(*label_lat));
   }
 
   return (Symtbl);
@@ -2956,13 +2966,23 @@ void draw_wx_polygon(Widget w, XPoint *points, int numPoints)
 
 
 // This function selects a point at which to display a shape's label.
-// Right now it ONLY returns the center of the shape's label, but
-// we probably need to explore other options, so I'm breaking this out
-// into a function.
+//
+// If label_method is one and the lat/lon has been set from dbfawk,
+// use that point.
+//
+// otherwise use the center of the shape's bounding box.
 void choose_polygon_label_point(SHPObject *object, float *lon, float *lat)
 {
-  *lon = (float) (object->dfXMax + object->dfXMin)/2.0;
-  *lat = (float) (object->dfYMax + object->dfYMin)/2.0;
+  if (label_method == 1 && label_lat != 0.0 && label_lon != 0.0)
+  {
+    *lon = label_lon;
+    *lat = label_lat;
+  }
+  else
+  {
+    *lon = (float) (object->dfXMax + object->dfXMin)/2.0;
+    *lat = (float) (object->dfYMax + object->dfYMin)/2.0;
+  }
 }
 
 
@@ -2992,6 +3012,9 @@ void initialize_rendering_variables(void)
   label_level=0;
   label_color=8;
   font_size=FONT_DEFAULT;
+  label_method=0;
+  label_lon=0.0;
+  label_lat=0.0;
 }
 #endif  // HAVE_LIBSHP
 

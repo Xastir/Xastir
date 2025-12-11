@@ -153,6 +153,10 @@ int main(int argc, char *argv[])
   int fill_stipple;
   int label_color = 8;
   int font_size = 0;
+  int label_method = 0;
+  double label_lon = 0.0;
+  double label_lat = 0.0;
+
   char *dir = NULL,*file = NULL,*dfile = NULL;
   dbfawk_sig_info *si = NULL, *sigs = NULL;
 
@@ -213,6 +217,9 @@ int main(int argc, char *argv[])
   awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
   awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
   awk_declare_sym(symtbl,"font_size",INT,&font_size,sizeof(font_size));
+  awk_declare_sym(symtbl,"label_method",INT,&label_method,sizeof(label_method));
+  awk_declare_sym(symtbl,"label_lon",FLOAT,&label_lon,sizeof(label_lon));
+  awk_declare_sym(symtbl,"label_lat",FLOAT,&label_lat,sizeof(label_lat));
 
   if (dfile)          /* parse dbf file */
   {
@@ -275,8 +282,11 @@ int main(int argc, char *argv[])
       fprintf(stderr,"pattern=%d, ",pattern);
       fprintf(stderr,"display_level=%d, ",display_level);
       fprintf(stderr,"font_size=%d, ", font_size);
-      fprintf(stderr,"label_level=%d\n",label_level);
-      fprintf(stderr,"label_color=%d\n",label_color);
+      fprintf(stderr,"label_level=%d, ",label_level);
+      fprintf(stderr,"label_color=%d, ",label_color);
+      fprintf(stderr,"label_method=%d, ",label_method);
+      fprintf(stderr,"label_lon=%lf, ",label_lon);
+      fprintf(stderr,"label_lat=%lf\n",label_lat);
       //    print_symtbl(symtbl);
     }
     DBFClose(dbf);

@@ -41,7 +41,10 @@ awk_symtab *initialize_dbfawk_symbol_table(char *dbffields, size_t dbffields_s,
                                            int *pattern, int *display_level,
                                            int *label_level,
                                            int *label_color,
-                                           int *font_size);
+                                           int *font_size,
+                                           int *label_method,
+                                           double *label_lon,
+                                           double *label_lat);
 int find_wx_alert_shape(alert_entry *alert, DBFHandle hDBF, int recordcount,
                         dbfawk_sig_info *sig_info, dbfawk_field_info *fld_info);
 void getViewportRect(struct Rect *viewportRect);
