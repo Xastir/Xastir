@@ -1197,6 +1197,7 @@ void draw_shapefile_map (Widget w,
         dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
         if (debug_level & 16)
         {
+          fprintf(stderr,"------\n");
           fprintf(stderr,"dbfawk parse of structure %d: ",structure);
           fprintf(stderr,"color=%d ",color);
           fprintf(stderr,"lanes=%d ",lanes);
@@ -1451,12 +1452,6 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"Found Polygons\n");
           }
 
-          // User requested filled polygons with stippling.
-          // Set the stipple now.  need to do here, because if
-          // done earlier the labels get stippled, too.
-          set_shpt_polygon_fill_stipple(w, fill_style, fill_stipple,
-                                        draw_filled);
-
           polygon_hole_flag = 0;
 
           // Allocate storage for a flag for each ring in
@@ -1538,6 +1533,13 @@ void draw_shapefile_map (Widget w,
               {
                 // it's not a weather alert, so draw it, filling if
                 // necessary and taking into account any holes.
+
+                // User requested filled polygons with stippling.
+                // Set the stipple now.  need to do here, because
+                // if not done inside the loop, only the first part of the
+                // multi-part polygon gets stippled!
+                set_shpt_polygon_fill_stipple(w, fill_style, fill_stipple,
+                                        draw_filled);
                 draw_filled_polygon(w,
                                     (polygon_hole_flag)?gc_temp:gc,
                                     points, numXPoints, color, fill_color,
