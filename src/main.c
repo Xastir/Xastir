@@ -11019,30 +11019,6 @@ void create_gc(Widget w)
   colors[0x74] = GetPixelByName(w,"tgr_forest_1");
   colors[0x75] = GetPixelByName(w,"tgr_water_1");
 
-  // These colors match the "civdis" map color palette, a colorblind-friendly
-  // palette actually mandated by EU for public sector maps
-  colors[0x76] = GetPixelByName(w,"cividis_1");
-  colors[0x77] = GetPixelByName(w,"cividis_2");
-  colors[0x78] = GetPixelByName(w,"cividis_3");
-  colors[0x79] = GetPixelByName(w,"cividis_4");
-  colors[0x7a] = GetPixelByName(w,"cividis_5");
-  colors[0x7b] = GetPixelByName(w,"cividis_6");
-  colors[0x7c] = GetPixelByName(w,"cividis_7");
-  colors[0x7d] = GetPixelByName(w,"cividis_8");
-  colors[0x7e] = GetPixelByName(w,"cividis_9");
-
-  // These colors are the "Set1" color palette from ColorBrewer
-  // https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
-  colors[0x7f] = GetPixelByName(w,"set1_1");
-  colors[0x80] = GetPixelByName(w,"set1_2");
-  colors[0x81] = GetPixelByName(w,"set1_3");
-  colors[0x82] = GetPixelByName(w,"set1_4");
-  colors[0x83] = GetPixelByName(w,"set1_5");
-  colors[0x84] = GetPixelByName(w,"set1_6");
-  colors[0x85] = GetPixelByName(w,"set1_7");
-  colors[0x86] = GetPixelByName(w,"set1_8");
-  colors[0x87] = GetPixelByName(w,"set1_9");
-
   // tracking trail colors
   // set color for your own station with  #define MY_TRAIL_COLOR  in db.c
   trail_colors[0x00] = GetPixelByName(w,"yellow");

@@ -24,7 +24,7 @@
 #ifndef XASTIR_COLOR_H
 #define XASTIR_COLOR_H
 
-#define MAX_COLORS 99
+#define MAX_COLORS 81
 
 #define MAX_COLORNAME 40
 typedef struct

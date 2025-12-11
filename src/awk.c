@@ -968,7 +968,7 @@ awk_program *awk_load_program_file(const char *file)
   awk_program *n = awk_new_program();
   awk_rule *r;
   FILE *f = fopen(file,"r");
-  char in[2048];
+  char in[1024];
   int line = 0;
 
   if (!f)
