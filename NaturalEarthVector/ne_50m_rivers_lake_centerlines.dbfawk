@@ -1,0 +1,30 @@
+#
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is used to set rendering rules for the Natural Earth Vector
+# file ne_50m_rivers_lake_centerlines.shp
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+dbfinfo="scalerank:featurecla:name:note:min_zoom:name_alt:min_label:name_en:label:wikidataid:name_ar:name_bn:name_de:name_es:name_fr:name_el:name_hi:name_hu:name_id:name_it:name_ja:name_ko:name_nl:name_pl:name_pt:name_ru:name_sv:name_tr:name_vi:name_zh:ne_id:name_fa:name_he:name_uk:name_ur:name_zht";
+
+dbffields="featurecla:name";
+}
+
+# defaults: steel blue lines.  Visible at max zoom.  Labels off at 10k zoom.
+BEGIN_RECORD {key=""; lanes=1; color=26; fill_color=26; name=""; filled=1; pattern=0; display_level=2147483647; label_level=10000; label_color=9; font_size=0; symbol=""; fill_style=0;}
+
+# per-field rules are applied to the dbffields that are read from
+# each record.
+
+/^name=(.+)$/ {name="$1";next}
+
+# rivers thicker than lake centerlines and canals, with larger labels.
+# lake center lines dashed
+# canals double dashed
+/^featurecla=River/ {lanes=1; font_size=3; pattern=0; next}
+/^featurecla=Lake Centerline/ {lanes=1; font_size=2; pattern=1; next}
+/^featurecla=Canal/ {lanes=1; font_size=2; pattern=2; next}
+
+
+

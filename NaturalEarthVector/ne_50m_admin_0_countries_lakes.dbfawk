@@ -1,0 +1,51 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# This file is meant to be used with the ne_50m_admin_0_countries shapefile
+# from natural-earth-vector (https://github.com/nvkelso/natural-earth-vector)
+
+
+BEGIN {
+dbfinfo="featurecla:scalerank:LABELRANK:SOVEREIGNT:SOV_A3:ADM0_DIF:LEVEL:TYPE:TLC:ADMIN:ADM0_A3:GEOU_DIF:GEOUNIT:GU_A3:SU_DIF:SUBUNIT:SU_A3:BRK_DIFF:NAME:NAME_LONG:BRK_A3:BRK_NAME:BRK_GROUP:ABBREV:POSTAL:FORMAL_EN:FORMAL_FR:NAME_CIAWF:NOTE_ADM0:NOTE_BRK:NAME_SORT:NAME_ALT:MAPCOLOR7:MAPCOLOR8:MAPCOLOR9:MAPCOLOR13:POP_EST:POP_RANK:POP_YEAR:GDP_MD:GDP_YEAR:ECONOMY:INCOME_GRP:FIPS_10:ISO_A2:ISO_A2_EH:ISO_A3:ISO_A3_EH:ISO_N3:ISO_N3_EH:UN_A3:WB_A2:WB_A3:WOE_ID:WOE_ID_EH:WOE_NOTE:ADM0_ISO:ADM0_DIFF:ADM0_TLC:ADM0_A3_US:ADM0_A3_FR:ADM0_A3_RU:ADM0_A3_ES:ADM0_A3_CN:ADM0_A3_TW:ADM0_A3_IN:ADM0_A3_NP:ADM0_A3_PK:ADM0_A3_DE:ADM0_A3_GB:ADM0_A3_BR:ADM0_A3_IL:ADM0_A3_PS:ADM0_A3_SA:ADM0_A3_EG:ADM0_A3_MA:ADM0_A3_PT:ADM0_A3_AR:ADM0_A3_JP:ADM0_A3_KO:ADM0_A3_VN:ADM0_A3_TR:ADM0_A3_ID:ADM0_A3_PL:ADM0_A3_GR:ADM0_A3_IT:ADM0_A3_NL:ADM0_A3_SE:ADM0_A3_BD:ADM0_A3_UA:ADM0_A3_UN:ADM0_A3_WB:CONTINENT:REGION_UN:SUBREGION:REGION_WB:NAME_LEN:LONG_LEN:ABBREV_LEN:TINY:HOMEPART:MIN_ZOOM:MIN_LABEL:MAX_LABEL:LABEL_X:LABEL_Y:NE_ID";
+
+dbffields="NAME_LONG:MAPCOLOR9:MIN_ZOOM:MAX_LABEL:LABEL_X:LABEL_Y";}
+
+# Defaults: thin black lines, 13% stippled, display all the way out to max
+# zoom, don't display below 1000 zoom, stop labeling above 50000 zoom,
+# use black labels in large font, take label location out of DBF fields
+BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=1; fill_style=2; fill_stipple=0; pattern=0; display_level=2147483647; min_display_level=1000; label_level=50000; label_color=8; symbol=""; font_size=3; label_method=1; label_lon=0.0; label_lat=0.0;}
+
+# Get the label text from the shapefile record
+/^NAME_LONG=(.*)$/ {name="$1";}
+
+# Color each polygon based on its "MAPCOLOR9" value.  Use the Set1 colors
+/^MAPCOLOR9=1$/ {fill_style=2; fill_stipple=0; fill_color=127;}
+/^MAPCOLOR9=2$/ {fill_style=2; fill_stipple=0; fill_color=128;}
+/^MAPCOLOR9=3$/ {fill_style=2; fill_stipple=0; fill_color=129;}
+/^MAPCOLOR9=4$/ {fill_style=2; fill_stipple=0; fill_color=130;}
+/^MAPCOLOR9=5$/ {fill_style=2; fill_stipple=0; fill_color=131;}
+/^MAPCOLOR9=6$/ {fill_style=2; fill_stipple=0; fill_color=132;}
+/^MAPCOLOR9=7$/ {fill_style=2; fill_stipple=0; fill_color=133;}
+/^MAPCOLOR9=8$/ {fill_style=2; fill_stipple=0; fill_color=134;}
+/^MAPCOLOR9=9$/ {fill_style=2; fill_stipple=0; fill_color=135;}
+
+# the smaller the MIN_ZOOM value, the farther out you have to be to see
+# the feature rendered (i.e. far enough out to want to see a whole country
+# shaded)
+/^MIN_ZOOM=0$/ {min_display_level=1000;}
+/^MIN_ZOOM=4.*$/ {min_display_level=900;}
+/^MIN_ZOOM=5.*$/ {min_display_level=500;}
+/^MIN_ZOOM=7.*$/ {min_display_level=350;}
+
+# the smaller the MAX_LABEL value, the farther out you have to be to
+# stop showing those labels.
+/^MAX_LABEL=5.(.*)$/ {label_level=60000;}
+/^MAX_LABEL=6.(.*)$/ {label_level=40000;}
+/^MAX_LABEL=7.(.*)$/ {label_level=30000;}
+/^MAX_LABEL=8.(.*)$/ {label_level=20000;}
+/^MAX_LABEL=9.(.*)$/ {label_level=10000;}
+/^MAX_LABEL=10.(.*)$/ {label_level=5000;}
+
+# label location taken from DBF record
+/^LABEL_X=(.+)$/ {label_lon=$1;}
+/^LABEL_Y=(.+)$/ {label_lat=$1;}
