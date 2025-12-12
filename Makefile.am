@@ -21,7 +21,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         Davis LaCrosse \
         OSM_template \
         CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png \
-        COPYING COPYING.LIB.LESSTIF AUTHORS
+        COPYING COPYING.LIB.LESSTIF AUTHORS NaturalEarthVector
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh missing mkinstalldirs \
@@ -50,6 +50,9 @@ nationalmap_DATA=WMS_USGS_Hydrography.geo WMS_USGS_ImageryOnly.geo \
 
 geogratismapdir=${pkgdatadir}/maps/Online/geogratis.gc.ca
 geogratismap_DATA=National.geo Regional.geo Sub_national.geo Sub_regional.geo
+
+naturalearthmapdir=${pkgdatadir}/maps/NaturalEarth
+naturalearthmap_DATA=NaturalEarthVector/LICENSE.md NaturalEarthVector/README NaturalEarthVector/ne_50m_admin_0_countries_lakes.README.html NaturalEarthVector/ne_50m_admin_0_countries_lakes.VERSION.txt NaturalEarthVector/ne_50m_admin_0_countries_lakes.cpg NaturalEarthVector/ne_50m_admin_0_countries_lakes.dbf NaturalEarthVector/ne_50m_admin_0_countries_lakes.dbfawk NaturalEarthVector/ne_50m_admin_0_countries_lakes.prj NaturalEarthVector/ne_50m_admin_0_countries_lakes.shp NaturalEarthVector/ne_50m_admin_0_countries_lakes.shx NaturalEarthVector/ne_50m_coastline.README.html NaturalEarthVector/ne_50m_coastline.VERSION.txt NaturalEarthVector/ne_50m_coastline.cpg NaturalEarthVector/ne_50m_coastline.dbf NaturalEarthVector/ne_50m_coastline.dbfawk NaturalEarthVector/ne_50m_coastline.prj NaturalEarthVector/ne_50m_coastline.shp NaturalEarthVector/ne_50m_coastline.shx NaturalEarthVector/ne_50m_lakes.README.html NaturalEarthVector/ne_50m_lakes.VERSION.txt NaturalEarthVector/ne_50m_lakes.cpg NaturalEarthVector/ne_50m_lakes.dbf NaturalEarthVector/ne_50m_lakes.dbfawk NaturalEarthVector/ne_50m_lakes.prj NaturalEarthVector/ne_50m_lakes.shp NaturalEarthVector/ne_50m_lakes.shx NaturalEarthVector/ne_50m_rivers_lake_centerlines.README.html NaturalEarthVector/ne_50m_rivers_lake_centerlines.VERSION.txt NaturalEarthVector/ne_50m_rivers_lake_centerlines.cpg NaturalEarthVector/ne_50m_rivers_lake_centerlines.dbf NaturalEarthVector/ne_50m_rivers_lake_centerlines.dbfawk NaturalEarthVector/ne_50m_rivers_lake_centerlines.prj NaturalEarthVector/ne_50m_rivers_lake_centerlines.shp NaturalEarthVector/ne_50m_rivers_lake_centerlines.shx
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder

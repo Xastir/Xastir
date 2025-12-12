@@ -1,0 +1,23 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is used to set rendering rules for the Natural Earth Vector
+# file ne_50m_coastlines.shp from natural-earth-vector
+# (https://github.com/nvkelso/natural-earth-vector)
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+dbfinfo="scalerank:featurecla:min_zoom";
+
+dbffields="featurecla";
+}
+
+#Default: black lines, visible all the way out to max zoom.  There is
+# nothing to fill or be labeled here, so everything else is irrelevant
+BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=26; name=""; filled=1; pattern=0; display_level=2147483647; label_level=10000; label_color=9; font_size=0; symbol=""; fill_style=0;}
+
+# All the features in this file are coastlines, but set to thin, solid lines
+# for all of them
+/^featurecla=Coastline/ {lanes=1; pattern=0; next}
+
+
+

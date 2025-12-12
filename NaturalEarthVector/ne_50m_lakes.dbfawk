@@ -1,0 +1,39 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is meant to be used with the ne_50m_lakes shapefile
+# from natural-earth-vector (https://github.com/nvkelso/natural-earth-vector)
+
+
+BEGIN {
+dbfinfo="scalerank:featurecla:name:name_alt:note:admin:namepar:min_zoom:min_label:name_abb:label:wikidataid:name_ar:name_bn:name_de:name_en:name_es:name_fr:name_el:name_hi:name_hu:name_id:name_it:name_ja:name_ko:name_nl:name_pl:name_pt:name_ru:name_sv:name_tr:name_vi:name_zh:ne_id:name_fa:name_he:name_uk:name_ur:name_zht";
+
+dbffields="name:featurecla:min_zoom:min_label";}
+
+# defaults: color 117 (same as Tiger/Line water color), fill color 117,
+# stippled 50%, display all the way out to max zoom, stop labeling at
+# 50k zoom, label in black.
+
+BEGIN_RECORD {key=""; lanes=1; color=117; name=""; filled=1; fill_color=117; fill_style=2; fill_stipple=2; pattern=0; display_level=2147483647; label_level=50000; label_color=8; symbol=""; font_size=3; label_method=0;}
+
+# Feature name from DBF record
+/^name=(.*)$/ {name="$1";}
+
+# color reservoirs and alkaline lakes in a different shaed of blue
+/^featurecla=Alkaline Lake$/ {fill_color=128;}
+/^featurecla=Reservoir$/ {fill_color=23;}
+
+# set display level and label level based on attributes
+# higher numbers are smaller features
+/^min_zoom=6./ {display_level=1024;}
+/^min_zoom=5./ {display_level=2048;}
+/^min_zoom=4./ {display_level=4096;}
+/^min_zoom=3./ {display_level=8192;}
+/^min_zoom=2./ {display_level=16384;}
+/^min_zoom=1./ {display_level=32768;}
+
+/^min_label=7./ {label_level=1024;}
+/^min_label=6./ {label_level=2048;}
+/^min_label=5./ {label_level=4096;}
+/^min_label=4./ {label_level=8192;}
+/^min_label=3./ {label_level=16384;}
+
