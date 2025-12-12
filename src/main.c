@@ -30749,7 +30749,7 @@ int main(int argc, char *argv[], char *envp[])
 
       // Check whether we're running Xastir for the first time.
       // If so, my_callsign will be "NOCALL".   In this case
-      // write "worldhi.map" into ~/.xastir/config/selected_maps.sys
+      // write something appropriate into ~/.xastir/config/selected_maps.sys
       // so that we get the default map on startup.  Also
       // request to bring up the Configure->Station dialog in
       // this case.
@@ -30767,7 +30767,11 @@ int main(int argc, char *argv[], char *envp[])
         ff = fopen( get_user_base_dir(SELECTED_MAP_DATA, temp_base_dir, sizeof(temp_base_dir)), "a");
         if (ff != NULL)
         {
+#ifdef HAVE_LIBSHP
+          fprintf(ff,"NaturalEarth/\n");
+#else
           fprintf(ff,"worldhi.map\n");
+#endif
           (void)fclose(ff);
         }
       }
