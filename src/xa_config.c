@@ -643,8 +643,15 @@ void save_data(void)
     store_string (fout, "SOUND_DIR", SOUND_DIR);
     store_string (fout, "GROUP_DATA_FILE", group_data_file);
     store_string (fout, "GNIS_FILE", locate_gnis_filename);
-    store_string (fout, "GEOCODE_FILE", geocoder_map_filename);
+    // store_string (fout, "GEOCODE_FILE", geocoder_map_filename);  // Obsolete TIGER/Line
     store_int (fout, "SHOW_FIND_TARGET", show_destination_mark);
+
+    /* Nominatim geocoding configuration */
+    store_string (fout, "NOMINATIM_SERVER_URL", nominatim_server_url);
+    store_int (fout, "NOMINATIM_CACHE_ENABLED", nominatim_cache_enabled);
+    store_int (fout, "NOMINATIM_CACHE_DAYS", nominatim_cache_days);
+    store_string (fout, "NOMINATIM_USER_EMAIL", nominatim_user_email);
+    store_string (fout, "NOMINATIM_COUNTRY_DEFAULT", nominatim_country_default);
 
     /* maps */
     store_int (fout, "MAPS_LONG_LAT_GRID", long_lat_grid);
@@ -1699,6 +1706,8 @@ void load_data_or_default(void)
                     get_data_base_dir ("GNIS/WA.gnis"));
   }
 
+  // Obsolete TIGER/Line geocoding file - no longer used with Nominatim
+  /*
   if (!get_string ("GEOCODE_FILE", geocoder_map_filename, sizeof(geocoder_map_filename))
       || geocoder_map_filename[0] == '\0')
   {
@@ -1707,8 +1716,34 @@ void load_data_or_default(void)
                     "%s",
                     get_data_base_dir ("GNIS/geocode"));
   }
+  */
 
   show_destination_mark = get_int ("SHOW_FIND_TARGET", 0, 1, 1);
+
+  /* Nominatim geocoding configuration */
+  if (!get_string ("NOMINATIM_SERVER_URL", nominatim_server_url, sizeof(nominatim_server_url))
+      || nominatim_server_url[0] == '\0')
+  {
+    xastir_snprintf(nominatim_server_url,
+                    sizeof(nominatim_server_url),
+                    "%s",
+                    "https://nominatim.openstreetmap.org");
+  }
+
+  nominatim_cache_enabled = get_int ("NOMINATIM_CACHE_ENABLED", 0, 1, 1);
+  nominatim_cache_days = get_int ("NOMINATIM_CACHE_DAYS", 0, 365, 30);
+
+  // Empty string is ok here
+  if (!get_string ("NOMINATIM_USER_EMAIL", nominatim_user_email, sizeof(nominatim_user_email)))
+  {
+    nominatim_user_email[0] = '\0';
+  }
+
+  // Empty string is ok here
+  if (!get_string ("NOMINATIM_COUNTRY_DEFAULT", nominatim_country_default, sizeof(nominatim_country_default)))
+  {
+    nominatim_country_default[0] = '\0';
+  }
 
   /* maps */
   long_lat_grid = get_int ("MAPS_LONG_LAT_GRID", 0, 1, 1);

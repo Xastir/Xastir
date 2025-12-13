@@ -30,6 +30,7 @@ XASTIR_SRC = \
     fetch_remote.c fetch_remote.h \
     forked_getaddrinfo.c forked_getaddrinfo.h \
     geo-find.c geo.h \
+    geocoder.c geocoder.h \
     geocoder_gui.c \
     gps.c gps.h \
     hashtable.c hashtable_private.h hashtable.h \
@@ -83,7 +84,14 @@ XASTIR_SRC = \
     xa_config.c xa_config.h \
     xastir.h
 
-xastir_SOURCES = $(XASTIR_SRC) compiledate.c
+# Conditionally compiled sources
+if HAVE_NOMINATIM
+NOMINATIM_SRC = nominatim.c nominatim.h
+else
+NOMINATIM_SRC =
+endif
+
+xastir_SOURCES = $(XASTIR_SRC) $(NOMINATIM_SRC) compiledate.c
 
 xastir_udp_client_SOURCES = \
     xastir_udp_client.c

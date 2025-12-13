@@ -89,7 +89,7 @@ PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
-PULDNMP029|Find Address||
+PULDNMP029|Search Location||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
 MPUPTGR017|Internet Map Timeout (sec)||
@@ -750,7 +750,7 @@ WPUPSTI012|last via Unknown||
 WPUPSTI013|, and has moved||
 WPUPSTI014|Current Power Gain:||
 WPUPSTI016|Altitude: %.0f%s ||
-WPUPSTI017|Course: %s° ||
+WPUPSTI017|Course: %sï¿½ ||
 WPUPSTI018|Speed: %.1f km/h||
 WPUPSTI019|Speed: %.1f mph||
 WPUPSTI020|%0.1f miles||
@@ -758,14 +758,14 @@ WPUPSTI021|%0.1f km||
 WPUPSTI022|Distance from my station: %s  Bearing from my station: %s||
 WPUPSTI023|Last Position: ||
 WPUPSTI024|Weather Data %c:%s||
-WPUPSTI025|Wind Course: %s°    Speed: %03d km/h||
-WPUPSTI026|Wind Course: %s°    Speed: %s mph||
+WPUPSTI025|Wind Course: %sï¿½    Speed: %03d km/h||
+WPUPSTI026|Wind Course: %sï¿½    Speed: %s mph||
 WPUPSTI027|   Gust: %03d km/h||
 WPUPSTI028|   Gust: %s mph||
-WPUPSTI029|Temperature: %02.1f°C  ||
-WPUPSTI030|Temperature: %s°F   ||
+WPUPSTI029|Temperature: %02.1fï¿½C  ||
+WPUPSTI030|Temperature: %sï¿½F   ||
 WPUPSTI031|Humidity: %s%%   ||
-WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI032| Humidex: %02.1fï¿½C  ||
 WPUPSTI033|Baro: %s hPa||
 WPUPSTI034|Snow: %0.1f (cm/24h)||
 WPUPSTI035|Snow: %0.0f (inch/24h)||
@@ -793,8 +793,8 @@ WPUPSTI056|Enable Automatic Updates||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Bearing: %s||
 WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
-WPUPSTI060|Fuel Temp: %02.1f°C  ||
-WPUPSTI061|Fuel Temp: %s°F   ||
+WPUPSTI060|Fuel Temp: %02.1fï¿½C  ||
+WPUPSTI061|Fuel Temp: %sï¿½F   ||
 WPUPSTI062|Fuel Moisture: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Fetch NWS Alert||
@@ -879,8 +879,8 @@ UNIOP00010|Allow Transmitting?||
 UNIOP00011|Activate on Startup?||
 UNIOP00012|km/h||
 UNIOP00013|mph||
-UNIOP00014|°C||
-UNIOP00015|°F||
+UNIOP00014|ï¿½C||
+UNIOP00015|ï¿½F||
 UNIOP00016|mm||
 UNIOP00017|inch||
 UNIOP00018|mm/day||
@@ -1135,7 +1135,7 @@ SYMSEL0003|Secondary Symbol Table||
 PRINT0001|Print Properties||
 PRINT0002|Paper Size||
 PRINT0003|Auto-Rotate Image||
-PRINT0004|Rotate Image 90° CCW||
+PRINT0004|Rotate Image 90ï¿½ CCW||
 PRINT0005|Auto-Scale Image||
 PRINT0006|Scale:||
 PRINT0007|Force default background color to white||
@@ -1165,6 +1165,45 @@ FEATURE008|City:||
 FEATURE009|Mark Destination||
 FEATURE010|Zip Code:||
 FEATURE011|Geocoding File||
+#
+# Geocoding Dialog (Nominatim)
+GEOCODE001|Search Location||
+GEOCODE002|Search Query:||
+GEOCODE003|Country Filter:||
+GEOCODE004|Search||
+GEOCODE005|Clear||
+GEOCODE006|Results:||
+GEOCODE007|Go To||
+GEOCODE008|Mark||
+GEOCODE009|Close||
+GEOCODE010|Searching...||
+GEOCODE011|No results found||
+GEOCODE012|Error: %s||
+GEOCODE013|Found %d result(s)||
+GEOCODE014|Data (C) OpenStreetMap contributors||
+GEOCODE015|None (Worldwide)||
+GEOCODE016|United States||
+GEOCODE017|United Kingdom||
+GEOCODE018|Canada||
+GEOCODE019|Australia||
+GEOCODE020|Germany||
+GEOCODE021|France||
+GEOCODE022|Japan||
+GEOCODE023|Service not available||
+GEOCODE024|Enter a location to search||
+GEOCODE025|Clear Cache||
+GEOCODE026|Cache cleared successfully||
+GEOCODE027|Failed to clear cache||
+GEOCODE028|Nominatim server:||
+GEOCODE029|Cache enabled:||
+GEOCODE030|Cache expiry (days):||
+GEOCODE031|User email:||
+GEOCODE032|Default country:||
+GEOCODE033|Settings||
+GEOCODE034|Save||
+GEOCODE035|Cancel||
+GEOCODE036|Apply||
+GEOCODE037|Geocoding Settings||
 #
 # Coordinate Calculator Dialog
 COORD001|Coordinate Calculator||

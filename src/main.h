@@ -431,6 +431,13 @@ extern void updateObjectPictureCallback(Widget w,XtPointer clientData,XtPointer 
 
 extern void Draw_All_CAD_Objects(Widget w);
 
+// Nominatim geocoding configuration
+extern char nominatim_server_url[400];
+extern int nominatim_cache_enabled;
+extern int nominatim_cache_days;
+extern char nominatim_user_email[100];
+extern char nominatim_country_default[20];
+
 // unit conversion
 extern char un_alt[2+1];
 extern char un_dst[2+1];

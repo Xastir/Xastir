@@ -711,6 +711,12 @@ int do_dbstatus;
 // Coordinate System
 int coordinate_system = USE_DDMMMM; // Default, used for most APRS systems
 
+// Nominatim geocoding configuration
+char nominatim_server_url[400];
+int nominatim_cache_enabled = 1;
+int nominatim_cache_days = 30;
+char nominatim_user_email[100];
+char nominatim_country_default[20];
 
 // ------------------------- audio alarms ----------------------------
 Widget configure_audio_alarm_dialog = (Widget)NULL;
