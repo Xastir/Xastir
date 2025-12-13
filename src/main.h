@@ -378,6 +378,7 @@ extern void Tracks_All_Clear(Widget w, XtPointer clientData, XtPointer callData)
 extern void Locate_station(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_place(Widget w, XtPointer clientData, XtPointer callData);
 extern void Geocoder_place(Widget w, XtPointer clientData, XtPointer callData);
+extern void Configure_geocoder_settings(Widget w, XtPointer clientData, XtPointer callData);
 extern void Display_Wx_Alert(Widget w, XtPointer clientData, XtPointer callData);
 extern void Auto_msg_option(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Auto_msg_set(Widget w, XtPointer clientData, XtPointer calldata);

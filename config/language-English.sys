@@ -92,6 +92,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Search Location||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
+PULDNMP032|Geocoding Settings||
 MPUPTGR017|Internet Map Timeout (sec)||
 #
 # PopUp "Configure USGS DRG"
@@ -1204,6 +1205,13 @@ GEOCODE034|Save||
 GEOCODE035|Cancel||
 GEOCODE036|Apply||
 GEOCODE037|Geocoding Settings||
+#
+# Geocoding Configuration Dialog
+GEOCFG001|Geocoding Settings||
+GEOCFG002|Server URL:||
+GEOCFG003|Email Address:||
+GEOCFG004|(Optional but recommended)||
+GEOCFG005|Default Country:||
 #
 # Coordinate Calculator Dialog
 COORD001|Coordinate Calculator||

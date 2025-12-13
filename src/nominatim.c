@@ -54,6 +54,13 @@
 // Must be last include file
 #include "leak_detection.h"
 
+// Configuration variables
+char nominatim_server_url[400];
+int nominatim_cache_enabled = 1;
+int nominatim_cache_days = 30;
+char nominatim_user_email[100];
+char nominatim_country_default[20];
+
 // Error message storage
 static char nominatim_error[512] = "";
 
@@ -104,6 +111,7 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
 
 /**
  * Enforce rate limiting - wait if needed to maintain 1 req/sec
+ * (Unlikely to happen but required by Nominatim usage policy)
  */
 static void enforce_rate_limit(void)
 {
@@ -126,7 +134,11 @@ static void enforce_rate_limit(void)
  * Simple hash function for cache keys
  * Uses basic string hash (not cryptographic - just for cache lookup)
  */
-static void compute_query_hash(const char *query, char *hash, size_t hash_size)
+#ifdef NOMINATIM_UNIT_TEST
+void compute_query_hash(const char *query, const char *country_codes, char *hash, size_t hash_size)
+#else
+static void compute_query_hash(const char *query, const char *country_codes, char *hash, size_t hash_size)
+#endif
 {
     unsigned long h = 5381;
     int c;
@@ -137,6 +149,14 @@ static void compute_query_hash(const char *query, char *hash, size_t hash_size)
         h = ((h << 5) + h) + tolower(c);
     }
     
+    // Include country codes in hash if present
+    if (country_codes && country_codes[0]) {
+        str = country_codes;
+        while ((c = *str++)) {
+            h = ((h << 5) + h) + tolower(c);
+        }
+    }
+    
     xastir_snprintf(hash, hash_size, "%016lx", h);
 }
 
@@ -144,14 +164,18 @@ static void compute_query_hash(const char *query, char *hash, size_t hash_size)
  * Look up query in cache
  * Returns 1 if found, 0 if not found or expired
  */
-static int cache_lookup(const char *query, struct geocode_result_list *results)
+#ifdef NOMINATIM_UNIT_TEST
+int cache_lookup(const char *query, const char *country_codes, struct geocode_result_list *results)
+#else
+static int cache_lookup(const char *query, const char *country_codes, struct geocode_result_list *results)
+#endif
 {
     char query_hash[33];
     struct nominatim_cache_entry *entry;
     time_t now = time(NULL);
     int found = 0;
     
-    compute_query_hash(query, query_hash, sizeof(query_hash));
+    compute_query_hash(query, country_codes, query_hash, sizeof(query_hash));
     
     begin_critical_section(&cache_lock, "nominatim.c:cache_lookup");
     
@@ -188,7 +212,11 @@ static int cache_lookup(const char *query, struct geocode_result_list *results)
 /**
  * Store results in cache
  */
-static void cache_store(const char *query, const struct geocode_result_list *results)
+#ifdef NOMINATIM_UNIT_TEST
+void cache_store(const char *query, const char *country_codes, const struct geocode_result_list *results)
+#else
+static void cache_store(const char *query, const char *country_codes, const struct geocode_result_list *results)
+#endif
 {
     char query_hash[33];
     struct nominatim_cache_entry *entry;
@@ -197,7 +225,7 @@ static void cache_store(const char *query, const struct geocode_result_list *res
         return;
     }
     
-    compute_query_hash(query, query_hash, sizeof(query_hash));
+    compute_query_hash(query, country_codes, query_hash, sizeof(query_hash));
     
     begin_critical_section(&cache_lock, "nominatim.c:cache_store");
     
@@ -433,13 +461,14 @@ int nominatim_search(const char *query,
     CURLcode res;
     struct http_response response = {0};
     char url[2048];
+    char user_agent[256];
     char *escaped_query = NULL;
     cJSON *json = NULL;
     int ret = -1;
     int i;
     
     // Check cache first
-    if (nominatim_cache_enabled && cache_lookup(query, results)) {
+    if (nominatim_cache_enabled && cache_lookup(query, country_codes, results)) {
         return results->count;
     }
     
@@ -493,7 +522,8 @@ int nominatim_search(const char *query,
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Xastir/2.2.0");
+    xastir_snprintf(user_agent, sizeof(user_agent), "Xastir/%s", PACKAGE_VERSION);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent);
     
     // Perform request
     res = curl_easy_perform(curl);
@@ -553,7 +583,7 @@ int nominatim_search(const char *query,
             ret = results->count;
             
             // Store in cache
-            cache_store(query, results);
+            cache_store(query, country_codes, results);
         } else {
             xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                            "Out of memory");
