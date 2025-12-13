@@ -2667,7 +2667,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   {
     // Here we check for really wacko points that will cause problems
     // with the X drawing routines, and fix them.
-    (void) clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
+    (void) clip_x_y_pair(&x, &y, 0l, screen_width, 0l, screen_height);
   }
 
   // Convert point to screen coordinates
@@ -2677,7 +2677,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
   {
     // Here we check for really wacko points that will cause problems
     // with the X drawing routines, and fix them.
-    (void) clip_x_y_pair(&width, &height, 1l, 1700l, 1l, 1700l);
+    (void) clip_x_y_pair(&width, &height, 1l, screen_width, 1l, screen_height);
   }
 
   //TODO
@@ -2754,7 +2754,7 @@ GC get_hole_clipping_context(Widget w, SHPObject *object,
           // cause problems with the X drawing routines, and
           // fix them.  Increment on_screen if any of the
           // points might be on screen.
-          on_screen += clip_x_y_pair(&x, &y, 0l, 1700l, 0l, 1700l);
+          on_screen += clip_x_y_pair(&x, &y, 0l, screen_width, 0l, screen_height);
 
           points[i].x = l16(x);
           points[i].y = l16(y);
