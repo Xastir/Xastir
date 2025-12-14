@@ -19,8 +19,13 @@ BEGIN_RECORD {
 /^FULLNAME=(.+)$/ {name="$1";next;}
 
 #Rivers
-/^MTFCC=H3010$/ {color=117; lanes=1; pattern=0; display_level=256; next;}
+/^MTFCC=H3010$/ {color=117; lanes=1; pattern=0; display_level=256;                  label_color=26;
+    next;}
 # braided streams/rivers
-/^MTFCC=H3013$/ {color=117; lanes=1; pattern=0; display_level=256; next;}
+/^MTFCC=H3013$/ {color=117; lanes=1; pattern=0; display_level=256;
+    label_color=26;
+    next;}
 # canals, ditches, aquaducts (slightly different shade of blue, dashed lines)
-/^MTFCC=H3020$/ {color=101; lanes=1; pattern=1; display_level=256; next;}
+/^MTFCC=H3020$/ {color=101; lanes=1; pattern=1; display_level=256;
+    label_color=26;
+    next;}
