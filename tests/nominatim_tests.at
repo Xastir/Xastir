@@ -5,7 +5,7 @@
 AT_BANNER([Nominatim Geocoding Functions])
 
 # Query hash function tests
-AT_BANNER([compute_query_hash() Function Tests])
+AT_BANNER([Nominatim compute_query_hash() Function Tests])
 
 AT_SETUP([compute_query_hash: consistency])
 AT_KEYWORDS([nominatim hash])
@@ -36,7 +36,7 @@ AT_CHECK(["$abs_top_builddir/tests/test_nominatim" compute_query_hash_different_
 AT_CLEANUP
 
 # Cache lookup tests
-AT_BANNER([Cache Lookup Function Tests])
+AT_BANNER([Nominatim Cache Lookup Function Tests])
 
 AT_SETUP([cache_lookup: empty cache returns 0])
 AT_KEYWORDS([nominatim cache])
@@ -81,7 +81,7 @@ AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_update_existing], [0], 
 AT_CLEANUP
 
 # Cache management tests
-AT_BANNER([Cache Management Function Tests])
+AT_BANNER([Nominatim Cache Management Function Tests])
 
 AT_SETUP([nominatim_clear_cache: clears all entries])
 AT_KEYWORDS([nominatim cache])
