@@ -689,8 +689,10 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
     // Select configured default or "None" if not set
     if (default_country_index > 0) {
         XmListSelectPos(country_combo, default_country_index, False);
+        XmListSetPos(country_combo, default_country_index);
     } else {
         XmListSelectPos(country_combo, 1, False); // Select "None" by default
+        XmListSetPos(country_combo, 1);
     }
     XtManageChild(country_combo);
 
@@ -1091,8 +1093,10 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
     // Select current default or "None" if not set
     if (default_country_index > 0) {
         XmListSelectPos(config_country_combo, default_country_index, False);
+        XmListSetPos(config_country_combo, default_country_index);
     } else {
         XmListSelectPos(config_country_combo, 1, False); // Select "None" by default
+        XmListSetPos(config_country_combo, 1);
     }
 
     XtManageChild(config_country_combo);
