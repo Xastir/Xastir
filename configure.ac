@@ -235,20 +235,24 @@ AC_ARG_WITH(nominatim,
   [nominatim_desired=yes])
 
 if test "${nominatim_desired}" = "yes"; then
-  AC_CHECK_HEADERS([cjson/cJSON.h],
-    [AC_CHECK_LIB([cjson], [cJSON_Parse],
-      [use_cjson="yes"
-       use_nominatim="yes"
-       LIBS="${LIBS} -lcjson"
-       AC_DEFINE(HAVE_CJSON, 1,
-                 [Define to 1 if you have cJSON])
-       AC_DEFINE(HAVE_NOMINATIM, 1,
-                 [Define to 1 to enable Nominatim geocoding])
-      ],
-      [AC_MSG_WARN([cJSON library not found, disabling Nominatim geocoding])]
-    )],
-    [AC_MSG_WARN([cjson/cJSON.h not found, disabling Nominatim geocoding])]
-  )
+  if test "${use_curl}" = "yes"; then
+    AC_CHECK_HEADERS([cjson/cJSON.h],
+      [AC_CHECK_LIB([cjson], [cJSON_Parse],
+        [use_cjson="yes"
+         use_nominatim="yes"
+         LIBS="${LIBS} -lcjson"
+         AC_DEFINE(HAVE_CJSON, 1,
+                   [Define to 1 if you have cJSON])
+         AC_DEFINE(HAVE_NOMINATIM, 1,
+                   [Define to 1 to enable Nominatim geocoding])
+        ],
+        [AC_MSG_WARN([cJSON library not found, disabling Nominatim geocoding])]
+      )],
+      [AC_MSG_WARN([cjson/cJSON.h not found, disabling Nominatim geocoding])]
+    )
+  else
+    AC_MSG_WARN([libcurl is required for Nominatim geocoding, disabling Nominatim])
+  fi
 fi
 
 # Make nominatim conditional available to Makefile.am
