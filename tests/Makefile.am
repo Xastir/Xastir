@@ -4,8 +4,13 @@
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at nominatim_tests.at
-EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at
+
+if HAVE_NOMINATIM
+TESTSUITE_AT += nominatim_tests.at
+endif
+
+EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
 check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects
@@ -81,6 +86,9 @@ package.m4: $(top_srcdir)/configure.ac
 	  echo 'm4_define([AT_PACKAGE_VERSION],   [@PACKAGE_VERSION@])'; \
 	  echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
 	  echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
+	  if test "x@HAVE_NOMINATIM_TRUE@" = "x"; then \
+	    echo 'm4_define([HAVE_NOMINATIM])'; \
+	  fi; \
 	} > $(srcdir)/package.m4
 
 .PHONY: check-unit

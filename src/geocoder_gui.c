@@ -46,6 +46,16 @@
 // Must be last include file
 #include "leak_detection.h"
 
+#ifndef HAVE_NOMINATIM
+// Configuration variables - defined here to avoid linker errors if Nominatim is not compiled in
+char nominatim_server_url[400];
+int nominatim_cache_enabled = 1;
+int nominatim_cache_days = 30;
+char nominatim_user_email[100];
+char nominatim_country_default[20];
+#endif  // HAVE_NOMINATIM
+
+
 extern XmFontList fontlist1;    // Menu/System fontlist
 static Atom delw;
 
@@ -79,51 +89,156 @@ struct country_option {
 
 static const struct country_option country_options[] = {
     {"None (Worldwide)", ""},
-    {"United States", "us"},
-    {"United Kingdom", "gb"},
-    {"Canada", "ca"},
-    {"Australia", "au"},
-    {"Germany", "de"},
-    {"France", "fr"},
-    {"Spain", "es"},
-    {"Italy", "it"},
-    {"Netherlands", "nl"},
-    {"Belgium", "be"},
-    {"Switzerland", "ch"},
-    {"Austria", "at"},
-    {"Sweden", "se"},
-    {"Norway", "no"},
-    {"Denmark", "dk"},
-    {"Finland", "fi"},
-    {"Poland", "pl"},
-    {"Czech Republic", "cz"},
-    {"Japan", "jp"},
-    {"China", "cn"},
-    {"South Korea", "kr"},
-    {"India", "in"},
-    {"Brazil", "br"},
+
+    {"Afghanistan", "af"},
+    {"Albania", "al"},
+    {"Algeria", "dz"},
+    {"American Samoa", "as"},
+    {"Andorra", "ad"},
+    {"Angola", "ao"},
     {"Argentina", "ar"},
-    {"Mexico", "mx"},
+    {"Armenia", "am"},
+    {"Australia", "au"},
+    {"Austria", "at"},
+    {"Azerbaijan", "az"},
+
+    {"Bahamas", "bs"},
+    {"Bahrain", "bh"},
+    {"Bangladesh", "bd"},
+    {"Barbados", "bb"},
+    {"Belarus", "by"},
+    {"Belgium", "be"},
+    {"Belize", "bz"},
+    {"Bolivia", "bo"},
+    {"Bosnia and Herzegovina", "ba"},
+    {"Botswana", "bw"},
+    {"Brazil", "br"},
+    {"Brunei", "bn"},
+    {"Bulgaria", "bg"},
+
+    {"Cambodia", "kh"},
+    {"Cameroon", "cm"},
+    {"Canada", "ca"},
     {"Chile", "cl"},
-    {"New Zealand", "nz"},
-    {"South Africa", "za"},
-    {"Russia", "ru"},
-    {"Ukraine", "ua"},
-    {"Turkey", "tr"},
+    {"China", "cn"},
+    {"Colombia", "co"},
+    {"Costa Rica", "cr"},
+    {"Croatia", "hr"},
+    {"Cuba", "cu"},
+    {"Cyprus", "cy"},
+    {"Czech Republic", "cz"},
+
+    {"Denmark", "dk"},
+    {"Dominican Republic", "do"},
+
+    {"Ecuador", "ec"},
+    {"Egypt", "eg"},
+    {"El Salvador", "sv"},
+    {"Estonia", "ee"},
+    {"Ethiopia", "et"},
+
+    {"Finland", "fi"},
+    {"France", "fr"},
+
+    {"Georgia", "ge"},
+    {"Germany", "de"},
+    {"Ghana", "gh"},
     {"Greece", "gr"},
-    {"Portugal", "pt"},
+    {"Greenland", "gl"},
+    {"Guatemala", "gt"},
+
+    {"Haiti", "ht"},
+    {"Honduras", "hn"},
+    {"Hong Kong", "hk"},
+    {"Hungary", "hu"},
+
+    {"Iceland", "is"},
+    {"India", "in"},
+    {"Indonesia", "id"},
+    {"Iran", "ir"},
     {"Ireland", "ie"},
     {"Israel", "il"},
-    {"Thailand", "th"},
-    {"Indonesia", "id"},
-    {"Philippines", "ph"},
-    {"Singapore", "sg"},
+    {"Italy", "it"},
+
+    {"Jamaica", "jm"},
+    {"Japan", "jp"},
+    {"Jordan", "jo"},
+
+    {"Kazakhstan", "kz"},
+    {"Kenya", "ke"},
+    {"Kuwait", "kw"},
+
+    {"Latvia", "lv"},
+    {"Lebanon", "lb"},
+    {"Liechtenstein", "li"},
+    {"Lithuania", "lt"},
+    {"Luxembourg", "lu"},
+
     {"Malaysia", "my"},
-    {"--- Custom Code ---", "custom"},  // Special marker for custom input
+    {"Malta", "mt"},
+    {"Mexico", "mx"},
+    {"Moldova", "md"},
+    {"Monaco", "mc"},
+    {"Mongolia", "mn"},
+    {"Morocco", "ma"},
+
+    {"Namibia", "na"},
+    {"Netherlands", "nl"},
+    {"New Zealand", "nz"},
+    {"Nigeria", "ng"},
+    {"North Macedonia", "mk"},
+    {"Norway", "no"},
+
+    {"Oman", "om"},
+
+    {"Pakistan", "pk"},
+    {"Panama", "pa"},
+    {"Paraguay", "py"},
+    {"Peru", "pe"},
+    {"Philippines", "ph"},
+    {"Poland", "pl"},
+    {"Portugal", "pt"},
+
+    {"Qatar", "qa"},
+
+    {"Romania", "ro"},
+    {"Russia", "ru"},
+
+    {"Saudi Arabia", "sa"},
+    {"Serbia", "rs"},
+    {"Singapore", "sg"},
+    {"Slovakia", "sk"},
+    {"Slovenia", "si"},
+    {"South Africa", "za"},
+    {"South Korea", "kr"},
+    {"Spain", "es"},
+    {"Sri Lanka", "lk"},
+    {"Sweden", "se"},
+    {"Switzerland", "ch"},
+
+    {"Taiwan", "tw"},
+    {"Thailand", "th"},
+    {"Trinidad and Tobago", "tt"},
+    {"Tunisia", "tn"},
+    {"Turkey", "tr"},
+
+    {"Ukraine", "ua"},
+    {"United Arab Emirates", "ae"},
+    {"United Kingdom", "gb"},
+    {"United States", "us"},
+    {"Uruguay", "uy"},
+
+    {"Venezuela", "ve"},
+    {"Vietnam", "vn"},
+
+    {"Zambia", "zm"},
+    {"Zimbabwe", "zw"},
+
+    {"--- Custom Code ---", "custom"},
     {NULL, NULL}
 };
 
-
+// Initialize the geocoder GUI module
 void geocoder_gui_init(void)
 {
     init_critical_section(&geocoder_dialog_lock);
@@ -134,6 +249,89 @@ void geocoder_gui_init(void)
 }
 
 
+// Helper function to populate a country combo box with the standard list
+// Returns the 1-based index of the default_value if found, or 0 if not found
+static int populate_country_list(Widget combo, const char *default_value)
+{
+    XmString str;
+    int i;
+    int default_index = 0;
+
+    for (i = 0; country_options[i].label != NULL; i++) {
+        str = XmStringCreateLocalized((char *)country_options[i].label);
+        XmListAddItem(combo, str, 0);
+        XmStringFree(str);
+
+        // Check if this matches the default value
+        if (default_value && default_value[0] != '\0' &&
+            strcmp(country_options[i].value, default_value) == 0) {
+            default_index = i + 1; // XmList is 1-indexed
+        }
+    }
+
+    return default_index;
+}
+
+
+// Helper function to get the selected country code from a combo box
+// If custom_text_widget is provided and "custom" is selected, reads from that field
+// Returns a newly allocated string that must be freed by caller, or NULL if none selected
+// If return value is non-NULL and *is_custom is non-NULL, sets *is_custom to 1 if custom field was used
+static char *get_selected_country_code(Widget combo, Widget custom_text_widget, int *is_custom)
+{
+    XmString *selected_items;
+    int selected_count;
+    char *result = NULL;
+
+    if (is_custom) {
+        *is_custom = 0;
+    }
+
+    XtVaGetValues(combo,
+                 XmNselectedItems, &selected_items,
+                 XmNselectedItemCount, &selected_count,
+                 NULL);
+
+    if (selected_count > 0) {
+        char *selected_text = NULL;
+        XmStringGetLtoR(selected_items[0], XmFONTLIST_DEFAULT_TAG, &selected_text);
+
+        if (selected_text) {
+            // Find matching option in our array
+            int i;
+            for (i = 0; country_options[i].label != NULL; i++) {
+                if (strcmp(selected_text, country_options[i].label) == 0) {
+                    const char *selected_value = country_options[i].value;
+
+                    if (strcmp(selected_value, "custom") == 0) {
+                        // Use custom text field
+                        if (custom_text_widget) {
+                            char *custom = XmTextFieldGetString(custom_text_widget);
+                            if (custom && custom[0]) {
+                                result = XtNewString(custom);
+                                if (is_custom) {
+                                    *is_custom = 1;
+                                }
+                            }
+                            if (custom) {
+                                XtFree(custom);
+                            }
+                        }
+                    } else if (selected_value[0] != '\0') {
+                        // Non-empty value - use it
+                        result = XtNewString(selected_value);
+                    }
+                    break;
+                }
+            }
+            XtFree(selected_text);
+        }
+    }
+
+    return result;
+}
+
+// Free the current geocode search results
 static void free_current_results(void)
 {
     if (current_results.results) {
@@ -144,7 +342,7 @@ static void free_current_results(void)
     }
 }
 
-
+// Update the status label in the geocoder dialog
 static void update_status(const char *message)
 {
     if (status_label) {
@@ -154,32 +352,32 @@ static void update_status(const char *message)
     }
 }
 
-
+// Populate the results list widget with current search results
 static void populate_results_list(void)
 {
     int i;
     XmString *items;
     char temp[512];
-    
+
     if (!results_list) return;
-    
+
     // Clear existing items
     XmListDeleteAllItems(results_list);
-    
+
     if (current_results.count == 0) {
         update_status(langcode("GEOCODE011")); // No results found
         XtSetSensitive(goto_button, False);
         XtSetSensitive(mark_button, False);
         return;
     }
-    
+
     // Allocate array for XmStrings
     items = (XmString *)malloc(sizeof(XmString) * current_results.count);
     if (!items) {
         update_status("Out of memory");
         return;
     }
-    
+
     // Build list items
     for (i = 0; i < current_results.count; i++) {
         struct geocode_result *result = &current_results.results[i];
@@ -193,39 +391,40 @@ static void populate_results_list(void)
             xastir_snprintf(temp, sizeof(temp), "%s",
                            subtitle);
         }
-        
+
         items[i] = XmStringCreateLocalized(temp);
     }
-    
+
     // Add items to list
     XmListAddItems(results_list, items, current_results.count, 0);
-    
+
     // Free XmStrings
     for (i = 0; i < current_results.count; i++) {
         XmStringFree(items[i]);
     }
     free(items);
-    
+
     // Update status
     xastir_snprintf(temp, sizeof(temp), langcode("GEOCODE013"), current_results.count);
     update_status(temp);
-    
+
     // Enable buttons
     XtSetSensitive(goto_button, True);
     XtSetSensitive(mark_button, True);
 }
 
 
-static void search_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData), 
+// Callback for the search button, performs geocoding search
+static void search_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData),
                            XtPointer UNUSED(callData))
 {
     char *query;
     char *country_codes = NULL;
     int result;
     char error_msg[512];
-    
+
     if (!query_text) return;
-    
+
     // Get query text
     query = XmTextFieldGetString(query_text);
     if (!query || !query[0]) {
@@ -233,89 +432,43 @@ static void search_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData),
         if (query) XtFree(query);
         return;
     }
-    
+
     // Check if service is available
     if (!geocode_service_available(GEOCODE_SERVICE_NOMINATIM)) {
         update_status(langcode("GEOCODE023")); // Service not available
         XtFree(query);
         return;
     }
-    
-    // Get selected country filter
+
+    // Get selected country filter using helper function
     if (country_combo) {
-        XmString *selected_items;
-        int selected_count;
-        
-        XtVaGetValues(country_combo,
-                     XmNselectedItems, &selected_items,
-                     XmNselectedItemCount, &selected_count,
-                     NULL);
-        
-        fprintf(stderr, "DEBUG: selected_count=%d\n", selected_count);
-        
-        if (selected_count > 0) {
-            // Find which item was selected by comparing XmStrings
-            char *selected_text = NULL;
-            XmStringGetLtoR(selected_items[0], XmFONTLIST_DEFAULT_TAG, &selected_text);
-            
-            fprintf(stderr, "DEBUG: selected_text='%s'\n", selected_text ? selected_text : "(null)");
-            
-            if (selected_text) {
-                // Find matching option in our array
-                int i;
-                for (i = 0; country_options[i].label != NULL; i++) {
-                    if (strcmp(selected_text, country_options[i].label) == 0) {
-                        const char *selected_value = country_options[i].value;
-                        fprintf(stderr, "DEBUG: matched option %d, value='%s'\n", i, selected_value);
-                        
-                        if (strcmp(selected_value, "custom") == 0) {
-                            // Use custom text field
-                            if (country_custom_text) {
-                                char *custom = XmTextFieldGetString(country_custom_text);
-                                if (custom && custom[0]) {
-                                    country_codes = custom;
-                                    fprintf(stderr, "DEBUG: Using custom code='%s'\n", country_codes);
-                                }
-                            }
-                        } else if (selected_value[0] != '\0') {
-                            // Non-empty value - use it
-                            country_codes = (char *)selected_value;
-                            fprintf(stderr, "DEBUG: Using country code='%s'\n", country_codes);
-                        } else {
-                            fprintf(stderr, "DEBUG: Empty value - worldwide search\n");
-                        }
-                        break;
-                    }
-                }
-                XtFree(selected_text);
-            }
-        }
+        country_codes = get_selected_country_code(country_combo, country_custom_text, NULL);
+        fprintf(stderr, "DEBUG: Using country code='%s'\n",
+                country_codes ? country_codes : "(none)");
     }
-    
+
     // Clear previous results
     free_current_results();
-    
+
     // Update status
     update_status(langcode("GEOCODE010")); // Searching...
     XmUpdateDisplay(geocoder_dialog);
-    
+
     // Perform search
-    fprintf(stderr, "DEBUG: Calling geocode_search with query='%s', country='%s'\n", 
-            query, country_codes ? country_codes : "(none)");
     result = geocode_search(GEOCODE_SERVICE_NOMINATIM,
                            query,
                            country_codes,
                            10,  // max results
                            &current_results);
-    fprintf(stderr, "DEBUG: geocode_search returned %d, result count=%d\n", 
-            result, current_results.count);
-    
+
     XtFree(query);
-    
+    if (country_codes) {
+        XtFree(country_codes);
+    }
+
     if (result < 0) {
         // Error occurred
         const char *error = geocode_get_error();
-        fprintf(stderr, "DEBUG: Error from geocoder: %s\n", error ? error : "(null)");
         if (error) {
             xastir_snprintf(error_msg, sizeof(error_msg),
                            langcode("GEOCODE012"), error);
@@ -326,65 +479,67 @@ static void search_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData),
         update_status(error_msg);
         return;
     }
-    
+
     // Display results
     populate_results_list();
 }
 
 
+// Callback for the clear button, clears query and results
 static void clear_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData),
                           XtPointer UNUSED(callData))
 {
     if (query_text) {
         XmTextFieldSetString(query_text, "");
     }
-    
+
     free_current_results();
-    
+
     if (results_list) {
         XmListDeleteAllItems(results_list);
     }
-    
-    update_status("");
-    
+
+    update_status(langcode("GEOCODE024")); // Enter a location to search
+
     if (goto_button) XtSetSensitive(goto_button, False);
     if (mark_button) XtSetSensitive(mark_button, False);
 }
 
-
+// Navigate the map to the specified geocode result location
 static void goto_location(struct geocode_result *result, int mark_location)
 {
     unsigned long coord_lat, coord_lon;
-    
+
     convert_to_xastir_coordinates(&coord_lon, &coord_lat,
                                  (float)result->lon,
                                  (float)result->lat);
-    
+
     // If marking, store the coordinates for display
     mark_destination = mark_location;
     if (mark_location) {
         destination_coord_lat = coord_lat;
         destination_coord_lon = coord_lon;
     }
-    
+
     // Set map position
     set_map_position(geocoder_dialog, coord_lat, coord_lon);
 }
 
 
+// Callback for the Go To button, navigates to selected result
 static void goto_callback(Widget w, XtPointer UNUSED(clientData),
                          XtPointer UNUSED(callData))
 {
     int *position_list;
     int position_count;
-    
+
     if (!results_list || current_results.count == 0) return;
-    
+
     // Get selected item(s)
     if (XmListGetSelectedPos(results_list, &position_list, &position_count)) {
         if (position_count > 0) {
             int index = position_list[0] - 1; // XmList is 1-indexed
-            
+
             if (index >= 0 && index < current_results.count) {
                 goto_location(&current_results.results[index], 0);
             }
@@ -393,20 +548,20 @@ static void goto_callback(Widget w, XtPointer UNUSED(clientData),
     }
 }
 
-
+// Callback for the Mark button, navigates to and marks selected result
 static void mark_callback(Widget w, XtPointer UNUSED(clientData),
                          XtPointer UNUSED(callData))
 {
     int *position_list;
     int position_count;
-    
+
     if (!results_list || current_results.count == 0) return;
-    
+
     // Get selected item(s)
     if (XmListGetSelectedPos(results_list, &position_list, &position_count)) {
         if (position_count > 0) {
             int index = position_list[0] - 1; // XmList is 1-indexed
-            
+
             if (index >= 0 && index < current_results.count) {
                 struct geocode_result *result = &current_results.results[index];
                 // Go to the location and mark it
@@ -417,53 +572,51 @@ static void mark_callback(Widget w, XtPointer UNUSED(clientData),
     }
 }
 
-
+// Callback for closing the geocoder dialog
 static void close_callback(Widget widget, XtPointer clientData,
                           XtPointer UNUSED(callData))
 {
     Widget shell = (Widget)clientData;
-    
+
     begin_critical_section(&geocoder_dialog_lock,
                           "geocoder_gui.c:close_callback");
-    
+
     free_current_results();
-    
+
     XtPopdown(shell);
     XtDestroyWidget(shell);
     geocoder_dialog = (Widget)NULL;
-    
+
     end_critical_section(&geocoder_dialog_lock,
                         "geocoder_gui.c:close_callback");
 }
 
-
+// Create and display the main geocoder dialog
 void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(callData))
 {
     Widget form, label, rowcol;
     Widget search_button, clear_button, close_button;
     Arg args[50];
     int n;
-    XmString str;
-    int i;
     int default_country_index = 0;
-    
+
     if (!geocode_service_available(GEOCODE_SERVICE_NOMINATIM)) {
         popup_message_always(langcode("POPEM00035"),
                             (char *)langcode("GEOCODE023")); // Service not available
         return;
     }
-    
+
     begin_critical_section(&geocoder_dialog_lock,
                           "geocoder_gui.c:Geocoder_place");
-    
+
     if (geocoder_dialog) {
         end_critical_section(&geocoder_dialog_lock,
                             "geocoder_gui.c:Geocoder_place");
-        
+
         (void)XRaiseWindow(XtDisplay(geocoder_dialog), XtWindow(geocoder_dialog));
         return;
     }
-    
+
     // Create dialog shell
     geocoder_dialog = XtVaCreatePopupShell(langcode("GEOCODE001"),
                                           xmDialogShellWidgetClass,
@@ -472,7 +625,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                           XmNdefaultPosition, FALSE,
                                           XmNfontList, fontlist1,
                                           NULL);
-    
+
     // Create main form
     form = XtVaCreateWidget("geocoder_form",
                            xmFormWidgetClass,
@@ -481,7 +634,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                            XmNautoUnmanage, FALSE,
                            XmNshadowThickness, 1,
                            NULL);
-    
+
     // Query input section
     label = XtVaCreateManagedWidget(langcode("GEOCODE002"), // Search Query:
                                    xmLabelWidgetClass,
@@ -492,7 +645,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     query_text = XtVaCreateManagedWidget("query_text",
                                         xmTextFieldWidgetClass,
                                         form,
@@ -506,7 +659,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                         XmNrightOffset, 10,
                                         XmNfontList, fontlist1,
                                         NULL);
-    
+
     // Country filter
     label = XtVaCreateManagedWidget(langcode("GEOCODE003"), // Country Filter:
                                    xmLabelWidgetClass,
@@ -518,7 +671,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     n = 0;
     XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
     XtSetArg(args[n], XmNtopWidget, query_text); n++;
@@ -529,20 +682,10 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
     XtSetArg(args[n], XmNvisibleItemCount, 5); n++;
     XtSetArg(args[n], XmNfontList, fontlist1); n++;
     country_combo = XmCreateScrolledList(form, "country_combo", args, n);
-    
-    // Populate country filter
-    for (i = 0; country_options[i].label != NULL; i++) {
-        str = XmStringCreateLocalized((char *)country_options[i].label);
-        XmListAddItem(country_combo, str, 0);
-        XmStringFree(str);
-        
-        // Check if this matches the configured default
-        if (nominatim_country_default[0] != '\0' && 
-            strcmp(country_options[i].value, nominatim_country_default) == 0) {
-            default_country_index = i + 1; // XmList is 1-indexed
-        }
-    }
-    
+
+    // Populate country filter using helper function
+    default_country_index = populate_country_list(country_combo, nominatim_country_default);
+
     // Select configured default or "None" if not set
     if (default_country_index > 0) {
         XmListSelectPos(country_combo, default_country_index, False);
@@ -550,7 +693,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
         XmListSelectPos(country_combo, 1, False); // Select "None" by default
     }
     XtManageChild(country_combo);
-    
+
     // Custom country code text field (for entering ISO codes not in list)
     label = XtVaCreateManagedWidget("Custom Code:",
                                    xmLabelWidgetClass,
@@ -562,7 +705,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     country_custom_text = XtVaCreateManagedWidget("country_custom_text",
                                                   xmTextFieldWidgetClass,
                                                   form,
@@ -575,7 +718,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                                   XmNleftOffset, 5,
                                                   XmNfontList, fontlist1,
                                                   NULL);
-    
+
     // Help text for custom field
     label = XtVaCreateManagedWidget("(e.g., 'us' or 'us,ca,mx')",
                                    xmLabelWidgetClass,
@@ -588,7 +731,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     // Button row
     rowcol = XtVaCreateManagedWidget("button_row",
                                     xmRowColumnWidgetClass,
@@ -605,21 +748,21 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                     XmNrightOffset, 10,
                                     XmNfontList, fontlist1,
                                     NULL);
-    
+
     search_button = XtVaCreateManagedWidget(langcode("GEOCODE004"), // Search
                                            xmPushButtonWidgetClass,
                                            rowcol,
                                            XmNfontList, fontlist1,
                                            NULL);
     XtAddCallback(search_button, XmNactivateCallback, search_callback, NULL);
-    
+
     clear_button = XtVaCreateManagedWidget(langcode("GEOCODE005"), // Clear
                                           xmPushButtonWidgetClass,
                                           rowcol,
                                           XmNfontList, fontlist1,
                                           NULL);
     XtAddCallback(clear_button, XmNactivateCallback, clear_callback, NULL);
-    
+
     // Results section
     label = XtVaCreateManagedWidget(langcode("GEOCODE006"), // Results:
                                    xmLabelWidgetClass,
@@ -631,7 +774,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     n = 0;
     XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
     XtSetArg(args[n], XmNtopWidget, label); n++;
@@ -645,7 +788,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
     XtSetArg(args[n], XmNfontList, fontlist1); n++;
     results_list = XmCreateScrolledList(form, "results_list", args, n);
     XtManageChild(results_list);
-    
+
     // Status label
     status_label = XtVaCreateManagedWidget("",
                                           xmLabelWidgetClass,
@@ -657,10 +800,10 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                           XmNleftOffset, 10,
                                           XmNfontList, fontlist1,
                                           NULL);
-    
+
     // Set initial status message to prevent layout shift
     update_status(langcode("GEOCODE024")); // Enter a location to search
-    
+
     // Attribution label (OSM credit)
     attribution_label = XtVaCreateManagedWidget(langcode("GEOCODE014"),
                                                xmLabelWidgetClass,
@@ -672,7 +815,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                                XmNleftOffset, 10,
                                                XmNfontList, fontlist1,
                                                NULL);
-    
+
     // Action buttons
     rowcol = XtVaCreateManagedWidget("action_buttons",
                                     xmRowColumnWidgetClass,
@@ -691,7 +834,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                     XmNbottomOffset, 10,
                                     XmNfontList, fontlist1,
                                     NULL);
-    
+
     goto_button = XtVaCreateManagedWidget(langcode("GEOCODE007"), // Go To
                                          xmPushButtonWidgetClass,
                                          rowcol,
@@ -699,7 +842,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                          XmNfontList, fontlist1,
                                          NULL);
     XtAddCallback(goto_button, XmNactivateCallback, goto_callback, NULL);
-    
+
     mark_button = XtVaCreateManagedWidget(langcode("GEOCODE008"), // Mark
                                          xmPushButtonWidgetClass,
                                          rowcol,
@@ -707,7 +850,7 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                          XmNfontList, fontlist1,
                                          NULL);
     XtAddCallback(mark_button, XmNactivateCallback, mark_callback, NULL);
-    
+
     close_button = XtVaCreateManagedWidget(langcode("GEOCODE009"), // Close
                                           xmPushButtonWidgetClass,
                                           rowcol,
@@ -715,23 +858,23 @@ void Geocoder_place(Widget w, XtPointer UNUSED(clientData), XtPointer UNUSED(cal
                                           NULL);
     XtAddCallback(close_button, XmNactivateCallback, close_callback,
                  geocoder_dialog);
-    
+
     // Set up Enter key in text field to trigger search
     XtAddCallback(query_text, XmNactivateCallback, search_callback, NULL);
-    
+
     pos_dialog(geocoder_dialog);
-    
+
     delw = XmInternAtom(XtDisplay(geocoder_dialog), "WM_DELETE_WINDOW", FALSE);
     XmAddWMProtocolCallback(geocoder_dialog, delw, close_callback,
                            (XtPointer)geocoder_dialog);
-    
+
     XtManageChild(form);
-    
+
     end_critical_section(&geocoder_dialog_lock,
                         "geocoder_gui.c:Geocoder_place");
-    
+
     XtPopup(geocoder_dialog, XtGrabNone);
-    
+
     // Initialize geocoding service
     geocode_init();
 }
@@ -742,37 +885,37 @@ static Widget geocoder_config_dialog = (Widget)NULL;
 static Widget config_server_url_text = (Widget)NULL;
 static Widget config_email_text = (Widget)NULL;
 static Widget config_country_combo = (Widget)NULL;
+static Widget config_country_custom_text = (Widget)NULL;
 
-
+// Destroy the geocoder configuration dialog shell
 static void geocoder_config_destroy_shell(Widget UNUSED(widget), XtPointer clientData, XtPointer UNUSED(callData))
 {
     Widget shell = (Widget)clientData;
-    
+
     XtPopdown(shell);
-    
+
     begin_critical_section(&geocoder_config_lock, "geocoder_gui.c:geocoder_config_destroy_shell");
-    
+
     XtDestroyWidget(shell);
     geocoder_config_dialog = (Widget)NULL;
-    
+
     end_critical_section(&geocoder_config_lock, "geocoder_gui.c:geocoder_config_destroy_shell");
 }
 
-
+// Save the geocoder configuration settings from the dialog
 static void geocoder_config_save_callback(Widget widget, XtPointer clientData, XtPointer callData)
 {
     char *server_url;
     char *email;
-    XmString *selected_items;
-    int selected_count;
-    
+    char *country_code;
+
     // Get server URL (save even if empty to allow clearing)
     if (config_server_url_text) {
         server_url = XmTextFieldGetString(config_server_url_text);
         if (server_url) {
             if (server_url[0] == '\0') {
                 // User cleared the field - restore default
-                xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url), 
+                xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url),
                               "https://nominatim.openstreetmap.org");
             } else {
                 xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url), "%s", server_url);
@@ -780,7 +923,7 @@ static void geocoder_config_save_callback(Widget widget, XtPointer clientData, X
             XtFree(server_url);
         }
     }
-    
+
     // Get email address (save even if empty to allow clearing)
     if (config_email_text) {
         email = XmTextFieldGetString(config_email_text);
@@ -790,66 +933,44 @@ static void geocoder_config_save_callback(Widget widget, XtPointer clientData, X
             XtFree(email);
         }
     }
-    
-    // Get default country
+
+    // Get default country using helper function
     if (config_country_combo) {
-        XtVaGetValues(config_country_combo,
-                     XmNselectedItems, &selected_items,
-                     XmNselectedItemCount, &selected_count,
-                     NULL);
-        
-        if (selected_count > 0) {
-            char *selected_text = NULL;
-            XmStringGetLtoR(selected_items[0], XmFONTLIST_DEFAULT_TAG, &selected_text);
-            
-            if (selected_text) {
-                // Find matching option in our array
-                int i;
-                for (i = 0; country_options[i].label != NULL; i++) {
-                    if (strcmp(selected_text, country_options[i].label) == 0) {
-                        const char *selected_value = country_options[i].value;
-                        
-                        // Store the country code (not the "custom" marker)
-                        if (strcmp(selected_value, "custom") != 0) {
-                            xastir_snprintf(nominatim_country_default, 
-                                          sizeof(nominatim_country_default), 
-                                          "%s", selected_value);
-                        } else {
-                            // If "custom" is selected, clear the default
-                            nominatim_country_default[0] = '\0';
-                        }
-                        break;
-                    }
-                }
-                XtFree(selected_text);
-            }
+        country_code = get_selected_country_code(config_country_combo, config_country_custom_text, NULL);
+
+        if (country_code) {
+            xastir_snprintf(nominatim_country_default,
+                          sizeof(nominatim_country_default),
+                          "%s", country_code);
+            XtFree(country_code);
+        } else {
+            // No country selected - clear the default
+            nominatim_country_default[0] = '\0';
         }
     }
-    
+
     // Save configuration
     save_data();
-    
+
     geocoder_config_destroy_shell(widget, clientData, callData);
 }
 
-
+// Create and display the geocoder configuration dialog
 void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED(callData))
 {
     Widget form, label, button_ok, button_cancel, rowcol;
     Arg args[50];
     int n;
-    XmString str;
-    int i;
     int default_country_index = 0;
-    
+
     begin_critical_section(&geocoder_config_lock, "geocoder_gui.c:Configure_geocoder_settings");
-    
+
     if (geocoder_config_dialog) {
         end_critical_section(&geocoder_config_lock, "geocoder_gui.c:Configure_geocoder_settings");
         (void)XRaiseWindow(XtDisplay(geocoder_config_dialog), XtWindow(geocoder_config_dialog));
         return;
     }
-    
+
     // Create dialog shell
     geocoder_config_dialog = XtVaCreatePopupShell(langcode("GEOCFG001"), // Geocoding Settings
                                                   xmDialogShellWidgetClass,
@@ -858,7 +979,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                                   XmNdefaultPosition, FALSE,
                                                   XmNfontList, fontlist1,
                                                   NULL);
-    
+
     // Create main form
     form = XtVaCreateWidget("geocoder_config_form",
                            xmFormWidgetClass,
@@ -867,7 +988,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                            XmNautoUnmanage, FALSE,
                            XmNshadowThickness, 1,
                            NULL);
-    
+
     // Server URL section
     label = XtVaCreateManagedWidget(langcode("GEOCFG002"), // Server URL:
                                    xmLabelWidgetClass,
@@ -878,7 +999,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     config_server_url_text = XtVaCreateManagedWidget("config_server_url_text",
                                                      xmTextFieldWidgetClass,
                                                      form,
@@ -893,10 +1014,10 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                                      XmNrightOffset, 10,
                                                      XmNfontList, fontlist1,
                                                      NULL);
-    
+
     // Set current value
     XmTextFieldSetString(config_server_url_text, nominatim_server_url);
-    
+
     // Email address section
     label = XtVaCreateManagedWidget(langcode("GEOCFG003"), // Email Address:
                                    xmLabelWidgetClass,
@@ -908,7 +1029,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     config_email_text = XtVaCreateManagedWidget("config_email_text",
                                                 xmTextFieldWidgetClass,
                                                 form,
@@ -924,10 +1045,10 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                                 XmNrightOffset, 10,
                                                 XmNfontList, fontlist1,
                                                 NULL);
-    
+
     // Set current value
     XmTextFieldSetString(config_email_text, nominatim_user_email);
-    
+
     // Help text for email
     label = XtVaCreateManagedWidget(langcode("GEOCFG004"), // (Optional but recommended)
                                    xmLabelWidgetClass,
@@ -939,7 +1060,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                    XmNleftOffset, 150,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     // Default country section
     label = XtVaCreateManagedWidget(langcode("GEOCFG005"), // Default Country:
                                    xmLabelWidgetClass,
@@ -951,7 +1072,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                    XmNleftOffset, 10,
                                    XmNfontList, fontlist1,
                                    NULL);
-    
+
     n = 0;
     XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
     XtSetArg(args[n], XmNtopWidget, label); n++;
@@ -963,29 +1084,58 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
     XtSetArg(args[n], XmNvisibleItemCount, 8); n++;
     XtSetArg(args[n], XmNfontList, fontlist1); n++;
     config_country_combo = XmCreateScrolledList(form, "config_country_combo", args, n);
-    
-    // Populate country list
-    for (i = 0; country_options[i].label != NULL; i++) {
-        str = XmStringCreateLocalized((char *)country_options[i].label);
-        XmListAddItem(config_country_combo, str, 0);
-        XmStringFree(str);
-        
-        // Check if this matches the current default
-        if (nominatim_country_default[0] != '\0' && 
-            strcmp(country_options[i].value, nominatim_country_default) == 0) {
-            default_country_index = i + 1; // XmList is 1-indexed
-        }
-    }
-    
+
+    // Populate country list using helper function
+    default_country_index = populate_country_list(config_country_combo, nominatim_country_default);
+
     // Select current default or "None" if not set
     if (default_country_index > 0) {
         XmListSelectPos(config_country_combo, default_country_index, False);
     } else {
         XmListSelectPos(config_country_combo, 1, False); // Select "None" by default
     }
-    
+
     XtManageChild(config_country_combo);
-    
+
+    // Custom country code text field (for entering ISO codes not in list)
+    label = XtVaCreateManagedWidget("Custom Code:",
+                                   xmLabelWidgetClass,
+                                   form,
+                                   XmNtopAttachment, XmATTACH_WIDGET,
+                                   XmNtopWidget, XtParent(config_country_combo),
+                                   XmNtopOffset, 10,
+                                   XmNleftAttachment, XmATTACH_FORM,
+                                   XmNleftOffset, 10,
+                                   XmNfontList, fontlist1,
+                                   NULL);
+
+    config_country_custom_text = XtVaCreateManagedWidget("config_country_custom_text",
+                                                         xmTextFieldWidgetClass,
+                                                         form,
+                                                         XmNcolumns, 20,
+                                                         XmNmaxLength, 99,
+                                                         XmNtopAttachment, XmATTACH_WIDGET,
+                                                         XmNtopWidget, XtParent(config_country_combo),
+                                                         XmNtopOffset, 5,
+                                                         XmNleftAttachment, XmATTACH_WIDGET,
+                                                         XmNleftWidget, label,
+                                                         XmNleftOffset, 5,
+                                                         XmNfontList, fontlist1,
+                                                         NULL);
+
+    // Help text for custom field
+    label = XtVaCreateManagedWidget("(e.g., 'us' or 'us,ca,mx' when Custom selected)",
+                                   xmLabelWidgetClass,
+                                   form,
+                                   XmNtopAttachment, XmATTACH_WIDGET,
+                                   XmNtopWidget, XtParent(config_country_combo),
+                                   XmNtopOffset, 10,
+                                   XmNleftAttachment, XmATTACH_WIDGET,
+                                   XmNleftWidget, config_country_custom_text,
+                                   XmNleftOffset, 10,
+                                   XmNfontList, fontlist1,
+                                   NULL);
+
     // Button row
     rowcol = XtVaCreateManagedWidget("button_row",
                                     xmRowColumnWidgetClass,
@@ -994,7 +1144,7 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                     XmNpacking, XmPACK_TIGHT,
                                     XmNentryAlignment, XmALIGNMENT_CENTER,
                                     XmNtopAttachment, XmATTACH_WIDGET,
-                                    XmNtopWidget, XtParent(config_country_combo),
+                                    XmNtopWidget, config_country_custom_text,
                                     XmNtopOffset, 15,
                                     XmNleftAttachment, XmATTACH_FORM,
                                     XmNleftOffset, 10,
@@ -1004,30 +1154,30 @@ void Configure_geocoder_settings(Widget UNUSED(w), XtPointer UNUSED(clientData),
                                     XmNbottomOffset, 10,
                                     XmNfontList, fontlist1,
                                     NULL);
-    
+
     button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"), // OK
                                        xmPushButtonWidgetClass,
                                        rowcol,
                                        XmNfontList, fontlist1,
                                        NULL);
     XtAddCallback(button_ok, XmNactivateCallback, geocoder_config_save_callback, geocoder_config_dialog);
-    
+
     button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"), // Cancel
                                            xmPushButtonWidgetClass,
                                            rowcol,
                                            XmNfontList, fontlist1,
                                            NULL);
     XtAddCallback(button_cancel, XmNactivateCallback, geocoder_config_destroy_shell, geocoder_config_dialog);
-    
+
     pos_dialog(geocoder_config_dialog);
-    
+
     delw = XmInternAtom(XtDisplay(geocoder_config_dialog), "WM_DELETE_WINDOW", FALSE);
     XmAddWMProtocolCallback(geocoder_config_dialog, delw, geocoder_config_destroy_shell,
                            (XtPointer)geocoder_config_dialog);
-    
+
     XtManageChild(form);
-    
+
     end_critical_section(&geocoder_config_lock, "geocoder_gui.c:Configure_geocoder_settings");
-    
+
     XtPopup(geocoder_config_dialog, XtGrabNone);
 }

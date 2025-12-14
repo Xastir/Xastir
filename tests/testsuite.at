@@ -25,4 +25,6 @@ m4_include([util_tests.at])
 m4_include([objects_tests.at])
 
 # Include nominatim geocoding tests (conditionally compiled if HAVE_NOMINATIM)
+m4_ifdef([HAVE_NOMINATIM], [
 m4_include([nominatim_tests.at])
+])

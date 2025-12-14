@@ -646,12 +646,14 @@ void save_data(void)
     // store_string (fout, "GEOCODE_FILE", geocoder_map_filename);  // Obsolete TIGER/Line
     store_int (fout, "SHOW_FIND_TARGET", show_destination_mark);
 
+#ifdef HAVE_NOMINATIM
     /* Nominatim geocoding configuration */
     store_string (fout, "NOMINATIM_SERVER_URL", nominatim_server_url);
     store_int (fout, "NOMINATIM_CACHE_ENABLED", nominatim_cache_enabled);
     store_int (fout, "NOMINATIM_CACHE_DAYS", nominatim_cache_days);
     store_string (fout, "NOMINATIM_USER_EMAIL", nominatim_user_email);
     store_string (fout, "NOMINATIM_COUNTRY_DEFAULT", nominatim_country_default);
+#endif
 
     /* maps */
     store_int (fout, "MAPS_LONG_LAT_GRID", long_lat_grid);
@@ -1720,6 +1722,7 @@ void load_data_or_default(void)
 
   show_destination_mark = get_int ("SHOW_FIND_TARGET", 0, 1, 1);
 
+#ifdef HAVE_NOMINATIM
   /* Nominatim geocoding configuration */
   if (!get_string ("NOMINATIM_SERVER_URL", nominatim_server_url, sizeof(nominatim_server_url))
       || nominatim_server_url[0] == '\0')
@@ -1744,6 +1747,7 @@ void load_data_or_default(void)
   {
     nominatim_country_default[0] = '\0';
   }
+#endif
 
   /* maps */
   long_lat_grid = get_int ("MAPS_LONG_LAT_GRID", 0, 1, 1);

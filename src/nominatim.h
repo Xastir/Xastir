@@ -29,7 +29,7 @@
 
 /*
  * Nominatim Geocoding Service Implementation
- * 
+ *
  * This module provides Nominatim-specific implementation for the abstract
  * geocoding API. It handles:
  * - HTTP requests to Nominatim servers
@@ -47,7 +47,7 @@ void nominatim_init(void);
 
 /**
  * Search Nominatim for locations matching query
- * 
+ *
  * @param query Search query string
  * @param country_codes Optional country filter (e.g., "us,ca"), NULL for none
  * @param limit Maximum number of results
@@ -61,7 +61,7 @@ int nominatim_search(const char *query,
 
 /**
  * Get last Nominatim error message
- * 
+ *
  * @return Error message string, or NULL if no error
  */
 const char *nominatim_get_error(void);

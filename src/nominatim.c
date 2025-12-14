@@ -68,7 +68,7 @@ static char nominatim_error[512] = "";
 static time_t last_request_time = 0;
 static xastir_mutex rate_limit_lock;
 
-// Cache entry structure
+// Cache entry structure (Nominatim usage policy suggests caching results)
 struct nominatim_cache_entry {
     char query_hash[33];        // MD5 hash of normalized query
     time_t timestamp;           // When cached
@@ -93,19 +93,19 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
 {
     size_t realsize = size * nmemb;
     struct http_response *response = (struct http_response *)userp;
-    
+
     char *ptr = realloc(response->data, response->size + realsize + 1);
     if (!ptr) {
         xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                        "Out of memory");
         return 0;
     }
-    
+
     response->data = ptr;
     memcpy(&(response->data[response->size]), contents, realsize);
     response->size += realsize;
     response->data[response->size] = 0;
-    
+
     return realsize;
 }
 
@@ -116,17 +116,17 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
 static void enforce_rate_limit(void)
 {
     begin_critical_section(&rate_limit_lock, "nominatim.c:enforce_rate_limit");
-    
+
     time_t now = time(NULL);
     time_t elapsed = now - last_request_time;
-    
+
     if (last_request_time > 0 && elapsed < 1) {
         // Wait to maintain 1 request per second
         sleep(1 - elapsed);
     }
-    
+
     last_request_time = time(NULL);
-    
+
     end_critical_section(&rate_limit_lock, "nominatim.c:enforce_rate_limit");
 }
 
@@ -143,12 +143,12 @@ static void compute_query_hash(const char *query, const char *country_codes, cha
     unsigned long h = 5381;
     int c;
     const char *str = query;
-    
+
     // Normalize to lowercase for case-insensitive matching
     while ((c = *str++)) {
         h = ((h << 5) + h) + tolower(c);
     }
-    
+
     // Include country codes in hash if present
     if (country_codes && country_codes[0]) {
         str = country_codes;
@@ -156,7 +156,7 @@ static void compute_query_hash(const char *query, const char *country_codes, cha
             h = ((h << 5) + h) + tolower(c);
         }
     }
-    
+
     xastir_snprintf(hash, hash_size, "%016lx", h);
 }
 
@@ -174,11 +174,11 @@ static int cache_lookup(const char *query, const char *country_codes, struct geo
     struct nominatim_cache_entry *entry;
     time_t now = time(NULL);
     int found = 0;
-    
+
     compute_query_hash(query, country_codes, query_hash, sizeof(query_hash));
-    
+
     begin_critical_section(&cache_lock, "nominatim.c:cache_lookup");
-    
+
     for (entry = cache_head; entry != NULL; entry = entry->next) {
         if (strcmp(entry->query_hash, query_hash) == 0) {
             // Check if expired
@@ -187,13 +187,13 @@ static int cache_lookup(const char *query, const char *country_codes, struct geo
                 // Expired - will be cleaned up later
                 break;
             }
-            
+
             // Found valid cached entry
             if (entry->result_count > 0) {
                 results->capacity = entry->result_count;
                 results->count = entry->result_count;
                 results->results = malloc(sizeof(struct geocode_result) * entry->result_count);
-                
+
                 if (results->results) {
                     memcpy(results->results, entry->results,
                            sizeof(struct geocode_result) * entry->result_count);
@@ -203,9 +203,9 @@ static int cache_lookup(const char *query, const char *country_codes, struct geo
             break;
         }
     }
-    
+
     end_critical_section(&cache_lock, "nominatim.c:cache_lookup");
-    
+
     return found;
 }
 
@@ -220,15 +220,15 @@ static void cache_store(const char *query, const char *country_codes, const stru
 {
     char query_hash[33];
     struct nominatim_cache_entry *entry;
-    
+
     if (!nominatim_cache_enabled || results->count == 0) {
         return;
     }
-    
+
     compute_query_hash(query, country_codes, query_hash, sizeof(query_hash));
-    
+
     begin_critical_section(&cache_lock, "nominatim.c:cache_store");
-    
+
     // Check if already in cache (update if so)
     for (entry = cache_head; entry != NULL; entry = entry->next) {
         if (strcmp(entry->query_hash, query_hash) == 0) {
@@ -247,7 +247,7 @@ static void cache_store(const char *query, const char *country_codes, const stru
             return;
         }
     }
-    
+
     // Create new entry
     entry = malloc(sizeof(struct nominatim_cache_entry));
     if (entry) {
@@ -255,7 +255,7 @@ static void cache_store(const char *query, const char *country_codes, const stru
         entry->timestamp = time(NULL);
         entry->result_count = results->count;
         entry->results = malloc(sizeof(struct geocode_result) * results->count);
-        
+
         if (entry->results) {
             memcpy(entry->results, results->results,
                    sizeof(struct geocode_result) * results->count);
@@ -265,7 +265,7 @@ static void cache_store(const char *query, const char *country_codes, const stru
             free(entry);
         }
     }
-    
+
     end_critical_section(&cache_lock, "nominatim.c:cache_store");
 }
 
@@ -275,10 +275,10 @@ static void cache_store(const char *query, const char *country_codes, const stru
 static int parse_nominatim_result(cJSON *json_result, struct geocode_result *result)
 {
     cJSON *item;
-    
+
     memset(result, 0, sizeof(struct geocode_result));
     result->service = GEOCODE_SERVICE_NOMINATIM;
-    
+
     // Extract core fields
     item = cJSON_GetObjectItem(json_result, "lat");
     if (item && cJSON_IsString(item)) {
@@ -286,21 +286,21 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
     } else {
         return -1;  // Lat is required
     }
-    
+
     item = cJSON_GetObjectItem(json_result, "lon");
     if (item && cJSON_IsString(item)) {
         result->lon = atof(item->valuestring);
     } else {
         return -1;  // Lon is required
     }
-    
+
     // Display name
     item = cJSON_GetObjectItem(json_result, "display_name");
     if (item && cJSON_IsString(item)) {
         xastir_snprintf(result->display_name, sizeof(result->display_name),
                        "%s", item->valuestring);
     }
-    
+
     // Bounding box
     item = cJSON_GetObjectItem(json_result, "boundingbox");
     if (item && cJSON_IsArray(item) && cJSON_GetArraySize(item) == 4) {
@@ -309,33 +309,33 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
         result->bbox[2] = atof(cJSON_GetArrayItem(item, 2)->valuestring);  // min_lon
         result->bbox[3] = atof(cJSON_GetArrayItem(item, 3)->valuestring);  // max_lon
     }
-    
+
     // Importance/relevance
     item = cJSON_GetObjectItem(json_result, "importance");
     if (item && cJSON_IsNumber(item)) {
         result->relevance = item->valuedouble;
     }
-    
+
     // Place ID (service-specific)
     item = cJSON_GetObjectItem(json_result, "place_id");
     if (item && cJSON_IsNumber(item)) {
         xastir_snprintf(result->service_id, sizeof(result->service_id),
                        "%d", item->valueint);
     }
-    
+
     // Classification
     item = cJSON_GetObjectItem(json_result, "class");
     if (item && cJSON_IsString(item)) {
         xastir_snprintf(result->place_class, sizeof(result->place_class),
                        "%s", item->valuestring);
     }
-    
+
     item = cJSON_GetObjectItem(json_result, "type");
     if (item && cJSON_IsString(item)) {
         xastir_snprintf(result->place_type, sizeof(result->place_type),
                        "%s", item->valuestring);
     }
-    
+
     // Address components (optional)
     cJSON *address = cJSON_GetObjectItem(json_result, "address");
     if (address && cJSON_IsObject(address)) {
@@ -345,14 +345,14 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
             xastir_snprintf(result->house_number, sizeof(result->house_number),
                            "%s", item->valuestring);
         }
-        
+
         // Road
         item = cJSON_GetObjectItem(address, "road");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->road, sizeof(result->road),
                            "%s", item->valuestring);
         }
-        
+
         // Neighbourhood
         item = cJSON_GetObjectItem(address, "neighbourhood");
         if (!item || !cJSON_IsString(item)) {
@@ -362,7 +362,7 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
             xastir_snprintf(result->neighbourhood, sizeof(result->neighbourhood),
                            "%s", item->valuestring);
         }
-        
+
         // Settlement (check city, town, village, hamlet in priority order)
         item = cJSON_GetObjectItem(address, "city");
         if (!item || !cJSON_IsString(item)) {
@@ -378,49 +378,49 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
             xastir_snprintf(result->settlement, sizeof(result->settlement),
                            "%s", item->valuestring);
         }
-        
+
         // County
         item = cJSON_GetObjectItem(address, "county");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->county, sizeof(result->county),
                            "%s", item->valuestring);
         }
-        
+
         // State
         item = cJSON_GetObjectItem(address, "state");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->state, sizeof(result->state),
                            "%s", item->valuestring);
         }
-        
+
         // State district
         item = cJSON_GetObjectItem(address, "state_district");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->state_district, sizeof(result->state_district),
                            "%s", item->valuestring);
         }
-        
+
         // Postcode
         item = cJSON_GetObjectItem(address, "postcode");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->postcode, sizeof(result->postcode),
                            "%s", item->valuestring);
         }
-        
+
         // Country
         item = cJSON_GetObjectItem(address, "country");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->country, sizeof(result->country),
                            "%s", item->valuestring);
         }
-        
+
         // Country code
         item = cJSON_GetObjectItem(address, "country_code");
         if (item && cJSON_IsString(item)) {
             xastir_snprintf(result->country_code, sizeof(result->country_code),
                            "%s", item->valuestring);
         }
-        
+
         // ISO3166-2
         item = cJSON_GetObjectItem(address, "ISO3166-2-lvl4");
         if (item && cJSON_IsString(item)) {
@@ -428,7 +428,7 @@ static int parse_nominatim_result(cJSON *json_result, struct geocode_result *res
                            "%s", item->valuestring);
         }
     }
-    
+
     return 0;
 }
 
@@ -466,15 +466,15 @@ int nominatim_search(const char *query,
     cJSON *json = NULL;
     int ret = -1;
     int i;
-    
+
     // Check cache first
     if (nominatim_cache_enabled && cache_lookup(query, country_codes, results)) {
         return results->count;
     }
-    
+
     // Enforce rate limiting
     enforce_rate_limit();
-    
+
     // Initialize curl
     curl = xastir_curl_init(nominatim_error);
     if (!curl) {
@@ -482,7 +482,7 @@ int nominatim_search(const char *query,
                        "Failed to initialize HTTP client");
         return -1;
     }
-    
+
     // URL-encode the query
     escaped_query = curl_easy_escape(curl, query, 0);
     if (!escaped_query) {
@@ -491,12 +491,12 @@ int nominatim_search(const char *query,
         curl_easy_cleanup(curl);
         return -1;
     }
-    
+
     // Build URL
     xastir_snprintf(url, sizeof(url),
                    "%s/search?q=%s&format=jsonv2&addressdetails=1&limit=%d",
                    nominatim_server_url, escaped_query, limit);
-    
+
     if (country_codes && country_codes[0]) {
         char *escaped_countries = curl_easy_escape(curl, country_codes, 0);
         if (escaped_countries) {
@@ -505,7 +505,7 @@ int nominatim_search(const char *query,
             curl_free(escaped_countries);
         }
     }
-    
+
     // Add email if configured
     if (nominatim_user_email[0]) {
         char *escaped_email = curl_easy_escape(curl, nominatim_user_email, 0);
@@ -515,51 +515,51 @@ int nominatim_search(const char *query,
             curl_free(escaped_email);
         }
     }
-    
+
     curl_free(escaped_query);
-    
+
     // Set up HTTP request
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
     xastir_snprintf(user_agent, sizeof(user_agent), "Xastir/%s", PACKAGE_VERSION);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent);
-    
+
     // Perform request
     res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
-    
+
     if (res != CURLE_OK) {
         xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                        "Network error: %s", curl_easy_strerror(res));
         if (response.data) free(response.data);
         return -1;
     }
-    
+
     if (!response.data || response.size == 0) {
         xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                        "Empty response from server");
         if (response.data) free(response.data);
         return -1;
     }
-    
+
     // Parse JSON response
     json = cJSON_Parse(response.data);
     free(response.data);
-    
+
     if (!json) {
         xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                        "Invalid JSON response");
         return -1;
     }
-    
+
     if (!cJSON_IsArray(json)) {
         xastir_snprintf(nominatim_error, sizeof(nominatim_error),
                        "Unexpected JSON format");
         cJSON_Delete(json);
         return -1;
     }
-    
+
     // Process results
     int array_size = cJSON_GetArraySize(json);
     if (array_size == 0) {
@@ -571,7 +571,7 @@ int nominatim_search(const char *query,
     } else {
         results->capacity = array_size;
         results->results = malloc(sizeof(struct geocode_result) * array_size);
-        
+
         if (results->results) {
             results->count = 0;
             for (i = 0; i < array_size; i++) {
@@ -581,7 +581,7 @@ int nominatim_search(const char *query,
                 }
             }
             ret = results->count;
-            
+
             // Store in cache
             cache_store(query, country_codes, results);
         } else {
@@ -590,7 +590,7 @@ int nominatim_search(const char *query,
             ret = -1;
         }
     }
-    
+
     cJSON_Delete(json);
     return ret;
 #endif  // HAVE_LIBCURL
@@ -613,9 +613,9 @@ const char *nominatim_get_error(void)
 void nominatim_clear_cache(void)
 {
     struct nominatim_cache_entry *entry, *next;
-    
+
     begin_critical_section(&cache_lock, "nominatim.c:nominatim_clear_cache");
-    
+
     entry = cache_head;
     while (entry) {
         next = entry->next;
@@ -626,7 +626,7 @@ void nominatim_clear_cache(void)
         entry = next;
     }
     cache_head = NULL;
-    
+
     end_critical_section(&cache_lock, "nominatim.c:nominatim_clear_cache");
 }
 

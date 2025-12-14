@@ -20,10 +20,10 @@
  * Look at the README for more information on the program.
  */
 
-/* 
+/*
  * Stub implementations for symbols referenced by nominatim.o
  * but not needed by the unit tests.
- * 
+ *
  * These stubs allow us to link with the nominatim code for testing
  * without pulling in the entire Xastir codebase.
  */
@@ -65,11 +65,11 @@ void end_critical_section(void *mutex, const char *location) {
 int xastir_snprintf(char *str, size_t size, const char *format, ...) {
     va_list args;
     int ret;
-    
+
     va_start(args, format);
     ret = vsnprintf(str, size, format, args);
     va_end(args);
-    
+
     return ret;
 }
 

@@ -64,23 +64,23 @@ int geocode_search(geocode_service_t service,
                    struct geocode_result_list *results)
 {
     int ret = -1;
-    
+
     // Validate parameters
     if (!query || !results) {
-        xastir_snprintf(last_error, sizeof(last_error), 
+        xastir_snprintf(last_error, sizeof(last_error),
                        "Invalid parameters");
         return -1;
     }
-    
+
     if (limit <= 0) {
         limit = 10;  // Default
     }
-    
+
     // Initialize result list
     results->count = 0;
     results->capacity = 0;
     results->results = NULL;
-    
+
     // Dispatch to appropriate service
     switch (service) {
 #ifdef HAVE_NOMINATIM
@@ -94,20 +94,20 @@ int geocode_search(geocode_service_t service,
             }
             break;
 #endif
-        
+
         case GEOCODE_SERVICE_NONE:
             xastir_snprintf(last_error, sizeof(last_error),
                            "No geocoding service specified");
             ret = -1;
             break;
-            
+
         default:
             xastir_snprintf(last_error, sizeof(last_error),
                            "Geocoding service not available (not compiled in)");
             ret = -1;
             break;
     }
-    
+
     return ret;
 }
 
@@ -175,11 +175,11 @@ void geocode_format_subtitle(const struct geocode_result *result,
 {
     char components[256] = "";
     int added = 0;
-    
+
     if (!result || !subtitle || size == 0) {
         return;
     }
-    
+
     // Build hierarchy based on what's available
     // Typical patterns by region:
     //   US: settlement, county, state
@@ -187,15 +187,15 @@ void geocode_format_subtitle(const struct geocode_result *result,
     //   Germany: settlement, state
     //   France: settlement, county (département), state (région)
     //   Japan: settlement, state (prefecture)
-    
+
     // Add primary settlement if present
     if (result->settlement[0]) {
         xastir_snprintf(components, sizeof(components), "%s", result->settlement);
         added = 1;
     }
-    
+
     // Add county if present and not redundant with settlement
-    if (result->county[0] && 
+    if (result->county[0] &&
         (!result->settlement[0] || strcmp(result->county, result->settlement) != 0)) {
         if (added) {
             strncat(components, ", ", sizeof(components) - strlen(components) - 1);
@@ -203,19 +203,19 @@ void geocode_format_subtitle(const struct geocode_result *result,
         strncat(components, result->county, sizeof(components) - strlen(components) - 1);
         added = 1;
     }
-    
+
     // Add state_district if present (e.g., "Greater London")
     if (result->state_district[0]) {
         if (added) {
             strncat(components, ", ", sizeof(components) - strlen(components) - 1);
         }
-        strncat(components, result->state_district, 
+        strncat(components, result->state_district,
                 sizeof(components) - strlen(components) - 1);
         added = 1;
     }
-    
+
     // Add state/province if different from previous components
-    if (result->state[0] && 
+    if (result->state[0] &&
         (!result->settlement[0] || strcmp(result->state, result->settlement) != 0) &&
         (!result->county[0] || strcmp(result->state, result->county) != 0)) {
         if (added) {
@@ -224,9 +224,9 @@ void geocode_format_subtitle(const struct geocode_result *result,
         strncat(components, result->state, sizeof(components) - strlen(components) - 1);
         added = 1;
     }
-    
+
     // Always add country if available (unless city-state like Singapore)
-    if (result->country[0] && 
+    if (result->country[0] &&
         (!result->settlement[0] || strcmp(result->country, result->settlement) != 0) &&
         (!result->state[0] || strcmp(result->country, result->state) != 0)) {
         if (added) {
@@ -234,6 +234,6 @@ void geocode_format_subtitle(const struct geocode_result *result,
         }
         strncat(components, result->country, sizeof(components) - strlen(components) - 1);
     }
-    
+
     xastir_snprintf(subtitle, size, "%s", components);
 }
