@@ -16,7 +16,7 @@ BEGIN_RECORD {
 
 
 /^MTFCC=S1100$/ { # Freeways/major highways
-lanes=3; color=70; label_color=8; display_level=1024; label_level=256; font_size=3; next; }
+lanes=3; color=70; label_color=8; display_level=2048; label_level=256; font_size=3; next; }
 /^MTFCC=S1200$/ { # Secondary roads
 display_level=256; lanes=2; color=8; label_color=8; label_level=128; font_size=2; next; }
 /^MTFCC=S1400$/ { # Local roads, ramps and service drives/frontage roads
