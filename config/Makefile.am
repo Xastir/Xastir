@@ -95,6 +95,7 @@ EXTRA_DIST = \
     tl_2025_roads.dbfawk \
     tl_2025_linearwater.dbfawk \
     tl_2025_areawater.dbfawk \
+    tl_2025_pointlm.dbfawk \
     tnc-startup.aea \
     tnc-startup.d700 \
     tnc-startup.d72_d710 \

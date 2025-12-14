@@ -2,6 +2,8 @@
 # dbfawk designed for 2025 Tiger/Line roads and "prisecroads" shapefiles
 BEGIN {
 dbfinfo="ANSICODE:HYDROID:FULLNAME:MTFCC:ALAND:AWATER:INTPTLAT:INTPTLON";
+# Adding area of water in case we want to change display level based on
+# area... possible enhancement
 dbffields="FULLNAME:AWATER:MTFCC";
 }
 
