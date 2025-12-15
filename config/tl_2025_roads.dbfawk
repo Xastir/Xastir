@@ -18,15 +18,15 @@ BEGIN_RECORD {
 
 
 /^MTFCC=S1100$/ { # Freeways/major highways
-lanes=3; color=70; label_color=8; display_level=4096; label_level=256; font_size=3; next; }
+lanes=3; color=106; label_color=8; display_level=4096; label_level=256; font_size=3; next; }
 /^MTFCC=S1200$/ { # Secondary roads
-display_level=256; lanes=2; color=8; label_color=8; label_level=128; font_size=2; next; }
+display_level=256; lanes=2; color=107; label_color=8; label_level=128; font_size=2; next; }
 /^MTFCC=S1400$/ { # Local roads, ramps and service drives/frontage roads
 display_level=64; color=80; label_color=80; label_level=8; color=48; lanes=1; font_size=2; next; }
 /^MTFCC=S1500$/ { # 4WD off-road trail
 color=4; label_color=4; display_level=64; label_level=8; font_size=1; name="$name (off-road trail)"; next; }
 /^MTFCC=S16[34]0$/ { # ramps and service roads for Freeways/major highways
-color=70; label_color=70; lanes=2; display_level=64; next; }
+color=80; label_color=80; lanes=2; display_level=64; next; }
 /^MTFCC=S1710$/{ #pedestrian walkways/trails
 color=4; label_color=4; pattern=1; display_level=16; label_level=8; next;}
 /^MTFCC=S172/ { # stairway
