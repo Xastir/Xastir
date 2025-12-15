@@ -1,5 +1,7 @@
+# Copyright (C) 2000-2023 The Xastir Group
 #
-# dbfawk designed for 2025 Tiger/Line roads and "prisecroads" shapefiles
+#
+# dbfawk designed for 2025 Tiger/Line areawater shapefiles
 BEGIN {
 dbfinfo="ANSICODE:HYDROID:FULLNAME:MTFCC:ALAND:AWATER:INTPTLAT:INTPTLON";
 # Adding area of water in case we want to change display level based on

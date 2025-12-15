@@ -1,3 +1,5 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
 #
 # dbfawk designed for 2025 Tiger/Line roads and "prisecroads" shapefiles
 BEGIN {
