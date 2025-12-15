@@ -51,7 +51,7 @@ PocketAPRS          Built-in.
 USGS GNIS           Built-in.  Can split into county-sized chunks
                     using xastir/scripts/split_gnis.pl to speed
                     things up.
-Address Lookup      Built-in.
+Address Lookup      CURL, cJSON
 Weather Alerts      Shapelib
 pre-2003 Tigermaps  Shapelib
 post-2003 Tigermaps Shapelib, pcre

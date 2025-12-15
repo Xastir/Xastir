@@ -23,6 +23,13 @@
 #ifndef XASTIR_GEOCODER_H
 #define XASTIR_GEOCODER_H
 
+
+// Destination marking
+extern long destination_coord_lat;
+extern long destination_coord_lon;
+extern int mark_destination;
+
+
 /*
  * Abstract Geocoding API
  *

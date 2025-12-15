@@ -63,7 +63,6 @@
 #include "tactical_call_utils.h"
 #include "bulletin_gui.h"
 #include "fcc_data.h"
-#include "geo.h"
 #include "gps.h"
 #include "rac_data.h"
 #include "interface.h"
