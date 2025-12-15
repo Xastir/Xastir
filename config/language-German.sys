@@ -96,9 +96,10 @@ PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Karten neu laden (nicht vom Cache)||
 PULDNMP028|Lösche gesamten Karten-Cache!||
-PULDNMP029|Finde Adresse||
+PULDNMP029|Standort suchen||
 PULDNMP030|Konfiguration USGS DRG||
 PULDNMP031|Kartenrand ein||
+PULDNMP032|Geocoding-Einstellungen||
 MPUPTGR017|Internet-Karten Timeout [Sek]||
 #
 # PopUp "Configure USGS DRG"
@@ -1166,6 +1167,45 @@ FEATURE008|Stadt:||
 FEATURE009|Zielmarkierung:||
 FEATURE010|PLZ:||
 FEATURE011|Geocoding Datei||
+#
+# Geocoding Dialog (Nominatim)
+GEOCODE001|Standort suchen||
+GEOCODE002|Suchanfrage:||
+GEOCODE003|Länderfilter:||
+GEOCODE004|Suchen||
+GEOCODE005|Löschen||
+GEOCODE006|Ergebnisse:||
+GEOCODE007|Gehe zu||
+GEOCODE008|Markieren||
+GEOCODE009|Schließen||
+GEOCODE010|Suche läuft...||
+GEOCODE011|Keine Ergebnisse gefunden||
+GEOCODE012|Fehler: %s||
+GEOCODE013|%d Ergebnis(se) gefunden||
+GEOCODE014|Daten (C) OpenStreetMap-Mitwirkende||
+GEOCODE015|Keine (Weltweit)||
+GEOCODE023|Dienst nicht verfügbar||
+GEOCODE024|Geben Sie einen Ort zum Suchen ein||
+GEOCODE025|Cache leeren||
+GEOCODE026|Cache erfolgreich geleert||
+GEOCODE027|Cache leeren fehlgeschlagen||
+GEOCODE028|Nominatim-Server:||
+GEOCODE029|Cache aktiviert:||
+GEOCODE030|Cache-Ablauf (Tage):||
+GEOCODE031|Benutzer-E-Mail:||
+GEOCODE032|Standardland:||
+GEOCODE033|Einstellungen||
+GEOCODE034|Speichern||
+GEOCODE035|Abbrechen||
+GEOCODE036|Anwenden||
+GEOCODE037|Geocoding-Einstellungen||
+#
+# Geocoding Configuration Dialog
+GEOCFG001|Geocoding-Einstellungen||
+GEOCFG002|Server-URL:||
+GEOCFG003|E-Mail-Adresse:||
+GEOCFG004|(Optional aber empfohlen)||
+GEOCFG005|Standardland:||
 #
 # Koordinatenrechner Dialog
 COORD001|Koordinatenumrechnung||

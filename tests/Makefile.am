@@ -5,10 +5,20 @@ TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
 TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at
-EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in
+
+if HAVE_NOMINATIM
+TESTSUITE_AT += nominatim_tests.at
+endif
+
+EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
 check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects
+
+# Conditionally add nominatim test program
+if HAVE_NOMINATIM
+check_PROGRAMS += test_nominatim
+endif
 
 test_interface_helpers_SOURCES = test_interface_helpers.c
 test_interface_helpers_CPPFLAGS = -I$(top_srcdir)/src
@@ -32,6 +42,13 @@ test_util_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_bui
 
 test_objects_SOURCES = test_objects.c test_objects_stubs.c $(top_srcdir)/src/objects.c $(top_srcdir)/src/util.c $(top_srcdir)/src/object_utils.c $(top_srcdir)/src/db.c
 test_objects_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+
+# Nominatim tests (conditional on HAVE_NOMINATIM)
+if HAVE_NOMINATIM
+test_nominatim_SOURCES = test_nominatim.c test_nominatim_stubs.c $(top_srcdir)/src/nominatim.c
+test_nominatim_CPPFLAGS = $(CPPFLAGS) $(LIBCURL_CFLAGS) $(CJSON_CFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir) -DNOMINATIM_UNIT_TEST
+test_nominatim_LDADD = $(LIBCURL_LIBS) $(CJSON_LIBS) -lpthread
+endif
 
 # Run tests
 check-local: atconfig atlocal $(TESTSUITE)
@@ -69,6 +86,9 @@ package.m4: $(top_srcdir)/configure.ac
 	  echo 'm4_define([AT_PACKAGE_VERSION],   [@PACKAGE_VERSION@])'; \
 	  echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
 	  echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
+	  if test "x@HAVE_NOMINATIM_TRUE@" = "x"; then \
+	    echo 'm4_define([HAVE_NOMINATIM])'; \
+	  fi; \
 	} > $(srcdir)/package.m4
 
 .PHONY: check-unit

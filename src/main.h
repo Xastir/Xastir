@@ -378,6 +378,7 @@ extern void Tracks_All_Clear(Widget w, XtPointer clientData, XtPointer callData)
 extern void Locate_station(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_place(Widget w, XtPointer clientData, XtPointer callData);
 extern void Geocoder_place(Widget w, XtPointer clientData, XtPointer callData);
+extern void Configure_geocoder_settings(Widget w, XtPointer clientData, XtPointer callData);
 extern void Display_Wx_Alert(Widget w, XtPointer clientData, XtPointer callData);
 extern void Auto_msg_option(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Auto_msg_set(Widget w, XtPointer clientData, XtPointer calldata);
@@ -430,6 +431,13 @@ extern Widget object_symbol_data;
 extern void updateObjectPictureCallback(Widget w,XtPointer clientData,XtPointer callData);
 
 extern void Draw_All_CAD_Objects(Widget w);
+
+// Nominatim geocoding configuration
+extern char nominatim_server_url[400];
+extern int nominatim_cache_enabled;
+extern int nominatim_cache_days;
+extern char nominatim_user_email[100];
+extern char nominatim_country_default[20];
 
 // unit conversion
 extern char un_alt[2+1];

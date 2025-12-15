@@ -1,0 +1,99 @@
+# Autotest tests for nominatim.c Functions
+# Tests for Nominatim geocoding functionality including cache, rate limiting, and URL formation
+# These tests only run if Nominatim support is compiled in
+
+AT_BANNER([Nominatim Geocoding Functions])
+
+# Query hash function tests
+AT_BANNER([Nominatim compute_query_hash() Function Tests])
+
+AT_SETUP([compute_query_hash: consistency])
+AT_KEYWORDS([nominatim hash])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" compute_query_hash_consistency], [0], [PASS: compute_query_hash produces consistent hashes
+])
+AT_CLEANUP
+
+AT_SETUP([compute_query_hash: case insensitive])
+AT_KEYWORDS([nominatim hash])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" compute_query_hash_case_insensitive], [0], [PASS: compute_query_hash is case-insensitive
+])
+AT_CLEANUP
+
+AT_SETUP([compute_query_hash: includes country codes])
+AT_KEYWORDS([nominatim hash])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" compute_query_hash_with_country], [0], [PASS: compute_query_hash includes country codes
+])
+AT_CLEANUP
+
+AT_SETUP([compute_query_hash: different queries produce different hashes])
+AT_KEYWORDS([nominatim hash])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" compute_query_hash_different_queries], [0], [PASS: compute_query_hash produces different hashes for different queries
+])
+AT_CLEANUP
+
+# Cache lookup tests
+AT_BANNER([Nominatim Cache Lookup Function Tests])
+
+AT_SETUP([cache_lookup: empty cache returns 0])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_lookup_empty], [0], [PASS: Cache lookup returns 0 for empty cache
+])
+AT_CLEANUP
+
+AT_SETUP([cache_lookup: store and lookup round-trip])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_store_and_lookup], [0], [PASS: Cache store and lookup round-trip works
+])
+AT_CLEANUP
+
+AT_SETUP([cache_lookup: case insensitive])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_case_insensitive], [0], [PASS: Cache is case-insensitive
+])
+AT_CLEANUP
+
+AT_SETUP([cache_lookup: distinguishes country codes])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_country_codes], [0], [PASS: Cache distinguishes queries with different country codes
+])
+AT_CLEANUP
+
+AT_SETUP([cache_lookup: multiple results])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_multiple_results], [0], [PASS: Cache handles multiple results correctly
+])
+AT_CLEANUP
+
+AT_SETUP([cache_lookup: update existing entry])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_update_existing], [0], [PASS: Cache updates existing entries correctly
+])
+AT_CLEANUP
+
+# Cache management tests
+AT_BANNER([Nominatim Cache Management Function Tests])
+
+AT_SETUP([nominatim_clear_cache: clears all entries])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_clear], [0], [PASS: Cache clear removes all entries
+])
+AT_CLEANUP
+
+AT_SETUP([cache: respects disabled setting])
+AT_KEYWORDS([nominatim cache])
+AT_SKIP_IF([test ! -x "$abs_top_builddir/tests/test_nominatim"])
+AT_CHECK(["$abs_top_builddir/tests/test_nominatim" cache_disabled], [0], [PASS: Cache respects disabled setting
+])
+AT_CLEANUP
+

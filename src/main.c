@@ -712,6 +712,7 @@ int do_dbstatus;
 int coordinate_system = USE_DDMMMM; // Default, used for most APRS systems
 
 
+
 // ------------------------- audio alarms ----------------------------
 Widget configure_audio_alarm_dialog = (Widget)NULL;
 Widget audio_alarm_config_play_data,
@@ -5715,7 +5716,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
          wx_alert_logging, enable_snapshots, print_button,
          test_button, debug_level_button, aa_button, speech_button,
          smart_beacon_button, map_indexer_button,
-         map_all_indexer_button, auto_msg_set_button,
+         map_all_indexer_button, geocoder_config_button, auto_msg_set_button,
          send_message_to_button,
          show_pending_messages_button, enable_kmlsnapshots,
          open_messages_group_button, clear_messages_button,
@@ -7541,6 +7542,17 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
   XtAddCallback(drg_config_button, XmNactivateCallback,Config_DRG,NULL);
 #endif  // HAVE_LIBGEOTIFF
 
+  // Geocoder Configuration
+  geocoder_config_button = XtVaCreateManagedWidget(langcode("PULDNMP032"),
+                           xmPushButtonGadgetClass,
+                           map_config_pane,
+                           XmNmnemonic,langcode_hotkey("PULDNMP032"),
+                           XmNfontList, fontlist1,
+                           MY_FOREGROUND_COLOR,
+                           MY_BACKGROUND_COLOR,
+                           NULL);
+
+
 
   (void)XtVaCreateManagedWidget("create_appshell sep2d",
                                 xmSeparatorGadgetClass,
@@ -9292,6 +9304,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
   XtAddCallback(smart_beacon_button,  XmNactivateCallback,Smart_Beacon,NULL);
   XtAddCallback(map_indexer_button,   XmNactivateCallback,Index_Maps_Now,NULL);
   XtAddCallback(map_all_indexer_button,XmNactivateCallback,Index_Maps_Now,"1");
+  XtAddCallback(geocoder_config_button,XmNactivateCallback,Configure_geocoder_settings,NULL);
   XtAddCallback(station_button,       XmNactivateCallback,Configure_station,NULL);
 
   XtAddCallback(help_about,           XmNactivateCallback,Help_About,NULL);

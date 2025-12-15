@@ -87,9 +87,10 @@ PULDNMP025|Fonts||
 PULDNMP015|Xfontsel||
 PULDNMP027|Re-download Maps (Not from cache)||
 PULDNMP028|Flush Entire Map Cache!||
-PULDNMP029|Find Address||
+PULDNMP029|Buscar ubicación||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
+PULDNMP032|Configuración de geocodificación||
 MPUPTGR017|Internet Map Timeout (segundo)||
 #
 # PopUp "Configure USGS DRG"
@@ -1155,6 +1156,45 @@ FEATURE008|City:||
 FEATURE009|Mark Destination||
 FEATURE010|Zip Code:||
 FEATURE011|Geocoding File||
+#
+# Geocoding Dialog (Nominatim)
+GEOCODE001|Buscar ubicación||
+GEOCODE002|Consulta de búsqueda:||
+GEOCODE003|Filtro de país:||
+GEOCODE004|Buscar||
+GEOCODE005|Borrar||
+GEOCODE006|Resultados:||
+GEOCODE007|Ir a||
+GEOCODE008|Marcar||
+GEOCODE009|Cerrar||
+GEOCODE010|Buscando...||
+GEOCODE011|No se encontraron resultados||
+GEOCODE012|Error: %s||
+GEOCODE013|Se encontró/encontraron %d resultado(s)||
+GEOCODE014|Datos (C) Colaboradores de OpenStreetMap||
+GEOCODE015|Ninguno (Mundial)||
+GEOCODE023|Servicio no disponible||
+GEOCODE024|Introduzca una ubicación para buscar||
+GEOCODE025|Vaciar caché||
+GEOCODE026|Caché vaciada exitosamente||
+GEOCODE027|Error al vaciar la caché||
+GEOCODE028|Servidor Nominatim:||
+GEOCODE029|Caché habilitada:||
+GEOCODE030|Expiración de caché (días):||
+GEOCODE031|Correo electrónico del usuario:||
+GEOCODE032|País predeterminado:||
+GEOCODE033|Configuración||
+GEOCODE034|Guardar||
+GEOCODE035|Cancelar||
+GEOCODE036|Aplicar||
+GEOCODE037|Configuración de geocodificación||
+#
+# Geocoding Configuration Dialog
+GEOCFG001|Configuración de geocodificación||
+GEOCFG002|URL del servidor:||
+GEOCFG003|Dirección de correo electrónico:||
+GEOCFG004|(Opcional pero recomendado)||
+GEOCFG005|País predeterminado:||
 #
 # Diálogo de Calcular Coordenada
 COORD001|Calcula Coordenada||

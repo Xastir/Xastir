@@ -227,6 +227,37 @@ if test "${use_curl}" = "no"; then
 fi
 
 
+# Check for cJSON library (optional - enables Nominatim geocoding)
+use_nominatim=no
+AC_ARG_WITH(nominatim,
+  [  --without-nominatim       Disable Nominatim geocoding support.],
+  [nominatim_desired=$withval],
+  [nominatim_desired=yes])
+
+if test "${nominatim_desired}" = "yes"; then
+  if test "${use_curl}" = "yes"; then
+    AC_CHECK_HEADERS([cjson/cJSON.h],
+      [AC_CHECK_LIB([cjson], [cJSON_Parse],
+        [use_cjson="yes"
+         use_nominatim="yes"
+         LIBS="${LIBS} -lcjson"
+         AC_DEFINE(HAVE_CJSON, 1,
+                   [Define to 1 if you have cJSON])
+         AC_DEFINE(HAVE_NOMINATIM, 1,
+                   [Define to 1 to enable Nominatim geocoding])
+        ],
+        [AC_MSG_WARN([cJSON library not found, disabling Nominatim geocoding])]
+      )],
+      [AC_MSG_WARN([cjson/cJSON.h not found, disabling Nominatim geocoding])]
+    )
+  else
+    AC_MSG_WARN([libcurl is required for Nominatim geocoding, disabling Nominatim])
+  fi
+fi
+
+# Make nominatim conditional available to Makefile.am
+AM_CONDITIONAL(HAVE_NOMINATIM, test x$use_nominatim = xyes)
+
 
 use_retrieval=no
 if test "${use_curl}" = "yes"; then
@@ -814,6 +845,11 @@ else
     ILIBS="$ILIBS        "
   fi
 fi
+if test "${use_nominatim}" = "yes"; then
+  ILIBS="$ILIBS nominatim"
+else
+  ILIBS="$ILIBS          "
+fi
 
 # Write out the library information to "summary.log".  Here we want
 # the spaces for the undefined pieces, so REGRESSION_TESTS formats
@@ -929,6 +965,7 @@ fi
 echo "  pcre (Shapefile customization) ............ : $use_pcre"
 echo "  Berkeley DB map caching-Raster map speedups : $use_map_cache"
 echo "  internet map retrieval .................... : $use_retrieval"
+echo "  Nominatim Geocoding ....................... : $use_nominatim"
 echo
 echo FOR THE ADVENTUROUS:
 echo "  AX25 (Linux Kernel I/O Drivers) ........... : $use_ax25"
