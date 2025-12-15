@@ -1881,7 +1881,7 @@ void display_file(Widget w)
   Draw_All_CAD_Objects(w);        // Draw all CAD objects, duh.
 
   // Check if we should mark where we found an address
-  if (mark_destination && show_destination_mark)
+  if (mark_destination)
   {
     int offset;
 

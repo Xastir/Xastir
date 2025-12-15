@@ -643,7 +643,6 @@ void save_data(void)
     store_string (fout, "SOUND_DIR", SOUND_DIR);
     store_string (fout, "GROUP_DATA_FILE", group_data_file);
     store_string (fout, "GNIS_FILE", locate_gnis_filename);
-    store_int (fout, "SHOW_FIND_TARGET", show_destination_mark);
 
 #ifdef HAVE_NOMINATIM
     /* Nominatim geocoding configuration */
@@ -1707,7 +1706,6 @@ void load_data_or_default(void)
                     get_data_base_dir ("GNIS/WA.gnis"));
   }
 
-  show_destination_mark = get_int ("SHOW_FIND_TARGET", 0, 1, 1);
 
 #ifdef HAVE_NOMINATIM
   /* Nominatim geocoding configuration */
