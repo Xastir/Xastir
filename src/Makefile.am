@@ -29,7 +29,6 @@ XASTIR_SRC = \
     festival.c festival.h \
     fetch_remote.c fetch_remote.h \
     forked_getaddrinfo.c forked_getaddrinfo.h \
-    geo-find.c geo.h \
     geocoder.c geocoder.h \
     geocoder_gui.c \
     gps.c gps.h \
@@ -38,7 +37,6 @@ XASTIR_SRC = \
     igate.c igate.h \
     interface.c interface.h \
     interface_gui.c \
-    io-common.c io-mmap.c io.h \
     lang.c lang.h \
     leak_detection.h \
     list_gui.c list_gui.h \

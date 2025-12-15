@@ -40,6 +40,11 @@
 // Must be last include file
 #include "leak_detection.h"
 
+// Destination marking
+long destination_coord_lat = 0;
+long destination_coord_lon = 0;
+int mark_destination = 0;
+
 // Error message storage
 static char last_error[256] = "";
 

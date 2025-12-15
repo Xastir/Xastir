@@ -75,12 +75,6 @@ static xastir_mutex geocoder_dialog_lock;
 static xastir_mutex geocoder_config_lock;
 static struct geocode_result_list current_results;
 
-// Destination marking
-long destination_coord_lat = 0;
-long destination_coord_lon = 0;
-int mark_destination = 0;
-int show_destination_mark = 1;  // This used to be a checkbox in the GUI, now we handle it as a button
-
 // Country code mapping (ISO 3166-1 alpha-2)
 struct country_option {
     const char *label;

@@ -47,7 +47,6 @@
 #include "draw_symbols.h"
 #include "maps.h"
 #include "track_gui.h"
-#include "geo.h"
 #include "snprintf.h"
 #include "objects.h"
 #include "objects_gui.h"
