@@ -1,0 +1,170 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# dbfawk designed for 2025 Tiger/Line area landmarks shapefiles
+BEGIN {
+dbfinfo="STATEFP:ANSICODE:AREAID:FULLNAME:MTFCC:ALAND:AWATER:INTPTLAT:INTPTLON:PARTFLG";
+dbffields="FULLNAME:MTFCC";
+}
+
+BEGIN_RECORD {
+  color=127; # color 127 used on things we missed.
+             #Only here so I can spot when I've forgot a good rule for something
+  name="";  pattern=0; key=""; lanes=1;
+  filled=1; fill_style=2;fill_stipple=0; fill_color=127;
+  label_color=127;
+  display_level=8192; label_level=8192;
+  font_size=1;
+  symbol="/.";
+}
+
+/^FULLNAME=(.+)$/ {name=$1; next;}
+
+#Mountain peaks
+/^MTFCC=C3022$/ {symbol="\n"; display_level=1024; label_level=512; next;}
+
+#Islands
+/^MTFCC=C3023$/ {symbol="/i"; display_level=1024; label_level=64; color=115; fill_color=115; label_color=8; next;}
+
+#Quarries
+/^MTFCC=C3026$/ {symbol="/i"; display_level=1024; label_level=64; color=70; fill_color=70; label_color=8; next;}
+
+# cul-de-sacs and traffic circles (barely show these!)
+/^MTFCC=C3061$/ {symbol="\o"; display_level=8; label_level=8; next;}
+/^MTFCC=C3062$/ {symbol="\o"; display_level=10; label_level=8; next;}
+
+# gates
+/^MTFCC=C3066$/ {symbol="//"; display_level=8; name="$name(gate)"; next;}
+
+# Towers
+/^MTFCC=C3071$/ {symbol="/r"; display_level=128; label_level=16; next;}
+
+#Lighthouse beacon
+/^MTFCC=C3074/ {symbol="\L"; display_level=128; label_level=32; next;}
+
+# Tank or tank farm
+/^MTFCC=C3075$/ {symbol="\0T"; display_level=128; label_level=16; next;}
+
+# Monument or memorial
+/^MTFCC=C3078$/ {symbol="//"; display_level=128; label_level=16; next;}
+
+# Windmill farms and windmills
+/^MTFCC=C3076$/ {symbol="\0W"; display_level=1024; label_level=16; next;}
+/^MTFCC=C3081$/ {symbol="\0W"; display_level=64; label_level=16; next;}
+
+# Solar farms
+/^MTFCC=C3077$/ {symbol="\0S"; display_level=1024; label_level=16; color=115; fill_color=115; label_color=8; next;}
+
+# "Locality point"
+/^MTFCC=C3081$/ {symbol="\)"; display_level=128; label_level=64; next;}
+
+#Alaska Native Village Official Point
+/^MTFCC=C3085$/ {symbol="\)"; display_level=128; label_level=64; next;}
+
+#Apartment buildings
+/^MTFCC=K1121$/ {symbol="/-"; display_level=64; label_level=32; color=98; fill_color=98; next;}
+
+#RV parks
+/^MTFCC=K1223$/ {symbol="/-"; display_level=64; label_level=32; color=98; fill_color=98; next;}
+
+#Crew of vessel location
+/^MTFCC=K1225$/ {symbol="/s"; display_level=256; label_level=128; next;}
+
+# hostels and youth centers, housing authorities
+/^MTFCC=K1226$/ {symbol="/-"; display_level=64; label_level=32; color=114; fill_color=114; next;}
+/^MTFCC=K1227$/ {symbol="/-"; display_level=64; label_level=32; color=114; fill_color=114; next;}
+
+#campgrounds
+/^MTFCC=K1228$/ {symbol="/-"; display_level=64; label_level=32; color=114; fill_color=114; next;}
+
+#Shelter or mission
+/^MTFCC=K1229$/ {symbol="/-"; display_level=64; label_level=32; color=115; fill_color=115; next;}
+
+#Hospitals and other medical-type facilities
+/^MTFCC=K123[13]$/ {symbol="/h"; display_level=256; label_level=63; color=98; fill_color=98; fill_stipple=2; next;}
+
+# jails and things like them
+/^MTFCC=K123[5678]$/ {symbol="\AJ"; display_level=64; label_level=32; color=37; fill_color=37; next;}
+
+# Convents, monasteries, other religious facilities
+/^MTFCC=K1239$/ {symbol="\+M"; display_level=128; label_level=32; next;}
+
+# Military installations
+/^MTFCC=K2110$/ {symbol="\aM"; display_level=128; label_level=32; next;}
+
+# Community center
+/^MTFCC=K2146$/ {symbol="\AC"; display_level=128; label_level=64; next;}
+
+# Government center
+/^MTFCC=K2165$/ {symbol="\AG"; display_level=256; label_level=64; next;}
+
+# Convention center
+/^MTFCC=K2167$/ {symbol="\AF"; display_level=256; label_level=64; next;}
+
+# All other governmental...
+/^MTFCC=K21..$/ {symbol="\AG"; display_level=256; label_level=64; fill_color=115; color=115; label_color=8; next;}
+
+# Parks of all flavors (\; would be better, but dbfawk is broken!), plus
+# amusement centers
+/^MTFCC=K218.$/ {symbol="\AP"; display_level=1024; label_level=64; color=114; fill_color=114; label_color=73; next;}
+/^MTFCC=K2190$/ {symbol="\AP"; display_level=1024; label_level=64; color=114; fill_color=114; label_color=73; next;}
+/^MTFCC=K2564$/ {symbol="\AP"; display_level=1024; label_level=64; color=114; fill_color=114; label_color=73; next;}
+
+#post offices
+/^MTFCC=K2191$/ {symbol="/]"; display_level=256; label_level=64; next;}
+
+#Fire stations
+/^MTFCC=K2193$/ {symbol="/d"; display_level=256; label_level=64; next;}
+
+#Police stations
+/^MTFCC=K2194$/ {symbol="/P"; display_level=256; label_level=64; next;}
+
+#libraries
+/^MTFCC=K2195$/ {symbol="\AL"; name="$name (library)"; display_level=256; label_level=64; next;}
+
+# All manner of commercial spaces
+/^MTFCC=K23..$/ {display_level=256; label_level=128; color=113; fill_color=113; label_color=80; next;}
+
+#Town halls
+/^MTFCC=K2196$/ {symbol="\AT"; display_level=256; label_level=64; next;}
+
+#Transportation terminal (Symbol is a bus, but we are limited in choices)
+/^MTFCC=K2400$/ {symbol="/U"; display_level=256; label_level=128; next;}
+
+#Marinas and docks
+/^MTFCC=K2424$/ {symbol="/s"; display_level=256; label_level=128; color=117; fill_color=117; fill_stipple=2; next;}
+/^MTFCC=K2432$/ {symbol="/s"; display_level=256; label_level=128; color=117; fill_color=117; fill_stipple=2; next;}
+
+#airports (/' would be better, but dbfawk is broken)
+/^MTFCC=K245[17]$/ {symbol="/^"; display_level=256; label_level=128; color=98; fill_color=98; label_color=80; next;}
+
+#Train station
+/^MTFCC=K2452$/ {symbol="/="; display_level=256; label_level=128; next;}
+
+#Bus station
+/^MTFCC=K2453$/ {symbol="/U"; display_level=256; label_level=128; next;}
+
+#Marine terminal
+/^MTFCC=K2454$/ {symbol="/s"; display_level=256; label_level=128; next;}
+
+#Seaplane anchorage (No good symbol, use S overlaid on circle
+/^MTFCC=K2455$/ {symbol="\0S"; display_level=256; label_level=128; next;}
+
+#heliports/landing pads
+/^MTFCC=K2460$/ {symbol="\0H"; display_level=256; label_level=128; next;}
+
+# Schools (universities and other)
+/^MTFCC=K254[03]$/ {symbol="/K"; display_level=256; label_level=128; color=98; fill_color=98; label_color=8; next;}
+
+# Museums and other tourist attractions
+/^MTFCC=K2545$/ {symbol="\AM"; display_level=256; label_level=128; next;}
+
+# Golf Courses
+/^MTFCC=K2561$/ {symbol="/5"; display_level=64; label_level=32; color=114; fill_color=114; next;}
+
+# Cemetery and churches
+/^MTFCC=K2582$/ {symbol="\+"; display_level=128; label_level=32; color=113; fill_color=113; next;}
+/^MTFCC=K3544$/ {symbol="\+"; display_level=128; label_level=32; color=113; fill_color=113; next;}
+
+# Zoos
+/^MTFCC=K2586$/ {symbol="//"; display_level=128; label_level=32; next;}
