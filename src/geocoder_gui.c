@@ -437,8 +437,6 @@ static void search_callback(Widget UNUSED(widget), XtPointer UNUSED(clientData),
     // Get selected country filter using helper function
     if (country_combo) {
         country_codes = get_selected_country_code(country_combo, country_custom_text, NULL);
-        fprintf(stderr, "DEBUG: Using country code='%s'\n",
-                country_codes ? country_codes : "(none)");
     }
 
     // Clear previous results
