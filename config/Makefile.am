@@ -97,6 +97,7 @@ EXTRA_DIST = \
     tl_2025_county.dbfawk \
     tl_2025_cousub.dbfawk \
     tl_2025_linearwater.dbfawk \
+    tl_2025_place.dbfawk \
     tl_2025_pointlm.dbfawk \
     tl_2025_roads.dbfawk \
     tl_2025_rails.dbfawk \
