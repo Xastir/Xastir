@@ -23,5 +23,5 @@ BEGIN_RECORD {
   display_level=8192; label_level=512; font_size=1; symbol="";
 }
 
-/^NAME=(.+)$/ {name="$1"; next;}
+/^NAME20=(.+)$/ {name="$1"; next;}
 
