@@ -1,0 +1,46 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# dbfawk designed for 2025 Tiger/Line roads and "prisecroads" shapefiles
+BEGIN {
+dbfinfo="LINEARID:FULLNAME:RTTYP:MTFCC";
+dbffields="FULLNAME:MTFCC";
+}
+
+BEGIN_RECORD {
+  color=11; # color 11 used on things we missed.
+  name=""; filled=0; pattern=0; key=""; lanes=1; fill_color=20; label_color=78; fill_style=0;
+  display_level=64; label_level=8; font_size=1; symbol=""; fill_stipple=0;
+}
+
+# only label non-null names
+/^FULLNAME=(.+)$/ {name="$1";next; }
+
+
+/^MTFCC=S1100$/ { # Freeways/major highways
+lanes=3; color=106; label_color=8; display_level=4096; label_level=256; font_size=3; next; }
+/^MTFCC=S1200$/ { # Secondary roads
+display_level=256; lanes=2; color=107; label_color=8; label_level=128; font_size=2; next; }
+/^MTFCC=S1400$/ { # Local roads, ramps and service drives/frontage roads
+display_level=64; color=80; label_color=80; label_level=8; color=48; lanes=1; font_size=2; next; }
+/^MTFCC=S1500$/ { # 4WD off-road trail
+color=4; label_color=4; display_level=64; label_level=8; font_size=1; name="$name (off-road trail)"; next; }
+/^MTFCC=S16[34]0$/ { # ramps and service roads for Freeways/major highways
+color=80; label_color=80; lanes=2; display_level=64; next; }
+/^MTFCC=S1710$/{ #pedestrian walkways/trails
+color=4; label_color=4; pattern=1; display_level=16; label_level=8; next;}
+/^MTFCC=S172/ { # stairway
+lanes=1; color=12; label_color=12; pattern=2; display_level=16; label_level=8; name="$name (stairs)"; next; }
+/^MTFCC=S1730$/ { # alley
+color=47; label_color=47; pattern=1; display_level=16; name="$name (alley)"; label_level=8; next; }
+/^MTFCC=S1740/ { # service road
+lanes=1; color=23; label_color=23; pattern=2; display_level=32; label_level=8; name="$name (service road)"; next; }
+/^MTFCC=S1780/ { # parking lot road
+lanes=1; color=23; label_color=23; pattern=2; display_level=32; label_level=8; name="$name (parking lot road)"; next; }
+/^MTFCC=S1820$/ { # bike path
+lanes=1; color=65; label_color=65; pattern=1; display_level=64; label_level=8; name="$name (bikeway)"; next; }
+/^MTFCC=S1830/ { # bridle path
+lanes=1; color=65; label_color=65; pattern=2; display_level=64; label_level=8; name="$name (bridle path)"; next; }
+
+#END_RECORD {}
+#END {}

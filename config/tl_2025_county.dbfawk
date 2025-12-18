@@ -1,0 +1,27 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# dbfawk designed for 2025 Tiger/Line "county" (counties) shapefiles
+#
+# This one's simple.  All shapes are G4020 for MTFCC, all will render the
+#same.  Just set color and display level in BEGIN_RECORD, name per record,
+# and we're done.
+#
+# For best results, the "tl_2025_us_county.shp" file should be a fairly low layer
+# as it otherwise covers other features in vector layers.
+#
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:COUNTYNS:GEOID:GEOIDFQ:NAME:NAMELSAD:LSAD:CLASSFP:MTFCC:CSAFP:CBSAFP:METDIVFP:FUNCSTAT:ALAND:AWATER:INTPTLAT:INTPTLON";
+dbffields="NAME";
+}
+
+
+BEGIN_RECORD {
+  color=80;
+  name=""; filled=1; pattern=0; key=""; lanes=1; label_color=80;
+  fill_style=2; fill_stipple=1; fill_color=78;
+  display_level=8192; label_level=1024; font_size=4; symbol="";
+}
+
+/^NAME=(.+)$/ {name="$1"; next;}
+

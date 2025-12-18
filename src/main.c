@@ -11023,6 +11023,8 @@ void create_gc(Widget w)
 
   // These colors added to make it possible to color local shapefile tiger
   //  maps similar to on-line ones.
+  colors[0x6a] = GetPixelByName(w,"tgr_prird_1");
+  colors[0x6b] = GetPixelByName(w,"tgr_secrd_1");
   colors[0x70] = GetPixelByName(w,"RosyBrown2");
   colors[0x71] = GetPixelByName(w,"gray81");
   colors[0x72] = GetPixelByName(w,"tgr_park_1");

@@ -1,0 +1,33 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# dbfawk designed for 2025 Tiger/Line linearwater shapefiles
+BEGIN {
+dbfinfo="ANSICODE:LINEARID:FULLNAME:ARTPATH:MTFCC";
+dbffields="FULLNAME:MTFCC";
+}
+
+BEGIN_RECORD {
+  color=127; # color 127 used on things we missed.
+             #Only here so I can spot when I've forgot a good rule for something
+  name="";  pattern=0; key=""; lanes=1;
+  filled=0; fill_style=0;fill_stipple=0; fill_color=127;
+  label_color=127;
+  display_level=64; label_level=8;
+  font_size=1;
+  symbol="";
+}
+
+/^FULLNAME=(.+)$/ {name="$1";next;}
+
+#Rivers
+/^MTFCC=H3010$/ {color=117; lanes=1; pattern=0; display_level=256;                  label_color=26;
+    next;}
+# braided streams/rivers
+/^MTFCC=H3013$/ {color=117; lanes=1; pattern=0; display_level=256;
+    label_color=26;
+    next;}
+# canals, ditches, aquaducts (slightly different shade of blue, dashed lines)
+/^MTFCC=H3020$/ {color=101; lanes=1; pattern=1; display_level=256;
+    label_color=26;
+    next;}

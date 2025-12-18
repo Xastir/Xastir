@@ -1,0 +1,26 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+#
+# dbfawk designed for 2025 Tiger/Line "cousub" (county subdivisions) shapefiles
+#
+# This one's simple.  All shapes are G4040 for MTFCC, all will render the
+#same.  Just set color and display level in BEGIN_RECORD, name per record,
+# and we're done.
+#
+# For best results, the "tl_2025_??_cousub.shp" files should be a fairly low layer
+# as it otherwise covers other features in vector layers.
+#
+BEGIN {
+dbfinfo="STATEFP:COUNTYFP:COUSUBFP:COUSUBNS:GEOID:GEOIDFQ:NAME:NAMELSAD:LSAD:CLASSFP:MTFCC:FUNCSTAT:ALAND:AWATER:INTPTLAT:INTPTLON";
+dbffields="NAME";
+}
+
+BEGIN_RECORD {
+  color=81;
+  name=""; filled=1; pattern=0; key=""; lanes=1; label_color=81;
+  fill_style=2; fill_stipple=0; fill_color=42;
+  display_level=4096; label_level=1024; font_size=4; symbol="";
+}
+
+/^NAME=(.+)$/ {name="$1"; next;}
+
