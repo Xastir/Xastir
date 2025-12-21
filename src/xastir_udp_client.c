@@ -109,10 +109,6 @@ int try_exchange(struct addrinfo *addr, char *buffer, int UNUSED(buflen) )
   return 1;
 }
 
-#ifndef AI_DEFAULT
-  #define AI_DEFAULT (AI_V4MAPPED|AI_ADDRCONFIG)
-#endif
-
 // Loop through the possible addresses for hostname (probably IPv6 and IPv4)
 // Tries until we are successful (get a response) or we run out of addresses
 int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
@@ -124,13 +120,14 @@ int exchange_packet(char *hostname, char *port, char *buffer, int buflen)
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = PF_UNSPEC;
   hints.ai_socktype = SOCK_DGRAM;
-  hints.ai_flags = AI_DEFAULT;
+  hints.ai_flags = (AI_V4MAPPED|AI_ADDRCONFIG);
 
   error = getaddrinfo(hostname, port, &hints, &res);
   if (error)
   {
     fprintf(stderr, "Error: Unable to lookup addresses for host %s port %s\n",
             hostname, port);
+    fprintf(stderr, "Getaddrinfo returned error: %s\n",gai_strerror(error));
     return 1;
   }
 
