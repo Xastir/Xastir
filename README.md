@@ -1,4 +1,21 @@
 # README
+
+> [!IMPORTANT]
+>
+> This document makes a lot of references to the Xastir
+> wiki and mailing lists at xastir.org.  At this time (December 2025)
+> that site is experiencing frequent downtime and may be unavailable.
+> This is being worked on.
+>
+> In the meantime, we have been trying to expand the documentation
+> available in the wiki on GitHub.  Please look there first, as much
+> of the information on the xastir.org site is outdated.  The
+> information on the Github wiki is very incomplete, but what is there
+> is more up-to-date than what's on the xastir.org wiki.
+>
+> Please use Github issues to report bugs and Github Discussions to
+> open topics of conversation until we get the mailing lists back on line.
+
 ------------------------------------------------------------------------
 
  Please at least SKIM this document before asking questions. In fact,
@@ -51,8 +68,9 @@
 
    More information on Xastir can be found here:
 
-   * http://xastir.org
+   * https://github.com/Xastir/Xastir/wiki
    * http://github.com/Xastir
+   * http://xastir.org
 
    including the latest releases, Git access (lets you
    download the latest developers' code), and information on how to join
@@ -80,7 +98,7 @@
    * Git USAGE
 
      Obtain the *very latest* version of Xastir under development by
-     using Git. 
+     using Git.
 
      See the file [README.GIT](README.GIT) for more details.
 
@@ -94,10 +112,13 @@
 
 3. QUICK STARTUP
 
+   Please see the [Xastir wiki at github](https://github.com/Xastir/Xastir/wiki) for the most
+   up-to-date documentation on getting started with Xastir.
+
    See [INSTALL.md](INSTALL.md) for a
    relatively quick overview of how to build and use Xastir.
 
-   Check the Xastir wiki (http://xastir.org) for OS-specific guidance
+   The Xastir wiki (http://xastir.org) might have OS-specific guidance
    for building Xastir on your system.
 
    WINDOWS USERS:  Please refer to the [README.CYGWIN](README.CYGWIN) file for
@@ -127,17 +148,20 @@
 
 6. OS SPECIFIC NOTES
 
-   [The OS-specific notes that were here were horribly outdated
-   and not maintained.  That text has been removed.  Please
-   see the Xastir wiki at http://xastir.org in the "Installation Notes"
-   section for OS-specific build guidance.]
+   There are some OS-specific installation notes at
+   https://github.com/Xastir/Xastir/wiki.  We are working on expanding
+   the section.
+
+   There are more OS-specific installation notes at http://xastir.org
+   in the "Installation Notes" section for OS-specific build guidance.
+   Some are very outdated, but may still be helpful.
 
 7. GATING WEATHER ALERTS, STATIONS, OBJECTS/ITEMS TO RF
 
    ## Gating NWS Weather Alerts to RF:
- 
+
    If you wish to gate NWS weather alerts from the Internet onto RF, you'll
-   need to create a text file in the users directory as 
+   need to create a text file in the users directory as
    ~/.xastir/data/nws-stations.txt
    List each NWS station that you would like to transmit via RF. Wildcards
    are implied for lengths of 3 or greater. Here's what an example file
@@ -180,7 +204,7 @@
    case-insensitive, so they'll match any case in received packets.
 
    Bob Bruninga, WB4APR, recommends gating these calls to RF:
-        
+
     SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD, MARS, JOTA
 
    See his link: "Generic Callsigns for National Events" off this web page
@@ -231,10 +255,11 @@
 
         ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 
-   Frank is no longer developing the Xastir code (although
-   he does put a word in every now and then) so don't bother
-   e-mailing him. If you have a serious problem, email the
-   Xastir mailing list and it will get to the coders.
+   Frank is no longer developing the Xastir code and has not
+   participated in Xastir development for many years, so don't bother
+   searching him out and emailing him. If you have a serious problem,
+   open an issue on Github.  You may also try posting to the xastir
+   mailing list.
 
    Please, before posting to this list, see what things are
    like, and when you do post, read over your post for
