@@ -12,7 +12,6 @@ dist_scripts_DATA = \
     geopdf2gtiff.pl \
     get-BOMdata \
     get-fcc-rac.pl \
-    get-gnis \
     get-NWSdata \
     gpx2shape \
     icontable.pl \
@@ -32,8 +31,6 @@ dist_scripts_DATA = \
     pos2shp.pl \
     ridge_radar.pl \
     slideshow.pl \
-    split_gnis.bash \
-    split_gnis.pl \
     test_coord.pl \
     toporama50k.pl \
     toporama250k.pl\
@@ -45,4 +42,4 @@ dist_scripts_DATA = \
 
 install-data-hook:
 	cd $(DESTDIR)$(scriptsdir) && \
-	chmod a+x *.pl get-* gpx2* *.bash
+	chmod a+x *.pl get-* gpx2*

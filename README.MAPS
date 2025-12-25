@@ -1,4 +1,8 @@
+NOTE:  This file is very old and contains much information that is outdated.
+It is in the process of being replaced by pages on the GitHub Wiki at
+https://github.com/Xastir/Xastir/wiki, but that work is not complete.
 
+This file is being kept around until more up-to-date information is available.
 
 Recommended Configurations for:
 
@@ -48,21 +52,19 @@ WinAPRS             Built-in.
 X-APRS              Built-in.
 MacAPRS             Built-in.
 PocketAPRS          Built-in.
-USGS GNIS           Built-in.  Can split into county-sized chunks
-                    using xastir/scripts/split_gnis.pl to speed
-                    things up.
+USGS GNIS           Built-in.
 Address Lookup      CURL, cJSON
 Weather Alerts      Shapelib
 pre-2003 Tigermaps  Shapelib
 post-2003 Tigermaps Shapelib, pcre
 ESRI Shapefiles     Shapelib
-Image Maps          ImageMagick.  Often need lcms library and others
-                    as well (whatever it takes to make ImageMagick
+Image Maps          GraphicsMagick.  Often need lcms library and others
+                    as well (whatever it takes to make GraphicsMagick
                     happy).  Can also use the XPM library for some
-                    image types without installing ImageMagick.
-Internet Maps       ImageMagick plus wget or libcurl.  Often need
+                    image types without installing GraphicsMagick.
+Internet Maps       GraphicsMagick plus wget or libcurl.  Often need
                     lcms library and others as well (whatever it
-                    takes to make ImageMagick happy). WMS Maps are
+                    takes to make GraphicsMagick happy). WMS Maps are
                     in this category as well.
 UI-View Maps        Convert from .INF to .GEO format using
                     xastir/scripts/inf2geo.pl
@@ -175,7 +177,7 @@ Getting Maps and other Data Files for Xastir:
 
     Download some maps:
 
-      If you compiled with ImageMagick and have wget or libcurl installed,
+      If you compiled with GraphicsMagick and have wget or libcurl installed,
       you can skip this step and use the online OSM/WMS maps
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
@@ -226,7 +228,9 @@ Getting Maps and other Data Files for Xastir:
       Vector Format:
       .shp/.shx/.dbf  Shapefile vector map (need all three files)
       .map            APRSdos/WinAPRS/MacAPRS vector map
-      .gnis           GNIS labels file (actually points instead of vectors)
+      .gnis           post-2009, pre-2021 GNIS labels file (actually points
+                      instead of vectors)
+      .pop            Pre-2009 GNIS labels file
       .geo            Vector map or Internet vector map.  Note that for
                       http/ftp-based maps Xastir requires an IMAGESIZE line.
 
@@ -239,7 +243,7 @@ Getting Maps and other Data Files for Xastir:
       Note:  .geo is listed twice because it can fit in both categories,
       depending on the base format of the map file that the .geo file
       points to.  .geo files are handled by the XPM library or by
-      ImageMagick, so most anything that can be handled by those installed
+      GraphicsMagick, so most anything that can be handled by those installed
       libraries can by handled by Xastir.
 
       A few maps of various types are available from:
@@ -953,7 +957,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
 
     .geo files/online maps & graphics:
 
-      If you have ImageMagick and wget or libcurl installed, .geo files
+      If you have GraphicsMagick and wget or libcurl installed, .geo files
       for NWS radars are available from one of these sites:
 
           ftp://gcpoolz.com/geos/Srb_geos.zip
@@ -988,7 +992,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
           (0,0) at the upper left.  A good value for the NWS radar
           images above is "CROP 35 20 616 600"
       GAMMA, CONTRAST, NEGATE, EQUALIZE, NORMALIZE, LEVEL, MODULATE:  These 
-          are all ImageMagick options, and are documented there, and
+          are all GraphicsMagick options, and are documented there, and
           briefly in the xastir help file.
 
      
@@ -1008,58 +1012,51 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
 
      Geographic Names Information System Labels:
 
-      These aren't maps, but are collections of name labels for locations.
-      These display at various zoom levels like Dos/WinAPRS map labels, but are
-      also searchable from the Maps menu.
+      These aren't intended as maps, but are collections of name
+      labels for locations.  Older versions of the GNIS format
+      produced prior to 2009 had information in them that made them
+      useful to Xastir as map files.
 
-         http://geonames.usgs.gov/
+      The primary value of GNIS files available after 2009 is to
+      enable the "Locate Map Feature" function in the Maps menu.
 
-      Click the link "Download GNIS Data: State and Topical Gazetteers" on
-      the left.
+      The only file of use is the POP_PLACES_20210825.txt file, which
+      can be downloaded from:
 
-      These files should be renamed in the form "<ST>.gnis" after download,
-      where <ST> is the abbreviation for the state that they cover, and
-      should be placed in the /usr/local/share/xastir/GNIS/ directory. To
-      make sure that maps are layered correctly with GNIS labels on the top
-      of the map stack, plus searchable, it is suggested that you link
-      /usr/local/share/xastir/maps/z to this GNIS directory.
+          https://prd-tnm.s3.amazonaws.com/StagedProducts/GeographicNames/Archive/TopicalGazetteers/POP_PLACES.zip
 
-      Type this as root to create the link and directories:
-       cd /usr/local/share/xastir/maps
-       ln -s ../GNIS z
+      Unzip the zipfile to get the .txt file.
 
-      The map files must end in ".gnis" to be used by Xastir, and must be in
-      pipe delimited format.  These are readily available from the above link
-      with such filenames as "AZ_DECI.TXT". The files must be renamed to
-      <ST>.gnis, and the trailing whitespace should be removed for speed. This
-      can be accomplished in one step with the following command. (bash
-      style...)
+      Note that this is an archived file that stopped being updated in
+      2021.  There are newer files at:
 
-   for a in *deci; do sed -e 's/[ ]*$//g' < $a > `basename $a _deci`.gnis; done
+          https://www.usgs.gov/us-board-on-geographic-names/download-gnis-data site
 
-      Individual files can have whitespace removed as follows:
-        sed -e 's/[ ]*$//g' < inputfile > outputfile
+      but these are not supported in Xastir.
 
-      Populated places GNIS file can be had at:
+      If you put this in your maps directory and rename it to have the
+      ".gnis" extension, Xastir can try to render it as a map, but
+      because this format lacks any information Xastir can use to pick
+      and choose what to display, it is a fairly useless map format.
 
-          http://geonames.usgs.gov/stategaz/POP_PLACES_DECI.zip
+      The Locate Map Feature function can use this file as is without
+      renaming.  Put it anywhere Xastir can find it and give the full
+      path to the file when using the Locate Map Feature Dialog.
 
-      A note from Jason Winningham, kg4wsv:
+     Pre-2009 format GNIS files
 
-      "The file has over 181k records in it.  You can use the following command
-      to weed out all places with populations less than 1000, and get it down
-      to just under 14k records, which is really fast to load: 
+      Xastir can still read very old GNIS files produced before 2009, if
+      you can find any.  These are usable in Xastir as map files if you
+      rename them to have the ".pop" extension.
 
-        awk -F\| '{if ($17 > 1000) print $0}' \
-            /usr/local/share/xastir/GNIS/0pop_places.gnis \
-            >/usr/local/share/xastir/GNIS/0pop_places_over_1k.gnis
-
-      I stuck a zero at the beginning of the filename so this would
-      show up in the GNIS directory before any of the state files."
-
+      Some Xastir users had created a repository of old GNIS files for
+      use as maps, but all the servers that had these old files are
+      long gone.  You may be able to get some from long-time Xastir
+      users who never throw anything away.  Ask on the mailing list or
+      on GitHub discussions and you might get lucky.
 
      County weather Warning maps (requires shapefile support):
-      
+
        The latest shapefile format weather maps may be found here:
          http://www.nws.noaa.gov/geodata/
 
@@ -1091,7 +1088,7 @@ and tested.  Git will be updated once the scripts are proven to work again. ****
       Unzip those files in the /usr/local/share/xastir/Counties/ directory and
       Xastir should find them and use them for weather alerts. Be sure to
       include the .shp, .shx, .and dbf.
-           
+
        Note that you can also use the county file as the background polygon
        filled map for drawing county lands and borders.  Either make a link
        to these files from your maps directory, or copy the files there so
