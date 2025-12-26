@@ -2943,8 +2943,9 @@ int ok_to_draw_station(DataRow *p_station)
       // CW through GW and then four digits.  There will undoubtedly be
       // more added in future years, so let's not be *too* restrictive,
       // but let's not be too aggressive, either.
-      if ((p_station->call_sign[0] >= 'C' && p_station->call_sign[0] <= 'G')
-          && p_station->call_sign[1] == 'W' )
+      if (((p_station->call_sign[0] >= 'C' && p_station->call_sign[0] <= 'G')
+           || (p_station->call_sign[0] >= 'c' && p_station->call_sign[0] <= 'g'))
+          && (p_station->call_sign[1] == 'W' || p_station->call_sign[1] == 'w'))
       {
         if ( is_num_chr(p_station->call_sign[2])
              && is_num_chr(p_station->call_sign[3])
