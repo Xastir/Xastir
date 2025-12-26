@@ -34,7 +34,7 @@ jobs:
     - name: Update Packages
       run: sudo apt-get update
     - name: Install Packages
-      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp libcjson1 libcjson-dev
+      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp libcjson1 libcjson-dev wget
     - name: Bootstrap (with autoreconf)
       run: autoreconf -i
     - name: configure
@@ -45,6 +45,8 @@ jobs:
       run: make check
     - name: make install
       run: sudo make install
+    - name: get NWS data
+      run:  sudo /usr/local/share/xastir/scripts/get-NWSdata
 
   macos-build:
     runs-on: macos-latest
@@ -82,7 +84,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         autoreconf -i
     - name: configure out-of-source
-      shell: freebsd {0} 
+      shell: freebsd {0}
       run: |
         cd $GITHUB_WORKSPACE
         cd ..
