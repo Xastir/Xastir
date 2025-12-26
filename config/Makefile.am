@@ -32,46 +32,12 @@ EXTRA_DIST = \
     tgrplc00.dbfawk \
     tgrwat.dbfawk \
     nwsc_ddmmyy.dbfawk \
-    nwsc_ddmmyy_09.dbfawk \
-    nwsc_ddmmyy_09b.dbfawk \
-    nwsc_ddmmyy_10.dbfawk \
-    nwsc_ddmmyy_10a.dbfawk \
-    nwsc_ddmmyy_13.dbfawk \
-    nwsc_ddmmyy_15.dbfawk \
-    nwsfz_ddmmyy_19.dbfawk \
+    nwsfz_ddmmyy.dbfawk \
     nwsmzddmmyy.dbfawk \
-    nwsmzddmmyy_09.dbfawk \
-    nwsmzddmmyy_11.dbfawk \
-    nwsmzddmmyy_16.dbfawk \
-    nwsmzddmmyy_17.dbfawk \
-    nwsmzoddmmyy.dbfawk \
     nwsozddmmyy.dbfawk \
-    nwsozddmmyy_09.dbfawk \
-    nwsozddmmyy_14.dbfawk \
-    nwsozddmmyy_14b.dbfawk \
-    nwsozddap12.dbfawk \
     nwsw_ddmmyy.dbfawk \
-    nwsw_ddmmyy_09.dbfawk \
-    nwsw_ddmmyy_10.dbfawk \
-    nwsw_ddmmyy_13.dbfawk \
-    nwsw_ddmmyy_14.dbfawk \
-    nwsw_ddmmyy_14a.dbfawk \
-    nwsw_ddmmyy_17.dbfawk \
-    nwsw_ddmmyy_20.dbfawk \
-    nwsw_ddmmyy_22.dbfawk \
-    nwsw_ddjn12.dbfawk \
     nwsz_ddmmyy.dbfawk \
-    nwsz_ddmmyy_09.dbfawk \
-    nwsz_ddmmyy_10.dbfawk \
-    nwsz_ddmmyy_10b.dbfawk \
-    nwsz_ddmmyy_10c.dbfawk \
-    nwsz_ddmmyy_11.dbfawk \
-    nwsz_ddmmyy_13.dbfawk \
-    nwsz_ddmmyy_19.dbfawk \
-    nwsz1ddmmyy.dbfawk \
-    nwszoddmmyy.dbfawk \
     nwshzddmmyy.dbfawk \
-    nwshzddmmyy_old14.dbfawk \
     OSM_Cloudmade_administrative.dbfawk \
     OSM_Cloudmade_highway.dbfawk \
     OSM_Cloudmade_natural.dbfawk \
