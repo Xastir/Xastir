@@ -16,7 +16,7 @@ jobs:
     - name: Update Packages
       run: sudo apt-get update
     - name: Install Packages
-      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev
+      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
@@ -34,7 +34,7 @@ jobs:
     - name: Update Packages
       run: sudo apt-get update
     - name: Install Packages
-      run: sudo apt-get install -y graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre3-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp libcjson1 libcjson-dev
+      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev libproj-dev festival festival-dev libgeotiff-dev gpsman gpsmanshp libcjson1 libcjson-dev
     - name: Bootstrap (with autoreconf)
       run: autoreconf -i
     - name: configure
