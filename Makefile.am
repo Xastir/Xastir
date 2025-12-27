@@ -13,7 +13,7 @@ SUBDIRS = src config help scripts symbols callpass tests
 # DISTCLEANFILES =
 
 EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
-        missing placeholder FAQ LICENSE README README.GIT \
+        missing placeholder FAQ LICENSE README README.GIT.md \
         README.CYGWIN CONTRIBUTING.md \
         README.MAPS README.OSM_maps README.sudo testdbfawk.1 \
         DEBUG_LEVELS bootstrap.sh INSTALL.md UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \
@@ -61,7 +61,7 @@ sounddir=${pkgdatadir}/sounds
 sound_DATA=placeholder
 
 docdir=${prefix}/share/doc/xastir
-doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT README.CYGWIN \
+doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT.md README.CYGWIN \
         README.MAPS README.sudo COPYING INSTALL.md UPGRADE \
         README.OSM_maps CONTRIBUTING.md \
         COPYING.LIB.LESSTIF

@@ -100,7 +100,7 @@
      Obtain the *very latest* version of Xastir under development by
      using Git.
 
-     See the file [README.GIT](README.GIT) for more details.
+     See the file [README.GIT](README.GIT.md) for more details.
 
    * Release version tarballs
 
