@@ -12,7 +12,7 @@ SUBDIRS = src config help scripts symbols callpass tests
 
 # DISTCLEANFILES =
 
-EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
+EXTRA_DIST = config.guess config.sub install-sh \
         missing placeholder FAQ LICENSE README README.GIT.md \
         README.CYGWIN CONTRIBUTING.md \
         README.MAPS README.OSM_maps README.sudo testdbfawk.1 \
@@ -24,8 +24,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         COPYING COPYING.LIB.LESSTIF AUTHORS NaturalEarthVector
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
-        config.guess config.sub install-sh missing mkinstalldirs \
-        xastir.spec xastir-min.spec
+        config.guess config.sub install-sh missing mkinstalldirs
 
 countydir=${pkgdatadir}/Counties
 county_DATA=placeholder
