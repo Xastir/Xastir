@@ -895,16 +895,12 @@ int pipe_check(char *client_address)
 /* Globals */
 static char **Argv = ((void *)0);
 #ifdef __linux__
-  #ifndef __LSB__
     extern char *__progname, *__progname_full;
-  #endif  // __LSB__
 #endif  // __linux__
 static char *LastArgv = ((void *)0);
 static char **local_environ;
 #ifdef __linux__
-  #ifndef __LSB__
     static char *old_progname, *old_progname_full;
-  #endif  // __LSB__
 #endif  // __linux__
 
 
@@ -921,12 +917,10 @@ void clear_proc_title(void)
     local_environ = NULL;
   }
 #ifdef __linux__
-#ifndef __LSB__
   free(__progname);
   free(__progname_full);
   __progname = old_progname;
   __progname_full = old_progname_full;
-#endif  // __LSB__
 #endif  // __linux__
 }
 
@@ -965,13 +959,11 @@ void init_set_proc_title(int UNUSED(argc), char *argv[], char *envp[])
     }
   }
 #ifdef __linux__
-#ifndef __LSB__
   // Pretty sure you don't need this either
   old_progname = __progname;
   old_progname_full = __progname_full;
   __progname = strdup("xastir");
   __progname_full = strdup(argv[0]);
-#endif  // __LSB__
 #endif  // __linux__
   atexit(clear_proc_title);
 }

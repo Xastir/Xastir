@@ -46,7 +46,7 @@
 
 extern XmFontList fontlist1;    // Menu/System fontlist
 
-#if defined(__LSB__) || defined(LESSTIF_VERSION)
+#if defined(LESSTIF_VERSION)
   #define NO_DYNAMIC_WIDGETS 1
 #endif
 

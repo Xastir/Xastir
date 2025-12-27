@@ -75,13 +75,6 @@ void init_critical_section(xastir_mutex *lock)
   // Note that this stuff is not POSIX, so is considered non-portable.
   // Exists in Linux Threads implementation only?
 
-# ifdef __LSB__
-  // LSB VERSION (Linux Standard Base)
-  // Note that we _must_ use the newer pthread function in this
-  // case per LSB specs.
-  (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-# else   // __LSB__
-  // NON_LSB VERSION
   // Check first for newer pthread function
 #  ifdef HAVE_PTHREAD_MUTEXATTR_SETTYPE
   (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
@@ -89,7 +82,6 @@ void init_critical_section(xastir_mutex *lock)
   // Use older, deprecated pthread function
   (void)pthread_mutexattr_setkind_np(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
 #  endif  // HAVE_PTHREAD_MUTEXATTR_SETTYPE
-# endif  // __LSB__
 
   (void)pthread_mutexattr_init(&attr);
   (void)pthread_mutex_init(&lock->lock, &attr);
