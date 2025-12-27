@@ -80,7 +80,6 @@ XASTIR_COMPILER_FLAGS
 use_festival=yes
 use_gpsman=yes
 use_err_popups=no
-use_lsb=no
 use_spatial_db=no
 use_postgis=no
 use_mysql_spatial=no
@@ -89,8 +88,6 @@ AC_ARG_WITH(festival,[  --without-festival        Disable festival features.],us
 AC_ARG_WITH(gpsman,[  --without-gpsman          Disable gpsman features.],use_gpsman=$withval)
 
 AC_ARG_WITH(errorpopups,[  --with-errorpopups        Send error popups to stderr.],use_err_popups=$withval)
-
-AC_ARG_WITH(lsb,[  --with-lsb                Enable Linux Standard Base.],use_lsb=$withval)
 
 # Now that all the various "use_" variables are set, probe for binaries.
 XASTIR_DETECT_BINARIES
@@ -198,21 +195,15 @@ AC_CHECK_HEADER(curl/curl.h, CURL_INC="yes", CURL_INC="no")
 AC_ARG_WITH(libcurl,[  --without-libcurl         Disable libcurl features.],curl_desired=$withval)
 if test "${curl_desired}" = "yes"; then
   if test "${CURL_INC}" = "yes"; then
-    if test "${use_lsb}" = "no"; then 
-      # Important: when using the three-argument version of AC_CHECK_LIB, you
-      # must do all of what is normally the default behavior in the third argument,
-      # not just the extra stuff you want to accomplish:
-      AC_CHECK_LIB([curl], [curl_global_init], 
-                   [use_curl="yes"
-                    LIBS="${LIBS} -lcurl"
-                    AC_DEFINE(HAVE_LIBCURL, 1,
-                              [Define to 1 if your `curl' library has curl_global_init.])
-                    ])
-    else
-      AC_DEFINE(HAVE_LIBCURL, 1, [Define to 1 if your `curl' library has curl_global_init.] )
-      LIBS="${LIBS} -lcurl"
-      use_curl=yes
-    fi
+    # Important: when using the three-argument version of AC_CHECK_LIB, you
+    # must do all of what is normally the default behavior in the third argument,
+    # not just the extra stuff you want to accomplish:
+    AC_CHECK_LIB([curl], [curl_global_init], 
+                 [use_curl="yes"
+                  LIBS="${LIBS} -lcurl"
+                  AC_DEFINE(HAVE_LIBCURL, 1,
+                            [Define to 1 if your `curl' library has curl_global_init.])
+                  ])
   fi
 fi
 # Test for wget only if above libcurl tests fail
@@ -462,76 +453,57 @@ fi
 
 # Check for XPM
 use_xpm="no"
-if test "${use_lsb}" = "no"; then 
-  AC_CHECK_HEADERS(X11/xpm.h,
+AC_CHECK_HEADERS(X11/xpm.h,
+[
+  #action if found in addition to setting HAVE_X11_XPM_H
+  AC_SEARCH_LIBS(XpmWriteFileFromPixmap, [Xpm],
   [
-    #action if found in addition to setting HAVE_X11_XPM_H
-    AC_SEARCH_LIBS(XpmWriteFileFromPixmap, [Xpm],
+    # action if found (in addition to adding -lXpm to LIBS
+    use_xpm="yes"
+    AC_DEFINE(HAVE_LIBXPM, 1, [Define to 1 if you have the `Xpm' library (-lXpm).] )
+  ])
+],
+[
+  # Action if X11/xpm.h is not found: look for Xm/XpmI.h instead
+  AC_CHECK_HEADERS(Xm/XpmI.h,
+  [ # Action if found, in addition to setting HAVE_XM_XPMI_H
+     AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, [Xm],
     [
-      # action if found (in addition to adding -lXpm to LIBS
+      # action if -lXm is found, in addition to adding -lXm to LIBS
       use_xpm="yes"
-      AC_DEFINE(HAVE_LIBXPM, 1, [Define to 1 if you have the `Xpm' library (-lXpm).] )
-    ])
-  ],
-  [
-    # Action if X11/xpm.h is not found: look for Xm/XpmI.h instead
-    AC_CHECK_HEADERS(Xm/XpmI.h,
-    [ # Action if found, in addition to setting HAVE_XM_XPMI_H
-
-      AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, [Xm],
-      [
-        # action if -lXm is found, in addition to adding -lXm to LIBS
-        use_xpm="yes"
-        AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, [Define to 1 if the `Xm' library (-lXm) is used for Xpm.])
-      ],
-      [ #action if -lXm not found: issue warning
-         AC_MSG_WARN([**************************************************************** ])
-         AC_MSG_WARN([Your system does not have a library that contains XpmWriteFileFromPixmap])
- AC_MSG_WARN([PNG snapshots cannot work.       ])
- AC_MSG_WARN([**************************************************************** ])
-      ])
+      AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, [Define to 1 if the `Xm' library (-lXm) is used for Xpm.])
+    ],
+    [ #action if -lXm not found: issue warning
+       AC_MSG_WARN([**************************************************************** ])
+       AC_MSG_WARN([Your system does not have a library that contains XpmWriteFileFromPixmap])
+       AC_MSG_WARN([PNG snapshots cannot work.       ])
+       AC_MSG_WARN([**************************************************************** ])
     ])
   ])
-else
-  AC_DEFINE(HAVE_LIBXPM, 1, Define to 1 if you have the `Xpm' library (-lXpm). )
-  AC_DEFINE(HAVE_LIBXPM_IN_XM, 1, Define to 1 if the `Xm' library (-lXm) is used for Xpm. )
-  AC_DEFINE(HAVE_X11_XPM_H, 1, Define to 1 if you have 'X11/xpm.h' )
-fi
- 
- 
-#check for libtiff, libgeotiff
-# libjpeg.a and libz.a need to be compiled under LSB
+])
 
 
 use_geotiff=yes
 AC_ARG_WITH(geotiff, [  --without-geotiff         Disable geotiff features.], use_geotiff=$withval)
 if test "${use_geotiff}" = "yes"; then
     if test "${use_proj}" = "yes" ; then
-        if test "${use_lsb}" = "yes" ; then
-            use_tiff=yes
-            use_geotiff=yes
-            LIBS="$LIBS -lgeotiff -ltiff -ljpeg -lz -lproj"
-            AC_DEFINE(HAVE_TIFF, 1,Define to 1 if you have the 'tiff' library (-ltiff))
-            AC_DEFINE(HAVE_LIBGEOTIFF, 1,Define to 1 if you have the `geotiff' library (-lgeotiff).)
-        else
-            AC_CHECK_HEADER(xtiffio.h, , use_geotiff="no")
-            if test "${use_geotiff}" = "yes"; then
-                AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
-                LIBS="$LIBS -ltiff"
-                AC_DEFINE(HAVE_TIFF, 1,Define to 1 if you have the 'tiff' library (-ltiff)))
-                if test "${use_tiff}" = "yes"; then
-                    use_geotiff=no
-                    AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-                        LIBS="$LIBS -lgeotiff"
-                        AC_DEFINE(HAVE_LIBGEOTIFF, 1,Define to 1 if you have the `geotiff' library (-lgeotiff).))
-                else
-                    echo "*** Warning: geotiff requires libtiff."
-                    use_geotiff=no
-                fi
-            else
-                echo "*** Warning: geotiff include files not found."
-            fi
-        fi
+          AC_CHECK_HEADER(xtiffio.h, , use_geotiff="no")
+          if test "${use_geotiff}" = "yes"; then
+              AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
+              LIBS="$LIBS -ltiff"
+              AC_DEFINE(HAVE_TIFF, 1,Define to 1 if you have the 'tiff' library (-ltiff)))
+              if test "${use_tiff}" = "yes"; then
+                  use_geotiff=no
+                  AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
+                      LIBS="$LIBS -lgeotiff"
+                      AC_DEFINE(HAVE_LIBGEOTIFF, 1,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+              else
+                  echo "*** Warning: geotiff requires libtiff."
+                  use_geotiff=no
+              fi
+          else
+              echo "*** Warning: geotiff include files not found."
+          fi
     else
         echo "*** Warning: geotiff requires libproj."
         use_geotiff=no
@@ -637,17 +609,7 @@ use_graphicsmagick=yes
 use_imagemagick=no
 AC_ARG_WITH(graphicsmagick,[  --without-graphicsmagick  Disable graphicsmagick features.],use_graphicsmagick=$withval)
 if test "${use_graphicsmagick}" = "yes"; then
-  if test "${use_lsb}" = "no"; then
     XASTIR_CHECK_GRAPHICSMAGICK
-  else
-    MAGIC_BIN="/opt/lsb-tmp/bin/GraphicsMagick-config"
-    CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`"
-    CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`"
-    CFLAGS="$CFLAGS `${MAGIC_BIN} --cflags`"
-    LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`"
-    LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS"
-    AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick image library])
-  fi
 fi
 #
 # Note: This must be a separate "if" as the use_graphicsmagick
@@ -831,11 +793,7 @@ if test "${use_profiling}" = "yes"; then
 else
   ILIBS="$ILIBS          "
 fi
-if test "${use_lsb}" = "yes"; then
-  ILIBS="$ILIBS LSB"
-else
-  ILIBS="$ILIBS    "
-fi
+ILIBS="$ILIBS    "
 if test "${use_curl}" = "yes"; then
   ILIBS="$ILIBS libcurl"
 else
@@ -916,9 +874,7 @@ AC_CONFIG_FILES([Makefile \
     symbols/Makefile \
     tests/Makefile \
     tests/atlocal \
-    xastir.spec \
-    xastir-min.spec \
-    xastir-lsb.spec]) 
+    ]) 
 AC_CONFIG_FILES([scripts/get-BOMdata],[chmod +x scripts/get-BOMdata])
 AC_CONFIG_FILES([scripts/get-NWSdata],[chmod +x scripts/get-NWSdata])
 AC_CONFIG_FILES([scripts/get-fcc-rac.pl],[chmod +x scripts/get-fcc-rac.pl])
@@ -974,13 +930,12 @@ echo "  Festival (Text-to-speech) ................. : $use_festival"
 echo "  GPSMan/gpsmanshp (GPS downloads) .......... : $use_gpsman"
 #echo "  GPSD Client (libgps) ...................... : $use_libgps"
 
-if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_lsb}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
+if test "${use_err_popups}" = "yes" -o "${use_libgc}" = "yes" -o "${use_profiling}" = "yes" -o "${use_spatial_db}" = "yes" -o "$use_mysql_any" = "yes"; then
   echo
   echo DEVELOPER OPTIONS:
   echo "  ErrorPopups (Old Method) .................. : $use_err_popups"
   echo "  libgc (Debug memory usage) ................ : $use_libgc"
   echo "  profiling (Debug code efficiency) ......... : $use_profiling"
-  echo "  Linux Standard Base (LSB) ................. : $use_lsb"
   echo "  Spatial database support .................. : $use_spatial_db"
   echo "  Spatial database Postgresql/Postgis ....... : $use_postgis"
   echo "  MySQL ..................................... : $use_mysql_any"
