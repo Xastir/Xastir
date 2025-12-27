@@ -874,8 +874,6 @@ AC_CONFIG_FILES([Makefile \
     symbols/Makefile \
     tests/Makefile \
     tests/atlocal \
-    xastir.spec \
-    xastir-min.spec \
     ]) 
 AC_CONFIG_FILES([scripts/get-BOMdata],[chmod +x scripts/get-BOMdata])
 AC_CONFIG_FILES([scripts/get-NWSdata],[chmod +x scripts/get-NWSdata])
