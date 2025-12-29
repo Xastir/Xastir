@@ -12,11 +12,11 @@ SUBDIRS = src config help scripts symbols callpass tests
 
 # DISTCLEANFILES =
 
-EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec config.guess config.sub install-sh \
+EXTRA_DIST = config.guess config.sub install-sh \
         missing placeholder FAQ LICENSE README README.GIT.md \
         README.CYGWIN CONTRIBUTING.md \
         README.MAPS README.OSM_maps README.sudo testdbfawk.1 \
-        DEBUG_LEVELS bootstrap.sh INSTALL.md UPGRADE callpass.1 xastir.1 xastir_udp_client.1 \
+        DEBUG_LEVELS bootstrap.sh INSTALL.md callpass.1 xastir.1 xastir_udp_client.1 \
         worldhi.map \
         Davis LaCrosse \
         OSM_template \
@@ -24,8 +24,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec xastir-min.spec.in xastir-min.spec confi
         COPYING COPYING.LIB.LESSTIF AUTHORS NaturalEarthVector
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
-        config.guess config.sub install-sh missing mkinstalldirs \
-        xastir.spec xastir-min.spec
+        config.guess config.sub install-sh missing mkinstalldirs
 
 countydir=${pkgdatadir}/Counties
 county_DATA=placeholder
@@ -67,7 +66,7 @@ sound_DATA=placeholder
 
 docdir=${prefix}/share/doc/xastir
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT.md README.CYGWIN \
-        README.MAPS README.sudo COPYING INSTALL.md UPGRADE \
+        README.MAPS README.sudo COPYING INSTALL.md \
         README.OSM_maps CONTRIBUTING.md \
         COPYING.LIB.LESSTIF
 

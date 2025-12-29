@@ -1012,11 +1012,9 @@ The Answers
     You can create an alias in your shell for this so that you don't
     have to remember to type it each time.
 
-    e) Perhaps you're trying to run an old Xastir executable that
-    was compiled with different paths, or you have an LSB-Xastir
-    installed and have compiled or installed Xastir in the normal
-    fashion as well.  Type this to see where the executable is
-    trying to run from:
+    e) Perhaps you're trying to run an old Xastir executable that was
+    compiled with different paths.  Type this to see where the
+    executable is trying to run from:
 
         which xastir
     -or-
@@ -1053,8 +1051,7 @@ The Answers
     4.31 Why don't the maps I installed show up in the Map Chooser?
 
     Install the maps in the correct place, normally
-    "/usr/local/share/xastir/maps/" or subdirectories below there. If
-    running LSB-Xastir it's "/opt/Xastir/share/xastir/maps/".
+    "/usr/local/share/xastir/maps/" or subdirectories below there.
 
     Make sure the map directories and files have read permissions
     for the user.

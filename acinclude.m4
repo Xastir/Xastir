@@ -104,25 +104,20 @@ done
 
 # it would be much nicer to do this in a for loop
 
-if test "$use_lsb" = "yes"; then
+AC_PATH_PROG(gm, [gm version], no, $BINPATH)
+AC_CHECK_FILE(/usr/bin/gm.exe, gm="/usr/bin/gm")
+if test "$gm" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have gm or convert]) 
-  AC_DEFINE_UNQUOTED(CONVERT_PATH, "/opt/Xastir/bin/gm convert", [Path to gm or convert]) 
-else
-  AC_PATH_PROG(gm, [gm version], no, $BINPATH)
-  AC_CHECK_FILE(/usr/bin/gm.exe, gm="/usr/bin/gm")
-  if test "$gm" != "no"; then
-    AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have gm or convert]) 
-    AC_DEFINE_UNQUOTED(CONVERT_PATH, "${gm} convert", [Path to gm or convert])
-  else 
-    AC_PATH_PROG(convert, [convert --version], no, $BINPATH)
-    AC_CHECK_FILE(/usr/bin/convert.exe, convert="/usr/bin/convert")
-    if test "$convert" != "no"; then
-      AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
-      AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
-    fi
+  AC_DEFINE_UNQUOTED(CONVERT_PATH, "${gm} convert", [Path to gm or convert])
+else 
+  AC_PATH_PROG(convert, [convert --version], no, $BINPATH)
+  AC_CHECK_FILE(/usr/bin/convert.exe, convert="/usr/bin/convert")
+  if test "$convert" != "no"; then
+    AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
+    AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}", [Path to convert]) 
   fi
 fi
- 
+
 AC_PATH_PROG(lpr, [lpr /dev/null], no, $BINPATH)
 if test "$lpr" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_LPR, 1, [Define if you have lpr]) 
@@ -190,12 +185,6 @@ fi
 if test "$use_err_popups" != "no"; then
  AC_DEFINE_UNQUOTED(HAVE_ERROR_POPUPS, 1, [Define if you have error popups enabled])
 fi
-
-if test "$use_lsb" != "no"; then
- AC_DEFINE_UNQUOTED(__LSB__, 1, [Define if you're compiling for Linux Standard Base])
-fi
-
-
 
 ])
 
