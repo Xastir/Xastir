@@ -588,25 +588,14 @@ The Answers
     and the options you used to compile Xastir and helper libraries. The
     developers aren't aware of any specific cases in which there would be
     performance problems; generally these are limitations of your computer.
-    Xastir, when using only basic maps, runs reasonably on a Pentium 60. If
-    you use higher detail maps, such as the tiger line maps suggested in
-    README.MAPS, you'll need a faster computer to be able to load the maps
-    quickly. Also be sure you have a few Megabytes of memory available for
-    Xastir, because paging to disk decreases speed rapidly. If you have the
-    Internet interface, as well as TNC's and weather stations all active
-    at the same time, you'll see a slowdown on a slower computer. Also, if you
-    compiled Xastir or libax25/libtiff/libgeotiff/etc with debugging (-g),
-    recompile these software without debugging and with optimization ON (-O2).
 
     4.10 I installed a new version of lesstif, but the help menu shows the old
          version.
 
-    The help menu shows the version of lesstif that Xastir was compiled with,
-    not necessarily the version you're running now. Assuming you compiled it
-    with the new version, check that the new version is the only copy
-    installed. If you install in /usr/local/LessTif/, the default location,
-    be sure you remove any older version from /usr/LessTif/ or
-    /usr/X11R6/LessTif/, as some distributions use those locations.
+    This FAQ entry is ancient and no longer relevant.
+
+    lesstif was discontinued in 2012 when OpenMotif was provided under
+    a GPL-compatible license.  Switch to OpenMotif.
 
     4.11 Why does Xastir seg-fault sometimes when indexing or loading
          geoTIFF images?
@@ -629,24 +618,7 @@ The Answers
 
     4.12 Why doesn't Xastir run on RedHat 9.0 properly?
 
-    The RH kernels have implemented the new(er) New Posix Threading Library
-    (NPTL) as well as back-ported many of the new bells and whistles set to
-    appear in the 2.6.x kernels.  You might experience a great improvement
-    for apps that are heavily threaded.  NPTL is supposed to be backward
-    compatible but we have seen apps that have had problems.  You can revert
-    back to the older LinuxThreads implementation by setting the environment
-    variable: 
-
-    LD_ASSUME_KERNEL=<kernel-version>
-
-    in a shell before starting the app The following versions are available:
-
-       - 2.4.1 - Linuxthreads with floating stacks
-
-       - 2.2.5 - Linuxthreads without floating stacks
-
-    or, you can disable NPTL altogether for dynamically linked
-    applications by using 'nosysinfo' as a boot time option.
+    [entry deleted as irrelevant in 2025]
 
     4.13 Why do I see "Character '\55' not supported in font"?
 
@@ -782,13 +754,13 @@ The Answers
     TNC's/soundcards.  Note that AGWPE runs only on Windows.
 
     Yet another which looks to be netcat recoded/extended:  socat
-    
+
     Comfoolery:     http://www.brianpoe.com/comfoolery/
     Serproxy:       http://freshmeat.net/projects/serproxy/
     Serproxy:       http://www.lspace.nildram.co.uk/freeware.html
     Remserial:      http://lpccomp.bc.ca/remserial/
     Socat:          http://www.dest-unreach.org/socat/
- 
+
 
     4.21 I have Festival compiled in, but I can't get any speech, why?
 
@@ -820,7 +792,7 @@ The Answers
 
         127.0.0.1 localhost localhost.localdomain
 
-    d) On one Debian box, it was an issue with "/etc/hosts.allow".  
+    d) On one Debian box, it was an issue with "/etc/hosts.allow".
     See "man 8 tcpd" or "man 5 hosts_access" for detailed info about
     how to configure /etc/hosts.allow and /etc/hosts.deny.  It's
     part of the tcpwrappers stuff that allows you to configure which

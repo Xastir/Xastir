@@ -532,6 +532,14 @@ Some of the more esoteric types of interfaces may require some
 questions on the Xastir list.  Don't be afraid to ask them as we've
 all been there before.
 
+## Miscellaneous notes
+
+These notes don't really belong in the installation instructions, and
+will be removed shortly.  They are properly part of Xastir operation,
+not installation, and will be documented in the
+[Operating](https://github.com/Xastir/Xastir/wiki/Operating) page on
+the Xastir Github wiki.
+
 ### Various ways to manipulate Xastir
 
 
@@ -591,8 +599,6 @@ perform some action based on which signal you send.
 * Connect to TCP port 2023 if Server Port is enabled to send/receive packets.
 * Send to UDP port 2023 via the `xastir_udp_client` program to inject packets.
 
-## Miscellaneous notes
-
 ### A Note About the Map Directory:
 
 The map directory (/usr/local/share/xastir/maps/) is free-form,
@@ -607,7 +613,9 @@ your maps.
 
 You must have Shapelib compiled into Xastir, which also requires the
 PCRE2 library and its development headers to be installed.  Install
-NOAA shapefile maps as specified in README.MAPS.  These files must be
+NOAA shapefile maps as specified in [the Weather Alerts
+page](https://github.com/Xastir/Xastir/wiki/Weather-Alerts) on the
+Github wiki.  These files must be
 installed into the /usr/local/share/xastir/Counties/ directory.  You
 may use this script to download/install them for you:
 

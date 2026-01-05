@@ -275,10 +275,11 @@ Support for these additional map types has been compiled in:
        tif   USGS DRG Geotiff Topographic Maps (libgeotiff/libproj)
        xpm   X Pixmap Maps (XPM library)
 
-The README.MAPS file has instructions for where to get maps and where
-to put them under the Xastir hierarchy.
+The Xastir wiki at Github (https://github.com/Xastir/Xastir/wiki) has
+instructions for where to get maps and where to put them under the
+Xastir hierarchy.
 
-If you have any WinAPRS, DosAPRS, or PocketAPRS maps, now is a good
+If you have any WinAPRS or APRSDOS maps, now is a good
 time to place them in the /cygwin/usr/local/share/xastir/maps folder
 (or a subdirectory of it).  You can also use "*.geo" files and the
 associated image files with Xastir.  You may place them in this
