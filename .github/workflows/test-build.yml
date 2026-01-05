@@ -77,7 +77,7 @@ jobs:
         sync: nfs
         usesh: true
         prepare: |
-          pkg install -y devel/autoconf devel/automake devel/shapelib graphics/tiff devel/pcre2 graphics/GraphicsMagick graphics/libgeotiff ftp/curl databases/db18 lang/gcc13 x11-toolkits/open-motif audio/festival devel/libcjson
+          pkg install -y devel/autoconf devel/automake devel/shapelib devel/pcre2 graphics/GraphicsMagick graphics/libgeotiff ftp/curl databases/db18 lang/gcc13 x11-toolkits/open-motif audio/festival devel/libcjson
     - name: Bootstrap
       shell: freebsd {0}
       run: |
