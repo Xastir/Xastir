@@ -84,7 +84,7 @@ In order to get contributed patches accepted more easily by the
 Xastir developers:
 
 * Read
-[Coding Standard](https://github.com/Xastir/Xastir/wiki/Coding-Standard.md].
+[Coding Standard](https://github.com/Xastir/Xastir/wiki/Coding-Standard.md).
 Make sure to follow the
 formatting and indentation rules, and in particular the tab format
 (spaces, not tabs).  If you don't like some of the formatting rules,
