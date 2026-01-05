@@ -15,11 +15,28 @@ you have to write code.
 ### Asking and answering questions
 
 Please subscribe to our mailing list as listed on the official Xastir
-web site, http://xastir.org/.  We would prefer it if you would not use
-Xastir's git hub issue tracker just to ask questions, as this is not
-the ideal forum and doesn't reach the full Xastir user community.
-Your best bet is to get your question in front of as many users' eyes
-as possible, and the mailing list is the way to do that.
+web site, http://xastir.org/.  You may also want to keep an eye on
+Github Discussions at https://github.com/Xastir/Xastir/discussions .
+
+### Please don't open a Github Issue for questions about the code
+
+Github's "Issue" tracker is for reporting bugs.
+
+We would prefer it if you would not use Xastir's git hub issue tracker
+just to ask questions, as this is not the ideal forum and doesn't
+reach the full Xastir user community.  Your best bet is to get your
+question in front of as many users' eyes as possible, and the mailing
+list is the way to do that.
+
+### Github Discussions is fair game
+
+However, you may also use "GitHub Discussions" to ask questions,
+especially if the mailing list seems not to be getting you any
+response.
+
+
+
+### Side benefits of subscribing to the mailing list and watching Discussions on github
 
 Once you're confident enough with Xastir to be answering users'
 questions, your presence on the mailing list will naturally allow you
@@ -66,28 +83,29 @@ response when your pull request shows up..
 In order to get contributed patches accepted more easily by the
 Xastir developers:
 
-* Read "Developer Guidelines and Notes" in the "HowTos" section of
-Xastir's Wiki (http://xastir.org).  Make sure to follow the formatting
-and indentation rules, and in particular the tab format (spaces, not
-tabs).  If you don't like some of the formatting rules, abide by them
-anyway for consistency.  Some of the developers don't like some of the
-formatting rules either, but consistency is more important than ideas
-we might have of coding style!
+* Read
+[Coding Standard](https://github.com/Xastir/Xastir/wiki/Coding-Standard.md].
+Make sure to follow the
+formatting and indentation rules, and in particular the tab format
+(spaces, not tabs).  If you don't like some of the formatting rules,
+abide by them anyway for consistency.  Some of the developers don't
+like some of the  formatting rules either, but consistency is more
+important than ideas we might have of coding style!
 
 * Check the Xastir issue tracker: http://github.com/Xastir/Xastir/issues
 You need a GitHub account to create new issues, but this is free.
 This is one of the best places to see what needs to be worked on,
-and to see if anyone else has had a similar idea. 
+and to see if anyone else has had a similar idea.
 
 * Check with the Xastir-Dev list first to see if anyone else is
 working on that particular idea or section of code.
 
 * Verify on the Xastir-Dev list that your idea has some merit and
 chance of being accepted before you put your valuable time into the
-patch.
+change.
 
 * Make sure you're willing to abide by the GPL license with respect
-to your patch.
+to your changes.
 
 * Use as generic C as possible, and comment what you've done, in
 English please!
@@ -169,7 +187,7 @@ In a (rather large) nutshell this process goes like this:
     git rebase master               # makes sure that your branch is based
                                     # on the most recent version of master
     ```
-    
+
   * Now publish your branch in your GitHub fork (your "origin" remote).
 
         git push -u origin <branchname>
@@ -192,11 +210,10 @@ In a (rather large) nutshell this process goes like this:
     happen to you.
 
   * A good practice at this point, before you've asked the Xastir developers
-    to merge your work, is to send an email to the xastir-dev mailing list
-    and ask others to test out your work.  They can easily check out your
-    fork and make sure there are no hidden issues you hadn't detected.
-    See below for a suggestion of the easiest way to check out other people's
-    topic branches.
+    to merge your work, to create a "draft" pull request.  They can
+    easily check out your fork and make sure there are no hidden
+    issues you hadn't detected. See below for a suggestion of the
+    easiest way to check out other people's topic branches.
 
   * Now you are ready to ask for your code to be reviewed and accepted.
 
@@ -209,6 +226,13 @@ In a (rather large) nutshell this process goes like this:
       to begin the process of creating an automated request to pull your
       code into the main repo.  Fill out all of the form and create
       a pull request.
+
+      If your pull request is still a work in progress, add the text
+      "WIP:" in the title, and after you create the pull request click
+      the "Convert to draft" link.  This tells the development team
+      that the work isn't done and is not ready to merge, but they can
+      still review what's done already and make suggestions or demands
+      for further changes.
 
     * A member of the Xastir project will review your changes and
       comment on the pull request.  If the changes are
@@ -236,6 +260,12 @@ In a (rather large) nutshell this process goes like this:
       topic branch.  Ideally, you should endeavor to make your pull requests
       as easy to test and review as possible, so that it doesn't take forever
       for developers to get around to testing them and merging them.
+
+    * If you created a Work In Progress/draft pull request, when all
+      of your work is done return to your pull request page and click
+      "Ready for review" button and remove the "WIP:" from the pull
+      request's name.  This tells the development team that you think
+      it's safe to merge your changes.
 
   There are lots of guidelines out there about how to make good pull
   requests.  Please read
@@ -266,7 +296,7 @@ official repo.   You can instead just grab sumgai's changes:
 
 * I'm assuming you're already checked out from the master branch, but
   let's make sure:
- 
+
       git checkout master
 
 * In your regular Xastir clone directory, create a new branch to hold
@@ -291,7 +321,7 @@ official repo.   You can instead just grab sumgai's changes:
   unmodified Xastir just by doing "git checkout master," and
   rebuilding the code.  If you no longer want to keep a copy of
   sumgai's work around, you can delete the branch with
-  
+
       git branch -D sumgai-sumnufeetyur
 
 **Note to developers**:  The process of doing this checkout of others' branches
