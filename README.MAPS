@@ -30,26 +30,6 @@ How to Use APRS Overlay Maps (*.POS files) within Xastir:
 Getting Maps and other Data Files for Xastir:
 ---------------------------------------------
 
-    ---------
-
-    Splitting large Shapefile maps into regularly-sized tiles:
-
-      Look for "shp2tile" at http://imaptools.com/tools/, it does
-      exactly that.  This can speed up Xastir tremendously if you're
-      zoomed in quite a bit on a large Shapefile map (or maps).  If
-      it is broken into tiles Xastir only has to load the tiles of
-      interest instead of slogging through the entire large file
-      each time.
-
-WHERE TO FIND MORE INFO ON MAP DATUMS, ETC:
-
-    Geodesy:
-    http://oceanservice.noaa.gov/education/geodesy/welcome.html
-
-    "Geodesy for the Layman"
-    http://www.ngs.noaa.gov/PUBS_LIB/Geodesy4Layman/toc.htm
-
-
 MAP CACHING (WORKS WITH MOST ONLINE MAPS):
 
     Map caching works in conjunction with the map download routines,
