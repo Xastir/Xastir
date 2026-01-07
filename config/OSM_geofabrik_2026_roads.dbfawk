@@ -1,0 +1,82 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is used to map OSM shapefiles by "geofabrik.ge" which are
+# named "gis_osm_roads_free_1.dbf".  These files can be found at
+# https://download.geofabrik.de/
+#
+# This file is a modification of an older set, using input from github user
+# @mthassler to improve the older one
+
+BEGIN {
+dbfinfo="osm_id:code:fclass:name:ref:oneway:maxspeed:layer:bridge:tunnel";
+dbffields="fclass:name:oneway";
+}
+
+BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0;}
+
+# select the name given in the record
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=Highway (.*)$/ {name="$(name)Hwy $1"; next}
+/^name=State Route (.*)$/ {name="$(name)SR-$1"; next}
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^name=Interstate (.*) Northbound$/ {name="$(name)I-$1 N"; next}
+/^name=Interstate (.*) Southbound$/ {name="$(name)I-$1 S"; next}
+/^name=Interstate (.*) Eastbound$/ {name="$(name)I-$1 E"; next}
+/^name=Interstate (.*) Westbound$/ {name="$(name)I-$1 W"; next}
+/^name=Interstate (.*)$/ {name="$(name)I-$1"; next}
+/^name=Washington Highway (.*)$/ {name="$(name)Hwy $1"; next}
+/^name=(.+)$/ {name="$1";next}
+
+# Select render style by fclass:
+/^fclass=trunk/ {lanes=2; color=12; display_level=128; label_level=16; font_size=3; next}
+/^fclass=trunk_link/ {lanes=2; color=12; display_level=64; label_level=16; font_size=1; next}
+
+# Note:  No display_level or label_level
+/^fclass=motorway$/ {lanes=4; color=4; label_level=65536; font_size=3; next}
+# Note:  No display_level
+/^fclass=motorway_link$/ {lanes=3; color=4; label_level=65536; font_size=1; next}
+
+/^fclass=primary/ {lanes=2; color=12; display_level=512; label_level=96; font_size=1; next}
+/^fclass=primary_link$/ {lanes=2; color=12; display_level=512; label_level=96; font_size=1; next}
+
+/^fclass=secondary$/ {lanes=2; color=99; display_level=256; label_level=32; font_size=1; next}
+/^fclass=secondary_link$/ {lanes=1; color=99; display_level=256; label_level=32; font_size=1;  next}
+
+/^fclass=tertiary$/ {lanes=1; color=15; display_level=256; label_level=16; font_size=1; next}
+/^fclass=tertiary_link$/ {lanes=1; color=15; display_level=256; label_level=16; font_size=1; next}
+
+/^fclass=ramp/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+
+/^fclass=road/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+
+/^fclass=unsurfaced/ {lanes=1; color=105; display_level=64; label_level=16; font_size=1; next}
+
+/^fclass=unclassified/ {lanes=1; color=15; display_level=64; label_level=8; font_size=1; next}
+/^fclass=residential/ {lanes=1; color=15; display_level=64; label_level=8; font_size=1; next}
+/^fclass=living_street/ {lanes=1; color=15; display_level=64; label_level=8; font_size=1; next}
+/^fclass=pedestrian/ {lanes=1; color=15; display_level=8; label_level=4; font_size=1; pattern=1; next}
+
+# Very small roads
+/^fclass=service/ {lanes=1; color=98; display_level=16; label_level=8; font_size=1; pattern=1; next}
+/^fclass=track/ {lanes=1; color=4; display_level=16; label_level=8; font_size=1; pattern=1; next}
+/^fclass=trail/ {lanes=1; color=70; display_level=64; label_level=8; font_size=1; pattern=1; next}
+/^fclass=driveway/ {lanes=1; color=64; display_level=16; label_level=8; font_size=1; pattern=2; next}
+
+# Unsuitable for cars
+/^fclass=bridleway/ {lanes=1; color=70; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(bridleway); next}
+/^fclass=cycleway/ {lanes=1; color=11; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(cycleway)"; next}
+/^fclass=footway/ {lanes=1; color=66; display_level=8; label_level=4; font_size=1; pattern=1; name="$(name)(footway)"; next}
+/^fclass=path/ {lanes=1; color=96; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(path)"; next}
+/^fclass=steps/ {lanes=1; color=67; display_level=16; label_level=8; font_size=1; pattern=2; name="$(name)(steps)"; next}
+
+# Misc types --- these probably need some work
+/^fclass=abandoned/ {lanes=1; color=4; display_level=32; label_level=16; font_size=1; pattern=1; next}
+/^fclass=construction/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; pattern=2; next}
+/^fclass=crossing/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^fclass=ford/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^fclass=platform/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^fclass=raceway/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^fclass=t/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+/^fclass=tr/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
+

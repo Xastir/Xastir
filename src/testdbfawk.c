@@ -150,8 +150,8 @@ int main(int argc, char *argv[])
   int display_level = 1234;
   int min_display_level = 0;
   int label_level = 9;
-  int fill_style, fill_color;
-  int fill_stipple;
+  int fill_style=0, fill_color=0;
+  int fill_stipple=0;
   int label_color = 8;
   int font_size = 0;
   int label_method = 0;
