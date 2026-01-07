@@ -29,15 +29,15 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 /^name=(.+)$/ {name="$1";next}
 
 # Select render style by fclass:
-/^fclass=trunk/ {lanes=2; color=12; display_level=128; label_level=16; font_size=3; next}
-/^fclass=trunk_link/ {lanes=2; color=12; display_level=64; label_level=16; font_size=1; next}
+/^fclass=trunk$/ {lanes=2; color=12; display_level=128; label_level=16; font_size=3; next}
+/^fclass=trunk_link/ {lanes=2; color=12; display_level=128; label_level=16; font_size=1; next}
 
 # Note:  No display_level or label_level
 /^fclass=motorway$/ {lanes=4; color=4; label_level=65536; font_size=3; next}
 # Note:  No display_level
 /^fclass=motorway_link$/ {lanes=3; color=4; label_level=65536; font_size=1; next}
 
-/^fclass=primary/ {lanes=2; color=12; display_level=512; label_level=96; font_size=1; next}
+/^fclass=primary$/ {lanes=2; color=12; display_level=512; label_level=96; font_size=1; next}
 /^fclass=primary_link$/ {lanes=2; color=12; display_level=512; label_level=96; font_size=1; next}
 
 /^fclass=secondary$/ {lanes=2; color=99; display_level=256; label_level=32; font_size=1; next}
