@@ -58,17 +58,17 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 /^fclass=pedestrian/ {lanes=1; color=15; display_level=8; label_level=4; font_size=1; pattern=1; next}
 
 # Very small roads
-/^fclass=service/ {lanes=1; color=98; display_level=16; label_level=8; font_size=1; pattern=1; next}
+/^fclass=service/ {lanes=1; color=98; display_level=8; label_level=4; font_size=1; pattern=1; next}
 /^fclass=track/ {lanes=1; color=4; display_level=16; label_level=8; font_size=1; pattern=1; next}
 /^fclass=trail/ {lanes=1; color=70; display_level=64; label_level=8; font_size=1; pattern=1; next}
-/^fclass=driveway/ {lanes=1; color=64; display_level=16; label_level=8; font_size=1; pattern=2; next}
+/^fclass=driveway/ {lanes=1; color=121; display_level=8; label_level=4; font_size=1; pattern=2; next}
 
 # Unsuitable for cars
-/^fclass=bridleway/ {lanes=1; color=70; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(bridleway); next}
-/^fclass=cycleway/ {lanes=1; color=11; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(cycleway)"; next}
-/^fclass=footway/ {lanes=1; color=66; display_level=8; label_level=4; font_size=1; pattern=1; name="$(name)(footway)"; next}
-/^fclass=path/ {lanes=1; color=96; display_level=16; label_level=8; font_size=1; pattern=1; name="$(name)(path)"; next}
-/^fclass=steps/ {lanes=1; color=67; display_level=16; label_level=8; font_size=1; pattern=2; name="$(name)(steps)"; next}
+/^fclass=bridleway/ {lanes=1; color=70; display_level=16; label_level=8; font_size=1; pattern=1; next}
+/^fclass=cycleway/ {lanes=1; color=11; display_level=16; label_level=8; font_size=1; pattern=1;  next}
+/^fclass=footway/ {lanes=1; color=66; display_level=8; label_level=4; font_size=1; pattern=1; next}
+/^fclass=path/ {lanes=1; color=96; display_level=16; label_level=8; font_size=1; pattern=1;  next}
+/^fclass=steps/ {lanes=1; color=67; display_level=16; label_level=8; font_size=1; pattern=2; next}
 
 # Misc types --- these probably need some work
 /^fclass=abandoned/ {lanes=1; color=4; display_level=32; label_level=16; font_size=1; pattern=1; next}
