@@ -9,7 +9,7 @@
 
 BEGIN {
 dbfinfo="osm_id:code:fclass:name:ref:oneway:maxspeed:layer:bridge:tunnel";
-dbffields="fclass:name:oneway";
+dbffields="fclass:name";
 }
 
 BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0;}
@@ -58,7 +58,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 /^fclass=pedestrian/ {lanes=1; color=15; display_level=8; label_level=4; font_size=1; pattern=1; next}
 
 # Very small roads
-/^fclass=service/ {lanes=1; color=98; display_level=8; label_level=4; font_size=1; pattern=1; next}
+/^fclass=service/ {lanes=1; color=67; display_level=8; label_level=4; font_size=1; pattern=1; next}
 /^fclass=track/ {lanes=1; color=4; display_level=16; label_level=8; font_size=1; pattern=1; next}
 /^fclass=trail/ {lanes=1; color=70; display_level=64; label_level=8; font_size=1; pattern=1; next}
 /^fclass=driveway/ {lanes=1; color=121; display_level=8; label_level=4; font_size=1; pattern=2; next}
@@ -66,7 +66,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # Unsuitable for cars
 /^fclass=bridleway/ {lanes=1; color=70; display_level=16; label_level=8; font_size=1; pattern=1; next}
 /^fclass=cycleway/ {lanes=1; color=11; display_level=16; label_level=8; font_size=1; pattern=1;  next}
-/^fclass=footway/ {lanes=1; color=66; display_level=8; label_level=4; font_size=1; pattern=1; next}
+/^fclass=footway/ {lanes=1; color=79; display_level=8; label_level=4; font_size=1; pattern=1; next}
 /^fclass=path/ {lanes=1; color=96; display_level=16; label_level=8; font_size=1; pattern=1;  next}
 /^fclass=steps/ {lanes=1; color=67; display_level=16; label_level=8; font_size=1; pattern=2; next}
 
