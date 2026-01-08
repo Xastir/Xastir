@@ -1,8 +1,11 @@
 # Copyright (C) 2000-2023 The Xastir Group
 #
 # This file is used to map OSM shapefiles by "geofabrik.ge" which are
-# named "gis_osm_natural_a_free_1.dbf".  These files can be found at
+# named "gis_osm_natural_a_free_1.*".  These files can be found at
 # https://download.geofabrik.de/
+#
+# Because their signatures are the same, it also serves to render the
+# "gis_osm_water_a_free_1" shapefiles
 #
 
 BEGIN {
@@ -29,3 +32,10 @@ BEGIN_RECORD {key=""; lanes=1; color=35; fill_color=35; name=""; filled=1; patte
 /^fclass=spring$/ {color=117; fill_color=117; fill_style=2; fill_stipple=2; display_level=64; label_level=8; font_size=1; next}
 /^fclass=glacier$/ {color=117; fill_color=117; fill_style=2; fill_stipple=1; display_level=256; label_level=16; font_size=1; next}
 
+# Water features
+/^fclass=water$/ {color=117; fill_color=117; fill_style=2; fill_stipple=0; display_level=256; label_level=64; label_color=117; font_size=1; next}
+/^fclass=river$/ {color=117; fill_color=117; fill_style=2; fill_stipple=2; display_level=8192; label_level=128; label_color=117; font_size=1; next}
+/^fclass=riverbank$/ {color=117; fill_color=117; fill_style=2; fill_stipple=1; display_level=8192; label_level=128; label_color=117; font_size=1; next}
+/^fclass=reservoir$/ {color=117; fill_color=117; fill_style=2; fill_stipple=1; display_level=8192; label_level=128; label_color=117; font_size=1; next}
+/^fclass=wetland$/ {color=101; fill_color=101; fill_style=2; fill_stipple=0; display_level=128; label_level=32; label_color=101 ;font_size=1; next}
+/^fclass=dock$/ {color=122; fill_color=122; fill_style=2; fill_stipple=2; display_level=64; label_level=8; label_color=122; font_size=1; next}
