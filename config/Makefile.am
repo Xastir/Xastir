@@ -46,6 +46,7 @@ EXTRA_DIST = \
     OSM_geofabrik_roads.dbfawk \
     OSM_geofabrik_waterways.dbfawk \
     OSM_geofabrik_2026_buildings.dbfawk \
+    OSM_geofabrik_2026_natural.dbfawk \
     OSM_geofabrik_2026_roads.dbfawk \
     OSM_geofabrik_2026_waterways.dbfawk \
     predefined_EVENT.sys \

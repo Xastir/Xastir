@@ -1,0 +1,31 @@
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is used to map OSM shapefiles by "geofabrik.ge" which are
+# named "gis_osm_natural_a_free_1.dbf".  These files can be found at
+# https://download.geofabrik.de/
+#
+
+BEGIN {
+dbfinfo="osm_id:code:fclass:name";
+dbffields="fclass:name";
+}
+
+BEGIN_RECORD {key=""; lanes=1; color=35; fill_color=35; name=""; filled=1; pattern=0; display_level=65536; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=0;}
+
+/^name=(.+)$/ {name="$1"; next}
+
+/^fclass=tree$/ {color=114; fill_color=114; fill_style=2; fill_stipple=2; display_level=256; label_level=16; font_size=1; next}
+
+/^fclass=beach$/ {color=107; fill_color=107; fill_style=2; fill_stipple=2; display_level=8192; label_level=16; font_size=1; next}
+
+/^fclass=peak$/ {color=46; fill_color=46; display_level=256; label_level=16; font_size=1; next}
+/^fclass=cliff$/ {name="$(name)(cliff)"; color=74; fill_color=74; display_level=256; label_level=16; font_size=1; next}
+/^fclass=volcano$/ {color=68; fill_color=68; display_level=256; label_level=16; font_size=1; next}
+
+# color cave entrances and mines the same
+/^fclass=cave_entrance$/ {color=127; fill_color=127; display_level=256; label_level=16; font_size=1; next}
+/^fclass=mine$/ {color=127; fill_color=127; display_level=256; label_level=16; font_size=1; next}
+
+/^fclass=spring$/ {color=117; fill_color=117; fill_style=2; fill_stipple=2; display_level=64; label_level=8; font_size=1; next}
+/^fclass=glacier$/ {color=117; fill_color=117; fill_style=2; fill_stipple=1; display_level=256; label_level=16; font_size=1; next}
+
