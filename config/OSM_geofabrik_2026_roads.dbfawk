@@ -79,4 +79,4 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 /^fclass=raceway/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
 /^fclass=t/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
 /^fclass=tr/ {lanes=1; color=4; display_level=64; label_level=16; font_size=1; next}
-
+/^fclass=unknown/ {lanes=1; color=4; display_level=32; label_level=16; font_size=1; pattern=1; next}
