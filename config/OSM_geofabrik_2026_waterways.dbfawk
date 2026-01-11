@@ -1,0 +1,27 @@
+#
+# Copyright (C) 2000-2023 The Xastir Group
+#
+# This file is used to map OSM shapefiles by "geofabrik.de" which are
+# named "gis_osm_waterways_free_1.dbf". These files can be found at
+# https://download.geofabrik.de/
+#
+# This file is a modification of an older set, using input from github user
+# @mthassler to improve the older one
+
+BEGIN {
+dbfinfo="osm_id:code:fclass:width:name";
+dbffields="name:fclass:width";
+}
+
+BEGIN_RECORD {key=""; lanes=1; color=34; fill_color=26; name=""; filled=1; pattern=0; display_level=8192; label_level=32; label_color=9; font_size=0; symbol=""; fill_style=0;}
+
+/^name=(.+)$/ {name="$1";next}
+
+/^fclass=river/ {lanes=2; color=9; display_level=65536; label_level=16; font_size=1; next}
+/^fclass=stream/ 	{lanes=1; color=9; pattern=0; display_level=128; label_level=16; font_size=1; next}
+/^fclass=canal/ 	{lanes=1; color=9; pattern=2; display_level=128; label_level=16; font_size=1; next}
+/^fclass=drain/ 	{lanes=1; color=9; pattern=1; display_level=32; label_level=16; font_size=1;  next}
+
+
+
+
