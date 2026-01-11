@@ -77,13 +77,13 @@ jobs:
         sync: nfs
         usesh: true
         prepare: |
-          pkg install -y devel/autoconf devel/automake devel/shapelib devel/pcre2 graphics/GraphicsMagick graphics/libgeotiff ftp/curl databases/db18 lang/gcc13 x11-toolkits/open-motif audio/festival devel/libcjson
+          pkg install -y devel/autoconf devel/automake devel/shapelib devel/pcre2 graphics/GraphicsMagick graphics/libgeotiff ftp/curl databases/db18 lang/gcc13 x11-toolkits/open-motif audio/festival devel/libcjson lang/gcc14
     - name: Bootstrap
       shell: freebsd {0}
       run: |
         cd $GITHUB_WORKSPACE
         autoreconf -i
-    - name: configure out-of-source
+    - name: configure out-of-source gcc13
       shell: freebsd {0}
       run: |
         cd $GITHUB_WORKSPACE
@@ -91,13 +91,31 @@ jobs:
         mkdir build
         cd build
         ../Xastir/configure --with-bdb-incdir=/usr/local/include/db18 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc13 CXX=g++13
-    - name: make
+    - name: configure out-of-source gcc14
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        cd ..
+        mkdir build-gcc14
+        cd build-gcc14
+        ../Xastir/configure --with-bdb-incdir=/usr/local/include/db18 --with-bdb-libdir=/usr/local/lib CFLAGS="-O2 -g" CC=gcc13 CXX=g++14
+    - name: make gcc13
       shell: freebsd {0}
       run: |
         cd $GITHUB_WORKSPACE/../build
         make
-    - name: make check
+    - name: make gcc14
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE/../build-gcc14
+        make
+    - name: make check gcc13
       shell: freebsd {0}
       run: |
         cd $GITHUB_WORKSPACE/../build
+        make check
+    - name: make check gcc14
+      shell: freebsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE/../build-gcc14
         make check
