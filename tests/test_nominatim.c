@@ -41,6 +41,9 @@
 
 #include "tests/test_framework.h"
 
+// Geocoder structures needed for tests
+#include "geocoder.h"
+
 // External config variables that nominatim.c depends on
 extern char nominatim_server_url[400];
 extern int nominatim_cache_enabled;
@@ -58,8 +61,6 @@ extern void compute_query_hash(const char *query, const char *country_codes, cha
 extern int cache_lookup(const char *query, const char *country_codes, struct geocode_result_list *results);
 extern void cache_store(const char *query, const char *country_codes, const struct geocode_result_list *results);
 
-// Geocoder structures needed for tests
-#include "geocoder.h"
 
 /* Test cases */
 
