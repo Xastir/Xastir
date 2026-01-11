@@ -107,19 +107,30 @@ done
 # tests fail.
 ####################
 #
+
+exitcode=0
+
 for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6 $FILE7; do
 
   e=`echo $d | sed -e's/\(.*[0-9]\)[a-f]$/\1/'`
-    
+
   if [ -e $e.dbf ]; then
     echo
     echo $e.dbf
     # Run in a separate shell so we don't mess up the current directory for the -e test above
-    (cd ${prefix}/share/xastir; ${prefix}/bin/testdbfawk -D config -d Counties/$e.dbf 2>&1 | head -3 | tail -1)
- 
+    result=`cd ${prefix}/share/xastir; ${prefix}/bin/testdbfawk -D config -d Counties/$e.dbf 2>&1 | head -3 | tail -1`
+    echo $result
+    if [ "$result" = "No matching dbfawk signature found" ]; then
+        echo "Fix dbfawk for $e!"
+        exitcode=1
+    fi
   fi
 done
 echo
 
+if [ $exitcode -eq 1 ] ; then
+    echo "One or more dbfawk files is out of date.  Fix the problem."
+fi
 
+exit $exitcode
 
