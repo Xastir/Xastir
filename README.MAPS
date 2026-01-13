@@ -12,45 +12,6 @@ something and can't find it, look on the Github wiki.  When the work
 is done, this file will contain nothing but the recommendation to look
 at the wiki.
 
-
-How to Use APRS Overlay Maps (*.POS files) within Xastir:
----------------------------------------------------------
-    Use the "xastir/scripts/pos2shp.pl" script to convert the
-    overlay files to ESRI Shapefile maps:
-
-        # ./pos2shp.pl test.pos testmap
-        # cp testmap* /usr/local/share/xastir/maps/.
-
-    Xastir:  Map->Configure->Index: Add New Maps
-             Map Chooser:  Select the "testmap" map
-
-
-
-
-Getting Maps and other Data Files for Xastir:
----------------------------------------------
-
-MAP CACHING (WORKS WITH MOST ONLINE MAPS):
-
-    Map caching works in conjunction with the map download routines,
-    which fetch maps from http or ftp addresses.  The map caching features
-    use functions found in Berkeley DB 4.0 library, AKA libdb (version 4.0
-    or better), to create and manage a cache directory and a persistent
-    database of information about the files in the cache directory.  This
-    directory defaults to ~/.xastir/map_cache.  The files under this
-    directory can be cleaned up or removed by hand at any time - the
-    caching routines will simply download the maps and put new entries
-    into the .db file.
-
-    Map files are saved with filenames that include the number of seconds
-    since the Unix epoch.  This allows the caching routines to easily
-    determine the age of maps so that older cached maps can be deleted.
-    This is currently (Dec 2004) controlled with a compile time maximum
-    age setting.  See map_cache.h for specifics and for brief
-    documentation about all of the map_cache functions.
-
-
-
 DRAWING SAR SEARCH SEGMENTS IN XASTIR:
 
     Turn on "Draw" mode (togglebutton at the top of the main
