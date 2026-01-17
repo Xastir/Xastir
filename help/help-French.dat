@@ -2,16 +2,19 @@ HELP-INDEX>ME LIRE EN PREMIER - License
 
                         ME LIRE EN PREMIER pour XASTIR
 
-Traduction Francaise par F1SJE F1SJE@F1SJE.FRPA.FRA.EU
-Correction et derniers peaufinages F1IOL@F6KBF.FRPA.FRA.EU
-                        
-!!! NOTE: Ces documentations ne sont peut-�tre pas � jour ou incompl�tes
+Traduction Francaise par Google Translate
+Si vous n'aimez pas la traduction, on sera ravis d'avoir vos corrections!
 
-Les plus r�centes informations sont dans le README.1ST dans le r�pertoire
-Xastir.
+Pour obtenir les informations les plus récentes, veuillez consulter le
+fichier README.md dans le répertoire Xastir.  Consultez également les
+fichiers LICENSE et COPYING pour plus d'informations.
 
-Ce programme est destin� a �tre utilis� par des radio-amateurs DANS LE
-CADRE DE LEUR REGLEMENTATION NATIONALE.
+Ce programme est destiné à la communauté des radioamateurs. Aux
+États-Unis, la FCC interdit l'émission par radiofréquence aux
+personnes non titulaires d'une licence de radioamateur.
+
+Les utilisateurs résidant en dehors des États-Unis sont invités à se
+renseigner sur la réglementation en vigueur dans leur pays.
 
 LICENSE :
 
@@ -19,426 +22,358 @@ XASTIR, Amateur Station Tracking and Information Reporting
 Copyright (C) 1999  Frank Giannandrea
 Copyright (C) 2000-2023 The Xastir Group
 
-Ce programme est libre; vous pouvez le redistribuer et le modifier
-dans les conditions d�finies dans la "GNU General Public License"
-(version 2 ou sup�rieure) d�finie par la "Free Software Fondation".
+Ce programme est un logiciel libre ; vous pouvez le redistribuer et/ou le modifier
+conformément aux termes de la Licence publique générale GNU, telle que publiée
+par la Free Software Foundation ; soit la version 2 de la Licence, soit (à votre
+choix) toute version ultérieure.
 
-mais SANS AUCUNE GARANTIE. Voir la "GNU General Public License" pour
-plus de d�tails.
+Ce programme est distribué SANS AUCUNE GARANTIE ; sans même la garantie implicite
+de QUALITÉ MARCHANDE ou d'ADÉQUATION À UN USAGE PARTICULIER. Consultez la
+Licence publique générale GNU pour plus de détails.
 
-Vous devriez avoir recu une copie de la "GNU General Public License"
-avec ce programme sinon �crivez �  : the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+Vous devriez avoir reçu une copie de la Licence publique générale GNU avec ce
+programme ; si ce n'est pas le cas, veuillez écrire à la Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, États-Unis.
 
-Plus d'informations sur ce programme peuvent �tre trouv�e sur sa page Web :
+Vous trouverez plus d'informations sur le programme à l'adresse suivante :
 
-http://www.xastir.org
-http://github.com/Xastir/Xastir
+https://github.com/Xastir/Xastir
+https://github.com/Xastir/Xastir/wiki
+https://www.xastir.org
 
-Pour plus d'informations sur la License GNU regardez sur :
-http://www.gnu.org
+Des listes de diffusion spécifiques à Xastir sont disponibles.
+Veuillez vous abonner à l'une ou aux deux pour obtenir les dernières
+informations sur Xastir. Consultez https://www.xastir.org pour vous abonner.
+
+Pour plus d'informations sur la licence GNU, consultez :
+https://www.gnu.org
 
 
 HELP-INDEX>Bienvenue! Et notes de l'auteur.
 
-                        Bienvenue dans Xastir
-                        
-XASTIR, ou X-windows Amateur Station Tracking and Information Reporting.
+                      Bienvenue ! et Notes des auteurs
 
-C'est un programme APRS(tm) dont les sources sont ouvertes et libres 
-d'utilisation et de diffusion. Ce programme est en cours de d�veloppement
-et ne devrait pas �tre vu comme un produit fini. J'aurai besoin de votre 
-aide pour le rendre plus fonctionnel. J'ai beaucoup d'id�es mais peu de 
-temps alors si vous pensez pouvoir m'aider n'h�sitez pas et faite moi le 
-savoir!
+XASTIR, ou X Amateur Station Tracking and Information Reporting (Suivi
+et rapport d'informations des stations radioamateurs X).
 
-73s
-Frank Giannandrea
+Xastir est un programme APRS™ open source, gratuit et librement
+distribuable. Actuellement en développement, ce programme ne doit pas
+être considéré comme un produit fini ! Votre aide est précieuse pour
+l'améliorer. Si vous avez des compétences en programmation et/ou en
+rédaction de documentation, votre contribution est la bienvenue ! Nous
+avons beaucoup d'idées, mais peu de temps. Si vous pensez pouvoir
+apporter votre contribution, n'hésitez pas à nous contacter !
 
-APRS[tm] est une marque d�pos�e de Bob Bruninga, 
-Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
+APRS™ a été créé par Bob Bruninga et initialement déposé comme marque
+par lui. Il s'agit actuellement d'une marque déposée de la Tucson
+Amateur Radio Packet Corporation. Après le décès de Bob Bruninga, la
+maintenance et la documentation d'APRS pour la communauté ont été
+reprises par la Fondation APRS, dont le site web est
+https://how.aprs.works/. C'est la meilleure source d'informations à
+jour sur APRS.
 
-HELP-INDEX>What's new in Xastir 2.0.9
+Une copie historique du site web original d'APRS de Bob Bruninga est
+disponible à l'adresse https://aprs.org/.
 
-The "What's New" section of this help file has been long neglected,
-and has not been updated in every release.
+HELP-INDEX>Nouveautés de Xastir
 
-In general, the best way to see what has changed in Xastir is to view
-the git log.  What follows is an abbreviated summary, long after the
-fact, of what has changed since the last time this "What's New" was
-updated for release 2.0.1 (which was in 2012!).
+La section « Nouveautés » de ce fichier d'aide a été longtemps
+négligée et n'a pas été mise à jour à chaque version. À partir de la
+version 2.2.4, nous avons supprimé toutes les anciennes entrées et ne
+la mettrons plus à jour.
 
-The Xastir project has migrated from SourceForge and CVS to Github and
-git.  This changes how Xastir releases are distributed, and also how
-one accesses the latest development code.  The Xastir project is now hosted at
-https://github.com/Xastir/Xastir, and the wiki is still at http://xastir.org.
+Pour connaître les nouveautés de chaque version de Xastir, le mieux
+est de consulter les notes de version que nous publions sur
+GitHub. Vous pouvez les consulter à l'adresse suivante :
+https://github.com/Xastir/Xastir/releases.
 
--Added support for IPv6 in both Xastir server code and APRS-IS connection code.
--Added "wxnowsrv.pl" script to support feeding Xastir weather data via the
- WXNOW.TXT mechanism.
--Fixed compressed weather alert handling.
--Added correct dbfawk files for most recent NWS shapefiles.
--Added a few on line maps from geograits.gc.ca.
--Fixed area computation of CAD objects.
--Added support for proportional fonts in map labels.
--New scripts added to support feeding ADS-B and AIS data into Xastir.
--Many old GEO files for online maps stopped working when servers they
- referenced were taken down.  Most of these have been removed.  If you
- find other .geos that don't work, please report this on the xastir
- mailing list.
--Added new fosm OpenStreetmaps tile server GEO.
--Map cache code updated to work with any version of Berkeley db after 4.1
- (including the 5.x series).
+HELP-INDEX>Débuter
+                               Débuter
 
-HELP-INDEX>What's new in Xastir 2.0.1
-(Changes between 1.7 and 2.0.0 were never recorded here,this block
-describes a few of the changes from 1.9.8 to 2.0.0 that occured right
-before release of 2.0.0, but otherwise documents only changes from 2.0.0 
-to 2.0.1)
+Lors du premier lancement de Xastir, il est recommandé de le démarrer
+depuis une fenêtre de terminal afin de visualiser les éventuels
+messages d'avertissement ou d'erreur. Sur la plupart des systèmes, un
+chemin d'accès est configuré pour exécuter les programmes dans
+/usr/local/bin ; il vous suffit alors de taper « xastir & » à l'invite
+de commande. Sur les systèmes où ce chemin n'est pas configuré, tapez
+« /usr/local/bin/xastir & » pour démarrer le programme. Le caractère «
+& » permet de lancer Xastir en arrière-plan, libérant ainsi la fenêtre
+du terminal pour d'autres utilisations.
 
-Added tiling for OpenStreetMaps (2.0.0).
-Added "setlocale()" calls to assure we aren't confused by user 
-LANG variable settings.
-Improved speed of config file processing.
-Fixes for new One-Wire-Daemon protocol, allowing both old and 
-new to work with Xastir.
-Fixed segfaults that could happen when closing list dialogs.
-Fix OSM code to support 16-bit quanta in Graphics/ImageMagick.
-Fixed broken makefile that was ignoring DESTDIR.
-Fixed broken build so internal shapelib builds correctly when
-proj.4 is not installed.
-Add dbfawk files for several generations of new NWS shapefiles.
-Update get-NWSdata to pull current NWS shapefiles.
-Add start/stop files for Kenwood D72 and D710 radios.
-Added a script to convert GeoPDF files to usable GeoTIFF files.
-Make the command to set a TNC into CONVERSE mode a run-time
-configurable option in the TNC Interface Properties dialog.
-Add support for Australian Bureau of Metrology weather alerts.
-Fixes for Davis APRS Data Logger, Davis Meteo and LaCrosse 
-support so it gets rain totals correct.
-Allow "posit interval" in File->Configure->Timing to go all the
-way to zero, meaning "never send posits on a schedule."
-Add signal support so that Xastir will emit a posit when it 
-receives SIGUSR2.  Combined with zero "posit interval," this
-allows Xastir to emit a posit only when told to by an external
-script.
-Fixed error in logic for band-opening alerts (speech and audio
-alarms) so it does not incorrectly report third party traffic
-as a band opening.
-Add "Send Control-E to get GPS data?" to TNC interface 
-properties for the "Serial TNC w/ GPS on AUX port" interface
-type.  Defaults to enabled, which is correct for KPC-3+ TNCs,
-but should be turned off for any TNC that automatically
-streams GPS NMEA strings, such as Kenwood APRS radios.
-Update GPSMAN support to reflect changes in the gpsman command 
-line.
-Add a small delay between sending the converse-mode command
-and sending data for transmission, because KAM TNCs don't
-work if you send the data immediately.
-Fix a bug in the OSM tile download loop that could prevent
-further downloading of tiles if any one tile download fails.
-Fixed a thread-unsafeness bug that could cause Xastir to start
-using corrupted file names when multiple logging options
-(TNC, NET, WX, IGATE, etc.) selected simultaneously.
-Fixed get-fcc-rac.pl script to reflect changes in RAC download
-site.
+Vous pouvez également choisir la langue à ce moment-là. Pour définir
+la langue ou modifier la langue actuelle, lancez Xastir avec l'option
+« -l » :
 
+xastir -lEnglish
 
+Options de langue disponibles :
+xastir -l Dutch
+xastir -l English
+xastir -l French
+xastir -l German
+xastir -l Italian
+xastir -l Portuguese
+xastir -l Spanish
+xastir -l ElmerFudd
+xastir -l MuppetsSwedishChef
+xastir -l OldeEnglish
+xastir -l PigLatin
+xastir -l PirateEnglish
 
+La langue choisie sera enregistrée dans votre fichier de configuration
+et conservée pour les lancements ultérieurs de Xastir. Lors d'une
+nouvelle installation, Xastir utilise l'anglais par défaut jusqu'à ce
+que vous modifiiez la langue à l'aide de cette option de ligne de
+commande.
 
-HELP-INDEX>What's new in Xastir 1.7
-Added REGRESSION_TESTS in order to test interoperability of the
-configure-time flags.
-Added a replacement for malloc() for those cases where the OS
-provides a faulty one.
-Added more to the summary.log file:  The tests and results from
-config.log.
-GDAL configure probe now uses gdal-config if it's in the user's
-path.
-Tweaked configure so that dependent libraries cause other library
-searches to fail, and to provide more user output.
-Added ASCII-art drawing to INSTALL showing most of the library
-dependencies.
-Updated symbols.dat to more closely correspond to the current spec.
-Implemented EMERGENCY BEACON transmit capability under the Help
-menu.
-Added decoding for "EMERGENCY" anywhere in the packet plus any of
-these in the TO: field:  ALARM, ALERT, WARNING, WXALARM, EM.  Any of
-these will invoke the normal emergency popup dialog.
-Waypoint symbols now have a line drawn between them and the station
-transmitting them, per the spec.
-Now using font metrics to determine size of font.  We use that to
-determine size of black rectangle to draw underneath.
-Fixed the Fetch Findu Trail function so that it matches what Findu
-can provide.
-Fixed track->shapefile function so that it works on Cygwin too.
-Added reset button to Change Debug Levels dialog.
-Enable WX Alerts menu item is now grey'ed out if Shapelib isn't
-installed.
-RINO Download timing slider is now visible but grey'ed out if gpsman
-isn't installed.
-Added a custom zoom option to the right-click zoom levels menu.
-Moved the center & zoom dialog to the map menu.
-Changed a memcpy() to an xastir_snprintf() function in alert.c to
-assure that a string is terminated.
-Free'ing some malloc'ed space for cases where hash inserts fail.
-Added probe for sighandler_t definition.
-Changed includes, added leak_detector.h.
-A few small changes here and there to get rid of compiler warnings.
-Freeing some malloc'ed space for the cases where hash inserts fail.
-Fixed initializers for awk_rule[].
-Changed hash add functions so that they do a delete first instead of
-replacing hash values.
-Moved some wx-alert related code to debug level 2.
-Changed leak detect interval from 5 minutes to 60 seconds.
-Fixed a big memory leak in draw_nice_string() function.
-Changed include files around so memory leak detection stuff is in
-leak_detection.h.
-Added new compiler flags and cleaned up the code to eliminate many
-warnings created.
-Fixed Incoming Data dialog code so that packets transmitted to local
-interfaces would appear there.
-TNC/NET toggles work for those now too.
-Fixed memory leak in font metrics code.
-Simplfied get_long()  and get_int() functions and callouts.
-Tweaks for sighandler_t and sigjmp_buf.
-Added a sign-on message for server connects.
-FCC/RAC lookup or Locate Now buttons don't destroy the dialog
-anymore.
-Fixing up strings.h includes.
-Added a new popup for EMERGENCY packets.
-Changed signal() with SIG_IGN to sigignore for some cases.
-Added a test for sigignore() to configure.ac.
-Changes to allow different versions of "gv" to be used.
-Moved "-lgdal" to end of link line to avoid conflict with other
-libraries.
-Added UDP server and client.
-Added more language strings for previously hard-coded values.
-Changed config file get_int and get_long functions to provide better
-output when config file entries are missing or out-of-range.
-We now allow gating to the internet and to RF for user-defined
-packets and telemetry packets.
-Changing to <CR><LF> for the TCP server signon message.
-Changing to timestamp per packet for log files, with long int
-seconds at the beginning.
-Added icon.
-Added support for -geometry command-line parameter.
-Added fast creation of standard SAR objects via mouse menu,
-including adding digits to the end of the object name if name would
-conflict with pre-existing objects.
+Les menus supérieurs sont accessibles à la souris ou à l'aide de
+raccourcis clavier. Les raccourcis clavier peuvent ne pas fonctionner
+correctement si le verrouillage numérique est activé.
 
+Vous devrez configurer les interfaces pour pouvoir utiliser Xastir. La
+configuration des interfaces est détaillée dans la rubrique d'aide «
+Configuration des interfaces » et ses sous-rubriques.
 
+Si vous travaillez dans un contexte où un système de coordonnées autre
+que le système par défaut DD MM.MMMM serait plus approprié, vous
+pouvez sélectionner votre système préféré en allant dans Fichier |
+Configurer | Système de coordonnées. Tous les systèmes de coordonnées
+pris en charge peuvent être utilisés en entrée grâce au calculateur de
+coordonnées.
 
-HELP-INDEX>What's new in Xastir 1.6
-Fix for DF lines having incorrect angles at times.
-Configurable display of layers for USGS topo maps.
-Better Map Feature Search:  Shows up to 50 matches, user selects
-which one to center map on.
-Configurable "relay" digipeater calls:  Up to 50 callsigns can be
-specified in the Xastir config file to use for relay digipeating.
-"WIDE1-1" is now the default.
-Added support for Web Map Service (WMS).
-Tweaked the GPGGA and GPRMC GPS sentence decoding.
-Added speed-ups for lat/long geotiff's.
-Added Aloha circle.
-Added new #defines in interface.h for specifying "conv" or 'k'
-command to TNC.
-Added new tnc-startup file for TAPR-2 style TNC's.
-Added transparency capability to WMS.
-Fixed digpeating code for "wide1-1,wide2-1" case.
-Fixed some compile errors that are seen on FC4 and OSX Tiger.
-Added new terraserver .geo file options.
-Changed Map Properties "fill" option to allow NO/YES/AUTO.
-Auto uses dbfawk if present, no/yes force fill to that state.
-Fixed some #ifdefs here and there so that compiles will work if
-some libraries aren't present.
-Added map caching for nearly all internet maps, plus two new toggles
-on the map menu for clearing out current-view maps or all maps from
-the cache.
-Moved Tigermap timeout slider to main timing dialog, renamed it, and
-made it function for ALL internet map fetches.
-Added timestamps to x_spider log messages.
-A fix for the emacs tempfile bug w.r.t. dbfawk files went in, but
-hasn't been verified to have fixed the problem yet.
-More bulletproofing added to the map_cache code.
-Fixed a compile problem that happens if ImageMagick isn't installed.
-Changed stipple style to solid for polygons drawn with dbfawk.
-Another fix so that linking works without map caching. 
+HELP-INDEX>Configuration des informations de la station
 
+Configuration des informations de la station
 
+Cliquez sur Fichier, puis sur Configurer, puis sur Station.
 
-HELP-INDEX>What's new in Xastir 1.5
-Optional Rtree shapefile extent caching
-Optional berkelydb-based internet map caching
-Modifier keys fix
-Improvements to the message GUI
-Tactical call support re-written, hashtable based
-Warnings on crazy paths
-Hashtable weather alert speedups
-Dead-reconing for Objects/items
-Igate of specific stations (in the nws-stations.txt)
-Fixed DF object properties
-Measure function more accurate
-Decoding for "Position with Timestamp no APRS messaging" packets.
-More thorough checking for scanf/sscanf/fscanf function calls
-Fixing 100% humidity for some weather stations, plus added more data for Davis stations
-Changed active internet connection check from 1 min to 5 minutes
-Fixed decoding of compressed DF objects
-Fixes to allow new WHO-IS server to be used from Xastir
-Got rid of extra 0x00 byts between transmitted KISS frames
-Tweak to not start an interface upon changing its properties
-Tweaks to allow use of http proxy servers for online map accesses (.netrc file)
+Saisissez l'indicatif d'appel de votre station radioamateur.
 
+Saisissez la position de votre station si vous n'utilisez pas Xastir
+avec un récepteur GPS. Vous pouvez localiser votre position
+approximative sur la carte avec Xastir et utiliser la position
+indiquée par le curseur sur la carte. Cette position sera visible dans
+la zone située en bas de l'écran Xastir, à la deuxième position à
+partir de la gauche, lorsque la souris survole la zone de dessin. Vous
+pouvez également sélectionner « Déplacer ma station ici » dans le menu
+contextuel (clic droit) lorsque votre souris se trouve sur votre
+emplacement. Si vous possédez un GPS, vous pouvez igniter cette étape
+et configurer le GPS ultérieurement.
 
+L'option « Transmettre positions compressées », si elle est
+sélectionnée, transmettra les données au nouveau format compressé. Ce
+format réduit la quantité de données transmises, augmentant ainsi la
+capacité du réseau APRS™.  La précision maximale de la position
+transmise est également supérieure.  Certains programmes plus anciens,
+y compris les versions récentes de WinAPRS, ne décodent pas encore ce
+format. Findu.com pourrait également rencontrer des difficultés avec
+ce format. Nous transmettons le cap et la vitesse dans ce format, mais
+pas l'altitude. L'envoi du cap, de la vitesse ET de l'altitude
+nécessite l'ajout de neuf caractères au paquet, ce qui annule en
+partie l'intérêt d'utiliser les positions compressées.
 
-HELP-INDEX>What's new in Xastir 1.4
-Comment fields for interfaces
-split_gnis and ozi2geo scripts, need to add to section on scripts
-serial mkiss interface
-move objects without confirm
-new timing params w.r.t. trails, need to add to config|timing part
-geo-coder (already in docs)
-exponential/random back-off for almost everything
-dbfawk default, memory leaks fixed
-click+drag zoom boxes
-tactical callsign support
-numerous small memory leaks, uninitialized data uses, and similar bugs fixed. 
-GPS quality info
-RINO waypoints downloading
-label trackpoints
-comment/status timestamps
-listener socket/ability to act like a limited internet server
+Pour sélectionner un symbole pour votre station, vous devez spécifier
+un groupe et un caractère de symbole. Vous pouvez remplir ces champs
+manuellement ou appuyer sur « Sélectionner » pour choisir un symbole
+graphiquement. Deux groupes de symboles sont disponibles. Une
+description textuelle de chaque symbole est disponible dans l'aide,
+rubrique « Table des symboles ».
 
-HELP-INDEX>D�buter
-                               D�buter
-                               
-Maintenant que Xastir fonctionne il faut le configurer !
-Le menu Configurer va vous permettre de param�trer votre station.
-La plupart de options par d�faut vous permettent d�j� de travailler.
+Pour certains symboles du deuxième groupe, vous pouvez spécifier une
+superposition. Un symbole sera alors affiché avec un caractère de
+superposition supplémentaire, par exemple un symbole de voiture avec
+le chiffre 1 superposé.
 
-Le sous menu d�faut vous permet de s�lectionner les valeurs des 
-diff�rents intervals de temps, les options de transmission et les
-fonctions du gateway internet.
+Pour utiliser les superpositions, vous devez sélectionner un symbole
+dans la table des symboles secondaires et saisir le caractère de
+superposition à afficher dans le champ groupe/superposition. Seuls les
+chiffres et les majuscules sont autorisés comme caractères de
+superposition. Conformément à la spécification APRS™, tous les
+symboles ne peuvent pas être superposés. Xastir n'applique pas cette
+restriction, mais certains autres programmes peuvent le
+faire. Veuillez noter que tous les symboles n'ont pas encore été
+implémentés dans le sélecteur graphique, et certains ne sont pas
+encore conformes à la spécification APRS(tm).
 
-Le sous menu interfaces vous permet de param�trer vos p�riph�riques
-s�rie, AX25, GPS, Stations m�t�o, Connexions internet etc...
-Vous pouvez �galement modifier les param�tres de ces interfaces avec
-ce menu.
+Ensuite, saisissez les données relatives à la puissance, à la hauteur
+et au gain de votre station. Ces informations sont utiles mais non
+obligatoires ; il vous suffit de sélectionner « Désactiver PHG » pour
+les désactiver. Ces options offrent une représentation détaillée de la
+portée de votre station. Sélectionnez la combinaison de valeurs la
+plus proche de la description de votre station. Veuillez utiliser la
+hauteur au-dessus du terrain moyen (HAAT) pour la valeur de
+hauteur. N'utilisez PAS la hauteur moyenne au-dessus du niveau de la
+mer ni la hauteur au-dessus du sol. Toutes les valeurs doivent être
+spécifiées si vous souhaitez transmettre les informations PHG.
 
-Pour commencer le plus important est de configurer la station; 
-indicatif, Latitude/Longitude (Si vous n'avez pas de GPS), incertitude 
-quant � la position et autres informations.
+Une autre option consiste à spécifier la portée (RNG) en miles dans le
+champ de commentaire au lieu d'utiliser le PHG. Consultez la
+spécification APRS(tm) pour plus de détails.
 
-Alarmes sonores va configurer les sons en fonction des �v�nements.
+Pour le gain, utilisez le gain de votre antenne en dBi. (À CORRIGER :
+dBd ? La spécification n'est pas claire, je pense qu'il s'agit de dBi
+car il est indiqué que « en l'absence de données, les stations sont
+censées fonctionner avec une puissance de 10 W et une antenne
+omnidirectionnelle de 3 dB à 6 mètres de hauteur. Une antenne
+omnidirectionnelle typique n'a qu'un gain de 3 dBi… »)
 
-Mesure vous permettra de choisr entre syst�me m�trique ou mesures 
-anglaises.
+Remarque : Le réglage du gain est destiné aux antennes verticales ; le
+réglage du gain pour une antenne directionnelle doit être nettement
+inférieur au gain avant de l'antenne.  En effet, avec la directivité
+définie, le cercle PHG n'est décalé que d'un tiers de sa taille vers
+la direction spécifiée. Un réglage de gain plus élevé agrandirait le
+cercle de manière irréaliste, au lieu d'augmenter la directivité.  Il
+a été question il y a plusieurs années de modifier les spécifications
+pour mieux prendre en compte les antennes directionnelles, mais aucune
+modification n'a été apportée.
 
-NOTE : Dans les menus les options grises sont actives, quand vous 
-s�lectionnez vous faites passer l'option en gris.
+Saisissez un commentaire (facultatif), qui apportera des informations
+supplémentaires sur votre station.  Vous pouvez par exemple indiquer
+votre adresse e-mail préférée. Elle sera transmise avec vos positions.
 
-HELP-INDEX>Configuration de la station
+L'ambiguïté de position vous permet de contrôler la précision de la
+transmission de votre position. Le réglage « Aucun » permet à votre
+station de transmettre la position exacte que vous avez saisie ou
+reçue d'un GPS. Les autres options vous positionneront dans la plage
+de l'option sélectionnée. Notez que cela peut perturber certaines
+stations non conformes aux spécifications. Findu.com ne prend pas en
+charge l'ambiguïté de position.
 
-                                Configuration de la station
-  
-Entrez votre indicatif/SSID.
+Cliquez sur OK pour enregistrer vos modifications. Cliquez sur Annuler
+pour conserver les paramètres précédents.
 
-Le d�faut est NOCALL, si vous ne savez pas ce que ca veut dire peut-etre
-ne devriez vous pas utiliser ce programme.
+HELP-INDEX>Configuration des paramètres par défaut
 
-Ensuite entrez latitude et longitude en degr�s, minutes, centi�mes
+Configuration des paramètres par défaut
 
-N pour Nord, S pour Sud, E pour Est et attention W pour Ouest (Ndt : allez
-on ne va pas modifier les sources pour ca hi ! ) 
+Cliquez sur Fichier, puis sur Configurer, puis sur Paramètres par défaut.
 
-Maintenant entrez votre Groupe/Overlay et le symbole de votre station.
-Regardez le listing des tables pour choisir votre symbole.
-Par d�faut le symbole est x pour xwindows/Unix et le groupe est "/".
-Si vous voulez autre chose entrez la lettre ou le chiffre dans la
-fen�tre Groupe/Overlay et prenez un symbole dans le groupe "\".
+Cette page permet de configurer certains paramètres par défaut pour le
+fonctionnement du programme.
 
-Ce n'est pas obligatoire mais si vous voulez entrez ensuite la puissance,
-la hauteur et le gain de votre antenne en vous aidant des tableaux ci-dessous :
+L'option «Option de transmission» définit le type de paquet que votre
+station utilisera pour transmettre ses données.
 
+Les options IGate permettent de configurer votre station comme
+passerelle Internet-RF. Cette option doit être utilisée avec prudence
+; en tant qu'opérateur radioamateur, vous êtes responsable des données
+reçues via Internet et transmises par radio. Vous devrez également
+choisir une option IGate pour chaque interface afin que la passerelle
+IGate fonctionne.  Si vous souhaitez que votre passerelle IGate
+transmette les alertes météorologiques du NWS par radio, vous devez
+créer un fichier ~/.xastir/data/nws-stations.txt listant chaque
+indicatif ou station NWS (comme « PHISVR ») que vous souhaitez
+transmettre par radio. Cette fonctionnalité permet également de
+transmettre des indicatifs spécifiques par radio.
 
-Chiffre a utiliser       0  1  2  3   4   5   6   7   8   9 
-Puissance    (en watts)  0  1  4  9  16  25  36  49  64  81
+L'option « Transmettre les objets/éléments compressés ? », si elle est
+sélectionnée, transmettra les objets et les éléments au format
+compressé plus récent. La précision maximale de la position transmise
+est plus élevée et la transmission est plus courte, mais certains
+programmes plus anciens ne décodent pas encore ce
+format. Actuellement, cette option ne compresse que les
+objets/éléments « standard » avec une vitesse/direction
+optionnelle. Elle ne compressera pas les objets/éléments de zone, de
+panneau ou de radiogoniométrie, et ne représente pas actuellement
+l'altitude dans les objets/éléments « standard ».
 
-Exemple : Entrez 6 pour 36 Watts
+L'option « Afficher bulletins nouveaux », si elle est
+sélectionnée, affichera la boîte de dialogue des bulletins lorsque des
+bulletins se trouvant dans la plage configurée sont reçus. L'option «
+Afficher les bulletins à distance nulle » permet de ne pas afficher
+les bulletins sans position connue ni d'afficher de fenêtres
+contextuelles.
 
-Idem pour la hauteur, ce n'est pas la hauteur au dessus du sol
-mais la hauteur au dessus du niveau de la mer.
+L'option « Alerter si clés modificatrices (Verr.Num.) »
+affichera un avertissement si vous tentez d'utiliser Xastir alors que
+les touches Verr. Num, Arrêt défil. ou Verr. Maj sont
+activées. Certains utilisateurs signalent un écran noir et des
+problèmes similaires lorsqu'ils tentent d'utiliser Xastir avec l'une
+de ces touches de modification activée.
 
-Chiffre a utiliser    0   1   2   3    4    5    6     7     8     9 
-Hauteur              10  20  40  80  160  320  640  1280  2560  5120
+Vous pouvez également sélectionner « Activer réseau alterne ? » et
+choisir un indicatif de réseau alternatif dans cette boîte de
+dialogue. Le réseau alternatif vous permet de disposer d'un réseau
+APRS™ privé entre les stations qui ont également configuré le réseau
+alternatif et qui ont saisi le même indicatif de réseau
+alternatif. L'option « Désactiver identif. de duplic. posit. »
+désactive la vérification des positions en double. Cette option ne
+doit être utilisée que si une station est susceptible de revenir
+exactement à la même position (à 60 pieds près environ pour les
+positions non compressées) et que vous souhaitez afficher les
+positions et/ou les traces en double sur la carte. Cette option est
+rarement nécessaire en pratique, mais peut s'avérer utile pour des
+événements spéciaux tels que les opérations de recherche et de
+sauvetage.
 
-Exemple : Entrez 7 pour 1280m
+L'option « Mon parcour en une seule couleur » affiche toutes les traces
+associées à votre indicatif d'appel, mais avec des SSID différents,
+dans la même couleur. Si cette option est sélectionnée, mycall-1 et
+mycall-2 s'affichent dans la même couleur. Si elle est désactivée,
+mycall-1 et mycall-2 s'affichent dans des couleurs différentes.
 
-Pour le gain mettez simplement le gain de votre antenne en dB.
-
-Ci dessous en degr�s par rapport au nord 
-
-Chiffre a utiliser   0   1   2    3    4    5    6    7    8     9 
-Direction (deg)      0  45  90  135  180  225  270  315  360  None
-
-Utilisez 0 pour une antenne omnidirectionnelle (Verticale)
-
-Entrez un commentaire, ce n'est pas exig� mais personnalisera votre station.
-
-L'incertitude quant � votre position vous permet de g�rer la pr�cision 
-avec laquelle vous allez transmettre votre position.
-Avec aucune votre station transmettra la position exacte que vous avez
-entr�e ou recue par GPS sinon votre station sera vue quelque part dans 
-les limites choisies. 
-
-
-cliquez sur OK pour sauvegarder vos changements, cliquez sur annuler pour conserver
-les param�tres courants.
+L'option « Charger des objets prédéfinis à partir d'un fichier » et la
+liste déroulante qui la suit vous permettent de remplacer la liste des
+objets prédéfinis accessibles depuis le menu contextuel (clic droit)
+par votre propre liste d'objets. Un ensemble d'objets standard pour
+les opérations de recherche et de sauvetage et un ensemble d'objets
+typiques pour les événements publics sont fournis dans les fichiers
+predefined_SAR.sys et predefined_EVENT.sys. Vous pouvez également
+utiliser ces fichiers comme modèle pour créer un fichier
+predefined_USER.sys. Consultez les instructions dans les fichiers
+predefined_SAR.sys et predefined_EVENT.sys pour plus de détails sur la
+manière de définir des objets pour un menu d'objets prédéfinis
+personnalisé. Si l'option « Charger les objets prédéfinis à partir d'un
+fichier » est sélectionnée et qu'un fichier existant dans le
+répertoire xastir/config/ est sélectionné, les objets définis dans ce
+fichier s'afficheront dans le menu Objets prédéfinis. Le fichier
+predefined_SAR.sys non modifié définit les mêmes objets que le menu
+par défaut.
 
 HELP-INDEX>Comment utiliser mon GPS avec Xastir
 
                         Comment utiliser mon GPS avec Xastir
                         
-Vous avez 3 solutions, un GPS en r�seau , un GPS sur port s�rie ou un GPS
-sur port s�rie avec TNC et c�ble HSP.
-L'int�r�t d'un GPS en r�seau est que vous pouvez le partager avec d'autres 
-programmes. Xastir peut se connecter en r�seau sur un d�mon nomm� GPSD.
-Ce programme envoie des donn�es GPS standards sur le r�seau.
+Vous avez 3 solutions, un GPS en réseau , un GPS sur port série ou un GPS
+sur port série avec TNC et câble HSP.
+L'intérêt d'un GPS en réseau est que vous pouvez le partager avec d'autres 
+programmes. Xastir peut se connecter en réseau sur un démon nommé GPSD.
+Ce programme envoie des données GPS standards sur le réseau.
 Certaines versions autorisent une connexion GPS sur internet.
-Une fois install� sur votre machine (ou une autre en r�seau) vous pouvez 
-y connnecter Xastir en cr�ant une interface.
+Une fois installé sur votre machine (ou une autre en réseau) vous pouvez 
+y connnecter Xastir en créant une interface.
 Cliquez sur Configurer/Interfaces
 Ajouter
-R�seau GPS (avec gpsd)
-Entrez le nom de la machine ou vous avez install� GPSD et le nom du port.
+Réseau GPS (avec gpsd)
+Entrez le nom de la machine ou vous avez installé GPSD et le nom du port.
 Validez les 2 autres options selon ce que vous voulez.
 
-GPS s�rie :
-C'est un GPS s�rie standard connect� sur port s�rie qui doit transmettre
-ses donn�es au format NEMA. Proc�dez comme pour gpsd pour l'ajouter,
-mettez le port s�rie utilis�, en principe les param�tres par d�faut pour
-le port s�rie doivent fonctionner sinon ajustez les � l'aide de la doc de
+GPS série :
+C'est un GPS série standard connecté sur port série qui doit transmettre
+ses données au format NEMA. Procédez comme pour gpsd pour l'ajouter,
+mettez le port série utilisé, en principe les paramètres par défaut pour
+le port série doivent fonctionner sinon ajustez les à l'aide de la doc de
 votre appareil.
 
 HSP TNC/GPS: 
- Regardez � "Comment utiliser mon TNC avec Xastir?"
+ Regardez à "Comment utiliser mon TNC avec Xastir?"
 
 
 HELP-INDEX>Comment utiliser mon TNC avec Xastir?
 
                              Comment utiliser mon TNC avec Xastir?
                              
-La encore vous avez trois solutions : Un TNC en r�seau (AX25), un TNC sur
-port s�rie  et un TNC avec c�ble HSP et GPS.
+La encore vous avez trois solutions : Un TNC en réseau (AX25), un TNC sur
+port série  et un TNC avec câble HSP et GPS.
 
 AX25 :
 
 C'est simplement un des ports du kernel AX25 de Linux, vous devez avoir
-les librairies AX25 d'install�es et le support AX25 dans le Kernel.
+les librairies AX25 d'installées et le support AX25 dans le Kernel.
 
-TNC S�rie :
+TNC Série :
 
-TNC S�rie avec HSP et GPS :
+TNC Série avec HSP et GPS :
 
 
 HELP-INDEX>Configurer les Defauts
@@ -447,41 +382,41 @@ HELP-INDEX>Configurer les Defauts
 
 cliquez sur Configurer/Defaut.
 
-S�lectionnez l'intervalle de temps au del� duquel votre station sera
-consid�r�e comme vieille, 2 heures par default. Au bout de cet intervalle
-de temps l'icone de la station deviendra ombr�e ou transparente.
+Sélectionnez l'intervalle de temps au delà duquel votre station sera
+considérée comme vieille, 2 heures par default. Au bout de cet intervalle
+de temps l'icone de la station deviendra ombrée ou transparente.
 
 
 Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
-les param�tres courants.
+les paramètres courants.
 
 HELP-INDEX>Configurer le port GPS
 
                                 Configurer le port GPS
 cliquez sur Configurer/Interfaces
 Ajouter
-S�rie GPS pour un GPS seul, vous utiliserez un port s�rie style ttyS1.
+Série GPS pour un GPS seul, vous utiliserez un port série style ttyS1.
 
-Si vous avez un c�ble HSP qui vous permet de partager le port TNC avec 
-un GPS vous devez s�lectionner S�rie TNC/GPS sur c�ble HSP.
-C'est un c�ble sp�cial qui ne fonctionne pas sur toutes combinaisons
+Si vous avez un câble HSP qui vous permet de partager le port TNC avec 
+un GPS vous devez sélectionner Série TNC/GPS sur câble HSP.
+C'est un câble spécial qui ne fonctionne pas sur toutes combinaisons
 de machines/GPS/TNC.
-Attention aux param�tres de transmission, soyez sympas avec les autres
-utilisateurs de la fr�quence.
-Pour activer l'utilisation du GPS s�lectionner l'option autorisation de 
-transmettre sinon vous transmettrez les donn�es que vous avez configur�es
-dans le sous menu station. Ces donn�es seront mises a jours automatiquement
+Attention aux paramètres de transmission, soyez sympas avec les autres
+utilisateurs de la fréquence.
+Pour activer l'utilisation du GPS sélectionner l'option autorisation de 
+transmettre sinon vous transmettrez les données que vous avez configurées
+dans le sous menu station. Ces données seront mises a jours automatiquement
 si vous utilisez un GPS.
 Quand vous utilisez GPS vous denenez une station mobile avec vitesse et 
-direction m�me si vous ne bougez pas, les donn�es transmises changent. (Je 
+direction même si vous ne bougez pas, les données transmises changent. (Je 
 changerai cela avec une option plus tard)  
-Vous devrez s�lectionnez les intervalles de transmission directement
+Vous devrez sélectionnez les intervalles de transmission directement
 avec le GPS, les options par defaut de votre station ne seront plus prises
 en compte. Si vous etes en fixe mettez 10 minutes, sinon choissisez les 
 options selon vos besoins.
 
 Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
-les param�tres courants.
+les paramètres courants.
 
 HELP-INDEX>Configurer le port TNC
 
@@ -490,58 +425,58 @@ HELP-INDEX>Configurer le port TNC
 cliquez sur Configurer/Interface
 Ajouter
 Choisir votre TNC 
-S�lectionnez activer au d�marrage et autorisation de transmettre
+Sélectionnez activer au démarrage et autorisation de transmettre
 selon vos besoins.
-Entrez le port et param�trez le.
+Entrez le port et paramètrez le.
 
 Entrez le chemin des UNPROTOS.
-Xastir par d�faut a d�j� le chemin VIA XX.
-Vous pouvez en ajouter 3 autres de mani�re a �tre bien entendu
-m�me dans de mauvaises conditions.
+Xastir par défaut a déjà le chemin VIA XX.
+Vous pouvez en ajouter 3 autres de manière a être bien entendu
+même dans de mauvaises conditions.
 En fonction des champs remplis Xastir commencera un cycle d'envoi vers
-ces destinations, l'une apr�s l'autre a chaque fois qu'il sera l'heure
+ces destinations, l'une après l'autre a chaque fois qu'il sera l'heure
 de transmettre.
-Si vous �tes en local sans digi mettez WIDE2-2, si vous etes QRP ou loin 
+Si vous êtes en local sans digi mettez WIDE2-2, si vous etes QRP ou loin 
 d'un digi WIDE1-1,WIDE2-2 fonctionnera mieux.
-Si vous �tes pr�s d'un digi vous pouvez mettre INDICATIF,WIDE2-2.
+Si vous êtes près d'un digi vous pouvez mettre INDICATIF,WIDE2-2.
 La plupart d'entre vous n'avez besoin que d'un chemin mais si vous n'etes
-pas bien d�gag� mettez en plusieurs, demandez aux stations qui vous 
+pas bien dégagé mettez en plusieurs, demandez aux stations qui vous 
 entourent.
 
 Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
-les param�tres courants.
+les paramètres courants.
 
-HELP-INDEX>Configurer la connexion � Internet
+HELP-INDEX>Configurer la connexion à Internet
 
-                        Configurer la connexion � Internet
+                        Configurer la connexion à Internet
 
-Vous devez conna�tre un serveur et un n� de port, par defaut 
+Vous devez connaître un serveur et un n° de port, par defaut 
 www.aprs.net port 10151. Un mot de passe valide autorisera votre
-station � transmettre par internet et � �tre retransmise sur l'air.
-Pour obtenir un mot de passe contacter Steve Dimse, K4HG � www.aprs.net
-en lui pr�cisant vos nom, indicatif etc etc... Apr�s v�rification il vous
-donnera votre code. Sans code par d'acc�s sur l'air mais vous �tes quand 
-m�me forward� sur Internet.
-Validez reconnexion sur erreur r�seau pour une reconnexion automatique en
+station à transmettre par internet et à être retransmise sur l'air.
+Pour obtenir un mot de passe contacter Steve Dimse, K4HG à www.aprs.net
+en lui précisant vos nom, indicatif etc etc... Après vérification il vous
+donnera votre code. Sans code par d'accès sur l'air mais vous êtes quand 
+même forwardé sur Internet.
+Validez reconnexion sur erreur réseau pour une reconnexion automatique en
 cas de coupure.
-Dans Configurer/options vous avez la possiblit� de devenir un Gateway vous
-aussi. FAITES TRES ATTENTION � cette option, contactez Steve Dimse et veillez
-� rester en conformit� avec la r�glementation en vigueur.
+Dans Configurer/options vous avez la possiblité de devenir un Gateway vous
+aussi. FAITES TRES ATTENTION à cette option, contactez Steve Dimse et veillez
+à rester en conformité avec la règlementation en vigueur.
 Dans interface/fichier journal vous avez une option pour enregistrer 
-tous les �v�nements du Gateway.
+tous les évènements du Gateway.
 
 Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
-les param�tres courants.
+les paramètres courants.
 
-APRS[tm] est une marque d�pos�e de Bob Bruninga, 
+APRS[tm] est une marque déposée de Bob Bruninga, 
 Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
 
 HELP-INDEX>Configurer alertes sonores
 
                                 Configurer alertes sonores
                                 
-Bien �videment vous devez avoir une carte son ! il vous faudra aussi un
-programme qui joue les .wav, mettez le chemin complet dans la fen�tre 
+Bien évidement vous devez avoir une carte son ! il vous faudra aussi un
+programme qui joue les .wav, mettez le chemin complet dans la fenêtre 
 commande audio.
 
 Choix disponibles :
@@ -550,7 +485,7 @@ Nouvelle station
 
 Nouveau message
 
-Proximit�
+Proximité
 
 Ouverture de bande
 
@@ -558,98 +493,98 @@ Distance Minimum
 
 Distance Maximum
 
-Alerte M�t�o
+Alerte Météo
 
-HELP-INDEX>Configuration des  Unit�s
+HELP-INDEX>Configuration des  Unités
 
-                         Configuration des  Unit�s
+                         Configuration des  Unités
                          
-Ceci selectionne le syst�me d'unit�s, par defaut m�trique. Sinon
+Ceci selectionne le système d'unités, par defaut métrique. Sinon
 les mesures anglaises sont disponibles.
 
-HELP-INDEX>Ligne de status inf�rieure
+HELP-INDEX>Ligne de status inférieure
 
-                                Ligne de status inf�rieure
+                                Ligne de status inférieure
 
-En bas de la fen�tre vous pouvez voir diff�rents messages :
+En bas de la fenêtre vous pouvez voir différents messages :
 
-1�re fenetre : messages g�n�raux.
-2�me fen�tre : Latitude/Longitude du pointeur sur la carte.
-3�me fen�tre : Nombre de stations dans la base de donn�e.
-4�me fen�tre : Niveau de Zoom et Tr si le suivi de station est actif.
+1ère fenetre : messages généraux.
+2ème fenêtre : Latitude/Longitude du pointeur sur la carte.
+3ème fenêtre : Nombre de stations dans la base de donnée.
+4ème fenêtre : Niveau de Zoom et Tr si le suivi de station est actif.
 
-Les 2 derni�res fen�tres montrent le status du TNC et du r�seau.
-Un ">" pour des donn�es sortantes et un "<" pour des donn�es entrantes.
+Les 2 dernières fenêtres montrent le status du TNC et du réseau.
+Un ">" pour des données sortantes et un "<" pour des données entrantes.
 
 
 HELP-INDEX>Mouvements de la carte (Zoom et N.S.E.W) et menu options
 
         Mouvements de la carte (Zoom et N.S.E.W) et menu options
                 
-Les mouvements de la carte sont tr�s simple, la facilit� et la rapidit�
-des mouvements d�pend de la vitesse du processeur et du niveau de d�tail
-des cartes charg�es.
+Les mouvements de la carte sont très simple, la facilité et la rapidité
+des mouvements dépend de la vitesse du processeur et du niveau de détail
+des cartes chargées.
 Il suffit de cliquer sur un point de carte pour voir s'ouvrir un menu 
 qui permet de Zoomer sur ce point, voir + au nord, sud est ou ouest par
 rapport au centre de la carte; plus le zoom est petit plus le grossissement
 est grand.
-Le sous menu information sur la station vous donne les �l�ments de la station
-la plus proche du point ou vous avez cliqu�. S'il y a plusieurs stations non 
-loin un choix vous sera propos�.
+Le sous menu information sur la station vous donne les éléments de la station
+la plus proche du point ou vous avez cliqué. S'il y a plusieurs stations non 
+loin un choix vous sera proposé.
 
 HELP-INDEX>Menu Cartes et choix de cartes
 
                         Menu Cartes et choix de cartes
                         
 Carte automatique Actif/Inactif
-Si actif toutes les cartes du sous r�pertoire "map" et toutes celle des
-r�pertoires dessous seront affich�es si elles correspondent � la r�gion
-sur laquelle vous travaillez. Ceci peut ralentir consid�rablement le syst�me
-si vous avez beaucoup de cartes et un ordinateur tr�s lent.
+Si actif toutes les cartes du sous répertoire "map" et toutes celle des
+répertoires dessous seront affichées si elles correspondent à la région
+sur laquelle vous travaillez. Ceci peut ralentir considérablement le système
+si vous avez beaucoup de cartes et un ordinateur très lent.
 Si inactif seules les cartes choisies dans cartes/choisir une carte seront
-affich�es.
+affichées.
 
 Quadrillage Actif/Inactif
-Active un quadrillage tous les 10�.
+Active un quadrillage tous les 10°.
 
 Niveau Actif/Inactif
-Active le filtrage des petits d�tails quand le niveau de zoom montre une
-large surface, fonctionne seulement avec le cartes g�n�r�es avec "Tiger
+Active le filtrage des petits détails quand le niveau de zoom montre une
+large surface, fonctionne seulement avec le cartes générées avec "Tiger
 Line maps" (Site aprs.rutgers.edu).
 
 Choisir une carte
 Cliquez simplement sur les cartes que vous voulez afficher. Vous pouvez
 en prendre autant que vous voulez.
 cliquez sur OK pour afficher vos cartes, cliquez sur annuler pour conserver
-les param�tres courants.
+les paramètres courants.
 
 HELP-INDEX>Options Visualisation
 
                                 Options Visualisation
                                 
-Ces options vous permettent d'afficher des donn�es autour des stations
+Ces options vous permettent d'afficher des données autour des stations
 se trouvant sur la carte.
 
 Altitude Actif/Inactif
-Si actif une ligne bleue de donn�es aparait au dessus de l'indicatif,
-indiquant la derni�re altitude connue de la station.
+Si actif une ligne bleue de données aparait au dessus de l'indicatif,
+indiquant la dernière altitude connue de la station.
   
 Route Actif/Inactif
-Si actif une ligne verte de donn�es aparait au dessous de l'indicatif,
+Si actif une ligne verte de données aparait au dessous de l'indicatif,
 indiquant le dernier azimut connu de la station.
 
 Vitesse Actif/Inactif
-Si actif une ligne rouge de donn�es aparait au dessous de l'indicatif 
-ou de la trajectoire indiquant la derni�re vitesse connue de la station.
+Si actif une ligne rouge de données aparait au dessous de l'indicatif 
+ou de la trajectoire indiquant la dernière vitesse connue de la station.
 
 Distance/Orientation Actif/Inactif
-Si actif deux lignes de donn�es aparaissent � gauche de l'indicatif, la
-ligne du dessus indique la distance par rapport � votre station, celle
+Si actif deux lignes de données aparaissent à gauche de l'indicatif, la
+ligne du dessus indique la distance par rapport à votre station, celle
 du dessous l'azimut.
 
 Trajectoire des stations Actif/Inactif
 Si actif toutes les stations en mouvement traceront une ligne de couleur
-affichant les 100 derni�res positions. Quand la station devient vieille
+affichant les 100 dernières positions. Quand la station devient vieille
 et que sont icones est transparente la trajectoire n'est plus en ligne
 continue.
 
@@ -657,52 +592,52 @@ PHG  Actif/Inactif
 Si actif on verra des cercles Puissance/Gain autour de la station.
 
 Suivre une station
-Ouvrira une fen�tre ou vous pourrez entrer un indicatif. cliquez sur
+Ouvrira une fenêtre ou vous pourrez entrer un indicatif. cliquez sur
 suivre maintenant et l'affichage ira sur cette station et continuera 
-de la suivre quand elle enverra d'autres donn�es.
-cliquez sur fin de suivi pour arr�ter.
+de la suivre quand elle enverra d'autres données.
+cliquez sur fin de suivi pour arrêter.
 Cliquez sur Annuler pour quitter sans changement.
 
-Information M�t�o
-Si actif Les derni�res donn�es m�t�o seront affich�es (T�, Vitesse et
-direction du vent, rafales, humidit�)
+Information Météo
+Si actif Les dernières données météo seront affichées (T°, Vitesse et
+direction du vent, rafales, humidité)
 
 HELP-INDEX>Messages
 
                                 Messages
                                 
 Composer un message et message de groupe
-C'est a peu pr�t la m�me chose. Composer un message enverra votre
-message � une unique station, inversement vous ne recevrez des 
+C'est a peu prêt la même chose. Composer un message enverra votre
+message à une unique station, inversement vous ne recevrez des 
 messages que de cette station. Message de groupe enverra un message
 a un groupe de personnes et inversement vous recevrez tous les messages
-post�s dans ce groupe. Actuellement les messages de groupe ne 
-fonctionnent pas tout � fait bien.
-Dans chacun de ces �crans il y a une fen�tre Message, une ligne Message,
-une fen�tre ident. de la station et quelques boutons.
+postés dans ce groupe. Actuellement les messages de groupe ne 
+fonctionnent pas tout à fait bien.
+Dans chacun de ces écrans il y a une fenêtre Message, une ligne Message,
+une fenêtre ident. de la station et quelques boutons.
 Entrez en premier l'indicatif de la station ou le groupe. Ceci fait vous
-recevrez d�j� tous les messages de la station ou du groupe; une fen�tre
+recevrez déjà tous les messages de la station ou du groupe; une fenêtre
 s'ouvrira s'il n'y en a pas d'ouverte. Vous pouvez maintenant entrer
-un message de 250 caract�res maxi sur la ligne message, cliquez sur 
+un message de 250 caractères maxi sur la ligne message, cliquez sur 
 transmettre maintenant pour l'envoyer. Le bouton restera gris j'usqu'a
-reception d'un accus� de r�ception. Les messages recus seront tri�s et 
-s'afficheront dans la fen�tre message. En mode groupe vous verrez 
-l'indicatif de l'exp�diteur suivi du message; les messages seront tri�s
-par indicatif. Quand vous avez termin� cliquez sur fermer.
-Le bouton nouvelle identit� vous permet de voir les anciens messages
-qu'une station a envoy�s; tapez son indicatif pour les afficher.
-Bien entendu ce bouton peut servir � changer la station avec qui vous
+reception d'un accusé de réception. Les messages recus seront triés et 
+s'afficheront dans la fenêtre message. En mode groupe vous verrez 
+l'indicatif de l'expéditeur suivi du message; les messages seront triés
+par indicatif. Quand vous avez terminé cliquez sur fermer.
+Le bouton nouvelle identité vous permet de voir les anciens messages
+qu'une station a envoyés; tapez son indicatif pour les afficher.
+Bien entendu ce bouton peut servir à changer la station avec qui vous
 parlez. Le bouton effacer tous les messages effacera tous les messages
-de la fen�tre en cours.
+de la fenêtre en cours.
 
 Effacer tous les messages sortants
-Efface tous les messages non acquitt�s.
+Efface tous les messages non acquittés.
 
-R�ponse automatique
-Active ou d�sactive la r�ponse automatique.
+Réponse automatique
+Active ou désactive la réponse automatique.
 
-Message de r�ponse automatique
-Configure un message de r�ponse automatique.
+Message de réponse automatique
+Configure un message de réponse automatique.
 
 
 HELP-INDEX>Effacer toutes les stations
@@ -710,7 +645,7 @@ HELP-INDEX>Effacer toutes les stations
                                 Effacer toutes les stations
                                 
 cliquez sur fichier/Effacer toutes les stations enlevera toutes
-les station de votre �cran et de la base de donn�es station.
+les station de votre écran et de la base de données station.
 
 
 HELP-INDEX>Relire un fichier journal
@@ -719,22 +654,22 @@ HELP-INDEX>Relire un fichier journal
                                 
 cliquez sur Fichier/ouvrir un fichier journal. Choisissez un
 fichier journal, votre station va se comporter comme si elle
-recevait en �mmettait de nouveau, simulant les �v�nements du 
-fichier journal. Ca peut bien sur cr�er quelques messages d'alerte
+recevait en émmettait de nouveau, simulant les évènements du 
+fichier journal. Ca peut bien sur créer quelques messages d'alerte
 si par exemple vous avez eu une session message, votre station va 
-renvoyer les messages � un fichier journal !
+renvoyer les messages à un fichier journal !
 
 HELP-INDEX>Localiser une Station
 
                                 Localiser une Station
                                 
-Cliquer sur examiner/localiser une station, une fen�tre s'ouvre,
-entrez un indicatif ou une partie. Par d�faut Xastir cherchera
+Cliquer sur examiner/localiser une station, une fenêtre s'ouvre,
+entrez un indicatif ou une partie. Par défaut Xastir cherchera
 la correspondance exacte (D'une station ou d'un objet). Case exact
-vous permettra de chercher sans prendre en compte la diff�rence 
+vous permettra de chercher sans prendre en compte la différence 
 majuscule/minuscule. Cliquez sur trouver maintenant centrera 
-l'�cran sur la premi�re correspondance trouv�e.
-Cliquer sur annuler fermera la fen�tre.
+l'écran sur la première correspondance trouvée.
+Cliquer sur annuler fermera la fenêtre.
 
 HELP-INDEX>Table des symboles
 

@@ -2,13 +2,13 @@ HELP-INDEX>READ ME FIRST - License
 
                           READ ME FIRST - License
 
-For the most current information please read the README file in the Xastir
+For the most current information please read the README.md file in the Xastir
 directory.  Also see the LICENSE and COPYING files for additional information.
 
 Remember this program is intended to be used by the HAM community, in the USA
 the FCC restricts you from transmitting over RF if you are not a licensed HAM.
-Users in countries outside the USA should seek their local government 
-restrictions. 
+Users in countries outside the USA should seek their local government
+restrictions.
 
 LICENSE:
 
@@ -31,289 +31,54 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 More information on the program can be found at:
 
- http://www.xastir.org
- http://github.com/Xastir/Xastir
+ https://github.com/Xastir/Xastir
+ https://github.com/Xastir/Xastir/wiki
+ https://www.xastir.org
 
 There are some mailing lists available that are Xastir-specific.
 Please subscribe to one or both of them for the latest Xastir
-information.  See http://www.xastir.org to subscribe.
+information.  See https://www.xastir.org to subscribe.
 
 For more information on the GNU License look at:
-http://www.gnu.org
+https://www.gnu.org
 
 
 HELP-INDEX>Welcome! and Notes from the Authors
 
                       Welcome! and Notes from the Authors
 
-XASTIR, or X-windows Amateur Station Tracking and Information Reporting.
+XASTIR, or X Amateur Station Tracking and Information Reporting.
 
-Xastir is an APRS(tm) program that is Open Source and free to use and 
-pass out to others. Currently this program is in development and should 
+Xastir is an APRS(tm) program that is Open Source and free to use and
+pass out to others. Currently this program is in development and should
 not be seen as a finished product! Your help will be needed to make this
-a better program.  If you have programming skills and/or can write 
-documentation, your help may be needed! We have a lot of ideas but very 
+a better program.  If you have programming skills and/or can write
+documentation, your help may be needed! We have a lot of ideas but very
 little time, so if you think you can add something to the effort let us
 know!
 
 
 
-APRS(tm) is a Trademark of Bob Bruninga, his home page is at
-"http://web.usna.navy.mil/~bruninga/aprs.html". A great deal of information
-on APRS(tm) can be found in the APRSdos documentation written by
-Bob Bruninga. An additional source of information is the APRS(tm)
-specification, available from http://www.tapr.org .
+APRS(tm) was created by Bob Bruninga and originally trademarked by
+him.  It is currently a trademark of the Tucson Amateur Radio Packet
+Corporation.  When Bob Bruninga became a silent key, maintenance and
+documentation of APRS for the community was taken over by the APRS
+Foundation, whose web site is https://how.aprs.works/ .  This is the
+best modern source for up-to-date information about APRS.
 
-HELP-INDEX>What's new in Xastir 2.0.9
+A historical copy of Bob Bruninga's original APRS web site is
+maintained at https://aprs.org/ .
+
+
+HELP-INDEX>What's new in Xastir
 
 The "What's New" section of this help file has been long neglected,
-and has not been updated in every release.
+and has not been updated in every release.  As of release 2.2.4 we have
+removed all the old entries and will not update it further.
 
-In general, the best way to see what has changed in Xastir is to view
-the git log.  What follows is an abbreviated summary, long after the
-fact, of what has changed since the last time this "What's New" was
-updated for release 2.0.1 (which was in 2012!).
-
-The Xastir project has migrated from SourceForge and CVS to Github and
-git.  This changes how Xastir releases are distributed, and also how
-one accesses the latest development code.  The Xastir project is now hosted at
-https://github.com/Xastir/Xastir, and the wiki is still at http://xastir.org.
-
--Added support for IPv6 in both Xastir server code and APRS-IS connection code.
--Added "wxnowsrv.pl" script to support feeding Xastir weather data via the
- WXNOW.TXT mechanism.
--Fixed compressed weather alert handling.
--Added correct dbfawk files for most recent NWS shapefiles.
--Added a few on line maps from geograits.gc.ca.
--Fixed area computation of CAD objects.
--Added support for proportional fonts in map labels.
--New scripts added to support feeding ADS-B and AIS data into Xastir.
--Many old GEO files for online maps stopped working when servers they
- referenced were taken down.  Most of these have been removed.  If you
- find other .geos that don't work, please report this on the xastir
- mailing list.
--Added new fosm OpenStreetmaps tile server GEO.
--Map cache code updated to work with any version of Berkeley db after 4.1
- (including the 5.x series).
-
-HELP-INDEX>What's new in Xastir 2.0.1
-(Changes between 1.7 and 2.0.0 were never recorded here,this block
-describes a few of the changes from 1.9.8 to 2.0.0 that occurred right
-before release of 2.0.0, but otherwise documents only changes from 2.0.0 
-to 2.0.1)
-
-Added tiling for OpenStreetMaps (2.0.0).
-Added "setlocale()" calls to assure we aren't confused by user 
-LANG variable settings.
-Improved speed of config file processing.
-Fixes for new One-Wire-Daemon protocol, allowing both old and 
-new to work with Xastir.
-Fixed segfaults that could happen when closing list dialogs.
-Fix OSM code to support 16-bit quanta in Graphics/ImageMagick.
-Fixed broken makefile that was ignoring DESTDIR.
-Fixed broken build so internal shapelib builds correctly when
-proj.4 is not installed.
-Add dbfawk files for several generations of new NWS shapefiles.
-Update get-NWSdata to pull current NWS shapefiles.
-Add start/stop files for Kenwood D72 and D710 radios.
-Added a script to convert GeoPDF files to usable GeoTIFF files.
-Make the command to set a TNC into CONVERSE mode a run-time
-configurable option in the TNC Interface Properties dialog.
-Add support for Australian Bureau of Metrology weather alerts.
-Fixes for Davis APRS Data Logger, Davis Meteo and LaCrosse 
-support so it gets rain totals correct.
-Allow "posit interval" in File->Configure->Timing to go all the
-way to zero, meaning "never send posits on a schedule."
-Add signal support so that Xastir will emit a posit when it 
-receives SIGUSR2.  Combined with zero "posit interval," this
-allows Xastir to emit a posit only when told to by an external
-script.
-Fixed error in logic for band-opening alerts (speech and audio
-alarms) so it does not incorrectly report third party traffic
-as a band opening.
-Add "Send Control-E to get GPS data?" to TNC interface 
-properties for the "Serial TNC w/ GPS on AUX port" interface
-type.  Defaults to enabled, which is correct for KPC-3+ TNCs,
-but should be turned off for any TNC that automatically
-streams GPS NMEA strings, such as Kenwood APRS radios.
-Update GPSMAN support to reflect changes in the gpsman command 
-line.
-Add a small delay between sending the converse-mode command
-and sending data for transmission, because KAM TNCs don't
-work if you send the data immediately.
-Fix a bug in the OSM tile download loop that could prevent
-further downloading of tiles if any one tile download fails.
-Fixed a thread-unsafeness bug that could cause Xastir to start
-using corrupted file names when multiple logging options
-(TNC, NET, WX, IGATE, etc.) selected simultaneously.
-Fixed get-fcc-rac.pl script to reflect changes in RAC download
-site.
-
-
-
-
-HELP-INDEX>What's new in Xastir 1.7
-Added REGRESSION_TESTS in order to test interoperability of the
-configure-time flags.
-Added a replacement for malloc() for those cases where the OS
-provides a faulty one.
-Added more to the summary.log file:  The tests and results from
-config.log.
-GDAL configure probe now uses gdal-config if it's in the user's
-path.
-Tweaked configure so that dependent libraries cause other library
-searches to fail, and to provide more user output.
-Added ASCII-art drawing to INSTALL showing most of the library
-dependencies.
-Updated symbols.dat to more closely correspond to the current spec.
-Implemented EMERGENCY BEACON transmit capability under the Help
-menu.
-Added decoding for "EMERGENCY" anywhere in the packet plus any of
-these in the TO: field:  ALARM, ALERT, WARNING, WXALARM, EM.  Any of
-these will invoke the normal emergency popup dialog.
-Waypoint symbols now have a line drawn between them and the station
-transmitting them, per the spec.
-Now using font metrics to determine size of font.  We use that to
-determine size of black rectangle to draw underneath.
-Fixed the Fetch Findu Trail function so that it matches what Findu
-can provide.
-Fixed track->shapefile function so that it works on Cygwin too.
-Added reset button to Change Debug Levels dialog.
-Enable WX Alerts menu item is now grey'ed out if Shapelib isn't
-installed.
-RINO Download timing slider is now visible but grey'ed out if gpsman
-isn't installed.
-Added a custom zoom option to the right-click zoom levels menu.
-Moved the center & zoom dialog to the map menu.
-Changed a memcpy() to an xastir_snprintf() function in alert.c to
-assure that a string is terminated.
-Free'ing some malloc'ed space for cases where hash inserts fail.
-Added probe for sighandler_t definition.
-Changed includes, added leak_detector.h.
-A few small changes here and there to get rid of compiler warnings.
-Freeing some malloc'ed space for the cases where hash inserts fail.
-Fixed initializers for awk_rule[].
-Changed hash add functions so that they do a delete first instead of
-replacing hash values.
-Moved some wx-alert related code to debug level 2.
-Changed leak detect interval from 5 minutes to 60 seconds.
-Fixed a big memory leak in draw_nice_string() function.
-Changed include files around so memory leak detection stuff is in
-leak_detection.h.
-Added new compiler flags and cleaned up the code to eliminate many
-warnings created.
-Fixed Incoming Data dialog code so that packets transmitted to local
-interfaces would appear there.
-TNC/NET toggles work for those now too.
-Fixed memory leak in font metrics code.
-Simplfied get_long()  and get_int() functions and callouts.
-Tweaks for sighandler_t and sigjmp_buf.
-Added a sign-on message for server connects.
-FCC/RAC lookup or Locate Now buttons don't destroy the dialog
-anymore.
-Fixing up strings.h includes.
-Added a new popup for EMERGENCY packets.
-Changed signal() with SIG_IGN to sigignore for some cases.
-Added a test for sigignore() to configure.ac.
-Changes to allow different versions of "gv" to be used.
-Moved "-lgdal" to end of link line to avoid conflict with other
-libraries.
-Added UDP server and client.
-Added more language strings for previously hard-coded values.
-Changed config file get_int and get_long functions to provide better
-output when config file entries are missing or out-of-range.
-We now allow gating to the internet and to RF for user-defined
-packets and telemetry packets.
-Changing to <CR><LF> for the TCP server signon message.
-Changing to timestamp per packet for log files, with long int
-seconds at the beginning.
-Added icon.
-Added support for -geometry command-line parameter.
-Added fast creation of standard SAR objects via mouse menu,
-including adding digits to the end of the object name if name would
-conflict with pre-existing objects.
-
-
-
-HELP-INDEX>What's new in Xastir 1.6
-Fix for DF lines having incorrect angles at times.
-Configurable display of layers for USGS topo maps.
-Better Map Feature Search:  Shows up to 50 matches, user selects
-which one to center map on.
-Configurable "relay" digipeater calls:  Up to 50 callsigns can be
-specified in the Xastir config file to use for relay digipeating.
-"WIDE1-1" is now the default.
-Added support for Web Map Service (WMS).
-Tweaked the GPGGA and GPRMC GPS sentence decoding.
-Added speed-ups for lat/long geotiff's.
-Added Aloha circle.
-Added new #defines in interface.h for specifying "conv" or 'k'
-command to TNC.
-Added new tnc-startup file for TAPR-2 style TNC's.
-Added transparency capability to WMS.
-Fixed digpeating code for "wide1-1,wide2-1" case.
-Fixed some compile errors that are seen on FC4 and OSX Tiger.
-Added new terraserver .geo file options.
-Changed Map Properties "fill" option to allow NO/YES/AUTO.
-Auto uses dbfawk if present, no/yes force fill to that state.
-Fixed some #ifdefs here and there so that compiles will work if
-some libraries aren't present.
-Added map caching for nearly all internet maps, plus two new toggles
-on the map menu for clearing out current-view maps or all maps from
-the cache.
-Moved Tigermap timeout slider to main timing dialog, renamed it, and
-made it function for ALL internet map fetches.
-Added timestamps to x_spider log messages.
-A fix for the emacs tempfile bug w.r.t. dbfawk files went in, but
-hasn't been verified to have fixed the problem yet.
-More bulletproofing added to the map_cache code.
-Fixed a compile problem that happens if ImageMagick isn't installed.
-Changed stipple style to solid for polygons drawn with dbfawk.
-Another fix so that linking works without map caching. 
-
-
-
-HELP-INDEX>What's new in Xastir 1.5
-Optional Rtree shapefile extent caching
-Optional berkelydb-based internet map caching
-Modifier keys fix
-Improvements to the message GUI
-Tactical call support re-written, hashtable based
-Warnings on crazy paths
-Hashtable weather alert speedups
-Dead-reconing for Objects/items
-Igate of specific stations (in the nws-stations.txt)
-Fixed DF object properties
-Measure function more accurate
-Decoding for "Position with Timestamp no APRS messaging" packets.
-More thorough checking for scanf/sscanf/fscanf function calls
-Fixing 100% humidity for some weather stations, plus added more data for Davis stations
-Changed active internet connection check from 1 min to 5 minutes
-Fixed decoding of compressed DF objects
-Fixes to allow new WHO-IS server to be used from Xastir
-Got rid of extra 0x00 byts between transmitted KISS frames
-Tweak to not start an interface upon changing its properties
-Tweaks to allow use of http proxy servers for online map accesses (.netrc file)
-
-
-
-HELP-INDEX>What's new in Xastir 1.4
-Comment fields for interfaces
-split_gnis and ozi2geo scripts, need to add to section on scripts
-serial mkiss interface
-move objects without confirm
-new timing params w.r.t. trails, need to add to config|timing part
-geo-coder (already in docs)
-exponential/random back-off for almost everything
-dbfawk default, memory leaks fixed
-click+drag zoom boxes
-tactical callsign support
-numerous small memory leaks, uninitialized data uses, and similar bugs fixed. 
-GPS quality info
-RINO waypoints downloading
-label trackpoints
-comment/status timestamps
-listener socket/ability to act like a limited internet server
+The best way to see what's new in any release of Xastir is to view the
+release notes we provide with each release on Github.  These may be viewed at
+https://github.com/Xastir/Xastir/releases.
 
 
 HELP-INDEX>Starting Xastir for the first time
@@ -371,7 +136,7 @@ Click on File, then Configure, then Station.
 
 Fill in your Amateur Station call sign.
 
-Fill in your station position if you are not using Xastir with a GPS 
+Fill in your station position if you are not using Xastir with a GPS
 unit. You can locate your general position on the map with Xastir and
 use the position given by the cursor placement over the map. This
 position will be viewable in the box at the bottom of the Xastir screen
@@ -419,11 +184,11 @@ specified if you wish to transmit PHG information.
 
 Another option would be to specify the RNG in the comment field in miles
 instead of using PHG. See the APRS(tm) spec for details.
-    
-For Gain use the gain of your antenna in dBi. 
+
+For Gain use the gain of your antenna in dBi.
 (FIXME: dBd? spec is unclear, I think it's implying dBi because it says "in
 absence of any data, stations are assumed to be running 10w to a 3dB omni at
-20ft. A typical omni is only 3dBi.....) 
+20ft. A typical omni is only 3dBi.....)
 
 Note: The gain setting is really intended for vertical antennas; the gain
 setting for a beam should be quite a bit below the forward gain of the beam.
@@ -453,9 +218,9 @@ HELP-INDEX>Configure Default Operation
 
 Click on File, then Configure, then Defaults.
 
-This page sets up some standard defaults for the program operation. 
+This page sets up some standard defaults for the program operation.
 
-Transmit Station Option sets the type of packet your station will transmit 
+Transmit Station Option sets the type of packet your station will transmit
 its data as.
 
 IGate Options will set your station up as an Internet-RF gateway. This option
@@ -465,13 +230,8 @@ choose an IGate option on each interface in order for the IGate to function.
 If you want to have your IGate forward NWS weather alerts to RF, you must
 create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
 (like "PHISVR") that you would like to transmit via RF.  This feature also
-works for gating specific callsigns to RF.  Bob Bruninga, WB4APR, recommends
-gating these calls to RF: SCOUTS, SATERN, KIDS, REDCROSS, FOUR-H, YOUTH, GUARD,
-MARS, JOTA.  See his link: "Generic Callsigns for National Events" off this web
-page for his current list of recommended callsigns:
+works for gating specific callsigns to RF.
 
-        http://www.ew.usna.edu/~bruninga/aprs.html
-                     
 "Transmit Compressed objects/items?", if selected, will transmit objects and
 items in the newer compressed format. The maximum precision of the transmitted
 position is higher, and the transmission is shorter, but some older programs do
@@ -480,10 +240,10 @@ objects/items with an optional speed/course.  It won't compress area, signpost,
 or DF objects/items, and won't currently represent altitude in "standard"
 objects/items.
 
-"Pop up new Bulletins", if selected, will cause Xastir to bring up the bulletin
-dialog when bulletins within the configured range are received. "View 
-zero-distance bulletins" will cause bulletins with no known location not to
-be displayed or cause pop-ups.
+"Pop up new Bulletins", if selected, will cause Xastir to bring up the
+bulletin dialog when bulletins within the configured range are
+received. "View zero-distance bulletins" will cause bulletins with no
+known location not to be displayed or cause pop-ups.
 
 "Warn if Modifier keys" will cause Xastir to print a warning if you attempt to
 use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
@@ -502,23 +262,23 @@ see the duplicate positions and/or tracks displayed on the map.  This option
 is almost never needed in practice, but can be useful for special events like
 search and rescue operations.
 
-"My Trails in one color" shows all trails with your callsign but different 
-ssids in the same color.  With My trails in one color selected, mycall-1 
+"My Trails in one color" shows all trails with your callsign but different
+ssids in the same color.  With My trails in one color selected, mycall-1
 and mycall-2 are shown in the same color.  With My trails in one color
-unchecked, mycall-1 and mycall-2 are shown in different colors.  
+unchecked, mycall-1 and mycall-2 are shown in different colors.
 
-"Load predefined objects from file" and the pick list which follows it allows 
-you to replace the list of Predefined objects that are accessible from the 
+"Load predefined objects from file" and the pick list which follows it allows
+you to replace the list of Predefined objects that are accessible from the
 right click pop-up menu with your own list of objects.  A set of standard
-Search and Rescue objects and a set of typical public event objects are 
+Search and Rescue objects and a set of typical public event objects are
 supplied in the predefined_SAR.sys and predefined_EVENT.sys files.  You may
-also use these files as a template to create a predefined_USER.sys file.  
+also use these files as a template to create a predefined_USER.sys file.
 See the instructions in the predefined_SAR.sys and predefined_EVENT.sys file
 for details on how to define objects for a custom predefined objects menu.
-If both "Load predefined objects from file" is selected and a file that 
+If both "Load predefined objects from file" is selected and a file that
 exists in the xastir/config/ directory is selected, then the objects defined
 in that file will be shown on the Predefined objects menu.  The unaltered
-predefined_SAR.sys file defines the same objects as the default menu.   
+predefined_SAR.sys file defines the same objects as the default menu.
 
 
 HELP-INDEX>Configure Timing
@@ -594,7 +354,7 @@ The current choices are:
 Play message on hearing a new station.
 Play message on receiving a new message.
 Play message on receiving data from a station within the min/max distance of
-     your proximity settings. 
+     your proximity settings.
 Play message on receiving data from a station (via TNC) within the min/max
      distance of your band opening settings.
 Play message on receiving and displaying a new weather alert.
@@ -607,8 +367,8 @@ HELP-INDEX>Configure Speech
                        Configure Speech Synthesis
 
 To use this option you must have a sound card and the 'festival' speech
-synthesis software installed.  Install Festival and start it in 'server' 
-mode prior to starting up XASTIR.  The normal command for this is 
+synthesis software installed.  Install Festival and start it in 'server'
+mode prior to starting up XASTIR.  The normal command for this is
 "festival_server &".  If you use the "festival --server" option instead (old
 method), you may run into problems with connections getting rejected by the
 server.
@@ -620,17 +380,19 @@ New Station       - Announce the call of a new station.
 New Message Alert - Announce the arrival of a new message.
 New Message Body  - Speak the contents of a message.
 Proximity Alert   - Announce when receiving data from a station within the
-    min.max distance of your proximity settings.  This option uses the 
+    min.max distance of your proximity settings.  This option uses the
     proximity settings found in the Audio Alarms menu.
 Tracked station Proximity Alert - Announce when receiving data from a
     station within the min.max distance of the tracked station. This option
     uses the proximity settings found in the Audio Alarms menu.
-Band Opening      - Announce when receiving data from a station (via TNC) 
-    within the min/max distance of your band opening settings.  This option 
+Band Opening      - Announce when receiving data from a station (via TNC)
+    within the min/max distance of your band opening settings.  This option
     uses the distance settings found in the Audio Alarms menu.
 New Weather Alert - Not implemented yet.
 
-Info on Festival may be obtained from: http://www.speech.cs.cmu.edu/festival/
+Info on Festival may be obtained from:
+https://www.cstr.ed.ac.uk/projects/festival/
+
 
 HELP-INDEX>Configure Smart Beaconing
 
@@ -710,7 +472,7 @@ are in the database.
 
 The fourth box will display the current zoom level and will display "Tr" if
 the station tracking is on.  At some zoom levels the Tr is not
-displayed properly due to the size of the box. 
+displayed properly due to the size of the box.
 
 The fifth box indicates whether logging is enabled.
 
@@ -741,7 +503,7 @@ disable all maps in the maps menu in order to move around quickly, then
 enable maps again.
 
 Zooming:
-Zooming can be accomplished by right clicking on the map (and holding the 
+Zooming can be accomplished by right clicking on the map (and holding the
 button down). This will bring up an options menu, with choices to zoom in or
 out a single level, or to change to one of the preset zoom levels.
 
@@ -840,28 +602,28 @@ other options can't be changed. You could also delete the object with this
 option.
 
 Objects and items can be moved with the mouse if the "Move" check-box on the
-toolbar is enabled.  
+toolbar is enabled.
 
 The Predefined Objects option in the right click menu allows you to rapidly
-place standard Search and Rescue objects without having to go through the 
-Object/Item creation dialog.  These objects include standard Incident 
+place standard Search and Rescue objects without having to go through the
+Object/Item creation dialog.  These objects include standard Incident
 Command System symbols for ICP, Staging, Base, and Helibase, as well as
-SAR objects for PLS, IPP (with 4 area circles), and LKP If an object of the 
-same name as an object you select off the list allready exists, a new 
-object will be created with a number appended to the end.  For example, 
+SAR objects for PLS, IPP (with 4 area circles), and LKP If an object of the
+same name as an object you select off the list allready exists, a new
+object will be created with a number appended to the end.  For example,
 the first time you select Staging from the Predefined objects menu, an
-object named Staging will be created.  If you then create an additional 
-Staging object from the Predefined objects menu, it will be named Staging2. 
+object named Staging will be created.  If you then create an additional
+Staging object from the Predefined objects menu, it will be named Staging2.
 Heli- (and user defined objects ending in a "-") will be created as Heli-1,
-Heli-2, Heli-3, etc.  If you have received one of these standard objects that 
-was transmitted by another station, your first object will be named with an 
-appended number.  You may wish to assign a tactical call to your object in 
-this situation (for example, replacing ICP2 with a tactical call).  
+Heli-2, Heli-3, etc.  If you have received one of these standard objects that
+was transmitted by another station, your first object will be named with an
+appended number.  You may wish to assign a tactical call to your object in
+this situation (for example, replacing ICP2 with a tactical call).
 
-The Predefined Objects menu is customizable by modifying the files 
+The Predefined Objects menu is customizable by modifying the files
 predefined_SAR.sys, predefined_EVENT.sys, and predefined_USER.sys, and then
-selecting one these files through the File/Configuration/Defaults dialog. 
-See the predefined_SAR.sys file for details.  
+selecting one these files through the File/Configuration/Defaults dialog.
+See the predefined_SAR.sys file for details.
 
 Description of the entries in the object dialogue:
 
@@ -877,15 +639,15 @@ described below.
 = DF Object =
 This is a direction-finding report. Enabling it allows you to choose Omni or
 Beam report, and allows you to put in the specifics for each.  See:
-    http://web.usna.navy.mil/~bruninga/dfing.html
-and the APRSdos documentation for details on these useful techniques.
+    https://www.aprs.org/dfing.html
+for Bob Bruninga's discussion of how to use these techniques.
 (FIXME: Separate section on DF'ing techniques?)
 
 = Probability Circles =
-This allows you to define the radius (in miles) of two circles centered on 
-the object or item.  Min is the radius (in miles) of the smaller, inner 
-circle, and Max is the radius (in miles) of the larger, outer circle.  
-These circles are drawn in red.  They can be used to assist in planning 
+This allows you to define the radius (in miles) of two circles centered on
+the object or item.  Min is the radius (in miles) of the smaller, inner
+circle, and Max is the radius (in miles) of the larger, outer circle.
+These circles are drawn in red.  They can be used to assist in planning
 Search and Rescue operations.  To create more than two circles, add additional
 probability circle objects to the same location.  Probability circles may not
 be displayed by other client software.
@@ -906,7 +668,7 @@ symbols and therefore can't be selected here.  Those particular symbols get
 automatically assigned when you change to that type of object.
 
 = Location =
-The location of the object is specified here. If you selected "Create 
+The location of the object is specified here. If you selected "Create
 Object/Item" from the right-click menu, the location you clicked will be filled
 in. If you moved an object with the mouse, the new location will be in these
 fields.  You can also type in a location, for instance you may be placing an
@@ -953,7 +715,7 @@ around on other peoples' screens for an extended period.
 Description of weather watch boxes:
 
 Watch boxes and "areas of maximum concern" (AOMC) generated by the WXSVR
-(http://wxsvr.net/) are colored as follows:
+(https://www.aprs-is.net/WX/Default.aspx) are colored as follows:
 
   Yellow dashed = Severe Thunderstorm Watch  (looks like crime scene tape)
    Yellow solid = AOMC for Severe Thunderstorm Warning
@@ -967,36 +729,33 @@ HELP-INDEX>CAD Objects
 
                      CAD Objects
 
-[CAD object support has moved from the right click menu to 
-Map/Draw CAD Objects]. 
+CAD object support is preliminary at this time.  Features and the user
+interface are subject to change.
 
-CAD object support is preliminary at this time.  Features and the user 
-interface are subject to change.  
- 
-CAD objects are arbitrary shapes that you can draw on maps in xastir, but 
-can't transmit by APRS.  
+CAD objects are arbitrary shapes that you can draw on maps in xastir, but
+can't transmit by APRS.
 
 Currently supported CAD objects are:
-Polygons: Closed areas of at least three points.  
+Polygons: Closed areas of at least three points.
 
 To create a CAD object, first press the Draw radio button on the toolbar.
-This will change the cursor to a pencil.  Begin drawing a polygon by 
+This will change the cursor to a pencil.  Begin drawing a polygon by
 clicking with the middle mouse button (or both buttons on a two button mouse,
-for which you will need to have three button mouse emulation enabled).  This 
+for which you will need to have three button mouse emulation enabled).  This
 places a point on the map.  Now move the cursor somewhere else (the normal
 left click/right click navigation and zoom functions still work normally) and
 click the middle mouse button again.  This draws a line between the two points
-you have selected.  Middle click again to draw another line segment and keep 
+you have selected.  Middle click again to draw another line segment and keep
 repeating until you have drawn all except for the closing line segment of your
 polygon.  To close the polygon, select Map/Draw
 CAD Objects/Close Polygon.  This will close your polygon and bring up a dialog
 that will allow you to enter a name, comment, and probability for the polygon.
 
-When you have finished drawing CAD objects, exit the CAD drawing mode by 
+When you have finished drawing CAD objects, exit the CAD drawing mode by
 deselecting the Draw radio button on the toolbar.
 
-CAD objects can be edited from the View/CAD Polygons menu and from the 
-Map/Draw CAD Objects/CAD Polygons menu.  CAD objects can be  deleted from the 
+CAD objects can be edited from the View/CAD Polygons menu and from the
+Map/Draw CAD Objects/CAD Polygons menu.  CAD objects can be  deleted from the
 Map/Draw CAD Objects/Erase CAD Polygons menu.
 
 HELP-INDEX>View Menu
@@ -1018,7 +777,7 @@ for which you don't have a range yet (they haven't sent a posit yet, but you
 received a bulletin from them).  If this is unchecked, you must get a position
 from a station, and the station must be within the range selected (or range
 must be set to zero), in order for the bulletin to be viewed.
- 
+
 Incoming packet data
 This displays the incoming data on your TNC or internet interface. The radio
 buttons below select if you want to see only TNC data, only internet data, or
@@ -1029,7 +788,7 @@ This is a list of stations that are moving. Stations qualify for this list if
 they have moved (more than one position received for them), the symbol of the
 station is not considered. Information shown includes course, speed, altitude,
 position, number of packets received, number of visible GPS satellites, course
-from your station, and distance from your station. 
+from your station, and distance from your station.
 
 All Stations
 This option displays a table of all stations sorted alphabetically. It includes
@@ -1136,10 +895,17 @@ new location if it is found. The "GNIS File:" entry is saved between calls
 and between invocations of Xastir.  You must put GNIS files into the
 xastir/GNIS directory in order to use this feature.
 
-Find Address 
-This option brings up a search dialog where you can enter an address. It will 
-center on the map if the address is found. The path to the geo-coder file is 
-saved between calls. 
+Search Location
+This feature generally requires an internet connection.
+
+This option brings up a search dialog where you can enter an address
+or name of a business or location.  It will generate an internet
+request to a "Nominatim" server that queries OpenStreetMap data to
+find the location.  If any are found, the dialog will be filled in
+with a list of matching locations.  Choose one by clicking on it and
+then click either "Go To" or "Mark."  Either option will center the map
+on the location chosen, the "Mark" button will also place a large blue "X"
+over the location.
 
 Coordinate Calc
 This option opens a simple calculator that can convert between coordinate
@@ -1162,7 +928,7 @@ Configure menu:
   This allows you to apply gamma connection to all loaded map graphics. Maps
   can be adjusted individually in their .geo files, see the section on .geos in
   "Map files and WX Counties". This option only appears if you've compiled with
-  ImageMagick support, and does not apply to geoTIFF maps; see the above
+  GraphicsMagick support, and does not apply to GeoTIFF maps; see the above
   option.
 
   Map labels font
@@ -1197,18 +963,18 @@ Only vector maps will be displayed in this case.
 
 Enable Map Grid
 When enabled, this option will display a grid on the map.   If the coordinate
-system is UTM a UTM grid will be displayed.  If the coordinate system is 
+system is UTM a UTM grid will be displayed.  If the coordinate system is
 latitude/longitude then a latitude and longitude grid will be displayed.  As you
-zoom in the grid switches to a finer resolution.  The spacing of the latitude 
+zoom in the grid switches to a finer resolution.  The spacing of the latitude
 and longitude grid may be manually adjusted with the "+" and "-" keys.
 
 Enable Map Border
-When both Enable Map Grid and Enable Map Border are enabled, a narrow white 
-border is drawn around the map and the grid lines are labeled using the 
+When both Enable Map Grid and Enable Map Border are enabled, a narrow white
+border is drawn around the map and the grid lines are labeled using the
 selected coordinate system (File/Configure/Coordinate System), and the selected
-border font (Map/Configure/Map Labels font/Border Font).   If the UTM or MGRS 
+border font (Map/Configure/Map Labels font/Border Font).   If the UTM or MGRS
 coordinate systems are selected, the grid lines will be labeled with easting
-and northing values only at zoom levels smaller than about 2048.  
+and northing values only at zoom levels smaller than about 2048.
 
 Enable Map Levels
 When enabled, this option will try to filter out data when the zoom level
@@ -1228,14 +994,17 @@ control, maps may individually have color fill toggled in the properties dialog
 of the Map Chooser.
 
 Enable Weather Alert Counties
-This toggles the display of county warning area maps for severe weather.
-These maps can be obtained and installed according to the directions in the
-README.MAPS file. They are displayed on screen when special weather alert
-messages are received, and expire after a time or can be remotely canceled.
-The weather alert text can be seen under View|Weather Alerts. The
-xastir/Counties directory must be populated with the correct files from NOAA
-and Shapelib support must be compiled into Xastir in order to enable this
-functionality.
+
+This toggles the display of county warning area maps for severe
+weather.  These maps can be obtained and installed according to the
+directions at
+https://github.com/Xastir/Xastir/wiki/Xastir-Mapping-Overview and its
+various links. They are displayed on screen when special weather alert
+messages are received, and expire after a time or can be remotely
+canceled.  The weather alert text can be seen under View|Weather
+Alerts. The xastir/Counties directory must be populated with the
+correct files from NOAA and Shapelib support must be compiled into
+Xastir in order to enable this functionality.
 
 Index New Maps on Startup
 This option controls if the map index file is built on startup. Most users
@@ -1268,17 +1037,18 @@ HELP-INDEX>Map files and WX Counties
 
 Map Types
 Xastir will work with various types of map files. All DosAPRS, Windows/Mac
-APRS(tm) map files are supported, as well as PocketAPRS format maps and GNIS
-(Geographic Names Information System) label files.  Xastir also can be
+APRS(tm) map files are supported with no additional external libraries needed.
+Xastir also can be
 compiled to use external libraries to support XPixmap (XPM) images, GeoTIFF
 topographic maps, and ESRI Shapefile maps.  The graphics handling capability
-of Xastir can be greatly extended by compiling with ImageMagick support,
-enabling support for many graphic formats as maps (see
-"http://www.imagemagick.org/www/formats.html").  Xastir supports weather
-alert maps in ESRI Shapefile format, available from NOAA.
+of Xastir can be greatly extended by compiling with GraphicsMagick support,
+enabling support for many graphic formats as maps.  Xastir supports weather
+alert maps in ESRI Shapefile format, available from NOAA.  See the Github
+wiki page https://github.com/Xastir/Xastir/wiki/Installing-Xastir for details.
 
 Details of locations to obtain many of the above types of maps are found in
-the file README.MAPS
+the file https://github.com/Xastir/Xastir/wiki/Xastir-Mapping-Overview and
+links below it.
 
 Map Locations
 Any map file should be stored in the /usr/local/share/xastir/maps directory
@@ -1287,16 +1057,17 @@ how Xastir was compiled/installed. You can create any number of directories
 under this directory to help organize and separate your data. The maps will be
 loaded in alphanumerical order unless layering is specified.
 
-Hints on installing and organizing maps are found in README.MAPS. 
+Hints on installing and organizing maps are found in the Xastir Github
+wiki at https://github.com/Xastir/Xastir/wiki/Xastir-Mapping-Overview.
 Maps in a pixel graphics format actually need a combination of two files,
 a data file with a graphic pixmap (.xpm) (or other format if you compiled
-with ImageMagick), and a calibration file (.geo). The .xpm file is the
+with GraphicsMagick), and a calibration file (.geo). The .xpm file is the
 standard graphic format, available without additional libraries. If you
-want to save storage space you can use gzip to compress those files 
+want to save storage space you can use gzip to compress those files
 ("gzip map.xpm" will result in "map.xpm.gz"). Xastir detects this
-automatically during map loading. You can use XView/Gimp/ImageMagick and
+automatically during map loading. You can use XView/Gimp/GraphicsMagick and
 other programs to convert gif, jpg, and tif images into this format if
-you don't have support for many image types compiled in (ImageMagick). If
+you don't have support for many image types compiled in (GraphicsMagick). If
 you have problems with maps in xpm format, try to load and save the
 graphics with Gimp first, to convert all unknown color names into the
 binary representation.
@@ -1314,11 +1085,11 @@ IMAGESIZE  640        320
 .geo files can have many elements:
 
 FILENAME <filename>
-This specifies the filename of a map image to be loaded from the local disk.  
+This specifies the filename of a map image to be loaded from the local disk.
 
-URL <http://website>
-This specifies the URL of a map image to be loaded from a web or ftp site. 
-ImageMagick only.
+URL <https://website>
+This specifies the URL of a map image to be loaded from a web or ftp site.
+GraphicsMagick only.
 
 TIEPOINT <x-pixel> <y-pixel> <longitude> <latitude>
 Two tie-points are required, and more than 2 will be ignored.
@@ -1331,7 +1102,7 @@ IMAGESIZE <pixels horizontally> <pixels vertically>
 This specifies the size of the image in pixels. If this is not set, the image
 will be loaded each map redraw, regardless if it is on screen or not.
 IMAGESIZE is a REQUIRED OPTION if a URL is specified.  For local files, it's
-an optional parameter (we use ImageMagick to query the image size for local
+an optional parameter (we use GraphicsMagick to query the image size for local
 files).
 
 DATUM <datum>
@@ -1345,7 +1116,7 @@ projection.
 # <anything>
 Any line with the first character of a '#' will be ignored.
 
-ImageMagick specific image enhancements:
+GraphicsMagick specific image enhancements:
 
 GAMMA
 eg: GAMMA 1.2    or    GAMMA 1.2,2.0,1.2
@@ -1383,7 +1154,7 @@ move across your screen.  Xastir contains only one interval counter,
 so the smallest REFRESH interval loaded takes effect for all selected
 maps.
 
-TRANSPARENT 
+TRANSPARENT
 Color to remove from the background (make it transparent).  Use a
 number, 0=black.  Color-mapped images use the map value, so white is
 usually 0xffffffff (32-bits of 1s).  Values must be in hexadecimal,
@@ -1397,26 +1168,26 @@ Removes borders (makes them transparent).  Values are in pixels with
 images is "CROP 35 20 616 600"
 
 Special/nonstandard .geo files:
-
-TOPORAMA-250k
-Canadian 1:250k scale topo maps, downloaded from findu.com.
-"CanadaTopo250k.geo" is automatically installed in the maps
-directory.
-
-TOPORAMA-50k
-Canadian 1:50k scale topo maps, downloaded from findu.com.
-"CanadaTopo50k.geo" is automatically installed in the maps
 directory.
 
 WMSSERVER
-Allows use of Web Map Services (WMS). An example "WMSRadar.geo" is
-automatically installed in the maps directory.
+Allows use of Web Map Services (WMS). Several example of this type of
+online map source are automatically installed in the maps directory such
+as "USTigermap.geo" and the weather radar maps in the "NWS" directory.
+
+OSMSTATICMAP
+OSM_TILED_MAP
+Allows use of OpenStreetMap servers that provide either a single
+static image or small map tiles.  Several examples whose names begin with
+"OSM_" are installed in the maps directory.
 
 
-
-geoTIFF maps are a combination of two files as well: a .tif and a .fgd file.
-The .tif file is the actual map data.  The .fgd file need only contain four
-lines like this (but may contain many other lines):
+GeoTIFF maps are a variant of the TIFF image format with extra
+georeferencing tags embedded.  Those in the US usually have come with
+two files: a .tif and a .fgd file.  The .tif file is the actual map
+data.  The .fgd file is a metadata file that conforms to a federal standard,
+but for Xastir's purposes need only contain four lines like this (but may
+contain many other lines):
 
 1.5.1.1   WEST BOUNDING COORDINATE:  -122.000000
 1.5.1.2   EAST BOUNDING COORDINATE:  -120.000000
@@ -1433,7 +1204,7 @@ off a tad bit. An added feature in Xastir is the ability to do datum
 translations from NAD 1927 to WGS 84 datum, which makes the USGS topographic
 maps much more  accurate on the Xastir screen.
 
-Xastir can use USGS geoTIFF topographic maps directly from the CD drive.
+Xastir can use USGS GeoTIFF topographic maps directly from the CD drive.
 Manually mount the disk or use auto-mounter to do it for you, and make sure
 you have a sym-link created in your maps directory that points to where you
 mounted your CD-ROM drive.  That's it!
@@ -1442,20 +1213,18 @@ mounted your CD-ROM drive.  That's it!
 ESRI Shapefile maps are also a combination of several files, a .shp file, a
 .dbf file, and a .shx file. You only need to select the .shp file to load the
 map, but the other(s) must be present for the map to load correctly.
-
-
-GNIS (Geographic Names Information System) data is a collection of names of
-locations, or geographic features. These labels behave like map labels in
-Dos/WinAPRS maps.  As you zoom in, more labels will appear, assuming you've
-selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
-If you have some of them in the xastir/GNIS directory, you can also search
-for map labels within Xastir.
+Furthermore, unless your shapefile set matches those that Xastir already
+has rendering rules for, you will have to construct a "dbfawk" file to get
+Xastir to make it pretty.
 
 
 WX County Maps
-All WX County maps should be stored in the /usr/local/share/xastir/Counties
-and Xastir only supports the ESRI Shapefile standard for these. Installation
-is explained in README.MAPS.  You must have Shapelib compiled in.
+
+All WX County maps should be stored in the
+/usr/local/share/xastir/Counties and Xastir only supports the ESRI
+Shapefile standard for these. Installation is explained in
+https://github.com/Xastir/Xastir/wiki/Xastir-Mapping-Overview.  You
+must have Shapelib compiled in.
 
 As NWS messages are received, different areas will get tinted to designate
 areas of concern.  They are color-coded to specify different types of
@@ -1500,9 +1269,9 @@ This sub-menu allows saving data for all stations to files [or databases]
       date and time with a .kml extension, e.g. 20080125-033045.kml
       KML files can also be written on a regular basis using KML
       Snapshots on the file menu.
-     
+
     Store to open databases [Not yet implemented]
-      [Store to database interfaces is currently only implemented through 
+      [Store to database interfaces is currently only implemented through
       individual SQL database interface dialogs]
 
     To save a png snapshot of the current map, use File->PNG Snapshots
@@ -1549,7 +1318,9 @@ This sub-menu allows filtering of the displayed symbols:
 
      Select CWOP WX Stations
       This option includes the display of citizen weather (non-ham) weather
-      data.
+      data.  Currently, Xastir recognizes any station that begins with
+      the letters C through G, whose second letter is "W", and which has
+      four digits following as CWOP stations.
 
   Select Objects/Items
     Global toggle for displaying objects/items, but may be narrowed:
@@ -1598,7 +1369,7 @@ This sub-menu allows filtering of the displayed data:
 
   Display Speed
   When on, red text will appear below the call sign (or course). This will
-  display the last known speed of the station. 
+  display the last known speed of the station.
 
     Display Short Speed
     This option removes display of the measurement units for speed.
@@ -1620,7 +1391,7 @@ This sub-menu allows filtering of the displayed data:
 
     Display Wind Barb
     When enabled, a wind barb showing the direction and speed of the wind is
-    drawn for all displayed stations reporting this information. 
+    drawn for all displayed stations reporting this information.
 
 
   Display Position Ambiguity
@@ -1630,7 +1401,7 @@ This sub-menu allows filtering of the displayed data:
   Display Power/Gain
   When on, Power/Gain Circles will be displayed. Overlapping circles indicate
   that the stations are theoretically within simplex range of one another.
-  This is only roughly accurate, especially in areas of variable terrain. 
+  This is only roughly accurate, especially in areas of variable terrain.
 
     Use Default Power/Gain
     Enables a default power/gain setting as specified in the APRS(tm)
@@ -1656,7 +1427,7 @@ This sub-menu allows filtering of the displayed data:
     Display Course
     Displays an expected course and distance traveled by the station, assuming
     the course hasn't changed.
- 
+
     Display Symbols
     Displays a ghosted version of the stations symbol at the expected position,
     assuming the station has continued at its current course and speed.
@@ -1763,7 +1534,7 @@ To publish TACTICAL calls to other Xastir and APRS+SA stations as
 well as assign those tactical calls locally: Send a message to
 "TACTICAL" with the body of the message containing lines something
 like:
-  
+
   callsign-1=TAC1;callsign-2=TAC2;callsign-3=TAC3
 
 To remove these tactical calls later from local AND remote screens,
@@ -1802,7 +1573,7 @@ messages. Messages are still acknowledged using the reply-ack system. When
 operating over a satellite it is clear that your message made it, because you
 will hear it repeated. The receiving station sending an independent ack only
 adds QRM.
- 
+
 HELP-INDEX>Interfaces Menu
 
                          Interfaces menu
@@ -1897,7 +1668,7 @@ section.
 latest information.
 
 The information available may include: Number of packets heard, the time
-last heard, the device the packet came from, station comments, 
+last heard, the device the packet came from, station comments,
 power/height/gain of the station, course/distance from your station,
 weather information, and current and previous positions.
 
@@ -1940,35 +1711,36 @@ Query               Query      Query
 The Clear Track button will clear any line tracking for this station that is
 currently stored or on the map display.
 
-"Store Track" will save the track of the station to a file on disk. The 
+"Store Track" will save the track of the station to a file on disk. The
 format is similar to that used by GPS receivers but its specification
 might be changed (enhanced) in future versions. There is currently no
 way to read that track data back in, but it is planned for the future.
 The goal is to also read and display GPS track-logs in a similar manner.
 These track-log files will be placed in the directory ~/.xastir/tracklogs
-with a name equal to the stations call with ".trk" as extension.  "Store 
+with a name equal to the stations call with ".trk" as extension.  "Store
 Track" will simultaneously save the station's track as a Keyhole Markup
 Language (.kml) file with a filename equal to the station's call, the
 current date and time and .kml as extension.  If shapefile support has
-been included, the station's track will also be saved as a set of four 
+been included, the station's track will also be saved as a set of four
 files (.dbf,.prj,.shp,.shx).  Subsequent presses of Store Track for the
 same station will write additional lines into the .trk file, and create
-new .kml (and shapefile) files (each containing all positions in the 
-station's track.  
+new .kml (and shapefile) files (each containing all positions in the
+station's track.
 
 "Modify Object/Item" will bring up the Object Modify window.
 
 "Send message" will open up the message window and allow you to send a message
 to this station. It will fill in the call sign for you.
 
-If the FCC (U.S. Federal Communications Commission) or RAC (Radio Amateurs of
-Canada) database is installed and the callsign appears to be a Canadian or
-U.S. callsign, the "Search FCC/RAC Database" button will become active,
-otherwise this button will be inactive.  The FCC and RAC files should be
-placed in the /usr/local/share/xastir/fcc directory, and case is important!
-Pressing this button adds the station's name and address into the Station
-Info box.  Instructions for installing these databases are in the README.MAPS
-file.
+If the FCC (U.S. Federal Communications Commission) or RAC (Radio
+Amateurs of Canada) database is installed and the callsign appears to
+be a Canadian or U.S. callsign, the "Search FCC/RAC Database" button
+will become active, otherwise this button will be inactive.  The FCC
+and RAC files should be placed in the /usr/local/share/xastir/fcc
+directory, and case is important!  Pressing this button adds the
+station's name and address into the Station Info box.  Instructions
+for installing these databases are in the "Helper Scripts" page on the wiki,
+https://github.com/Xastir/Xastir/wiki/Helper-Scripts
 
 Xastir will create index files for each database file upon startup. If a newer
 callsign file is placed there while Xastir is running, it will create or
@@ -2011,7 +1783,7 @@ Click on "File", then "Open Log File" and a file selector window will display.
 You can use it to browse your hard drive and select any file containing raw
 TNC data like those created by the TNC and Net logging options. Your station
 will still function the same way, receiving and transmitting. If you were
-logging data, the typical place to look for those files would be 
+logging data, the typical place to look for those files would be
 ~/.xastir/logs/
 
 NOTE: This function doesn't read the saved station tracklogs.
@@ -2084,7 +1856,7 @@ tools to convert it to postscript, scale it, rotate it, preview it, then print
 it.  You must have your system printing set up to handle postscript (usually
 this requires Ghostscript and a print filter installed, as well as lp or lpr
 print spoolers).  You must also have the following tools installed for this
-capability:  ImageMagick tools (specifically "convert"), "Ghostscript",
+capability:  GraphicsMagick tools (specifically "convert"), "Ghostscript",
 Ghostscript fonts, and "gv".  Once all of these packages are installed and
 functional, you should get a "gv" window popping up shortly after you tell
 Xastir to create a print file.  From there  you can view the printed image, and
@@ -2098,31 +1870,31 @@ HELP-INDEX>Creating Snapshots
 
 Xastir has the capability to create automatic snapshots of the map screen
 on a recurring basis.  The default time period is set at once per five
-minutes.  Assuming that you have "convert" from the ImageMagick tools
+minutes.  Assuming that you have "convert" from the GraphicsMagick tools
 installed, Xastir will create an XPM format file in ~/.xastir/tmp/, then
 convert it to the PNG file ~/.xastir/tmp/snapshot.png. This file is useful for
 embedding in web pages to show a "live" image of what is on your Xastir
-screen.  Enable this feature via the "File->PNG Snapshots" toggle-button. 
-The rate is once every five minutes (configurable from the Configure 
-Timing dialog from "File->Configure->Timing"), or every time the button is 
-toggled from off to on. A .geo is created to allow you to use the snapshot 
+screen.  Enable this feature via the "File->PNG Snapshots" toggle-button.
+The rate is once every five minutes (configurable from the Configure
+Timing dialog from "File->Configure->Timing"), or every time the button is
+toggled from off to on. A .geo is created to allow you to use the snapshot
 as a map.  A .kml file is also written to allow you to use the snapshot as
 a graphic overlay on terrain in applications capable of reading kml.  See
-kml_snapshot_to_web.sh and kml_snapshot_feed.kml in the scripts directory 
+kml_snapshot_to_web.sh and kml_snapshot_feed.kml in the scripts directory
 for more information on using the snapshot.png and snapshot.kml file to
 produce a kml feed using the snapshots.
 
                     Creating Automatic KML Snapshots
 
 Xastir is capable of writing all current stations and tracks to a kml file
-on a recurring basis.  Enable this feature via the "File->KML Snapshots" 
+on a recurring basis.  Enable this feature via the "File->KML Snapshots"
 toggle button.  The rate at which these snapshots are generated is the same
-as that of PNG snapshots, configured from "File->Configure->Timing" by 
+as that of PNG snapshots, configured from "File->Configure->Timing" by
 setting the snapshot time interval.  Each snapshot is written to a .kml
 file in ~/.xastir/tracklogs, with a filename based on the date and time
-of the snapshot, e.g. 20080206-000720.kml  This behavior may change to 
+of the snapshot, e.g. 20080206-000720.kml  This behavior may change to
 make KML snapshots write to a single file like PNG snapshots.
-                    
+
 
 HELP-INDEX>Included Scripts
 
@@ -2159,7 +1931,7 @@ images.
 
 overlay.pl
 This script creates .log format files from comma-separated overlay files. See
-the script comments for full usage information. 
+the script comments for full usage information.
 
 ozi2geo.pl
 This script creates .geo files from OziExplorer .map files.
@@ -2189,7 +1961,7 @@ This script is targeted toward developers. It rebuilds a specified language
 file to contain all the strings of another. It is usually used to regenerate
 the non-English language files when significant changes have been made to the
 English file. When the second language file lacks a string in the main file,
-the untranslated string is inserted. Typical usage would be 
+the untranslated string is inserted. Typical usage would be
 "update_langfile.pl language-German.sys" . The main language file is
 hard-coded but easily editable.
 
@@ -2243,12 +2015,12 @@ Change the information you want and click OK.
 
 More specific help is available under the help topics of each interface type.
 
-SQL Databases will only appear as an option if you have MySQL or Postgis 
-support compiled.  
+SQL Databases will only appear as an option if you have MySQL or Postgis
+support compiled.
 
-HELP-INDEX>Configure Serial TNC Devices 
+HELP-INDEX>Configure Serial TNC Devices
 
-                          Configure Serial TNC Devices 
+                          Configure Serial TNC Devices
 
 This section covers adding or modifying Serial TNCs or Serial TNCs with a
 GPS on a HSP cable.
@@ -2331,9 +2103,9 @@ these devices.
 
 Because Control-E was required by the most common TNCs that had an aux
 port for GPS at the time that this interface type was written, this is
-the default behavior of Xastir.  If you have a Kenwood radio that you are 
+the default behavior of Xastir.  If you have a Kenwood radio that you are
 using in this mode, you must DESELECT the "Send Control-E to get GPS data?"
-checkbox in the configuration dialog for this interface type.  
+checkbox in the configuration dialog for this interface type.
 
 HELP-INDEX>Configure Serial KISS TNC
 
@@ -2512,10 +2284,10 @@ Selecting "Allow Transmitting" will tell Xastir that any outgoing Internet
 data can be sent to this device.
 
 Enter the host name (or IP address) and the port number of the Internet
-Server you want to contact. 
+Server you want to contact.
 
 Enter a valid pass-code to validate your connection, this will allow your
-data to be transmitted via an IGate. If you don't have a pass-code, use the 
+data to be transmitted via an IGate. If you don't have a pass-code, use the
 included "callpass" program to generate one. Note that passcodes are dependent
 on callsigns.  From the src directory, "make callpass" should create the
 executable if it isn't already compiled.
@@ -2599,74 +2371,75 @@ HELP-INDEX>Configure a SQL Database Connection
                          [Experimental]
 
 Xastir can experimentally store and retrieve station data from either
-a MySQL database or a Postgresql + Postgis database.  See the 
+a MySQL database or a Postgresql + Postgis database.  See the
 "OPTIONAL: Experimental.  Add GIS database support." section in the
 INSTALL file for more information.  Station and object data are stored
 as spatial data, and can be retrieved from other GIS applications, for example
 Xastir can write station locations into a Postgis database from which they
 can also be viewed using QGIS.  SQL database connections also allow for the
 persistence of data between Xastir sessions.  All aspects of spatial database
-support, including database structures, are currently experimental and may 
-change at any time.  You may configure multiple SQL database connections, 
-but you should only have one active at a time.  
+support, including database structures, are currently experimental and may
+change at any time.  You may configure multiple SQL database connections,
+but you should only have one active at a time.
 
-Before creating a database connection in Xastir, you will need to create a 
-database to connect to, create an appropriate set of tables 
-(see the db_gis_xxxxx.sql scripts in the scripts directory), and add a user 
+Before creating a database connection in Xastir, you will need to create a
+database to connect to, create an appropriate set of tables
+(see the db_gis_xxxxx.sql scripts in the scripts directory), and add a user
 with a password and rights to access the database.  For postgis databases
 you may also need to appropriately configure the user in pg_hba.conf
 
 Configuration options on the SQL database dialog include:
-Database: MySQL (lat/long) for very old MySQL databases, 
-          Postgis for postgresql + postgis, and 
+Database: MySQL (lat/long) for very old MySQL databases,
+          Postgis for postgresql + postgis, and
           MySQL (Spatial) for current MySQL databases.
 With tables for: Currently only the Xastir simple schema - a very basic
           flat table holding minimal information about stations.
 Host: IP address or hostname for the database server, default is localhost.
 Port: Default is 3306 for MySQL and 5432 for Postgresql.  The database can
           be on a remote server, but the appropriate port will need to be
-          open in any firewalls.  
+          open in any firewalls.
 Username: Can be unique to your database, e.g. xastir_user
-Password: Unique to your database.  
+Password: Unique to your database.
 Schema name: Your database name. e.g. xastir
 MySQL Socket: check my.cnf, or mysql --help | grep socket
           Leave blank for postgis databases.
 Reconnect on Net Failure: [Not yet implemented]
 MySQL defaults and Postgis defaults provided by the buttons may
-or may not be correct for your database.  
+or may not be correct for your database.
 
 Three options control the behavior of the SQL Database interface:
-Activate on Startup:  Try to connect to this database and begin storing heard 
+Activate on Startup:  Try to connect to this database and begin storing heard
 station data as soon as Xastir starts (if store incoming data is also selected).
 
 Store incoming data: Stores each station (including objects and items) report
-as a record in the database.  All stations heard on all interfaces will be 
-stored to the database - if you are connected to internet feeds and leave 
+as a record in the database.  All stations heard on all interfaces will be
+stored to the database - if you are connected to internet feeds and leave
 xastir running this can easily be a million records per day.
 
 Load data on startup: Retrieve all station data from the database
-when restaring Xastir.  Currently the only way to retrieve persistent 
-data from a database.  Will attempt to connect to database and retrieve data 
+when restaring Xastir.  Currently the only way to retrieve persistent
+data from a database.  Will attempt to connect to database and retrieve data
 independent of the settings of either activate on startup or store incoming
-data.  Due to rounding and conversion errors, non-mobile stations may move 
-slightly.  
+data.  Due to rounding and conversion errors, non-mobile stations may move
+slightly.
 
 The "Most Recent Error" box may or may not contain an error message to help
-identify connection problems.  When Xastir fails to connect to a database, 
-the interface will show ERROR on the interface list, and the most recent error 
-may be shown here.   Running xastir from the console and observing error 
+identify connection problems.  When Xastir fails to connect to a database,
+the interface will show ERROR on the interface list, and the most recent error
+may be shown here.   Running xastir from the console and observing error
 messages there, or running xastir from the console with xastir -v1 may help
-identify the cause of connection problems, as may examination of the 
-database's error logs.  
+identify the cause of connection problems, as may examination of the
+database's error logs.
 
-You will only be able to configure a SQL Database interface if you have 
+You will only be able to configure a SQL Database interface if you have
 compiled Xastir with support for that DBMS (--with-mysql or --with-postgis).
 
 HELP-INDEX>Symbol Table
 
-These are the symbols that you can select for your station under the "Station
-Information" configuration menu. The current list can be found in the APRS(tm)
-Reference which you could get from http://www.tapr.org
+These are the symbols that you can select for your station under the
+"Station Information" configuration menu. The current list can be
+found at https://github.com/hessu/aprs-symbols.
+
 
                              Symbol Table
 
@@ -2766,328 +2539,4 @@ z                                        X Windows
 |          Black Line                    Black Line
 }          TCP                           TCP
 ~          Sail Boat                     Sail Boat
-
-HELP-INDEX>What was new in Xastir 1.0
-
-Over the past year, Xastir has been under active development, and this new
-release is the culmination of those efforts. Development has been run by
-Chuck Byam, who agreed to take over for Frank Giannandrea. Many other
-individuals have contributed to this project, and are listed in the AUTHORS
-file.
-
-The Xastir package now uses GNU autoconf to build makefiles and select
-features based on the libraries and software one has installed. No more
-editing makefiles as in previous releases!
-
-Starting Xastir 1.0, one probably won't immediately notice any major
-changes. The familiar interface of previous Xastir versions has been retained
-for the most part. The great majority of the changes are improvements in
-efficiency under the hood:
-* Startup time for the program has been improved.
-* Memory usage has greatly improved, with dynamic allocation of separate
-  station, trail, and weather data on an as-needed basis. No longer will
-  memory be wasted on stationary stations for trail data, nor will non-weather
-  stations waste memory for weather information. With these modifications,
-  Xastir can even be connected to the internet link comfortably on a 16MB
-  machine.
-* Improvements have been made to avoid having to reload maps from disk at every
-  minor change; Weather alerts and changes to the display and tracking options
-  no longer cause the maps to reload, rather the trails and symbols are
-  redrawn alone.
-* Improvements have been made to various dialog boxes that re-drew often, to
-  redraw less often, to allow them to be usable on slower systems. This is
-  also true of tracking a station, with the map redrawing only if the station
-  approaches the edge of the screen.
-Thanks to these changes, Xastir is perfectly usable on slower Pentium(tm)
-machines.
-
-Native GeoTIFF support is now included, and will be compiled into one's copy
-of Xastir if they have the GeoTIFF libraries installed on their system. These
-map files are of very high quality, and are especially useful in search and
-rescue operations. Maps on this format are available from the USGS, and
-commercially on CD-ROM. Xastir understands how to convert from the NAD-27
-datum to the new WGS-84 datum, so maps of both format can be read accurately.
-New shortcut buttons have been added to the map selection dialog to enable
-one to pick all maps of a specific type.
-
-Support for the Festival Speech Synthesis System is now available to announce
-new stations and band openings. The old system of alert sounds has been
-retained as well.
-
-Xastir now supports adding and deleting objects. Finally, Xastir users are able
-to manage resources with this useful feature. Objects are helpful for
-coordinating events, directing travelers, and doing search and rescue work.
-
-The County Warning Area maps that display weather alerts are no longer painted
-onto the maps below, but are shaded onto the maps. While this does make the
-colors unpredictable, it is now possible to see the road-maps below the 
-alert! 
-
-A new and useful feature is the change in the orientation of a symbol based on
-the direction in which it is moving. Even without a trail, a quick glance can
-tell you a mobile station's bearing. There are several more new options in the
-display menu, enabling one to decide more precisely what is displayed and what
-isn't.
-
-Panning and control over the map has been enhanced: There are now arrow buttons
-visible at the top of the screen to pan the map. The map can also be panned
-with the arrow keys, and the zoom can be adjusted with the page up and page
-down keys. There are new option in the click menu, to center the map where you
-clicked or to place an object where you clicked. The panning options in this
-menu have been removed in favor of the new controls at the top of the screen.
-
-Support for altnet has been added, enabling one to have a private APRS(tm)
-network for special events, search and rescue, storm chasing, or whenever else
-the user doesn't want to be bothered by the hundreds of APRS(tm) stations
-around.
-
-There are numerous small changes, both visible and invisible to the user. The
-interface control dialog now has a "Start all" and "Stop all" option, to save
-the user the time of performing these actions for each interface. The station
-setup dialog now shows you your symbol, so you don't have to exit the dialog to
-see which symbol you chose. Several buffer overflows that caused unpredictable
-behavior and/or crashes have been fixed. And many minor improvements have been
-made to the source code to ensure that it compiles correctly on various
-systems.
-
-Enjoy the new Xastir!
-
-
-HELP-INDEX>What was new in Xastir 1.1
-
-                    What was new in Xastir 1.1
-
-This new release, Xastir 1.1, adds significant new features and enhancements
-to the user interface. Unlike 1.0, the interface changes will take some getting
-used to, but the flexibility and versatility of the enhanced interface will
-more than make up for the troubles.
-Among the improvements to the user interface:
-* Keyboard shortcuts for menus and dialogs, menu reorganization, and mouse
-  behavior changes.
-* The ability to move objects or measure distance with the mouse, using the
-  appropriate check-boxes in the toolbar.
-* A scale has been added to allow one to judge distance on a map.
-* Map labels for windows-style APRS(tm) maps are rotated to match the marked
-  map features.
-* The user interface for dealing with objects has been entirely redesigned.
-* Station info boxes can be set to automatically update.
-* Tear-off menus.  Allow you to keep a menu on the screen and play with
-  different options. Tear off a menu by clicking on the dashed-line portion.
-
-Map support has been greatly enhanced, with PocketAPRS, ESRI Shapefiles, GNIS
-labels and many graphics formats with ImageMagick. Additionally, support for
-downloading graphical maps from web-servers has been added, allowing Xastir to
-use online radar, Tiger, and Terraserver maps. 
-
-Xastir 1.1 supports much more of the APRS(tm) protocol than its predecessor:
-* It can add, modify, move and view area objects, signpost objects, and items.
-  These features are invaluable for event coordination and search and rescue
-  use. Objects and items are also periodically retransmitted.
-* Support for displaying position ambiguity squares, pre-calculated radio
-  ranges, Maidenhead grid squares, and weather objects. These features aren't
-  extremely common, but do come up occasionally.
-* Support for the APRS(tm) radio direction finding features. These features
-  are useful for anything from tracking jammers to locating lost hikers. Xastir
-  supports both Omni and Beam reports.
-  
-Other notable improvements:
-* Xastir can now search for a specified location or landmark using GNIS data.
-* Track logs can now be exported to file.
-* Maps can be printed if certain tools and libraries are present.
-* Support for retrieving historical track data from findu.com.
-* Xastir now compiles and runs on Mac OS X, Solaris and FreeBSD with only
-  minimal changes; see README for details. 
-* Several major bugs found in 1.0 have been corrected, including the problems
-  loading DOS maps and the problems with the weather reporting. Other minor
-  bugs and memory leaks have been fixed. And several more errors have been
-  corrected in the parsing routines, so Xastir should remain stable no matter
-  what is thrown at it! 
-
-
-HELP-INDEX>What was new in Xastir 1.2
-
-                    What was new in Xastir 1.2
-
-The latest Xastir release adds numerous new capabilities, keeping Xastir a
-benchmark for APRS(tm) programs on any operating system.
-
-Xastir's hardware support has been enhanced, with
-* Support for Serial KISS TNCs
-* Support for Serial TNCs with GPS on the AUX port
-* Support for using AGWPE as a TNC
-* Support for Dallas One-Wire weather station
-  (see http://melhuish.info/simon/projects/oww/)
-* Support for more weather stations via the wx200d daemon (WX-200/WM-918/
-  WMR-918/WMR-968)
-* Support for the different sized rain gauges of the Peet Brothers weather
-  stations.
-
-Additionally, several bugs in the weather reporting code were corrected, and
-support for setting the system clock based on the GPS was added.
-
-There have been many additions and improvements to the Xastir user interface:
-The most notable is the addition of dead-reckoning. This means that stations
-that are moving will continue to move on your screen in the direction and at
-the speed speed that they last reported. The estimated location can be shown
-with any combination of a ghosted icon, a dashed line from the last position,
-or an arc of expected possible distance and angle.
-
-Also very notable are the improvements to the Map Chooser. Maps can now be
-selected a directory at a time, or individually. And the new map properties
-dialog allows individual control of map layering, map color filling, and
-consideration for auto-maps. Additionally, with extent caching under the hood,
-auto-maps regains much of its formal usefulness even with many maps installed!
-
-Bulletins pop up on screen, and emergency beacons cause an alert with the 
-locate station dialog on hand. These changes are helpful in emergencies and
-event coordination.
-
-Xastir can now be set to use one of several coordinate systems, including UTM,
-dd.ddddd, dd mm.mmm, and dd mm ss.s. This is helpful for coordinating with
-other groups using a different system.
-
-The online Tiger maps can now be enabled from the map menu, and options can
-be adjusted to request maps with just the data you want displayed.
-
-The stations menu has been reorganized, allowing more intuitive filtering of
-stations shown and of accompanying data.
-
-Other smaller interface changes include:
-* The density of the grid-lines can be adjusted with the +, =, and - keys.
-* Objects and item lists have been added to the view menu.
-* Station maidenhead grid squares are now shown in station info and the
-  coordinate calculator.
-* There is a check-box "Track me" to enable easily tracking your own station
-* The length of trails downloaded from findu.com can now be specified.
-* Xastir can now ID via voice IDs or Screen IDs, by editing the configuration
-  file. This is intended for configurations when the Xastir screen is seen
-  remotely via fast-scan TV. 
-* Timestamps are written to log files every 30 seconds of operation, to keep a
-  record of when data was heard.
-* The status bar can display the course/distance to your station when
-  enabled in the file|configure menu.
-* Range scales are now shown opposite the map scale. This is an attempt to
-  standardize various APRS(tm) client approaches to zoom levels.
-
-New additions under-the-hood:
-* Tracked proximity alarms.
-* Export waypoints within proximity boundaries.  Your GPS can show
-  you the locations of APRS(tm) stations as waypoints on the GPS map
-  screen.
-* Export trail as ESRI Shapefile.  New feature if you have Shapelib
-  compiled in.  Station Info->Store Track button also creates a
-  Shapefile map of the station's track now.
-
-The weather reporting features have been improved, with the addition of
-optional wind barbs to weather stations and decoding of storm wind radius data.
-Weather alert shading is now done with pixmap stipples showing the type of
-alert. Further information on an alert is available over the internet from
-the WXSVR by simply double-clicking the alert in the weather alerts list.
-Weather alerts now use the newer ESRI Shapefile-format maps.
-
-Xastir's map support has been improved with enhancements to the ESRI Shapefile
-code to handle point-type ESRI Shapefiles. Additionally, speed improvements
-have been made in the ImageMagick graphical map loading, and many
-color-correction features have been added. As mentioned above, the Map Chooser
-has been greatly improved, and weather alerts use ESRI Shapefile-format maps.
-
-Under the hood, Xastir has had several major improvements:
-
-The messaging system has been largely rewritten, and the annoying timed updates
-to dialogs no longer occur. The new messaging system allows multiple messages
-to be queued, and implements reply-ack's for speed. Xastir also attempts to
-specify a reasonable path for the message based on received messages. This
-improves speed and congestion control. The messaging GUI has been largely
-untouched, and remains high on the list of future improvements.
-
-The build process has been significantly improved; Xastir is now able to be
-built on numerous operating systems with few manual interventions.
-
-Xastir now supports GPSMan/gpsmanshp, allowing the importing of waypoints,
-tracks, and routes from several types of GPS receivers.  This allows you to
-create ESRI Shapefile-format maps out of GPS data.
-
-Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
-and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
-topic.
-
-IGating support has also improved, with the ability to configure a specific RF
-path for IGated packets, and the addition of a 29 second anti-dupe queue to
-reduce unnecessary redundancy on the RF channel.
-
-Map extents and filenames are now cached, so maps will not be loaded from disk
-unless they are on screen. This is a major improvement for map types that did
-not specify this information. Additionally, auto-maps uses this information,
-making it usable even with many maps installed.
-
-Objects controlled by Xastir are now stored in a file, so a restart of Xastir
-will not cause them to be lost. Additionally, Xastir now supports the
-compressed format for objects and items, which can help reduce RF channel
-congestion. It also gives you better location accuracy of the placed objects.
-See the help topic "Configure Default Operation".
-
-Xastir now drops root privileges when not needed if run setuid root. Please
-read the information about this in INSTALL; this change provides only
-limited protection.
-
-Xastir now supports using a private colormap with the command-line argument
-"-i". This is recommended for systems running in 8-bit color mode. 
-
-Additionally, several more buffer overruns and other errors were corrected in
-Xastir's data parser, and numerous other bugs have been fixed.
-
-Enjoy the new Xastir!
-
-HELP-INDEX>What's new in Xastir 1.3
-
-                    What's new in Xastir 1.3
-
-This latest Xastir release greatly improves on the efficiency and usability of
-Xastir, and adds many helpful and often-requested new features.
-
-.geo files can now have REFRESH tags, to specify how often the file is
-reloaded. This is useful for weather radars and other dynamic images. .geo
-files can also have a TRANSPARENT tag to make a certain color transparent, and
-a CROP tag to specify a specific region to display.
-
-Some Opentrac packets are now decoded and displayed. See
-http://opentrac.org/ for more details.
-
-The default main Xastir directory is now /usr/local/share/xastir; please see
-the upgrade notes in README for migration information. This more closely
-mirrors the behavior of other applications.  If you're installing
-from a binary package (rpm/deb/etc), the default install location
-may be /usr/share/xastir.
-
-Xastir efficiency has been greatly improved. Changes in data structures and
-timing values have made this Xastir release the most efficient yet.
-Additionally, map redraw sequences are interruptible, so map panning speed
-has been improved.
-
-dbfawk support - Experimental support for configurable shapefile metadata, in
-an awk-like language. See README.MAPS for more details; this must be turned
-on with a specific switch to the configure command.
-
-GDAL/OGR support - Experimental support for GDAL and loading of native Tiger
-data (.RT1 files). This is automatically enabled if the GDAL library is
-found.
-
-Support for UTM w/special zones and MGRS coordinate systems.
-
-Cad drawing mode allows one to draw regions on your screen using the center
-mouse button. This feature is not yet complete, but is functional.
-
-User interface changes:
-* Several of the menus have been reorganized to have a hierarchical design.
-* Additionally, a few colors have been modified for better visibility.
-* The map label font and style are more configurable
-* The cursor changes to let one know if they're in move object or measure mode.
-* If the coordinate system is set to UTM, and "Map Grid" is selected, an UTM
-  grid is displayed. 
-
-Snapshot mode now generates a .geo file, allowing the image to later be used
-as a map.
-
-Tiger maps have been moved back the chooser, as was the pre-1.2 behavior.
-This is more consistent.
 
