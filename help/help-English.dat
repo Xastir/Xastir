@@ -360,7 +360,7 @@ Play message on receiving data from a station (via TNC) within the min/max
 Play message on receiving and displaying a new weather alert.
 
 There is a standard set of sounds available most places where Xastir can be
-obtained, please see the file INSTALL for more information.
+obtained, please see the file INSTALL.md for more information.
 
 HELP-INDEX>Configure Speech
 
@@ -698,11 +698,11 @@ detail onto maps. This will be done with the following entries:
     Choose the color in which the object will display. This is also affected
     by the "Bright Color" option above.
   = Object Offset Up =
-    In hundredth of a degree latitude.  An unfortunate detail of the spec,
+    In 1/1500 of a degree latitude.  An unfortunate detail of the spec,
     and hard to calculate easily.  Suffice it to say that you can change
     the size of the object once you place it.
   = Object Offset Left except / =
-    In hundredth of a degree longitude.  See above.
+    In 1/1500 of a degree longitude.  See above.
   = Object corridor =
     This is the width of a line area object. Useful for runways, weather
     watch boxes, describing an area of interest or an area of exclusion, etc.
@@ -947,6 +947,9 @@ rapid zooming or panning, because it saves the need to load the maps on each
 redraw.  Note that this option is not saved between sessions.
 
 Enable Auto Maps
+
+NOTE:  "Auto maps" is a deprecated feature that is best left turned off!
+
 When enabled, any map found in the map directory (or any directory under it)
 will be displayed if it falls within the current display region. You can add
 any number of directory levels under the main map directory for your maps. Auto
@@ -1024,7 +1027,7 @@ take quite a while to complete if you have a lot of maps.
 Mouse pointer menu
 This option brings up the options menu normally available by right clicking.
 
-One note on maps:  Many of the currently available vector maps for the
+One note on maps:  Many of the historical vector maps for the
 U.S. were created in NAD 1927 datum, while Xastir and other APRS(tm) programs
 use WGS 1984 datum.  If zoomed in to a small area on the map the datum
 shift may be very noticeable.  The USGS topographic maps have their datum
@@ -1168,7 +1171,6 @@ Removes borders (makes them transparent).  Values are in pixels with
 images is "CROP 35 20 616 600"
 
 Special/nonstandard .geo files:
-directory.
 
 WMSSERVER
 Allows use of Web Map Services (WMS). Several example of this type of
@@ -1382,99 +1384,92 @@ This sub-menu allows filtering of the displayed data:
   Display Weather Info
   Global toggle for displaying weather information, but may be narrowed:
 
-    Display Weather Text
-    When enabled, the latest weather data (temp,wind speed/course/gust,
-    humidity) is displayed. This may be adjusted with the following option:
+    Display Weather Text When enabled, the latest weather data
+    (temp,wind speed/course/gust, humidity) is displayed. This may be
+    adjusted with the following option:
 
-      Display Temperature Only
-      Displays only the temperature data for the station.
+      Display Temperature Only Displays only the temperature data for
+      the station.
 
-    Display Wind Barb
-    When enabled, a wind barb showing the direction and speed of the wind is
-    drawn for all displayed stations reporting this information.
-
-
-  Display Position Ambiguity
-  When enabled, the area in which station using position ambiguity may be
-  located within is shaded, with the relevant station in the center.
-
-  Display Power/Gain
-  When on, Power/Gain Circles will be displayed. Overlapping circles indicate
-  that the stations are theoretically within simplex range of one another.
-  This is only roughly accurate, especially in areas of variable terrain.
-
-    Use Default Power/Gain
-    Enables a default power/gain setting as specified in the APRS(tm)
-    specification.
-
-    Display Mobile Power/Gain
-    Enables power/gain circles for mobile stations.
+    Display Wind Barb When enabled, a wind barb showing the direction
+    and speed of the wind is drawn for all displayed stations
+    reporting this information.
 
 
-  Display DF Attributes
-  When enabled, any DF circles/lines will be displayed on the screen.
+  Display Position Ambiguity When enabled, the area in which station
+  using position ambiguity may be located within is shaded, with the
+  relevant station in the center.
 
-  Enable Dead-Reckoning
-  When enabled, the positions of stations are estimated based on past course
-  and speed. The recalculation rate should be reasonable, but can be adjusted
-  in the configuration file.
+  Display Power/Gain When on, Power/Gain Circles will be
+  displayed. Overlapping circles indicate that the stations are
+  theoretically within simplex range of one another.  This is only
+  roughly accurate, especially in areas of variable terrain.
 
-    Display Arc
-    Displays an expanding arc of expected maximum travel distance, location and
-    course given the past course and speed. The arc slowly becomes a circle as
-    the position report gets older.
+    Use Default Power/Gain Enables a default power/gain setting as
+    specified in the APRS(tm) specification.
 
-    Display Course
-    Displays an expected course and distance traveled by the station, assuming
-    the course hasn't changed.
-
-    Display Symbols
-    Displays a ghosted version of the stations symbol at the expected position,
-    assuming the station has continued at its current course and speed.
+    Display Mobile Power/Gain Enables power/gain circles for mobile
+    stations.
 
 
-  Display Dist/Bearing
-  When enabled, two lines of text will be displayed on the left side of the
-  stations' icon. The top line will contain the distance from your station to
-  this station. The bottom line will contain the course from your station to
-  this station.
+  Display DF Attributes When enabled, any DF circles/lines will be
+  displayed on the screen.
 
-  Display Last Report Age
-  Display the time since the station was last heard.
+  Enable Dead-Reckoning When enabled, the positions of stations are
+  estimated based on past course and speed. The recalculation rate
+  should be reasonable, but can be adjusted in the configuration file.
 
-Reload Object/Item History
-This will reload the ~/.xastir/config/objects.log file used for Object and Item
-persistence. This is needed if you edit the file while Xastir is running.
+    Display Arc Displays an expanding arc of expected maximum travel
+    distance, location and course given the past course and speed. The
+    arc slowly becomes a circle as the position report gets older.
 
-Clear Object/Item History
-This will clear the ~/.xastir/config/objects.log file used for Object and Item
-persistence. It is recommended that you manually select and delete all Objects
-and Items that you own before doing this, otherwise they may remain on the
-screens of other APRS(tm) users.
+    Display Course Displays an expected course and distance traveled
+    by the station, assuming the course hasn't changed.
 
-Clear All Tactical Calls
-Clears all assigned tactical calls. This will take effect the next
-redraw. Note that this will NOT clear tactical calls on other
-peoples' screens if you've published them via a message to
-"TACTICAL" (see the help text for "Send Message").
+    Display Symbols Displays a ghosted version of the stations symbol
+    at the expected position, assuming the station has continued at
+    its current course and speed.
 
-Clear Tactical Call History
-This removes the tactical call history file, meaning that tactical calls
-assigned will not remain permanent between Xastir restarts.  Note
-that this will NOT clear tactical calls on other peoples' screens if
-you've published them via a message to "TACTICAL" (see the help text
-for "Send Message".
 
-Clear All Trails
-This will wipe all the line tracking data from the station database and
-refresh the screen.  This option is perhaps useful if you're low on memory
-or just want an uncluttered screen.  You may also clear individual stations'
-trails from the Station Info dialog.
+  Display Dist/Bearing When enabled, two lines of text will be
+  displayed on the left side of the stations' icon. The top line will
+  contain the distance from your station to this station. The bottom
+  line will contain the course from your station to this station.
 
-Clear All Stations
-This will wipe all the data from the station database except yours.  This
-option is perhaps useful if you're low on memory or just want to unclutter
-your screen.
+  Display Last Report Age Display the time since the station was last
+  heard.
+
+Reload Object/Item History This will reload the
+~/.xastir/config/objects.log file used for Object and Item
+persistence. This is needed if you edit the file while Xastir is
+running.
+
+Clear Object/Item History This will clear the
+~/.xastir/config/objects.log file used for Object and Item
+persistence. It is recommended that you manually select and delete all
+Objects and Items that you own before doing this, otherwise they may
+remain on the screens of other APRS(tm) users.
+
+Clear All Tactical Calls Clears all assigned tactical calls. This will
+take effect the next redraw. Note that this will NOT clear tactical
+calls on other peoples' screens if you've published them via a message
+to "TACTICAL" (see the help text for "Send Message").
+
+Clear Tactical Call History This removes the tactical call history
+file, meaning that tactical calls assigned will not remain permanent
+between Xastir restarts.  Note that this will NOT clear tactical calls
+on other peoples' screens if you've published them via a message to
+"TACTICAL" (see the help text for "Send Message".
+
+Clear All Trails This will wipe all the line tracking data from the
+station database and refresh the screen.  This option is perhaps
+useful if you're low on memory or just want an uncluttered screen.
+You may also clear individual stations' trails from the Station Info
+dialog.
+
+Clear All Stations This will wipe all the data from the station
+database except yours.  This option is perhaps useful if you're low on
+memory or just want to unclutter your screen.
 
 HELP-INDEX>Messages and the Messages menu
 
@@ -1918,10 +1913,6 @@ from a map.inf, typical usage would be "inf2geo.pl map".
 kiss-off.pl
 This script sends the commands needed to turn off a TNC's KISS mode.
 
-mapblast2geo.pl
-This script creates .geo files for Mapblast pixel maps. It includes usage
-information.
-
 mapfgd.pl
 This script creates minimal .fgd files for GeoTIFF images lacking them, based
 on information found in the GeoTIFF file. The created files allow Xastir to
@@ -1939,14 +1930,6 @@ This script creates .geo files from OziExplorer .map files.
 permutations.pl
 This script converts between different lat/lon formats. See the script comments
 for further details.
-
-split_gnis.bash
-This will take a GNIS data-point file (typically for a whole state, 8+MB), break
-it down into smaller chunks (typically for a county, 30-200k) it will also
-throw away the trailing spaces and <CR>s at EOL.
-
-split_gnis.pl
-This is a Perl version of the above script.
 
 test_coord.pl
 Tests for the Coordinate.pm Perl module.
@@ -1973,7 +1956,7 @@ also requires the GPS::Garmin module.
 db_gis_mysql.sql  db_gis_postgis.sql
 These will create tables for storing station data in a mysql or postgresql/
 postgis database.  SQL Server database support is experimental.  See the
-"OPTIONAL: Experimental.  Add GIS database support" section in INSTALL
+"OPTIONAL: Experimental.  Add GIS database support" section in INSTALL.md
 
 HELP-INDEX>Configuring Interfaces
 
@@ -1999,7 +1982,7 @@ Serial KISS TNC
 Networked Database (Not Implemented Yet)
 Networked AGWPE
 Serial Multi-Port KISS TNC
-SQL Databases [MySQL,Postgis] (Experimental)
+SQL Databases  (Experimental)
 
 To add a device, click on the add button. A "Choose Interface Type" box will
 appear. Click on the type of device you would like to add. Then click the Add
@@ -2125,7 +2108,7 @@ set up communications with it when the program first starts.
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
-Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic.  It will do
+Selecting "Digipeat?" will tell Xastir to digipeat traffic.  It will do
 this if the first unused digipeater call in the path matches your callsign or a
 callsign listed in your Xastir config file ("RELAY_DIGIPEAT_CALLS" line,
 default is "WIDE1-1"). This option is only recommended for base stations in
