@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 #
 #
-# Copyright (C) 2000-2023 The Xastir Group
+# Copyright (C) 2000-2026 The Xastir Group
 
 
 #########################################################################

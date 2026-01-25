@@ -2,7 +2,7 @@
 use warnings;
 #
 # XASTIR, Amateur Station Tracking and Information Reporting
-# Copyright (C) 2000-2023 The Xastir Group
+# Copyright (C) 2000-2026 The Xastir Group
 #
 # Converts "dump1090" telnet port output to Xastir UDP input, for decoding
 # packets directly from aircraft.  This script will parse packets containing

@@ -2,7 +2,7 @@
    See the top of datum.h for information on this code.
    N7TAP
 
-   Portions Copyright (C) 2000-2023 The Xastir Group
+   Portions Copyright (C) 2000-2026 The Xastir Group
 
 */
 

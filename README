@@ -224,7 +224,7 @@
 
    As of Xastir 0.4.0 all changes made by the Xastir
    development team to the Xastir source code and any related
-   files are Copyright (C) 2000-2023 The Xastir Group. The source
+   files are Copyright (C) 2000-2026 The Xastir Group. The source
    code will still be distributed according to the GNU General
    Public License as Frank Giannandrea did in the past.
 
@@ -293,5 +293,5 @@
 APRS(tm) is a Trademark of Bob Bruninga
 
 Copyright (C) 1999 Frank Giannandrea
-Copyright (C) 2000-2023 The Xastir Group
+Copyright (C) 2000-2026 The Xastir Group
 

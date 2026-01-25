@@ -1,6 +1,6 @@
 # acinclude.m4 for Xastir
 #
-# Copyright (C) 2000-2023 The Xastir Group
+# Copyright (C) 2000-2026 The Xastir Group
 #
 
 # test for devices.  Avoid the tests on Cygwin as they hang on some

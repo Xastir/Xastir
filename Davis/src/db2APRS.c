@@ -2,7 +2,7 @@
  *
  *
  * Copyright (C) 2004 Bruce Bennett <bruts@adelphia.net>
- * Portions Copyright (C) 2000-2023 The Xastir Group
+ * Portions Copyright (C) 2000-2026 The Xastir Group
  *
  * (see the files README and COPYING for more details)
  *

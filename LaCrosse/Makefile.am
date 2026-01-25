@@ -1,6 +1,6 @@
 
 #
-# Copyright (C) 2000-2023 The Xastir Group
+# Copyright (C) 2000-2026 The Xastir Group
 #
 
 AUTOMAKE_OPTIONS = gnu dist-bzip2

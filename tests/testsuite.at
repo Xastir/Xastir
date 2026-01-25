@@ -2,7 +2,7 @@
 # This file defines the test suite structure
 
 AT_INIT([Xastir Tests])
-AT_COPYRIGHT([Copyright (C) 2025 The Xastir Group])
+AT_COPYRIGHT([Copyright (C) 2025-2026 The Xastir Group])
 
 AT_COLOR_TESTS
 

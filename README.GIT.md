@@ -538,6 +538,6 @@ branch locally)
 ```
 
 ------------------------------------------------------------------------
-Copyright (C) 2000-2023 The Xastir Group
+Copyright (C) 2000-2026 The Xastir Group
 
 

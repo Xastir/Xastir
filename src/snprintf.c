@@ -3,7 +3,7 @@
  *
  */
 /*
- * Portions Copyright (C) 2000-2023 The Xastir Group
+ * Portions Copyright (C) 2000-2026 The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
