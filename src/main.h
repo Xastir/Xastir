@@ -27,9 +27,9 @@
 #include <X11/Intrinsic.h>
 
 // For mutex debugging with Linux threads only
-#ifdef __linux__
-  #define MUTEX_DEBUG 1
-#endif  // __linux__
+//#ifdef __linux__
+//  #define MUTEX_DEBUG 1
+//#endif  // __linux__
 
 
 // This gets defined if pthreads implementation uses SIGUSR1/SIGUSR2
