@@ -673,31 +673,6 @@ fi
 # be caused by other problems with libraries.
 # 
 LIBS=" -lXm -lXt -lX11 $LIBS" 
-  
-# 
-# Remove duplicate entries.  Thanks to Paul Lutt, ke7xt, for this! 
-#
-# Don't get rid of dupes on the LIBS line.  We may need the same
-# "-Llibdir" called out several times, immediately prior to each
-# "-llibrary" that needs it.
-# 
-changequote(,) 
-CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
-CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
-LDFLAGS=`echo "$LDFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
-#LIBS=`echo "$LIBS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
-changequote([,]) 
-
-
-# 
-# Remove "-g" CFLAGS/CPPFLAGS entries.  Note:  This is a _bad_ idea
-# as debuggers won't have a symbol table to work from!
-#
-#changequote(,) 
-#CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
-#CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
-#changequote([,]) 
-
 
 #
 # Change the compiler optimization if using Windows/Cygwin in order
