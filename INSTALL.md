@@ -3,6 +3,13 @@
 This file is meant to replace the original "INSTALL" file that has
 been distributed with Xastir for years.
 
+> [!NOTE]
+> This document makes a lot of references to the xastir.org wiki site,
+> which has been experiencing frequent downtime and may be unreachable
+> more often than not.  Please look at the Wiki on GitHub
+> at https://Xastir/Xastir/wiki for replacement, up-to-date
+> documentation.  We apologize for the inconvenience.
+
 
 General build process:
 
