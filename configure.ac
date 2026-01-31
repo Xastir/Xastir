@@ -887,7 +887,7 @@ if test "${use_graphicsmagick}" = "yes"; then
   echo "yes (GraphicsMagick)"
 else
   if test "${use_imagemagick}" = "yes"; then
-    echo "yes (ImageMagick)"
+    echo "yes (Legacy ImageMagick)"
   else
     echo "no"
   fi
@@ -897,10 +897,10 @@ echo "  Berkeley DB map caching-Raster map speedups : $use_map_cache"
 echo "  internet map retrieval .................... : $use_retrieval"
 echo "  Nominatim Geocoding ....................... : $use_nominatim"
 echo
-echo FOR THE ADVENTUROUS:
+echo FOR ADDITIONAL FEATURES:
 echo "  AX25 (Linux Kernel I/O Drivers) ........... : $use_ax25"
-echo "  libproj (USGS Topos & Aerial Photos) ...... : $use_proj"
-echo "  GeoTiff (USGS Topos & Aerial Photos) ...... : $use_geotiff"
+echo "  libproj (used by libgeotif) ............... : $use_proj"
+echo "  GeoTiff (Georeferenced TIFF files) ........ : $use_geotiff"
 echo "  Festival (Text-to-speech) ................. : $use_festival"
 echo "  GPSMan/gpsmanshp (GPS downloads) .......... : $use_gpsman"
 #echo "  GPSD Client (libgps) ...................... : $use_libgps"
