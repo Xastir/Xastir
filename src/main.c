@@ -30714,7 +30714,6 @@ int main(int argc, char *argv[], char *envp[])
       {
         // Constants for screen sizing ratios
         const double DEFAULT_SCREEN_RATIO = 0.70;
-        
         int screen_num = DefaultScreen(display);
         int display_width = DisplayWidth(display, screen_num);
         int display_height = DisplayHeight(display, screen_num);
