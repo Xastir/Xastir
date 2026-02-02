@@ -18,6 +18,12 @@ configure
 depcomp
 install-sh
 missing
+ltmain.sh
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
 #-----
 #Everything from here down should be left alone, and make us ignore
 # configure and build artifacts.  They should be ignored on all branches:
@@ -64,4 +70,5 @@ tests/test_db
 tests/test_interface_helpers
 tests/atconfig
 tests/testsuite
+_codeql_detected_source_root
 
