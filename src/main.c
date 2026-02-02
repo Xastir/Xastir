@@ -30712,14 +30712,16 @@ int main(int argc, char *argv[], char *envp[])
       // while preserving existing user configurations.
       if (screen_width == 590l && screen_height == 420l)
       {
+        // Constants for screen sizing ratios
+        const double DEFAULT_SCREEN_RATIO = 0.70;
+        
         int screen_num = DefaultScreen(display);
         int display_width = DisplayWidth(display, screen_num);
         int display_height = DisplayHeight(display, screen_num);
         
-        // Use 70% of screen width and height as default, with minimum
-        // and maximum constraints to ensure usability
-        long new_width = (long)(display_width * 0.70);
-        long new_height = (long)(display_height * 0.70);
+        // Use DEFAULT_SCREEN_RATIO of screen width and height as default
+        long new_width = (long)(display_width * DEFAULT_SCREEN_RATIO);
+        long new_height = (long)(display_height * DEFAULT_SCREEN_RATIO);
         
         // Enforce minimum sizes (use the old defaults as minimum)
         if (new_width < 590l)
@@ -30731,19 +30733,7 @@ int main(int argc, char *argv[], char *envp[])
           new_height = 420l;
         }
         
-        // Enforce maximum sizes (90% of screen to leave room for panels)
-        long max_width = (long)(display_width * 0.90);
-        long max_height = (long)(display_height * 0.90);
-        if (new_width > max_width)
-        {
-          new_width = max_width;
-        }
-        if (new_height > max_height)
-        {
-          new_height = max_height;
-        }
-        
-        // Also enforce the upper bounds from the config system
+        // Enforce the upper bounds from the config system
         if (new_width > 10000l)
         {
           new_width = 10000l;
