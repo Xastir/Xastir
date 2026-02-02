@@ -30717,11 +30717,11 @@ int main(int argc, char *argv[], char *envp[])
         int screen_num = DefaultScreen(display);
         int display_width = DisplayWidth(display, screen_num);
         int display_height = DisplayHeight(display, screen_num);
-        
+
         // Use DEFAULT_SCREEN_RATIO of screen width and height as default
         long new_width = (long)(display_width * DEFAULT_SCREEN_RATIO);
         long new_height = (long)(display_height * DEFAULT_SCREEN_RATIO);
-        
+
         // Enforce minimum sizes (use the old defaults as minimum)
         if (new_width < 590l)
         {
@@ -30731,7 +30731,7 @@ int main(int argc, char *argv[], char *envp[])
         {
           new_height = 420l;
         }
-        
+
         // Enforce the upper bounds from the config system
         if (new_width > 10000l)
         {
@@ -30741,10 +30741,10 @@ int main(int argc, char *argv[], char *envp[])
         {
           new_height = 10000l;
         }
-        
+
         screen_width = new_width;
         screen_height = new_height;
-        
+
         fprintf(stderr,
                 "Auto-sizing window to %ldx%ld based on display size %dx%d\n",
                 screen_width,
