@@ -272,9 +272,6 @@ In a (rather large) nutshell this process goes like this:
   https://github.com/blog/1943-how-to-write-the-perfect-pull-request
   for one such article.
 
-  There is also a pretty nice tutorial on how to do your first pull request
-  at https://www.thinkful.com/learn/github-pull-request-tutorial/
-
 ## Git Commit Message Format
 Git commit messages need to be in a certain format to make the best use
 of the "git log" commands. In particular the first line needs to be 50
