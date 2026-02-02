@@ -30706,6 +30706,65 @@ int main(int argc, char *argv[], char *envp[])
       setup_visual_info(display, DefaultScreen(display));
 
 
+      // Adjust default window size based on actual screen dimensions
+      // if still using the hardcoded defaults (590x420).
+      // This improves the experience for users with larger displays
+      // while preserving existing user configurations.
+      if (screen_width == 590l && screen_height == 420l)
+      {
+        int screen_num = DefaultScreen(display);
+        int display_width = DisplayWidth(display, screen_num);
+        int display_height = DisplayHeight(display, screen_num);
+        
+        // Use 70% of screen width and height as default, with minimum
+        // and maximum constraints to ensure usability
+        long new_width = (long)(display_width * 0.70);
+        long new_height = (long)(display_height * 0.70);
+        
+        // Enforce minimum sizes (use the old defaults as minimum)
+        if (new_width < 590l)
+        {
+          new_width = 590l;
+        }
+        if (new_height < 420l)
+        {
+          new_height = 420l;
+        }
+        
+        // Enforce maximum sizes (90% of screen to leave room for panels)
+        long max_width = (long)(display_width * 0.90);
+        long max_height = (long)(display_height * 0.90);
+        if (new_width > max_width)
+        {
+          new_width = max_width;
+        }
+        if (new_height > max_height)
+        {
+          new_height = max_height;
+        }
+        
+        // Also enforce the upper bounds from the config system
+        if (new_width > 10000l)
+        {
+          new_width = 10000l;
+        }
+        if (new_height > 10000l)
+        {
+          new_height = 10000l;
+        }
+        
+        screen_width = new_width;
+        screen_height = new_height;
+        
+        fprintf(stderr,
+                "Auto-sizing window to %ldx%ld based on display size %dx%d\n",
+                screen_width,
+                screen_height,
+                display_width,
+                display_height);
+      }
+
+
       // Get colormap (N7TAP: do we need this if the screen
       // visual is TRUE or DIRECT?
       //
