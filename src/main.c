@@ -30707,10 +30707,12 @@ int main(int argc, char *argv[], char *envp[])
 
 
       // Adjust default window size based on actual screen dimensions
-      // if still using the hardcoded defaults (590x420).
+      // if still using the hardcoded defaults
+      // (DEFAULT_STARTUP_SCREEN_WIDTHxDEFAULT_STARTUP_SCREEN_HEIGHT).
       // This improves the experience for users with larger displays
       // while preserving existing user configurations.
-      if (screen_width == 590l && screen_height == 420l)
+      if (screen_width == DEFAULT_STARTUP_SCREEN_WIDTH
+          && screen_height == DEFAULT_STARTUP_SCREEN_HEIGHT)
       {
         // Constants for screen sizing ratios
         const double DEFAULT_SCREEN_RATIO = 0.70;
