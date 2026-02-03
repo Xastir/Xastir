@@ -23,6 +23,8 @@
 
 
 #define MAX_VALUE 300
+#define DEFAULT_STARTUP_SCREEN_WIDTH 590l
+#define DEFAULT_STARTUP_SCREEN_HEIGHT 420l
 
 extern time_t next_time;
 
