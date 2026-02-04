@@ -64,7 +64,7 @@ gps_DATA=placeholder
 sounddir=${pkgdatadir}/sounds
 sound_DATA=placeholder
 
-docdir=${prefix}/share/doc/xastir
+docdir=@docdir@
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT.md README.CYGWIN \
         README.MAPS README.sudo COPYING INSTALL.md \
         README.OSM_maps CONTRIBUTING.md \
