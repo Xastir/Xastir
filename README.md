@@ -237,12 +237,12 @@
 
 9. MAILING LIST
 
->[!NOTE]
-> While there is hope that it may be restored, at the moment the
-> mailing lists described in this section are down with no ETA
-> on the restoration.  Please use the "Discussions" section on Github
-> to ask questions or post comments instead.  Please use the Issues
-> section for bug reports.
+   >[!NOTE]
+   > While there is hope that it may be restored, at the moment the
+   > mailing lists described in this section are down with no ETA
+   > on the restoration.  Please use the "Discussions" section on Github
+   > to ask questions or post comments instead.  Please use the Issues
+   > section for bug reports.
 
    There are currently a couple of mailing lists about Xastir.
    xastir@xastir.org is the one relevant for most users.
