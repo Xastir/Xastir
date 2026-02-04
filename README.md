@@ -260,14 +260,6 @@
    http://xastir.org and click on "XASTIR MAILING LISTS" (in the
    "Resources" section near the bottom) to subscribe.
 
-        ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
-
-   Frank is no longer developing the Xastir code and has not
-   participated in Xastir development for many years, so don't bother
-   searching him out and emailing him. If you have a serious problem,
-   open an issue on Github.  You may also try posting to the xastir
-   mailing list.
-
    Please, before posting to this list, see what things are
    like, and when you do post, read over your post for
    readability, spelling, and grammar mistakes. Obviously,
