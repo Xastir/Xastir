@@ -25,7 +25,7 @@ Copyright (C) 2000-2026 The Xastir Group
     The tag line for the map is "The Free Wiki World Map".
 
     Xastir will display bitmap versions of the OSM. There are multiple
-    renderings of the OSM to choose from and, by default, nine (9)
+    renderings of the OSM to choose from and, by default, three
     are available in Xastir.
 
   Map Types
@@ -56,8 +56,8 @@ Copyright (C) 2000-2026 The Xastir Group
     https://a.tile.openstreetmap.org/11/329/715.png
     (tile server a, zoom level 11, column 329, row 715).
     You can see more in this Wikiepedia article:
-    https://en.wikipedia.org/wiki/Tiled_web_map. 
-    
+    https://en.wikipedia.org/wiki/Tiled_web_map.
+
     Bitmap images, whether static or tiled, are available for only a
     limited number of zoom levels. There are 18 possible zoom levels.
     It takes 2^zoom tiles to represent 360 degrees. Since the tiles are
@@ -94,7 +94,7 @@ Copyright (C) 2000-2026 The Xastir Group
     ~/.xastir/map_cache/OSMtiles/, but that location can be changed on a
     by-style basis. The tiles are organized directories by style, zoom
     level, and longitude:
-    
+
       ~/.xastir/map_cache/OSMtiles/
                              + <style1>/
                              |    + <zoom>/
@@ -102,7 +102,7 @@ Copyright (C) 2000-2026 The Xastir Group
                              |            + [0 ... (2^zoom - 1)].png
                              + <style2>/
                              ...
-     
+
      Note that 'longitude' is a tile number between 0 and (2^zoom -1).
 
      Xastir downloads tiles as needed. If Xastir is compiled with
@@ -112,7 +112,7 @@ Copyright (C) 2000-2026 The Xastir Group
 
      If a tile can not be downloaded for any reason or if the downloaded
      file is not usable image, then the downloaded file (if any) will be
-     deleted and a red area will be shown in it's place on the display. 
+     deleted and a red area will be shown in it's place on the display.
 
      NOTE: Run Xastir at debug level 512 (-v 512) for more information
            on download issues. At debug level 512, corrupt tile files
@@ -183,13 +183,6 @@ Copyright (C) 2000-2026 The Xastir Group
        http://www.openstreetmap.org/
        http://creativecommons.org/licenses/by-sa/2.0/
 
-    in addition, tiles from CloudMade are
-    Copyright CloudMade, CC-BY-SA
-
-        http://www.cloudmade.com/
-        http://cloudmade.com/about/api-terms-and-conditions
-        http://cloudmade.com/terms_conditions
-
     TopOSM tiles are a composite of CC-BY-SA and public domain data,
     including MassGIS data. See
     http://wiki.openstreetmap.org/wiki/TopOSM for more information.
@@ -197,10 +190,10 @@ Copyright (C) 2000-2026 The Xastir Group
   Changing the Displayed Attribution
   ----------------------------------
 
-    The licenses from OpenStreetMap and CloudMade require attribution
-    that is met, in part, by a label shown at the top left corner of the
-    map. Two label images have been provided, one shows icons and the
-    other shows black text on a white background.
+    The licenses from OpenStreetMap require attribution that is met,
+    in part, by a label shown at the top left corner of the map. Two
+    label images have been provided, one shows icons and the other
+    shows black text on a white background.
 
     You can change between the two label styles by changing a symlink:
 

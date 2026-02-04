@@ -169,7 +169,7 @@ char *xastir_version=VERSION;
 #define ABOUT_MSG "X Amateur Station Tracking and Information Reporting\n\n        http://www.xastir.org\n\nCopyright (C) 2000-2026 The Xastir Group\nSee the \"LICENSE\" file for other applicable copyrights"
 
 // OpenStreetMap attribution
-#define ABOUT_OSM "Maps, tiles, and data from the OpenStreetMap project are\nCopyright OpenStreetMap and contributors, CC-BY-SA.\nMaps and tiles from CloudMade are Copyright CloudMade, CC-BY-SA.\n  http://www.openstreetmap.org/\n  http://creativecommons.org/licenses/by-sa/2.0/\n  http://www.cloudmade.com/\n"
+#define ABOUT_OSM "Maps, tiles, and data from the OpenStreetMap project are\nCopyright OpenStreetMap and contributors, CC-BY-SA.\nhttp://www.openstreetmap.org/\n  http://creativecommons.org/licenses/by-sa/2.0/\n"
 
 
 // Define this if you want an xastir.pid file created in the
