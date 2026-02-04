@@ -83,7 +83,7 @@ install-data-hook:
 	rm -f CC_OpenStreetMap.png && \
 	$(LN_S) CC_OpenStreetMap_logo.png CC_OpenStreetMap.png
  
-mandir=${prefix}/share/man
+mandir=@mandir@
 man_MANS=xastir.1 callpass.1 xastir_udp_client.1 testdbfawk.1
 
 # Use tiles for these maps
