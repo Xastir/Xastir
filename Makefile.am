@@ -70,14 +70,6 @@ doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.GIT.md README.CYGWIN \
         README.OSM_maps CONTRIBUTING.md \
         COPYING.LIB.LESSTIF
 
-# It'd be nice to remove the directory and contents at
-# "${pkgdatadir}/doc" then install a symlink called "doc" there pointing
-# to "${prefix}/share/doc/xastir/".  The new location for the
-# documentation is FHS compliant.
-
-install-exec-hook:
-	-rm -rf $(DESTDIR)${pkgdatadir}/doc
-
 install-data-hook:
 	cd $(DESTDIR)$(mapdir) && \
 	rm -f CC_OpenStreetMap.png && \
