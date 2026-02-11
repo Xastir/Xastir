@@ -37,38 +37,22 @@ SUDO Instructions:
 
     Exit from "su" so that you're a regular (non-root) user again.
 
-    Now, in the "xastir" source directory (mine is in "~/src/xastir"), create a
-    script that reads like this.  I named my script  "update-xastir" but nearly
-    any name for the script will do:
-
-    -----------------cut here--------------------
-        #! /bin/sh
+    To update xastir when the upstream sources have changed, one need only
+    pull the updated source code and rebuild the code.  The process is:
 
         git pull
-        ./bootstrap.sh
-        mkdir -p build
+        autoreconf -i
+        mkdir -p build  # actually any new, empty directory will do
         cd build
-        ../configure
+        ../configure [options needed to help configure find dependencies]
         sudo make clean
         sudo make install
         sudo chmod 4755 /usr/local/bin/xastir
-    -----------------cut here--------------------
 
-    Now type "chmod u+rwx update-xastir" to make that script executable.
-
-    Actually, we've just created a script for Xastir that implements the above
-    and called it "update-xastir".  Do a "git pull" to get it.
-
-    Try out the script.  Type:
-
-        ./update-xastir
-
-    It should run through the entire update/configure/make/install process for
-    Xastir.  Remember to either change to the proper xastir directory before
-    running it, or add a "cd" command at the beginning of the script so that it
-    will run in the proper directory in all cases.  If you add the proper "cd"
-    command you can copy the script to /usr/local/bin and then run it as
-    "update-xastir" from anywhere.
+    This is actually overly conservative, as it forces a full rebuild
+    of Xastir after each git update.  You can keep your build
+    directories around and just rerun configure and make in them and
+    make will only recompile files that have changed.
 
     Windows users:  You may need to remove the "sudo" keyword on each line to
     have it work properly for you.
