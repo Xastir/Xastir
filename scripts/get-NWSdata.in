@@ -42,13 +42,13 @@
 # should START to be used.  Don't just blindly put the newest filename
 # here if that start-date hasn't arrived yet!
 #
-FILE1="w_18mr25"    # GREEN: NWSM Library: County Warning Area Boundaries
-FILE2="z_18mr25"    # GREEN: NWSM Library: Public Forecast Zone Boundaries
-FILE3="mz18mr25"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
-FILE4="oz18mr25"   # GREEN: NWSM Library: Coastal and Offshore Marine Zones
+FILE1="w_03mr26"    # GREEN: NWSM Library: County Warning Area Boundaries
+FILE2="z_03mr26"    # GREEN: NWSM Library: Public Forecast Zone Boundaries
+FILE3="mz03mr26"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
+FILE4="oz03mr26"   # GREEN: NWSM Library: Coastal and Offshore Marine Zones
 FILE5="hz20fe25"    # GREEN: NWSM Library: Coastal and Offshore Marine Zones
-FILE6="fz18mr25"    # GREEN: NWSM Library: Fire Weather Zone Boundaries
-FILE7="c_18mr25"    # RED: Counties, States, Provinces: U.S. Counties
+FILE6="fz03mr26"    # GREEN: NWSM Library: Fire Weather Zone Boundaries
+FILE7="c_03mr26"    # RED: Counties, States, Provinces: U.S. Counties
 
 prefix=@prefix@
 
