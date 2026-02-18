@@ -1,4 +1,4 @@
-#/bin/sh -e
+#!/bin/sh -e
 #
 #
 # Copyright (C) 2000-2026 The Xastir Group
