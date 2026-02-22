@@ -1,7 +1,7 @@
-# Git Instructions for Xastir developers and developers
+# Git Instructions for Xastir users and developers
 
 For those who think git might be a bit too complicated to deal with,
-here are (I think) the minimal commands. 
+here are (I think) the minimal commands.
 
 
 # Basics for USERS:
