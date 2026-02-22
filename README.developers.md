@@ -58,9 +58,9 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
   the moment, and you're going to pick X.Y.Z so that the new Z is
   even.
 
-- Change the version number in configure.ac to X.Y.Z.  Grep around the
-  code and remember to fix any other places where the old version
-  string appears (there should, at this point, not be any).  Commit
+- Change the version number in configure.ac to X.Y.Z.  There should
+  no longer be any other places in the code where this version number
+  appears, so changing it in this one place is sufficient.  Commit
   this change:
 
       git add configure.ac
@@ -110,6 +110,10 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
 
       git tag -a -m "Xastir Release X.Y.Z" Release-X.Y.Z
 
+  Don't forget the "-a", as this is what allows our use of "git
+  describe" to give the user an accurate description of what code
+  they're running if they're running a development version later.
+
 - At this point, you are almost done, but all of your changes are only
   in your local repository clone.  Double check that it really works
   by creating a tar file of your code from the tagged state, then try
@@ -129,6 +133,12 @@ users must now use "bootstrap.sh" as a first step in building Xastir.
       cd build
       ../configure [options]
       make
+
+  This is strictly a sanity check to make sure that everything that's
+  in the repository really, truly is ready to go.  If you've been
+  following good coding and testing practices and the continuous
+  integration testing is working properly, this step isn't really
+  necessary.  But it's good to be sure.
 
 - If the sanity check above worked, you can throw away the testing
   tarball and unpacked code:
