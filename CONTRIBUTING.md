@@ -176,7 +176,9 @@ In a (rather large) nutshell this process goes like this:
     git fetch upstream            # This fetches changes in the official rep
     git checkout master           # go back to the master branch
     git merge upstream/master     # brings your local master up to date
-    git push origin                 # this brings your GitHub fork up to date
+    git push origin :             # this brings your GitHub fork up to date
+                                  # by pushing all branches that exist
+                                  # locally and upstream to origin
     git checkout <branchname>       # get your branch back
     ```
 
@@ -195,15 +197,15 @@ In a (rather large) nutshell this process goes like this:
     Now your changes exist on the named branch in your GitHub repo, and may
     be shared with others.
 
-    NOTE: If you have refrained from touching the code on the master
-    branch, the merge of upstream master will always be as simple as
-    shown here, with no conflicts possible --- all you're doing is
-    grabbing what others have done while you were working.  In times
-    of great activity on master (there are seldom such times) it is
-    possible, though, that the rebase operation can show conflicts
-    between upstream changes and your changes that you will have to
-    fix yourself.  Resolving these conflicts requires editing your
-    code, fixing the conflict markers, then doing additional git
+    NOTE: If you have correctly refrained from touching the code on
+    the master branch, the merge of upstream master will always be as
+    simple as shown here, with no conflicts possible --- all you're
+    doing is grabbing what others have done while you were working.
+    In times of great activity on master (there are seldom such times)
+    it is possible, though, that the rebase operation can show
+    conflicts between upstream changes and your changes that you will
+    have to fix yourself.  Resolving these conflicts requires editing
+    your code, fixing the conflict markers, then doing additional git
     add/git commit operations and a third command to tell git rebase
     to continue after the conflict resolution.  Please see the Pro Git
     book at https://git-scm.com/book/en/v2 for guidance should this
@@ -214,6 +216,12 @@ In a (rather large) nutshell this process goes like this:
     easily check out your fork and make sure there are no hidden
     issues you hadn't detected. See below for a suggestion of the
     easiest way to check out other people's topic branches.
+
+    Most importantly, when you create your pull request it will also
+    run all of Xastir's Github Actions, checking that your new code
+    compiles on several different operating systems.  This addresses
+    the concern that you've created non-portable changes and gives you
+    the opportunity to fix them if you have.
 
   * Now you are ready to ask for your code to be reviewed and accepted.
 
