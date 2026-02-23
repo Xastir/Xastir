@@ -75,10 +75,6 @@ Xastir Source
 /*             Date   :  March 1999                                      */
 /*-----------------------------------------------------------------------*/
 
-   *) The code in the src/shapelib directory is an old version of shapelib
-      that is built and used by Xastir only if an external shapelib is not
-      already installed on the system.  This code is licensed under the LGPLv2.
-      The LGPL terms are in src/shapelib/LICENSE.LGPL
 
 -------------------------------
 Xastir scripts
@@ -92,7 +88,7 @@ Xastir scripts
    open source licenses, and the licensing information will be present
    in script comments, which should be consulted for details:
       inf2geo.pl, mapfgd.pl, overlay.pl, ozi2geo.pl, permutations.pl,
-      ridge_radar.pl, split_gnis.bash
+      ridge_radar.pl
           --- These are stated to be "Released into the Public Domain" by
               their respective authors.
 
