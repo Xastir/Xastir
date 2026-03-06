@@ -255,8 +255,6 @@ int test_convert_screen_to_xastir_coordinates(void)
 
   convert_screen_to_xastir_coordinates(0,0,
                                        &lat_xa, &lon_xa);
-  convert_lon_l2s(lon_xa, computed_lon, sizeof(computed_lon),CONVERT_HP_NOSP);
-  convert_lat_l2s(lat_xa, computed_lat, sizeof(computed_lat),CONVERT_HP_NOSP);
 
   TEST_ASSERT(lon_xa == NW_corner_longitude, "Top left pixel mapped correctly to NW corner longitude");
   TEST_ASSERT(lat_xa == NW_corner_latitude, "top left pixel mapped correctly to NW corner latitude");
