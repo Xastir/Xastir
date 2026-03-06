@@ -199,10 +199,6 @@ int test_convert_screen_to_xastir_coordinates(void)
   // SW corner 3454.727N 10548.923W
   // the "long" coords are in centi-seconds (1/100 second)
   // scale_x and scale_y are centi-seconds per pixel
-  char corner_lat_s[10];
-  char corner_lon_s[11];
-  char computed_lat[10];
-  char computed_lon[11];
   long lon_xa, lat_xa;
   long screen_x, screen_y;
 
