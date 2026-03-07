@@ -12,7 +12,8 @@ here are (I think) the minimal commands.
 
 1. Run
 ```
-     git config --global user.name "Your Name" user.email "Your@email.address"
+     git config --global user.name "Your Name"
+     git config --global user.email "Your@email.address"
 ```
 The above is not strictly necessary, but if you ever try to make changes
 to Xastir and get them integrated with the project it is important.
