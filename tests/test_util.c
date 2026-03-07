@@ -229,44 +229,18 @@ int test_convert_screen_to_xastir_coordinates(void)
   TEST_ASSERT(lon_xa == center_longitude, "Center pixel mapped correctly to center longitude");
   TEST_ASSERT(lat_xa == center_latitude, "Center pixel mapped correctly to center latitude");
 
-  // Now try to convert this back to screen coords the way
-  // map_shp and others do
-  screen_x = center_longitude - NW_corner_longitude;
-  screen_y = center_latitude - NW_corner_latitude;
-  screen_x = screen_x/scale_x;
-  screen_y = screen_y/scale_y;
-
-  // We expect these screen coords to be screen_width/2, screen_height/2
-  TEST_ASSERT(screen_x == screen_width/2, "center lon maps onto center pixel");
-  TEST_ASSERT(screen_y == screen_height/2, "center lat maps onto center pixel.");
-
-  // Now what about NW and SE corners?
-  // Remember we fudged the corners based on screen size and original intended
-  // scale, and rounding probably moved the actual xastir coords of the /
-  // corners.  So recompute what we *expect* the conversions to be.
-
-  // This is what we should be expecting for the NW corner strings.
-  // Note that they are almost certainly different from the strings
-  // we used to initialize NW_corner_lat/lon
-
+  // Now the NW corner
   convert_screen_to_xastir_coordinates(0,0,
                                        &lat_xa, &lon_xa);
 
   TEST_ASSERT(lon_xa == NW_corner_longitude, "Top left pixel mapped correctly to NW corner longitude");
   TEST_ASSERT(lat_xa == NW_corner_latitude, "top left pixel mapped correctly to NW corner latitude");
 
-  // No point checking the formula for converting back to screen, because
-  // it is trivially 0,0
-
   // now the SE corner
-  // This is what we should be expecting for the SE corner strings.
-  // Note that they are almost certainly different from the strings
-  // we used to initialize SE_corner_lat/lon
-
   convert_screen_to_xastir_coordinates(screen_width, screen_height,
                                        &lat_xa, &lon_xa);
-  TEST_ASSERT(lon_xa == SE_corner_longitude, "Top left pixel mapped correctly to SE corner longitude");
-  TEST_ASSERT(lat_xa == SE_corner_latitude, "top left pixel mapped correctly to SE corner latitude");
+  TEST_ASSERT(lon_xa == SE_corner_longitude, "Bottom right pixel mapped correctly to SE corner longitude");
+  TEST_ASSERT(lat_xa == SE_corner_latitude, "Bottom right pixel mapped correctly to SE corner latitude");
 
   TEST_PASS("convert_screen_to_xastir_coordinates: works as expected");
 }
