@@ -1,5 +1,7 @@
 # README
 
+https://img.shields.io/github/check-runs/Xastir/Xastir/master
+
 > [!IMPORTANT]
 >
 > This document makes a lot of references to the Xastir
