@@ -1,6 +1,6 @@
 # README
 
-https://img.shields.io/github/check-runs/Xastir/Xastir/master
+![build badge](https://img.shields.io/github/check-runs/Xastir/Xastir/master)
 
 > [!IMPORTANT]
 >
