@@ -499,4 +499,151 @@ int xastir_cairo_text_height(const char *fontspec)
   return height;
 }
 
+
+void xastir_cairo_draw_text_box(
+    Display      *dpy,
+    Pixmap        target,
+    const char   *text,
+    const char   *fontspec,
+    unsigned long fg_pixel,
+    unsigned long bg_pixel,
+  unsigned long top_shadow_pixel,
+  unsigned long bottom_shadow_pixel,
+  int           shadow_thickness,
+    int           padding_x)
+{
+  Window root_ret;
+  int x_ret, y_ret;
+  unsigned int width, height, border, depth;
+  char *utf8_text = NULL;
+
+  if (!XGetGeometry(dpy, target, &root_ret, &x_ret, &y_ret,
+                    &width, &height, &border, &depth))
+  {
+    fprintf(stderr, "xastir_cairo_draw_text_box: XGetGeometry failed\n");
+    return;
+  }
+
+  if (text && text[0] != '\0')
+    utf8_text = normalize_text_for_cairo(text);
+
+  int screen = DefaultScreen(dpy);
+  Visual *visual = DefaultVisual(dpy, screen);
+  Colormap cmap = DefaultColormap(dpy, screen);
+
+  cairo_surface_t *surface =
+    cairo_xlib_surface_create(dpy, target, visual,
+                              (int)width, (int)height);
+  if (!surface || cairo_surface_status(surface) != CAIRO_STATUS_SUCCESS)
+  {
+    fprintf(stderr, "xastir_cairo_draw_text_box: cairo_xlib_surface_create failed\n");
+    if (surface) cairo_surface_destroy(surface);
+    free(utf8_text);
+    return;
+  }
+
+  cairo_t *cr = cairo_create(surface);
+  if (!cr || cairo_status(cr) != CAIRO_STATUS_SUCCESS)
+  {
+    fprintf(stderr, "xastir_cairo_draw_text_box: cairo_create failed\n");
+    if (cr) cairo_destroy(cr);
+    cairo_surface_destroy(surface);
+    free(utf8_text);
+    return;
+  }
+
+  cairo_set_antialias(cr, CAIRO_ANTIALIAS_GRAY);
+
+  double br, bg, bb;
+  double tsr, tsg, tsb;
+  double bsr, bsg, bsb;
+  int inner_x;
+  int inner_y;
+  int inner_width;
+  int inner_height;
+
+  pixel_to_rgba(dpy, cmap, bg_pixel, &br, &bg, &bb);
+  pixel_to_rgba(dpy, cmap, top_shadow_pixel, &tsr, &tsg, &tsb);
+  pixel_to_rgba(dpy, cmap, bottom_shadow_pixel, &bsr, &bsg, &bsb);
+
+  inner_x = shadow_thickness;
+  inner_y = shadow_thickness;
+  inner_width = (int)width - (shadow_thickness * 2);
+  inner_height = (int)height - (shadow_thickness * 2);
+
+  if (inner_width <= 0 || inner_height <= 0)
+  {
+    inner_x = 0;
+    inner_y = 0;
+    inner_width = (int)width;
+    inner_height = (int)height;
+    shadow_thickness = 0;
+  }
+
+  if (shadow_thickness > 0)
+  {
+    int i;
+
+    for (i = 0; i < shadow_thickness; i++)
+    {
+      int x0 = i;
+      int y0 = i;
+      int x1 = (int)width - i - 1;
+      int y1 = (int)height - i - 1;
+      double span_w = (double)(x1 - x0 + 1);
+      double span_h = (double)(y1 - y0 + 1);
+
+      cairo_set_source_rgb(cr, bsr, bsg, bsb);
+      cairo_rectangle(cr, (double)x0, (double)y0, span_w, 1.0);
+      cairo_rectangle(cr, (double)x0, (double)y0 + 1.0, 1.0, span_h - 1.0);
+      cairo_fill(cr);
+
+      cairo_set_source_rgb(cr, tsr, tsg, tsb);
+      cairo_rectangle(cr, (double)x0 + 1.0, (double)y1, span_w - 1.0, 1.0);
+      cairo_rectangle(cr, (double)x1, (double)y0, 1.0, span_h - 1.0);
+      cairo_fill(cr);
+    }
+  }
+
+  cairo_set_source_rgb(cr, br, bg, bb);
+  cairo_rectangle(cr, (double)inner_x, (double)inner_y,
+                  (double)inner_width, (double)inner_height);
+  cairo_fill(cr);
+
+  if (utf8_text && utf8_text[0] != '\0')
+  {
+    char family[128];
+    double size;
+    cairo_font_extents_t fe;
+    double fr, fg, fb;
+    double baseline;
+
+    parse_fontspec(fontspec, family, sizeof(family), &size);
+    pixel_to_rgba(dpy, cmap, fg_pixel, &fr, &fg, &fb);
+
+    cairo_select_font_face(cr, family,
+                           CAIRO_FONT_SLANT_NORMAL,
+                           CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(cr, size);
+    cairo_font_extents(cr, &fe);
+
+    baseline = (((double)inner_height - (fe.ascent + fe.descent)) / 2.0)
+               + fe.ascent + (double)inner_y;
+
+    cairo_set_source_rgb(cr, fr, fg, fb);
+    cairo_save(cr);
+    cairo_rectangle(cr, (double)inner_x, (double)inner_y,
+                    (double)inner_width, (double)inner_height);
+    cairo_clip(cr);
+    cairo_move_to(cr, (double)(inner_x + padding_x), baseline);
+    cairo_show_text(cr, utf8_text);
+    cairo_restore(cr);
+  }
+
+  cairo_surface_flush(surface);
+  cairo_destroy(cr);
+  cairo_surface_destroy(surface);
+  free(utf8_text);
+}
+
 #endif /* HAVE_CAIRO */

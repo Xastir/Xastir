@@ -73,6 +73,24 @@ int xastir_cairo_text_width(
 int xastir_cairo_text_height(
     const char *fontspec);
 
+/*
+ * Draw a non-rotated UI text box directly into an X11 drawable.
+ * The background is fully repainted using bg_pixel, then text is
+ * drawn left-aligned with vertical centering and padding_x pixels
+ * of left/right margin.
+ */
+void xastir_cairo_draw_text_box(
+    Display      *dpy,
+    Pixmap        target,
+    const char   *text,
+    const char   *fontspec,
+    unsigned long fg_pixel,
+    unsigned long bg_pixel,
+  unsigned long top_shadow_pixel,
+  unsigned long bottom_shadow_pixel,
+  int           shadow_thickness,
+    int           padding_x);
+
 #endif /* HAVE_CAIRO */
 
 #endif /* CAIRO_TEXT_H */
