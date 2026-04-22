@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "snprintf.h"
 
@@ -137,6 +138,105 @@ static void pixel_to_rgba(Display *dpy, Colormap cmap,
   }
 }
 
+/*
+ * Old Xastir strings may contain ISO-8859-1 bytes such as 0xB0 for the
+ * degree symbol. Cairo's toy text API expects UTF-8, so validate first and
+ * fall back to a Latin-1 to UTF-8 conversion when needed.
+ */
+static int is_valid_utf8(const char *text)
+{
+  const unsigned char *s = (const unsigned char *)text;
+
+  while (*s)
+  {
+    if (*s < 0x80)
+    {
+      s++;
+      continue;
+    }
+
+    if ((*s & 0xe0) == 0xc0)
+    {
+      if ((s[1] & 0xc0) != 0x80 || *s < 0xc2)
+        return 0;
+      s += 2;
+      continue;
+    }
+
+    if ((*s & 0xf0) == 0xe0)
+    {
+      if ((s[1] & 0xc0) != 0x80 || (s[2] & 0xc0) != 0x80)
+        return 0;
+      if (*s == 0xe0 && s[1] < 0xa0)
+        return 0;
+      if (*s == 0xed && s[1] >= 0xa0)
+        return 0;
+      s += 3;
+      continue;
+    }
+
+    if ((*s & 0xf8) == 0xf0)
+    {
+      if ((s[1] & 0xc0) != 0x80 ||
+          (s[2] & 0xc0) != 0x80 ||
+          (s[3] & 0xc0) != 0x80)
+        return 0;
+      if (*s == 0xf0 && s[1] < 0x90)
+        return 0;
+      if (*s > 0xf4 || (*s == 0xf4 && s[1] >= 0x90))
+        return 0;
+      s += 4;
+      continue;
+    }
+
+    return 0;
+  }
+
+  return 1;
+}
+
+static char *latin1_to_utf8(const char *text)
+{
+  size_t in_len = strlen(text);
+  char *utf8 = (char *)malloc(in_len * 2 + 1);
+  unsigned char *out;
+  const unsigned char *in;
+
+  if (!utf8)
+    return NULL;
+
+  out = (unsigned char *)utf8;
+  in  = (const unsigned char *)text;
+
+  while (*in)
+  {
+    if (*in < 0x80)
+    {
+      *out++ = *in++;
+    }
+    else
+    {
+      *out++ = (unsigned char)(0xc0 | (*in >> 6));
+      *out++ = (unsigned char)(0x80 | (*in & 0x3f));
+      in++;
+    }
+  }
+
+  *out = '\0';
+  return utf8;
+}
+
+static char *normalize_text_for_cairo(const char *text)
+{
+  if (!text)
+    return NULL;
+
+  if (is_valid_utf8(text))
+    return strdup(text);
+
+  return latin1_to_utf8(text);
+}
+
 /* ---------------------------------------------------------------------- */
 /* Internal drawing primitive                                               */
 /* ---------------------------------------------------------------------- */
@@ -167,6 +267,7 @@ static void cairo_draw_text_at(cairo_t *cr,
                                 double or_, double og, double ob)
 {
   cairo_text_extents_t te;
+  cairo_font_extents_t fe;
 
   cairo_select_font_face(cr, family,
                          CAIRO_FONT_SLANT_NORMAL,
@@ -174,6 +275,7 @@ static void cairo_draw_text_at(cairo_t *cr,
   cairo_set_font_size(cr, size);
 
   cairo_text_extents(cr, text, &te);
+  cairo_font_extents(cr, &fe);
 
   double angle_rad = angle_deg * M_PI / 180.0;
 
@@ -182,12 +284,33 @@ static void cairo_draw_text_at(cairo_t *cr,
   cairo_rotate(cr, -angle_rad);
 
   double tx = 0.0;
+  double ty = 0.0;
+  double rbearing = te.x_bearing + te.width;
+
   if (align == BCENTRE)
-    tx = -te.width / 2.0 - te.x_bearing;
+  {
+    /* Match xvertext: centered around the rightmost ink edge. */
+    tx = -rbearing / 2.0;
+    ty = -fe.descent;
+  }
   else if (align == BRIGHT)
-    tx = -te.width - te.x_bearing;
-  else /* BLEFT */
-    tx = -te.x_bearing;
+  {
+    /* Match xvertext: anchor on the lower-right corner of the text box. */
+    tx = -rbearing;
+    ty = -fe.descent;
+  }
+  else if (align == BLEFT)
+  {
+    /* Match xvertext: anchor on the lower-left corner of the text box. */
+    tx = 0.0;
+    ty = -fe.descent;
+  }
+  else
+  {
+    /* NONE behaves like XDrawString: x/y are the text baseline origin. */
+    tx = 0.0;
+    ty = 0.0;
+  }
 
   if (draw_outline)
   {
@@ -198,14 +321,14 @@ static void cairo_draw_text_at(cairo_t *cr,
     cairo_set_source_rgb(cr, or_, og, ob);
     for (int i = 0; i < 4; i++)
     {
-      cairo_move_to(cr, tx + offsets[i][0], offsets[i][1]);
+      cairo_move_to(cr, tx + offsets[i][0], ty + offsets[i][1]);
       cairo_show_text(cr, text);
     }
   }
 
   /* Foreground text */
   cairo_set_source_rgb(cr, r, g, b);
-  cairo_move_to(cr, tx, 0.0);
+  cairo_move_to(cr, tx, ty);
   cairo_show_text(cr, text);
 
   cairo_restore(cr);
@@ -228,8 +351,17 @@ void xastir_cairo_draw_text(
     unsigned long outline_pixel,
     int           align)
 {
+  char *utf8_text;
+
   if (!text || text[0] == '\0')
     return;
+
+  utf8_text = normalize_text_for_cairo(text);
+  if (!utf8_text || utf8_text[0] == '\0')
+  {
+    free(utf8_text);
+    return;
+  }
 
   /* Get pixmap geometry so we can create a correctly-sized surface. */
   Window root_ret;
@@ -239,6 +371,7 @@ void xastir_cairo_draw_text(
                     &width, &height, &border, &depth))
   {
     fprintf(stderr, "xastir_cairo_draw_text: XGetGeometry failed\n");
+    free(utf8_text);
     return;
   }
 
@@ -254,6 +387,7 @@ void xastir_cairo_draw_text(
   {
     fprintf(stderr, "xastir_cairo_draw_text: cairo_xlib_surface_create failed\n");
     if (surface) cairo_surface_destroy(surface);
+    free(utf8_text);
     return;
   }
 
@@ -263,6 +397,7 @@ void xastir_cairo_draw_text(
     fprintf(stderr, "xastir_cairo_draw_text: cairo_create failed\n");
     if (cr) cairo_destroy(cr);
     cairo_surface_destroy(surface);
+    free(utf8_text);
     return;
   }
 
@@ -283,12 +418,12 @@ void xastir_cairo_draw_text(
     double or_, og, ob;
     pixel_to_rgba(dpy, cmap, outline_pixel, &or_, &og, &ob);
     /* Single call: vector stroke+fill — no 8-copy halo merge */
-    cairo_draw_text_at(cr, x, y, angle_deg, text, family, size,
+    cairo_draw_text_at(cr, x, y, angle_deg, utf8_text, family, size,
                        align, fr, fg_, fb, 1, or_, og, ob);
   }
   else
   {
-    cairo_draw_text_at(cr, x, y, angle_deg, text, family, size,
+    cairo_draw_text_at(cr, x, y, angle_deg, utf8_text, family, size,
                        align, fr, fg_, fb, 0, 0.0, 0.0, 0.0);
   }
 
@@ -297,13 +432,23 @@ void xastir_cairo_draw_text(
   cairo_surface_flush(surface);
   cairo_destroy(cr);
   cairo_surface_destroy(surface);
+  free(utf8_text);
 }
 
 
 int xastir_cairo_text_width(const char *text, const char *fontspec)
 {
+  char *utf8_text;
+
   if (!text || text[0] == '\0')
     return 0;
+
+  utf8_text = normalize_text_for_cairo(text);
+  if (!utf8_text || utf8_text[0] == '\0')
+  {
+    free(utf8_text);
+    return 0;
+  }
 
   char family[128];
   double size;
@@ -320,11 +465,12 @@ int xastir_cairo_text_width(const char *text, const char *fontspec)
   cairo_set_font_size(cr, size);
 
   cairo_text_extents_t te;
-  cairo_text_extents(cr, text, &te);
+  cairo_text_extents(cr, utf8_text, &te);
   int width = (int)(te.width + 0.5);
 
   cairo_destroy(cr);
   cairo_surface_destroy(surface);
+  free(utf8_text);
   return width;
 }
 

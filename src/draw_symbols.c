@@ -120,7 +120,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
       case 0:
         /* outline style: 8 copies in bgcolor, then text in fgcolor */
         xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
-                               colors[bgcolor], 1, colors[bgcolor], BLEFT);
+                               colors[bgcolor], 1, colors[bgcolor], NONE);
         break;
 
       case 1:
@@ -131,7 +131,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                              text_w, font_height);
         /* fall through: draw text over box */
         xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
-                               colors[bgcolor], 0, 0, BLEFT);
+                               colors[bgcolor], 0, 0, NONE);
         return;
 
       case 2:
@@ -141,7 +141,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                              x, y - (font_height - font_height/4),
                              text_w, font_height);
         xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
-                               colors[fgcolor], 0, 0, BLEFT);
+                               colors[fgcolor], 0, 0, NONE);
         return;
 
       case 3:
@@ -150,13 +150,13 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
         xastir_cairo_draw_text(dpy, where,
                                x + font_height/10, y + font_height/10,
                                0.0f, text, fontspec,
-                               colors[bgcolor], 0, 0, BLEFT);
+                               colors[bgcolor], 0, 0, NONE);
         break;
     }
 
     /* final foreground text */
     xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
-                           colors[fgcolor], 0, 0, BLEFT);
+                           colors[fgcolor], 0, 0, NONE);
   }
 #else  /* !HAVE_CAIRO */
   {
@@ -3996,5 +3996,4 @@ void draw_deadreckoning_features(DataRow *p_station,
                 0);  // Don't bump the station count
   }
 }
-
 
