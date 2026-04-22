@@ -16,11 +16,11 @@ jobs:
     - name: Update Packages
       run: sudo apt-get update
     - name: Install Packages
-      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev libcairo2-dev
+      run: sudo apt-get install -y build-essential xorg-dev graphicsmagick libgraphicsmagick1-dev libmotif-dev libcurl4-openssl-dev libpcre2-dev libdb-dev shapelib libshp-dev libxpm-dev
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
-      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
+      run: ./configure --without-cairo CPPFLAGS="-I/usr/include/geotiff"
     - name: make
       run: make
     - name: make install

@@ -85,12 +85,7 @@ these packages for which both are available.
 * festival (enables text-to-speech options)
 * Berkeley DB version 5 (enables caching of some online map imagery)
   or version 18.1
-* Cairo with Xlib support (enables antialiased map text rendering).
-  The `cairo-xlib` pkg-config module must be available; on Debian/Ubuntu
-  install `libcairo2-dev`, on Fedora/RHEL install `cairo-devel`.  Cairo
-  is optional: if it is not detected (or if you pass `--without-cairo`
-  to configure), Xastir falls back to the original non-antialiased
-  xvertext rendering.
+* Cairo with Xlib support (enables antialiased map text rendering)
 
 In some cases, there are alternatives that can provide the same
 features:
