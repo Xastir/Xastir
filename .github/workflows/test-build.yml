@@ -20,7 +20,7 @@ jobs:
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
-      run: ./configure --without-cairo CPPFLAGS="-I/usr/include/geotiff"
+      run: ./configure CPPFLAGS="-I/usr/include/geotiff"
     - name: make
       run: make
     - name: make install
