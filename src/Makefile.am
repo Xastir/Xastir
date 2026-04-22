@@ -111,6 +111,8 @@ remove_compiledate:
 
 xastir_LDADD=-Lrtree -lrtree
 
+XASTIR_SRC += cairo_text.c cairo_text.h
+
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 xastir_udp_client_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@

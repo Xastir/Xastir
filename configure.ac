@@ -185,6 +185,20 @@ fi
 
 
 
+# Check for Cairo xlib (antialiased text rendering)
+use_cairo=no
+AC_ARG_WITH(cairo,[  --without-cairo           Disable Cairo antialiased text rendering.],cairo_desired=$withval,cairo_desired=yes)
+if test "${cairo_desired}" = "yes"; then
+  PKG_CHECK_MODULES([CAIRO], [cairo-xlib],
+    [use_cairo=yes
+     AC_DEFINE([HAVE_CAIRO], [1], [Define if Cairo xlib is available for antialiased text])
+     CPPFLAGS="$CPPFLAGS $CAIRO_CFLAGS"
+     LIBS="$LIBS $CAIRO_LIBS"],
+    [use_cairo=no
+     AC_MSG_WARN([cairo-xlib not found; antialiased map text rendering will be disabled])])
+fi
+
+
 use_curl=no
 curl_desired=yes
 # Note: Had to move AC_CHECK_HEADER here instead of inside the first
