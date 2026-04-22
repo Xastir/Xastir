@@ -341,14 +341,6 @@ Widget iface_da;
 Widget menubar;
 Widget toolbar;
 
-#ifdef HAVE_CAIRO
-typedef struct
-{
-  char *text;
-  Dimension min_width;
-} cairo_status_widget_data_t;
-#endif
-
 Widget configure_station_dialog     = (Widget)NULL;
 Widget right_menu_popup              = (Widget)NULL;    // Button one or left mouse button
 //Widget middle_menu_popup=(Widget)NULL;  // Button two or middle mouse button
@@ -3888,141 +3880,6 @@ void redraw_symbols(Widget w)
 
 
 
-#ifdef HAVE_CAIRO
-static cairo_status_widget_data_t *get_cairo_status_widget_data(Widget w)
-{
-  cairo_status_widget_data_t *data = NULL;
-
-  XtVaGetValues(w, XmNuserData, &data, NULL);
-  return data;
-}
-
-
-static void redraw_cairo_status_widget(Widget w)
-{
-  cairo_status_widget_data_t *data;
-  Pixel fg = 0;
-  Pixel bg = 0;
-  Pixel top_shadow = 0;
-  Pixel bottom_shadow = 0;
-  Dimension shadow_thickness = 0;
-
-  if (!XtIsRealized(w))
-    return;
-
-  data = get_cairo_status_widget_data(w);
-  if (!data)
-    return;
-
-  XtVaGetValues(w,
-                XmNforeground, &fg,
-                XmNbackground, &bg,
-                XmNtopShadowColor, &top_shadow,
-                XmNbottomShadowColor, &bottom_shadow,
-                XmNshadowThickness, &shadow_thickness,
-                NULL);
-
-  xastir_cairo_draw_text_box(XtDisplay(w),
-                             (Pixmap)XtWindow(w),
-                             data->text,
-                             rotated_label_fontname[FONT_SYSTEM],
-                             (unsigned long)fg,
-                             (unsigned long)bg,
-                             (unsigned long)top_shadow,
-                             (unsigned long)bottom_shadow,
-                             (int)shadow_thickness,
-                             4);
-}
-
-
-static void cairo_status_widget_expose_cb(Widget w,
-                                          XtPointer UNUSED(clientData),
-                                          XtPointer UNUSED(callData))
-{
-  redraw_cairo_status_widget(w);
-}
-
-
-static void cairo_status_widget_destroy_cb(Widget w,
-                                           XtPointer UNUSED(clientData),
-                                           XtPointer UNUSED(callData))
-{
-  cairo_status_widget_data_t *data = get_cairo_status_widget_data(w);
-
-  if (!data)
-    return;
-
-  free(data->text);
-  free(data);
-  XtVaSetValues(w, XmNuserData, NULL, NULL);
-}
-
-
-static void init_cairo_status_widget(Widget w)
-{
-  cairo_status_widget_data_t *data;
-  Dimension width = 0;
-
-  data = (cairo_status_widget_data_t *)calloc(1, sizeof(*data));
-  if (!data)
-    return;
-
-  data->text = strdup("");
-  XtVaSetValues(w, XmNhighlightThickness, 0, NULL);
-  XtVaGetValues(w, XmNwidth, &width, NULL);
-  data->min_width = width;
-  XtVaSetValues(w, XmNuserData, data, NULL);
-  XtAddCallback(w, XmNexposeCallback, cairo_status_widget_expose_cb, NULL);
-  XtAddCallback(w, XmNresizeCallback, cairo_status_widget_expose_cb, NULL);
-  XtAddCallback(w, XmNdestroyCallback, cairo_status_widget_destroy_cb, NULL);
-}
-#endif
-
-
-static void set_status_widget_string(Widget w, const char *value)
-{
-#ifdef HAVE_CAIRO
-  cairo_status_widget_data_t *data = get_cairo_status_widget_data(w);
-  char *copy;
-
-  if (data)
-  {
-    if (!value)
-      value = "";
-
-    copy = strdup(value);
-    if (!copy)
-      return;
-
-    free(data->text);
-    data->text = copy;
-
-    {
-      Dimension shadow_thickness = 0;
-      int content_width;
-      int requested_width;
-
-      XtVaGetValues(w, XmNshadowThickness, &shadow_thickness, NULL);
-
-      content_width = xastir_cairo_text_width(data->text,
-                                              rotated_label_fontname[FONT_SYSTEM]);
-      requested_width = content_width + (2 * 4) + (2 * (int)shadow_thickness);
-
-      if (requested_width < (int)data->min_width)
-        requested_width = (int)data->min_width;
-
-      XtVaSetValues(w, XmNwidth, (Dimension)requested_width, NULL);
-    }
-
-    redraw_cairo_status_widget(w);
-    return;
-  }
-#endif
-
-  XmTextFieldSetString(w, (char *)(value ? value : ""));
-}
-
-
 static void TrackMouse( Widget UNUSED(w), XtPointer clientData, XEvent *event, Boolean * UNUSED(flag) )
 {
   char my_text[70];
@@ -4188,7 +4045,7 @@ static void TrackMouse( Widget UNUSED(w), XtPointer clientData, XEvent *event, B
             sizeof(my_text) - 1 - strlen(my_text));
   }
 
-  set_status_widget_string(textarea, my_text);
+  XmTextFieldSetString(textarea, my_text);
   XtManageChild(textarea);
 }
 
@@ -4377,7 +4234,8 @@ void Tactical_Callsign_History_Clear( Widget UNUSED(w), XtPointer UNUSED(clientD
  */
 void statusline(char *status_text,int UNUSED(update) )
 {
-  set_status_widget_string(text, status_text);
+
+  XmTextFieldSetString (text, status_text);
   last_statusline = sec_now();    // Used for auto-ID timeout
 //    if (update != 0)
 //        XmUpdateDisplay(text);      // do an immediate update
@@ -4437,7 +4295,7 @@ void check_statusline_timeout(int curr_sec)
                     langcode ("BBARSTA040"),
                     my_callsign);
 
-    set_status_widget_string(text, status_text);
+    XmTextFieldSetString(text, status_text);
 
     if (last_id_time < curr_sec - id_interval)
     {
@@ -4516,7 +4374,7 @@ void display_zoom_status(void)
     \
   }
 
-  set_status_widget_string(text4, zoom);
+  XmTextFieldSetString(text4,zoom);
 }
 
 
@@ -9744,36 +9602,11 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
 
 #define FONT_WIDTH 9
 
-#ifdef HAVE_CAIRO
-#define CAIRO_STATUS_WIDGET_HEIGHT \
-  (xastir_cairo_text_height(rotated_label_fontname[FONT_SYSTEM]) + 4)
-#endif
-
   // Create bottom text area
   //
 #ifdef USE_TWO_STATUS_LINES
 
   // Quantity of stations box, Bottom left corner
-#ifdef HAVE_CAIRO
-  text3 = XtVaCreateWidget("create_appshell text_output3",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             14,
-                           XmNwidth,               ((22*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_FORM,
-                           XmNleftAttachment,      XmATTACH_FORM,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text3 = XtVaCreateWidget("create_appshell text_output3",
                            xmTextFieldWidgetClass,
                            form,
@@ -9793,30 +9626,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
   // Zoom level box, Bottom second from left
-#ifdef HAVE_CAIRO
-  text4 = XtVaCreateWidget("create_appshell text_output4",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             10,
-                           XmNwidth,               ((15*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_FORM,
-                           XmNleftAttachment,      XmATTACH_WIDGET,
-                           XmNleftWidget,          text3,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text4 = XtVaCreateWidget("create_appshell text_output4",
                            xmTextFieldWidgetClass,
                            form,
@@ -9837,30 +9648,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
   // Log indicator box, Bottom second from right
-#ifdef HAVE_CAIRO
-  log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
-                                   xmDrawingAreaWidgetClass,
-                                   form,
-                                   XmNshadowType,          XmSHADOW_IN,
-                                   XmNshadowThickness,     1,
-                                   XmNcolumns,             8,
-                                   XmNwidth,               ((8*FONT_WIDTH)),
-                                   XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                                   XmNtopAttachment,       XmATTACH_NONE,
-                                   XmNbottomAttachment,    XmATTACH_FORM,
-                                   XmNleftAttachment,      XmATTACH_WIDGET,
-                                   XmNleftWidget,          text4,
-                                   XmNrightAttachment,     XmATTACH_NONE,
-                                   XmNnavigationType,      XmTAB_GROUP,
-                                   XmNtraversalOn,         FALSE,
-                                   XmNfontList, fontlist1,
-                                   MY_FOREGROUND_COLOR,
-                                   MY_BACKGROUND_COLOR,
-                                   NULL);
-#else
   log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
                                    xmTextFieldWidgetClass,
                                    form,
@@ -9881,7 +9670,6 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                                    MY_FOREGROUND_COLOR,
                                    MY_BACKGROUND_COLOR,
                                    NULL);
-#endif
 
   // Interface status indicators, Bottom right corner
   iface_da = XtVaCreateWidget("create_appshell iface",
@@ -9892,7 +9680,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                               XmNunitType,            XmPIXELS,
                               XmNtopAttachment,       XmATTACH_NONE,
                               XmNbottomAttachment,    XmATTACH_FORM,
-                              XmNbottomOffset,        0,
+                              XmNbottomOffset,        5,
                               XmNleftAttachment,      XmATTACH_WIDGET,
                               XmNleftWidget,          log_indicator,
                               XmNrightAttachment,     XmATTACH_NONE,
@@ -9904,28 +9692,6 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                               NULL);
 
   // Message box, on Top left
-#ifdef HAVE_CAIRO
-  text = XtVaCreateWidget("create_appshell text_output",
-                          xmDrawingAreaWidgetClass,
-                          form,
-                          XmNshadowType,          XmSHADOW_IN,
-                          XmNshadowThickness,     1,
-                          XmNcolumns,             30,
-                          XmNwidth,               ((29*FONT_WIDTH)+2),
-                          XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                          XmNtopOffset,           4,
-                          XmNtopAttachment,       XmATTACH_NONE,
-                          XmNbottomAttachment,    XmATTACH_WIDGET,
-                          XmNbottomWidget,        text3,
-                          XmNleftAttachment,      XmATTACH_FORM,
-                          XmNrightAttachment,     XmATTACH_NONE,
-                          XmNnavigationType,      XmTAB_GROUP,
-                          XmNtraversalOn,         FALSE,
-                          XmNfontList, fontlist1,
-                          MY_FOREGROUND_COLOR,
-                          MY_BACKGROUND_COLOR,
-                          NULL);
-#else
   text = XtVaCreateWidget("create_appshell text_output",
                           xmTextFieldWidgetClass,
                           form,
@@ -9947,31 +9713,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                           MY_FOREGROUND_COLOR,
                           MY_BACKGROUND_COLOR,
                           NULL);
-#endif
 
   // Coordinate display box, Top right
-#ifdef HAVE_CAIRO
-  text2 = XtVaCreateWidget("create_appshell text_output2",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             35,
-                           XmNwidth,   do_dbstatus?((37*FONT_WIDTH)+2):((24*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_WIDGET,
-                           XmNbottomWidget,        text3,
-                           XmNleftAttachment,      XmATTACH_WIDGET,
-                           XmNleftWidget,          text,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text2 = XtVaCreateWidget("create_appshell text_output2",
                            xmTextFieldWidgetClass,
                            form,
@@ -9993,32 +9736,10 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
 #else
 
   // Message box, on left
-#ifdef HAVE_CAIRO
-  text = XtVaCreateWidget("create_appshell text_output",
-                          xmDrawingAreaWidgetClass,
-                          form,
-                          XmNshadowType,          XmSHADOW_IN,
-                          XmNshadowThickness,     1,
-                          XmNcolumns,             30,
-                          XmNwidth,               ((29*FONT_WIDTH)+2),
-                          XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                          XmNtopOffset,           4,
-                          XmNtopAttachment,       XmATTACH_NONE,
-                          XmNbottomAttachment,    XmATTACH_FORM,
-                          XmNleftAttachment,      XmATTACH_FORM,
-                          XmNrightAttachment,     XmATTACH_NONE,
-                          XmNnavigationType,      XmTAB_GROUP,
-                          XmNtraversalOn,         FALSE,
-                          XmNfontList, fontlist1,
-                          MY_FOREGROUND_COLOR,
-                          MY_BACKGROUND_COLOR,
-                          NULL);
-#else
   text = XtVaCreateWidget("create_appshell text_output",
                           xmTextFieldWidgetClass,
                           form,
@@ -10039,30 +9760,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                           MY_FOREGROUND_COLOR,
                           MY_BACKGROUND_COLOR,
                           NULL);
-#endif
 
   // Coordinate display box, 2nd from left
-#ifdef HAVE_CAIRO
-  text2 = XtVaCreateWidget("create_appshell text_output2",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             35,
-                           XmNwidth,   do_dbstatus?((37*FONT_WIDTH)+2):((24*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_FORM,
-                           XmNleftAttachment,      XmATTACH_WIDGET,
-                           XmNleftWidget,          text,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text2 = XtVaCreateWidget("create_appshell text_output2",
                            xmTextFieldWidgetClass,
                            form,
@@ -10083,30 +9782,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
   // Quantity of stations box, 3rd from left
-#ifdef HAVE_CAIRO
-  text3 = XtVaCreateWidget("create_appshell text_output3",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             14,
-                           XmNwidth,               ((10*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_FORM,
-                           XmNleftAttachment,      XmATTACH_WIDGET,
-                           XmNleftWidget,          text2,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text3 = XtVaCreateWidget("create_appshell text_output3",
                            xmTextFieldWidgetClass,
                            form,
@@ -10127,30 +9804,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
   // Zoom level box, 3rd from right
-#ifdef HAVE_CAIRO
-  text4 = XtVaCreateWidget("create_appshell text_output4",
-                           xmDrawingAreaWidgetClass,
-                           form,
-                           XmNshadowType,          XmSHADOW_IN,
-                           XmNshadowThickness,     1,
-                           XmNcolumns,             10,
-                           XmNwidth,               ((8*FONT_WIDTH)+2),
-                           XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                           XmNtopAttachment,       XmATTACH_NONE,
-                           XmNbottomAttachment,    XmATTACH_FORM,
-                           XmNleftAttachment,      XmATTACH_WIDGET,
-                           XmNleftWidget,          text3,
-                           XmNrightAttachment,     XmATTACH_NONE,
-                           XmNnavigationType,      XmTAB_GROUP,
-                           XmNtraversalOn,         FALSE,
-                           XmNfontList, fontlist1,
-                           MY_FOREGROUND_COLOR,
-                           MY_BACKGROUND_COLOR,
-                           NULL);
-#else
   text4 = XtVaCreateWidget("create_appshell text_output4",
                            xmTextFieldWidgetClass,
                            form,
@@ -10171,30 +9826,8 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                            MY_FOREGROUND_COLOR,
                            MY_BACKGROUND_COLOR,
                            NULL);
-#endif
 
   // Log indicator box, 2nd from right
-#ifdef HAVE_CAIRO
-  log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
-                                   xmDrawingAreaWidgetClass,
-                                   form,
-                                   XmNshadowType,          XmSHADOW_IN,
-                                   XmNshadowThickness,     1,
-                                   XmNcolumns,             8,
-                                   XmNwidth,               ((8*FONT_WIDTH)),
-                                   XmNheight,              CAIRO_STATUS_WIDGET_HEIGHT,
-                                   XmNtopAttachment,       XmATTACH_NONE,
-                                   XmNbottomAttachment,    XmATTACH_FORM,
-                                   XmNleftAttachment,      XmATTACH_WIDGET,
-                                   XmNleftWidget,          text4,
-                                   XmNrightAttachment,     XmATTACH_NONE,
-                                   XmNnavigationType,      XmTAB_GROUP,
-                                   XmNtraversalOn,         FALSE,
-                                   XmNfontList, fontlist1,
-                                   MY_FOREGROUND_COLOR,
-                                   MY_BACKGROUND_COLOR,
-                                   NULL);
-#else
   log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
                                    xmTextFieldWidgetClass,
                                    form,
@@ -10215,7 +9848,6 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                                    MY_FOREGROUND_COLOR,
                                    MY_BACKGROUND_COLOR,
                                    NULL);
-#endif
 
   // Interface status indicators, on right
   iface_da = XtVaCreateWidget("create_appshell iface",
@@ -10226,7 +9858,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                               XmNunitType,            XmPIXELS,
                               XmNtopAttachment,       XmATTACH_NONE,
                               XmNbottomAttachment,    XmATTACH_FORM,
-                              XmNbottomOffset,        0,
+                              XmNbottomOffset,        5,
                               XmNleftAttachment,      XmATTACH_WIDGET,
                               XmNleftWidget,          log_indicator,
                               XmNrightAttachment,     XmATTACH_NONE,
@@ -10238,14 +9870,6 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                               NULL);
 
 #endif // USE_TWO_STATUS_LINES
-
-#ifdef HAVE_CAIRO
-  init_cairo_status_widget(text);
-  init_cairo_status_widget(text2);
-  init_cairo_status_widget(text3);
-  init_cairo_status_widget(text4);
-  init_cairo_status_widget(log_indicator);
-#endif
 
   // The separator goes on top of the text box no matter how
   // many lines the status bar is, so I'm putting if after the
@@ -11084,7 +10708,7 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
   XtAddCallback(appshell,XtNsaveCallback, save_state, (XtPointer) NULL);
   XtAddCallback(appshell,XtNdieCallback, Window_Quit, (XtPointer) NULL);
 
-  set_status_widget_string(text, "");
+  XmTextFieldSetString(text,"");
   XtManageChild(text);
 
   display_zoom_status();
@@ -14362,7 +13986,7 @@ void UpdateTime( XtPointer clientData, XtIntervalId UNUSED(id) )
                       langcode("BBARSTH001"),
                       currently_selected_stations,
                       station_count);
-      set_status_widget_string(text3, station_num);
+      XmTextFieldSetString(text3, station_num);
 
       // Set up for next time
       station_count_save = station_count;
@@ -18469,15 +18093,15 @@ void Set_Log_Indicator(void)
              || (1==log_wx_alert_data)
              || (1==log_message_data) )
   {
+    XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
     XtVaSetValues(log_indicator,
                   XmNbackground, GetPixelByName(appshell,"RosyBrown"),
                   NULL);
-    set_status_widget_string(log_indicator, langcode("BBARSTA043")); // Logging
   }
   else
   {
+    XmTextFieldSetString(log_indicator, NULL);
     XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
-    set_status_widget_string(log_indicator, NULL);
   }
 }
 
@@ -31271,3 +30895,5 @@ int main(int argc, char *argv[], char *envp[])
   quit(0);
   return 0;
 }
+
+
