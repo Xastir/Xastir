@@ -82,6 +82,7 @@
 #include "rotated.h"
 #include "color.h"
 #include "xa_config.h"
+#include "lang.h"
 
 #ifdef HAVE_LIBSHP
   #include "awk.h"
@@ -1322,6 +1323,7 @@ void draw_shapefile_map (Widget w,
               // the symbol and aligned nicely.
               if (map_labels && !skip_label)
               {
+                utf8_to_latin1_inplace(temp);
                 draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
               }
             }
@@ -1410,6 +1412,7 @@ void draw_shapefile_map (Widget w,
                    && map_labels
                    && !skip_label )
               {
+                utf8_to_latin1_inplace(temp);
                 x=points[0].x;
                 y=points[0].y;
 
@@ -1610,6 +1613,7 @@ void draw_shapefile_map (Widget w,
             }
             ok = 1;
 
+            utf8_to_latin1_inplace(name);
             /* TODO:  consider other label point options */
             /* for now, this function just gives us the center of the
              * bounding box
