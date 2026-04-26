@@ -1582,7 +1582,7 @@ void load_data_or_default(void)
                    );
   }
 
-  letter_style = get_int ("MAP_LETTERSTYLE", 0, 3, 0 );
+  letter_style = get_int ("MAP_LETTERSTYLE", 0, 4, 0 );
 
   icon_outline_style = get_int ("MAP_ICONOUTLINESTYLE", 0, 3, 0);
 

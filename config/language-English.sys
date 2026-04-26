@@ -143,6 +143,7 @@ PULDNMSL01|Black Border|B|
 PULDNMSL02|Black Shadow|S|
 PULDNMSL03|Text on Black|T|
 PULDNMSL04|DropShadow||
+PULDNMSL05|Black on White|W|
 #
 # PullDown "Icon Outline Style"
 PULDNMIO01|No Outline|N|

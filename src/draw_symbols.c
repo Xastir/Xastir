@@ -111,6 +111,11 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
   {
     Display *dpy = XtDisplay(w);
     const char *fontspec = rotated_label_fontname[FONT_STATION];
+    static const int outline_offsets_2px[12][2] = {
+      {-2,  0}, { 2,  0}, { 0, -2}, { 0,  2},
+      {-1, -1}, {-1,  1}, { 1, -1}, { 1,  1},
+      {-2, -1}, {-2,  1}, { 2, -1}, { 2,  1}
+    };
 
     int font_height = xastir_cairo_text_height(fontspec);
     int text_w      = xastir_cairo_text_width(text, fontspec);
@@ -152,6 +157,23 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
                                0.0f, text, fontspec,
                                colors[bgcolor], 0, 0, NONE);
         break;
+
+      case 4:
+      {
+        int i;
+
+        for (i = 0; i < 12; i++)
+        {
+          xastir_cairo_draw_text(dpy, where,
+                                 x + outline_offsets_2px[i][0],
+                                 y + outline_offsets_2px[i][1],
+                                 0.0f, text, fontspec,
+                                 colors[0x20], 0, 0, NONE);
+        }
+        xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
+                               colors[0x10], 0, 0, NONE);
+        return;
+      }
     }
 
     /* final foreground text */
@@ -163,6 +185,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
     GContext gcontext;
     XFontStruct *xfs_ptr;
     int font_width, font_height;
+    int x_outline, y_outline;
 
     gcontext = XGContextFromGC(gc);
     xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
@@ -202,6 +225,25 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
         (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
         (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/10),y+(font_width/8),text,length);
         break;
+      case 4:
+        (void)XSetForeground(XtDisplay(w),gc,colors[0x20]);
+        for (x_outline=-2; x_outline<=2; x_outline++)
+        {
+          for (y_outline=-2; y_outline<=2; y_outline++)
+          {
+            if ((x_outline == 0 && y_outline == 0)
+                || abs(x_outline) + abs(y_outline) > 3)
+              continue;
+
+            (void)XDrawString(XtDisplay(w),where,gc,
+                              x+x_outline,y+y_outline,text,length);
+          }
+        }
+        (void)XSetForeground(XtDisplay(w),gc,colors[0x10]);
+        (void)XDrawString(XtDisplay(w),where,gc,x,y,text,length);
+        if (xfs_ptr)
+          XFreeFontInfo(NULL, xfs_ptr, 1);
+        return;
     }
     (void)XSetForeground(XtDisplay(w),gc,colors[fgcolor]);
     (void)XDrawString(XtDisplay(w),where,gc,x,y,text,length);

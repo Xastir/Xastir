@@ -143,6 +143,7 @@ PULDNMSL01|Fundo negro||
 PULDNMSL02|Fundo cinzento||
 PULDNMSL03|Texto em negro|T|
 PULDNMSL04|DropShadow||
+PULDNMSL05|Preto sobre branco||
 #
 # PullDown "Estilo da linha de fora do icon"
 PULDNMIO01|Nao ha limite|N|

@@ -151,6 +151,7 @@ PULDNMSL01|Schwarze Umrandung|U|
 PULDNMSL02|Schatten|S|
 PULDNMSL03|Schwarzer Hintergrund|H|
 PULDNMSL04|DropShadow||
+PULDNMSL05|Schwarz auf Weiss|W|
 #
 # PullDown "Symbol Umrandung"
 PULDNMIO01|Keine Umrandung|K|
