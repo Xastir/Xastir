@@ -1,25 +1,25 @@
-HELP-INDEX>Einführende Worte / Lizenzbestimmungen
+HELP-INDEX>EinfÃ¼hrende Worte / Lizenzbestimmungen
 
-                  Einführende Worte / Lizenzbestimmungen
+                  EinfÃ¼hrende Worte / Lizenzbestimmungen
 
-Für die aktuellsten Informationen und genauere Installationshinweise
+FÃ¼r die aktuellsten Informationen und genauere Installationshinweise
 lesen sie bitte die README Datei im Xastir Hauptverzeichnis. Beachten
-Sie auch die Dateien LICENCE und COPYING für weitere Informationen.
+Sie auch die Dateien LICENCE und COPYING fÃ¼r weitere Informationen.
 
-Bitte denken sie daran, daß dieses Programm für den Einsatz im
-Amateurfunk bestimmt ist. In Deutschland muß man im Besitz eines
-Funkzeugnises sein, um auf Amateurfunkfrequenzen senden zu dürfen.
+Bitte denken sie daran, daÃŸ dieses Programm fÃ¼r den Einsatz im
+Amateurfunk bestimmt ist. In Deutschland muÃŸ man im Besitz eines
+Funkzeugnises sein, um auf Amateurfunkfrequenzen senden zu dÃ¼rfen.
 Informationen zum Erwerb eines Funkzeugisses findet man beim
-Amateurfunkclub DARC http://www.darc.de. Auch in anderen Ländern
-gelten ähnliche Bestimmungen, die zu beachten sind.
+Amateurfunkclub DARC http://www.darc.de. Auch in anderen LÃ¤ndern
+gelten Ã¤hnliche Bestimmungen, die zu beachten sind.
 
-Die Entwicklung der Software und die Dokumentation erfolgte zunächst in
-Englisch, so daß im Zweifelsfall die englische Version aktueller sein
-könnte. Die vorliegende deutsche Hilfedatei wurde von DK7IN übersetzt.
+Die Entwicklung der Software und die Dokumentation erfolgte zunÃ¤chst in
+Englisch, so daÃŸ im Zweifelsfall die englische Version aktueller sein
+kÃ¶nnte. Die vorliegende deutsche Hilfedatei wurde von DK7IN Ã¼bersetzt.
 Korrekturen und Anregungen bitte an xastir@dk7in.de
 
 
-LIZENZBESTIMMUNGEN für XASTIR:
+LIZENZBESTIMMUNGEN fÃ¼r XASTIR:
 
 XASTIR steht unter der GNU Lizenz, im Folgenden der englische
 Wortlaut. Die Details der GNU-Lizenz finden sich in der Datei
@@ -56,7 +56,7 @@ um XASTIR zu verfolgen.
 Weitere Informationen zur GNU Lizenz finden sich auf:
   http://www.gnu.org
 
-Informationen über Freie Software in deutscher Sprache
+Informationen Ã¼ber Freie Software in deutscher Sprache
 finden Sie bei der Free Software Foundation Europe
   http://fsfeurope.org/index.de.html
 
@@ -71,18 +71,18 @@ XASTIR ist ein APRS(tm)-Programm, das als Open Source frei benutzt und an
 andere weitergegeben werden darf. Das Programm befindet sich momentan im
 Entwicklungsstadium und sollte nicht als fertiges Produkt angesehen
 werden! Mit ihrer Mitarbeit kann dieses Programm besser werden. Wenn sie
-also Programmiererfahrung haben, oder Dokumentation schreiben können,
-können wir ihre Hilfe gebrauchen. Wir haben eine Menge Ideen aber nur
-begrenzte Zeit. Wenn sie also denken, einen Beitrag leisten zu können,
+also Programmiererfahrung haben, oder Dokumentation schreiben kÃ¶nnen,
+kÃ¶nnen wir ihre Hilfe gebrauchen. Wir haben eine Menge Ideen aber nur
+begrenzte Zeit. Wenn sie also denken, einen Beitrag leisten zu kÃ¶nnen,
 lassen sie es uns wissen!
 
 
 APRS[tm] ist ein Warenzeichen von Bob Bruninga, seine Homepage ist
 "http://web.usna.navy.mil/~bruninga/aprs.html"
-Beachten Sie bitte, daß sehr viel Information zu APRS(tm) in
+Beachten Sie bitte, daÃŸ sehr viel Information zu APRS(tm) in
 der von Bob Bruninga geschriebenen Dokumentationen zu APRSdos
 enthalten ist. Eine weitere Informationsquelle ist die von
-http://www.tapr.org als PDF-Dokument erhältliche APRS Spezifikation.
+http://www.tapr.org als PDF-Dokument erhÃ¤ltliche APRS Spezifikation.
 
 HELP-INDEX>What's new in Xastir 2.0.9
 
@@ -340,20 +340,20 @@ HELP-INDEX>Der erste Aufruf von Xastir
                         Der erste Aufruf von Xastir
 
 Beim ersten Start von Xastir sollten sie das Programm aus einem
-Terminalfenster heraus aufrufen, um mögliche Fehlermeldungen sehen zu
-können. Da auf den meisten Systemen der Pfad so eingerichtet ist, daß
+Terminalfenster heraus aufrufen, um mÃ¶gliche Fehlermeldungen sehen zu
+kÃ¶nnen. Da auf den meisten Systemen der Pfad so eingerichtet ist, daÃŸ
 Programme in /usr/local/bin gefunden werden, reicht es am Prompt
-"xastir &" einzugeben. Auf anderen Systemen muß "/usr/local/bin/xastir &"
-eingegeben werden, um das Programm zu starten. Das '&' sorgt dafür, daß
-Xastir im Hintergrund gestartet wir, so daß das Terminalfenster noch
+"xastir &" einzugeben. Auf anderen Systemen muÃŸ "/usr/local/bin/xastir &"
+eingegeben werden, um das Programm zu starten. Das '&' sorgt dafÃ¼r, daÃŸ
+Xastir im Hintergrund gestartet wir, so daÃŸ das Terminalfenster noch
 anderweitig verwendet werden kann.
 
-Sie können beim Aufruf auch gleich die Sprache wählen. Um die Sprache zu
-ändern, rufen sie Xastir mit der Option -l auf:
+Sie kÃ¶nnen beim Aufruf auch gleich die Sprache wÃ¤hlen. Um die Sprache zu
+Ã¤ndern, rufen sie Xastir mit der Option -l auf:
 
     xastir -lGerman
 
-Weitere Möglichkeiten sind: 
+Weitere MÃ¶glichkeiten sind: 
     xastir -l Dutch 
     xastir -l English 
     xastir -l French 
@@ -365,15 +365,15 @@ Weitere Möglichkeiten sind:
     xastir -l PigLatin
     xastir -l PirateEnglish
 
-Die so gewählte Sprache wird in der Konfigurationsdatei des Benutzers
-gespeichert und auch beim nächsten Aufruf ohne diese Option verwendet.
+Die so gewÃ¤hlte Sprache wird in der Konfigurationsdatei des Benutzers
+gespeichert und auch beim nÃ¤chsten Aufruf ohne diese Option verwendet.
 Bei einem neu installierten Xastir ist die Voreinstellung Englisch
-bis zu einer Änderung mit dieser Option.
+bis zu einer Ã„nderung mit dieser Option.
 
-Die Menus am oberen Rand können auch mit Tastenkürzeln erreicht werden.
+Die Menus am oberen Rand kÃ¶nnen auch mit TastenkÃ¼rzeln erreicht werden.
 Diese funktionieren gegebenenfalls nicht, wenn NumLock eingeschaltet ist.
 
-Vor der Benutzung muß Xastir und einige Schnittstellen konfiguriert
+Vor der Benutzung muÃŸ Xastir und einige Schnittstellen konfiguriert
 werden. Die Schnittstellenkonfiguration ist detailliert in der Hilfe
 unter "Schnittstellen" beschrieben.
 
@@ -386,71 +386,71 @@ Klicken sie auf Datei, Einstellungen, dann auf Meine Stationsdaten
 Tragen sie ihr Amateurfunk-Rufzeichen ein.
 
 Tragen sie die Position ihrer Station ein, wenn sie Xastir nicht
-zusammen mit einem GPS-Empfänger einsetzen. Sie können ihre ungefähre
+zusammen mit einem GPS-EmpfÃ¤nger einsetzen. Sie kÃ¶nnen ihre ungefÃ¤hre
 Position auch mit einer Karte in Xastir bestimmen indem sie die Maus
 auf der Karte plazieren und die Position in der Statuszeile ablesen.
-Wenn sie einen GPS-Empfänger haben können sie diesen Schritt
-überspringen und stattdessen später den GPS-Empfänger einrichten.
+Wenn sie einen GPS-EmpfÃ¤nger haben kÃ¶nnen sie diesen Schritt
+Ã¼berspringen und stattdessen spÃ¤ter den GPS-EmpfÃ¤nger einrichten.
 
-Wählen sie ein Symbol für ihre Station, hierzu ist die Angabe der
-Gruppe und des eigentlichen Symbolzeichens erforderlich. Sie können
-dies manuell eintragen, oder nach Drücken auf Auswahl aus einer
-grafischen Symbolübersicht auswählen. Es stehen zwei Gruppen von
-Symbolen zur Verfügung. Eine Beschreibung der Symbolbedeutung findet
+WÃ¤hlen sie ein Symbol fÃ¼r ihre Station, hierzu ist die Angabe der
+Gruppe und des eigentlichen Symbolzeichens erforderlich. Sie kÃ¶nnen
+dies manuell eintragen, oder nach DrÃ¼cken auf Auswahl aus einer
+grafischen SymbolÃ¼bersicht auswÃ¤hlen. Es stehen zwei Gruppen von
+Symbolen zur VerfÃ¼gung. Eine Beschreibung der Symbolbedeutung findet
 sich im Hilfetext "Symboltabelle". 
 
-Für einige Symbole der sekundären Gruppe kann auch ein Overlay
+FÃ¼r einige Symbole der sekundÃ¤ren Gruppe kann auch ein Overlay
 spezifiziert werden. Hierbei wird das Symbol zusammen mit dem
 Overlay-Zeichen dargestellt, z.B. ein Autosymbol mit der Zahl 1.
 
-Um Overlays zu nutzen müssen sie ein Symbol der sekundären Gruppe wählen
-und das gewünschte Überlagerungszeichen in das Feld Gruppe/Overlay
-eintragen. Nur Zahlen und Großbuchstaben sind als Overlay zulässig.
-Nach den APRS-Spezifikationen kann nicht jedes Symbol überlagert werden,
-aber Xastir erzwingt dies nicht, wie möglicherweise andere Programme.
-Beachten sie, daß bisher auch nicht alle Symbole belegt sind und manche
+Um Overlays zu nutzen mÃ¼ssen sie ein Symbol der sekundÃ¤ren Gruppe wÃ¤hlen
+und das gewÃ¼nschte Ãœberlagerungszeichen in das Feld Gruppe/Overlay
+eintragen. Nur Zahlen und GroÃŸbuchstaben sind als Overlay zulÃ¤ssig.
+Nach den APRS-Spezifikationen kann nicht jedes Symbol Ã¼berlagert werden,
+aber Xastir erzwingt dies nicht, wie mÃ¶glicherweise andere Programme.
+Beachten sie, daÃŸ bisher auch nicht alle Symbole belegt sind und manche
 eventuell nicht ganz den APRS-Spezifikationen entsprechen.
 
-Tragen sie als nächstes die Daten für Leistung, Höhe, Gewinn und
-Vorzugsrichtung für ihre Station ein. Es ist eine sinnvolle Information
-wird aber nicht unbedingt benötigt. Wählen sie einfach "Kein PHG", wenn
+Tragen sie als nÃ¤chstes die Daten fÃ¼r Leistung, HÃ¶he, Gewinn und
+Vorzugsrichtung fÃ¼r ihre Station ein. Es ist eine sinnvolle Information
+wird aber nicht unbedingt benÃ¶tigt. WÃ¤hlen sie einfach "Kein PHG", wenn
 sie diese Daten nicht aussenden wollen. Diese Einstellungen geben eine
-grobe Vorstellung von der Reichweite ihrer Station. Wählen sie die Werte,
-die den ihren am nächsten kommen.
+grobe Vorstellung von der Reichweite ihrer Station. WÃ¤hlen sie die Werte,
+die den ihren am nÃ¤chsten kommen.
 
-Eine andere Möglichkeit wäre es, stattdessen die Reichweite RNG in
-Meilen im Kommentar zu spezifizieren. Für Details ziehen sie bitte
+Eine andere MÃ¶glichkeit wÃ¤re es, stattdessen die Reichweite RNG in
+Meilen im Kommentar zu spezifizieren. FÃ¼r Details ziehen sie bitte
 die APRS-Spezifikationen zu Rate.
 
-Benutzen sie hier bitte die nicht die Höhe über dem Boden oder
-Meereshöhe, sondern die Höhe gegenüber dem durchschnittlichen Gelände.
-Die Angabe ist in Fuß, Meter müssen mit 3,28 multipliziert werden.
+Benutzen sie hier bitte die nicht die HÃ¶he Ã¼ber dem Boden oder
+MeereshÃ¶he, sondern die HÃ¶he gegenÃ¼ber dem durchschnittlichen GelÃ¤nde.
+Die Angabe ist in FuÃŸ, Meter mÃ¼ssen mit 3,28 multipliziert werden.
 
 Als Gewinn tragen sie den Antennengewinn in dBi ein.
 
-Anmerkung: Die Angabe des Gewinns ist primär für Vertikalantennen
-gedacht, für Beams sollten kleinere Werte eingetragen werden. Die Grund
-hierfür ist, daß bei gesetzter Vorzugsrichtung, die Ellipse für die
-Reichweite nur um ein Drittel in die angegebene Richtung vergrößert wird.
-Wird der Gewinn eines Beams größer angegeben, so wird nur die
-Reichweitenmarkierung unrealistisch groß, statt daß die deren
-Richtwirkung erhöht würde.
+Anmerkung: Die Angabe des Gewinns ist primÃ¤r fÃ¼r Vertikalantennen
+gedacht, fÃ¼r Beams sollten kleinere Werte eingetragen werden. Die Grund
+hierfÃ¼r ist, daÃŸ bei gesetzter Vorzugsrichtung, die Ellipse fÃ¼r die
+Reichweite nur um ein Drittel in die angegebene Richtung vergrÃ¶ÃŸert wird.
+Wird der Gewinn eines Beams grÃ¶ÃŸer angegeben, so wird nur die
+Reichweitenmarkierung unrealistisch groÃŸ, statt daÃŸ die deren
+Richtwirkung erhÃ¶ht wÃ¼rde.
 
-Bei der Angabe einer Vorzugsrichtung ihrer Antenne wären z.B. 90° eine
+Bei der Angabe einer Vorzugsrichtung ihrer Antenne wÃ¤ren z.B. 90Â° eine
 Antenne, die nach Osten weist.
 
 Geben sie einen Kommentar ein, dies ist nicht notwendig, erlaubt aber
-die Übermittlung sinnvoller Informationen, wie z.B. den Namen und die
-E-Mail-Adresse. Es wird zusammen mit den Positionsmeldungen übertragen.
+die Ãœbermittlung sinnvoller Informationen, wie z.B. den Namen und die
+E-Mail-Adresse. Es wird zusammen mit den Positionsmeldungen Ã¼bertragen.
 
 Die Positionsverschleierung erlaubt ihnen einszustellen, wie genau ihre
-Position übermittelt wird. Bei "Keine" werden die exakten eingetragenen
-oder vom GPS empfangenen Daten ausgesendet. Die anderen Möglichkeiten
-setzen die übermittelte Position irgendwo in den gewählten Bereich.
+Position Ã¼bermittelt wird. Bei "Keine" werden die exakten eingetragenen
+oder vom GPS empfangenen Daten ausgesendet. Die anderen MÃ¶glichkeiten
+setzen die Ã¼bermittelte Position irgendwo in den gewÃ¤hlten Bereich.
 Einige Stationen, die nicht ganz den Spezifikationen entsprechen,
 verstehen jedoch keine Positionsverschleierung, so z.B. auch findu.com.
 
-Bei einem Klick auf OK werden die Änderungen gesichert, bei Abbrechen
+Bei einem Klick auf OK werden die Ã„nderungen gesichert, bei Abbrechen
 bleiben die vorherigen Einstellungen erhalten.
 
 HELP-INDEX>Grundeinstellungen
@@ -459,55 +459,55 @@ HELP-INDEX>Grundeinstellungen
 
 Klicken sie auf Datei, Einstellungen, dann auf Grundeinstellungen
 
-Auf dieser Seite werden einige Standardwerte für den Programmablauf
+Auf dieser Seite werden einige Standardwerte fÃ¼r den Programmablauf
 eingestellt. Alte Stationen werden nach einiger Zeit schemenhaft
-dargestellt und die zugehörigen Spuren gestrichelt.
+dargestellt und die zugehÃ¶rigen Spuren gestrichelt.
 
 In der ersten Zeile wird festgelegt, nach welcher Zeit eine Station nur
-noch schemenhaft angezeigt wird. In der nächsten Zeile wird festgelegt,
+noch schemenhaft angezeigt wird. In der nÃ¤chsten Zeile wird festgelegt,
 nach welcher Zeit eine Station ganz vom Bildschirm verschwindet. Nach
 dem Doppelten dieser Zeit wird die Station dann auch aus den internen
-Datenbanken gelöscht.
+Datenbanken gelÃ¶scht.
 
-Die dritte Zeile legt fest, in welchen Abständen die eigene Position
-übermittelt wird. Für Feststationen sind 30 Minuten ein guter Wert, es
-sollten auf alle Fälle nicht unter 10 Minuten sein. Bei Mobilstationen
-kann ein kürzeres Intervall sinnvoll sein. Diese Einstellung wird auch
+Die dritte Zeile legt fest, in welchen AbstÃ¤nden die eigene Position
+Ã¼bermittelt wird. FÃ¼r Feststationen sind 30 Minuten ein guter Wert, es
+sollten auf alle FÃ¤lle nicht unter 10 Minuten sein. Bei Mobilstationen
+kann ein kÃ¼rzeres Intervall sinnvoll sein. Diese Einstellung wird auch
 verwendet, um Objekte und Items wiederholt zu senden. Versuchen sie hier
-eine sinnvolle Einstellung zu finden, um nicht zu viel unnötigen Verkehr
+eine sinnvolle Einstellung zu finden, um nicht zu viel unnÃ¶tigen Verkehr
 zu produzieren.
 
 GPS Zeit legt das Zeitintervall fest, nach dem nach neuen GPS Daten
-geschaut wird. Diese Option ist für Stationen mit gemeinsamen Zugriff
-auf TNC und GPS über ein HSP-Kabel.
+geschaut wird. Diese Option ist fÃ¼r Stationen mit gemeinsamen Zugriff
+auf TNC und GPS Ã¼ber ein HSP-Kabel.
 
 Mit dem Sendeformat der Station wird festgelegt, welche Art von Paketen
 die Station sendet.
 
-IGate Options ermöglicht die Errichtung einer Brücke zwischen Internet
+IGate Options ermÃ¶glicht die Errichtung einer BrÃ¼cke zwischen Internet
 und Funk. Diese Option sollte mit Vorsicht benutzt werden. Als
-Fumkamateur sind sie selbst dafür verantwortlich, was aus dem Internet
-kommt und über ihre Funkanlage ausgesendet wird. Sie müssen außerdem bei
+Fumkamateur sind sie selbst dafÃ¼r verantwortlich, was aus dem Internet
+kommt und Ã¼ber ihre Funkanlage ausgesendet wird. Sie mÃ¼ssen auÃŸerdem bei
 jeder Schnittstelle eine IGate-Einstellung machen, damit dies
-funktioniert. Wenn sie wollen, daß ihr IGate NWS Wetterwarnungen über
-Funk weitergibt, müssen sie eine Datei ~/.xastir/data/nws-stations.txt
-anlegen, in der alle Stationen aufgeführt sind (wie z.B. "PHISVR"),
-deren Daten sie über Funk weiterreichen wollen.
+funktioniert. Wenn sie wollen, daÃŸ ihr IGate NWS Wetterwarnungen Ã¼ber
+Funk weitergibt, mÃ¼ssen sie eine Datei ~/.xastir/data/nws-stations.txt
+anlegen, in der alle Stationen aufgefÃ¼hrt sind (wie z.B. "PHISVR"),
+deren Daten sie Ã¼ber Funk weiterreichen wollen.
 
 Bei Aktivierung von "Sende komprimierte Position" wird die Position in
 einem neueren, komprimierten Format gesendet. Hierdurch werden die
-gesendeten Pakete kürzer, so daß die Kapazität des APRS(tm) Netzwerks
-steigt. Die maximale Auflösung der gesendeten Position ist ebenfalls
-höher. Allerdings können einige ältere Programme, einschließlich
-kürzlich erschienener Versionen von WinAPRS, dieses Format noch nicht
+gesendeten Pakete kÃ¼rzer, so daÃŸ die KapazitÃ¤t des APRS(tm) Netzwerks
+steigt. Die maximale AuflÃ¶sung der gesendeten Position ist ebenfalls
+hÃ¶her. Allerdings kÃ¶nnen einige Ã¤ltere Programme, einschlieÃŸlich
+kÃ¼rzlich erschienener Versionen von WinAPRS, dieses Format noch nicht
 dekodieren. Auch findu.com kann damit Probleme haben.
 
-Wenn "Sende Wetter Rohdaten" gewählt wurde, werden auch Pakete gesendet,
-die unverarbeitete Wetterstationsdaten enthalten. Dies ist nützlich für
+Wenn "Sende Wetter Rohdaten" gewÃ¤hlt wurde, werden auch Pakete gesendet,
+die unverarbeitete Wetterstationsdaten enthalten. Dies ist nÃ¼tzlich fÃ¼r
 Wetterstationen mit ASCII-Daten, wie Peet Bros. Wetterstationen.
 
-Sie können außerdem Alternatives Netz aktivieren, und dort ein eigenes
-Kürzel eintragen. Alternatives Netz erlaubt ihnen damit, ein privates
+Sie kÃ¶nnen auÃŸerdem Alternatives Netz aktivieren, und dort ein eigenes
+KÃ¼rzel eintragen. Alternatives Netz erlaubt ihnen damit, ein privates
 APRS-Netzwerk aufzubauen, mit Stationen, die ebenfalls Alternatives
 Netz aktiviert haben und das gleiche Rufzeichen benutzen.
 
@@ -517,26 +517,26 @@ HELP-INDEX>Audio Alarm
 
 Klicken sie auf Datei, Einstellungen, dann Audio Alarm.
 
-Um diese Option zu nutzen, benötigen sie eine Soundkarte und ein
+Um diese Option zu nutzen, benÃ¶tigen sie eine Soundkarte und ein
 Programm, das Audiodateien im WAV-Format abspielt. Tragen sie als
-Kommando dieses Programm ein und eventuell benötigte Kommandozeilen-
-parameter. Das ganze funktioniert natürlich nicht, wenn die einzige
-Soundkarte im System für ein Soundmodem benutzt wird...
+Kommando dieses Programm ein und eventuell benÃ¶tigte Kommandozeilen-
+parameter. Das ganze funktioniert natÃ¼rlich nicht, wenn die einzige
+Soundkarte im System fÃ¼r ein Soundmodem benutzt wird...
 
-Für verschiedene Ereignisse kann eine Datei eingetragen werden, z.B. eine
-wav-Datei, die abgespielt werden soll. Bei einigen Ereignissen können
-zusätzliche Parameter geändert werden. Für jedes Ereignis kann einzeln
+FÃ¼r verschiedene Ereignisse kann eine Datei eingetragen werden, z.B. eine
+wav-Datei, die abgespielt werden soll. Bei einigen Ereignissen kÃ¶nnen
+zusÃ¤tzliche Parameter geÃ¤ndert werden. FÃ¼r jedes Ereignis kann einzeln
 festgelegt werden, ob eine akustische Meldung erfolgen soll.
 
-Momentan steht zur Verfügung:
+Momentan steht zur VerfÃ¼gung:
 Abspielen einer Ansage beim Auftauchen einer neuen Station
 Abspielen einer Ansage bei einer neuen Nachricht
 Abspielen einer Ansage, wenn Daten von einer Station empfangen
-     werden, die sich innerhalb einer min/max Entfernung gemäß den
-     Annäherungs-Einstellungen befindet
-Abspielen einer Ansage, wenn Daten von einer Station über TNC
+     werden, die sich innerhalb einer min/max Entfernung gemÃ¤ÃŸ den
+     AnnÃ¤herungs-Einstellungen befindet
+Abspielen einer Ansage, wenn Daten von einer Station Ã¼ber TNC
      empfangen werden, die sich innerhalb einer min/max Entfernung
-     gemäß den Bandöffnungs-Einstellungen befindet
+     gemÃ¤ÃŸ den BandÃ¶ffnungs-Einstellungen befindet
 Abspielen einer Ansage bei einer Wetterwarnung
 
 
@@ -546,47 +546,47 @@ HELP-INDEX>Sprachausgabe
 
 Klicken sie auf Datei, Einstellungen, dann Sprachausgabe.
 
-Um diese Option zu nutzen, benötigen sie neben einer Soundkarte die
+Um diese Option zu nutzen, benÃ¶tigen sie neben einer Soundkarte die
 'Festival' Sprachsynthese Software. Installieren sie Festival und starten
-sie es als Server bevor sie Xastir aufrufen. Das Kommando hierfür heißt
-üblicherweise "festival --server &".
+sie es als Server bevor sie Xastir aufrufen. Das Kommando hierfÃ¼r heiÃŸt
+Ã¼blicherweise "festival --server &".
 
-Nachdem Festival installiert ist, kann Xastir für folgende Fälle eine
+Nachdem Festival installiert ist, kann Xastir fÃ¼r folgende FÃ¤lle eine
 Sprachausgabe vornehmen:
 
 o Ansagen des Rufzeichens einer neuen Station.
 
-o Ansagen, daß eine neue Nachricht eingetroffen ist.
+o Ansagen, daÃŸ eine neue Nachricht eingetroffen ist.
 
 o Den Text einer Nachricht vorlesen.
 
 o Eine Ansage, wenn Daten von einer Station empfangen wurden, die sich
-  innerhalb einer min/max Entfernung gemäß den
-  Annäherungs-Einstellungen (siehe Audio Alarm) befindet.
+  innerhalb einer min/max Entfernung gemÃ¤ÃŸ den
+  AnnÃ¤herungs-Einstellungen (siehe Audio Alarm) befindet.
 
-o Eine Ansage, wenn Daten von einer Station über TNC empfangen werden,
+o Eine Ansage, wenn Daten von einer Station Ã¼ber TNC empfangen werden,
   die sich innerhalb einer min/max Entfernung
-  gemäß den Bandöffnungs-Einstellungen (siehe Audio Alarm) befindet.
+  gemÃ¤ÃŸ den BandÃ¶ffnungs-Einstellungen (siehe Audio Alarm) befindet.
 
-o Die Ansage einer Wetterwarnung ist bisher noch nicht verfügbar.
+o Die Ansage einer Wetterwarnung ist bisher noch nicht verfÃ¼gbar.
 
-Informationen zu Festival erhalten sie über:
+Informationen zu Festival erhalten sie Ã¼ber:
   http://www.speech.cs.cmu.edu/festival/
 
-HELP-INDEX>Maßeinheiten
+HELP-INDEX>MaÃŸeinheiten
 
-                             Maßeinheiten
+                             MaÃŸeinheiten
 
 Als Standardeinstellung wird das metrische System mit mm, cm, m, km,
-km/h, usw. verwendet. Wenn sie englische Maßeinheiten bevorzugen,
-klicken sie auf Datei, Einstellungen und aktivieren sie Englische Maße,
-um Zoll, Fuß, mph, usw. anzuzeigen.
+km/h, usw. verwendet. Wenn sie englische MaÃŸeinheiten bevorzugen,
+klicken sie auf Datei, Einstellungen und aktivieren sie Englische MaÃŸe,
+um Zoll, FuÃŸ, mph, usw. anzuzeigen.
 
 HELP-INDEX>Einstellungen sichern
 
                          Einstellungen sichern
 
-Über Datei, Einstellungen, Einstellungen sichern können alle
+Ãœber Datei, Einstellungen, Einstellungen sichern kÃ¶nnen alle
 vorgenommenen Einstellungen sofort in der Konfigurationsdatei gespeichert
 werden. Aber auch beim Verlassen des Programms werden die Einstellungen
 gespeichert.
@@ -599,7 +599,7 @@ Am unteren Rand des Bildschirms werden verschiedene Statusmeldungen
 dargestellt:
 
 Im ersten Feld (links) werden allgemeine Statusmeldungen angezeigt, sie
-werden nach kurzer Zeit wieder gelöscht.
+werden nach kurzer Zeit wieder gelÃ¶scht.
 
 Das zweite Feld zeigt bei Mausbewegungen die aktuelle Position auf der
 Karte unter dem Mauszeiger an.
@@ -610,19 +610,19 @@ der Datenbank an.
 Das vierte Feld zeigt den aktuellen Zoomstatus an und ein "Tr", wenn eine
 Station verfolgt wird (Tracking).
 
-Das letzte Feld zeigt mit Symbolen den Status für jedes Gerät an, wobei
-die Schnittstellen von links nach rechts (0 bis 9) gezählt werden. Der
-Status wird vertikal in drei Bereiche unterteilt. Oben Art des Geräts,
-in der Mitte der Datenfluß und unten der Betriebszustand.
+Das letzte Feld zeigt mit Symbolen den Status fÃ¼r jedes GerÃ¤t an, wobei
+die Schnittstellen von links nach rechts (0 bis 9) gezÃ¤hlt werden. Der
+Status wird vertikal in drei Bereiche unterteilt. Oben Art des GerÃ¤ts,
+in der Mitte der DatenfluÃŸ und unten der Betriebszustand.
 
-Die Art des Geräts kann anhand der Farbe unterschieden werden. Blau steht
-für die verschiedenen TNC Geräte, grün sind GPS-Empfänger, gelb Internet
+Die Art des GerÃ¤ts kann anhand der Farbe unterschieden werden. Blau steht
+fÃ¼r die verschiedenen TNC GerÃ¤te, grÃ¼n sind GPS-EmpfÃ¤nger, gelb Internet
 Server und orange Wetterstationen.
 
 In der Mitte zeigt ein links weisender Pfeil empfangene Daten an, ein
-rechtsweisender Pfeil steht für über dieses Gerät gesendete Daten.
+rechtsweisender Pfeil steht fÃ¼r Ã¼ber dieses GerÃ¤t gesendete Daten.
 
-Ein grünes Rechteck im unteren Bereich zeigt, daß diese Schnittstelle
+Ein grÃ¼nes Rechteck im unteren Bereich zeigt, daÃŸ diese Schnittstelle
 aktiviert ist. Ein rotes Rechteck deutet auf eine aktive Schnittstelle
 hin, bei der aber ein Fehler aufgetreten ist. Anderenfalls wird nichts
 angezeigt, wenn die Schnittstelle nicht aktiv ist.
@@ -632,203 +632,203 @@ HELP-INDEX>Verschieben der Karte und Mauszeiger-Menu
                   Verschieben der Karte und Mauszeiger-Menu        
 
 Das Verschieben der Karte ist sehr einfach, die Geschwindigkeit des
-Bildaufbaus hängt jedoch von der Rechnerleistung und dem Umfang der zu
+Bildaufbaus hÃ¤ngt jedoch von der Rechnerleistung und dem Umfang der zu
 ladenden Kartendaten ab.
 
 Zoomen:
 Man kann in der Karte zoomen, indem man auf der Karte mit der rechten
-Maustaste klickt (und diese gedrückt hält). Es erscheint ein PopUp-Menu,
-mit der Möglichkeit, hinein oder heraus zu zoomen, oder auf eine der
+Maustaste klickt (und diese gedrÃ¼ckt hÃ¤lt). Es erscheint ein PopUp-Menu,
+mit der MÃ¶glichkeit, hinein oder heraus zu zoomen, oder auf eine der
 vordefinierten Skalierungsfaktoren zu wechseln.
 
 Die Zoom-Funktionen zentrieren die Karte gleichzeitig an dem Punkt, an
-dem die rechte Maustaste gedrückt wurde. Bei "Zoomebenen" erhält man ein
-Untermenu. Die Skalierungen 1-64 sind für die nähere Umgebung, während
-256 und höher größere Bereiche darstellen. Je kleiner die Zahl, umso
+dem die rechte Maustaste gedrÃ¼ckt wurde. Bei "Zoomebenen" erhÃ¤lt man ein
+Untermenu. Die Skalierungen 1-64 sind fÃ¼r die nÃ¤here Umgebung, wÃ¤hrend
+256 und hÃ¶her grÃ¶ÃŸere Bereiche darstellen. Je kleiner die Zahl, umso
 lokaler wird der Kartenausschnitt.
 
 Ein schnelleres Hineinzoomen in einen Kartenausschnitt kann mit der Maus
 erreicht werden, wenn man auf mit der linken Maustaste auf eine Ecke des
-gewünschten Ausschnitts klickt, bei gedrückter Maustaste zur
-gegenüberliegeden Ecke fährt und dort die Taste losläßt. Die Karte wird
-in der Mitte des gewählten Ausschnitts neu zentriert, für die Skalierung
-wird nur die Höhe des Ausschnitts verwendet, die Breite wird der
-Bildschirmgröße entsprechend angepaßt. Die Schaltknöpfe "Messen" und
-"Bewegen" dürfen hierfür nicht aktiviert sein.
+gewÃ¼nschten Ausschnitts klickt, bei gedrÃ¼ckter Maustaste zur
+gegenÃ¼berliegeden Ecke fÃ¤hrt und dort die Taste loslÃ¤ÃŸt. Die Karte wird
+in der Mitte des gewÃ¤hlten Ausschnitts neu zentriert, fÃ¼r die Skalierung
+wird nur die HÃ¶he des Ausschnitts verwendet, die Breite wird der
+BildschirmgrÃ¶ÃŸe entsprechend angepaÃŸt. Die SchaltknÃ¶pfe "Messen" und
+"Bewegen" dÃ¼rfen hierfÃ¼r nicht aktiviert sein.
 
-Weiterhin besteht die Möglichkeit die PgUp und PgDn Tasten zum Zoomen zu
+Weiterhin besteht die MÃ¶glichkeit die PgUp und PgDn Tasten zum Zoomen zu
 verwenden. Hierbei bleibt das Zentrum er Karte erhalten.
 
 Verschieben/Zentrieren:
-Die Karte kann bei gleicher Auflösung neu zentriert werden, indem man
+Die Karte kann bei gleicher AuflÃ¶sung neu zentriert werden, indem man
 mit der linken Maustaste auf das neue Zentrum klickt. Beim Klicken mit
-der mittleren Maustaste wird die Karte neu zentriert, außerdem wird die
-Auflösung durch Herauszoomen auf die Hälfte reduziert.
+der mittleren Maustaste wird die Karte neu zentriert, auÃŸerdem wird die
+AuflÃ¶sung durch Herauszoomen auf die HÃ¤lfte reduziert.
 
-Ein Verschieben kann über das Mauszeiger-Menu oder durch die Pfeile am
+Ein Verschieben kann Ã¼ber das Mauszeiger-Menu oder durch die Pfeile am
 oberen Bildschirmrand erfolgen. Die Karte wird nur um einen Teil der
-Bildschirmgröße verschoben, so daß genügend Daten bestehen bleiben, um
+BildschirmgrÃ¶ÃŸe verschoben, so daÃŸ genÃ¼gend Daten bestehen bleiben, um
 sich wieder zurechtzufinden. Auch die Cursortasten verschieben die Karte.
 
 Informationen zum Mauszeiger-Menu:
-"Stationsinfo" versucht zunächst die Station zu finden, die der Stelle,
-an der die rechte Maustaste gedrückt wurde, am nächsten liegt. Befinden
-sich dort mehrere Stationen, so kommt zunächst ein PopUp-Fenster mit
-einer Stationsliste, aus der man die gewünschte wählen kann. Danach, oder
-wenn nur eine Station direkt in unmittelbarer Nähe ist, öffnet ein
+"Stationsinfo" versucht zunÃ¤chst die Station zu finden, die der Stelle,
+an der die rechte Maustaste gedrÃ¼ckt wurde, am nÃ¤chsten liegt. Befinden
+sich dort mehrere Stationen, so kommt zunÃ¤chst ein PopUp-Fenster mit
+einer Stationsliste, aus der man die gewÃ¼nschte wÃ¤hlen kann. Danach, oder
+wenn nur eine Station direkt in unmittelbarer NÃ¤he ist, Ã¶ffnet ein
 Fenster mit verschiedenen Daten zu dieser Station. Bei Mobilstationen mit
-vielen Daten kann dies auf langsamen Computern etwas Zeit benötigen. Um
-alte Stationen zu sehen, kann vorübergehend "Alte Daten zeigen" im Menu
+vielen Daten kann dies auf langsamen Computern etwas Zeit benÃ¶tigen. Um
+alte Stationen zu sehen, kann vorÃ¼bergehend "Alte Daten zeigen" im Menu
 "Ansicht" eingeschaltet werden.
 
-Über den Menupunkt "Letzte Ansicht" kann der vorherigen Kartenausschnitt
+Ãœber den Menupunkt "Letzte Ansicht" kann der vorherigen Kartenausschnitt
 wieder hergestellt werden.
 
-Für Informationen zu Objekten siehe den Hilfetext "Objekte und Items"
+FÃ¼r Informationen zu Objekten siehe den Hilfetext "Objekte und Items"
 
 HELP-INDEX>Objekte und Items
 
                           Objekte und Items
 
 Eine Station kann verschiedene Objekte auf der Karte setzen, deren
-Position auch über Funk an andere Stationen weitergegeben wird. Bei den
-Namen für Objekte bestehen nicht so viele Einschränkungen wie für die
+Position auch Ã¼ber Funk an andere Stationen weitergegeben wird. Bei den
+Namen fÃ¼r Objekte bestehen nicht so viele EinschrÃ¤nkungen wie fÃ¼r die
 Stationsnamen.
 
-Objekte und Items sind ziemlich das gleiche, sie werden manchmal für
-etwas unterschiedliche Zwecke angewandt. Objekte werden oft für
-bewegliche oder veränderliche Dinge eingsetzt, wie z.B. Wirbelstürme,
-während Items im Allgemeinen für unbewegliche Dinge, z.B. eine
+Objekte und Items sind ziemlich das gleiche, sie werden manchmal fÃ¼r
+etwas unterschiedliche Zwecke angewandt. Objekte werden oft fÃ¼r
+bewegliche oder verÃ¤nderliche Dinge eingsetzt, wie z.B. WirbelstÃ¼rme,
+wÃ¤hrend Items im Allgemeinen fÃ¼r unbewegliche Dinge, z.B. eine
 Wasserstation, eingesetzt werden. Da Items von einigen APRS-Programmen
-nicht dekodiert werden können, werden aber oftmals auch unbewegliche
+nicht dekodiert werden kÃ¶nnen, werden aber oftmals auch unbewegliche
 Objekte verwendet.
 
-Über das Mauszeiger-Menu hat man Zugriff zu "Objekt Neu" und "Objekt
-ändern. Maßgeblich für das Objekt ist dabei die Position des Mauszeigers
+Ãœber das Mauszeiger-Menu hat man Zugriff zu "Objekt Neu" und "Objekt
+Ã¤ndern. MaÃŸgeblich fÃ¼r das Objekt ist dabei die Position des Mauszeigers
 bei Aufruf des Mauszeiger-Menus.
 
 Neben normalen Objekten mit einem Symbol an der Position gibt es noch
-spezielle Objekte. Flächenobjekte sind geeignet, wenn es darum geht einen
-größeren Bereich auf der Karte zu markieren. Man kann damit auch Wege,
-Straßen oder Grenzen zeichnen, ein Suchgebiet abstecken, oder wenn es
-sein muß auch ein Schachbrett um über APRS zu spielen :-) Beachten sie,
-daß Flächenobjekte nicht in allen APRS-Programmen implementiert sind und
+spezielle Objekte. FlÃ¤chenobjekte sind geeignet, wenn es darum geht einen
+grÃ¶ÃŸeren Bereich auf der Karte zu markieren. Man kann damit auch Wege,
+StraÃŸen oder Grenzen zeichnen, ein Suchgebiet abstecken, oder wenn es
+sein muÃŸ auch ein Schachbrett um Ã¼ber APRS zu spielen :-) Beachten sie,
+daÃŸ FlÃ¤chenobjekte nicht in allen APRS-Programmen implementiert sind und
 wenn, dann auch teilweise unterschiedlich dargestellt werden. Die anderen
 beiden, Signpost und Peil-Objekte werden weiter unten beschrieben.
 
-Objekte werden in den gleichen Abständen wie die eigenen Stationsdaten,
+Objekte werden in den gleichen AbstÃ¤nden wie die eigenen Stationsdaten,
 die in "Datei-Einstellungen-Grundeinstellungen" festgelegt sind,
 wiederholt ausgesendet, insgesamt bis zum Doppelten der ebenfalls dort
-definierten Anzeigezeit für Stationen. Auch gelöschte Objekte werden
+definierten Anzeigezeit fÃ¼r Stationen. Auch gelÃ¶schte Objekte werden
 wiederholt gesendet, bis sie in der Datenbank auslaufen.
 
 
-Bei "Objekt Neu" wird die Position, an der das Mauszeiger-Menu geöffnet
-wurde, als Vorgabe für ein neu zu erstellendes Objekt verwendet. Nach
-Eingabe eines Namens kann man ein anderes Symbol für das Objekt wählen,
-einen Kommentar eintragen und es über das Menu ein neues Objekt oder
+Bei "Objekt Neu" wird die Position, an der das Mauszeiger-Menu geÃ¶ffnet
+wurde, als Vorgabe fÃ¼r ein neu zu erstellendes Objekt verwendet. Nach
+Eingabe eines Namens kann man ein anderes Symbol fÃ¼r das Objekt wÃ¤hlen,
+einen Kommentar eintragen und es Ã¼ber das Menu ein neues Objekt oder
 Item erstellen.
 
-Bei "Objekt Ändern" erhält man einen ähnlichen Dialog, bei dem allerdings
+Bei "Objekt Ã„ndern" erhÃ¤lt man einen Ã¤hnlichen Dialog, bei dem allerdings
 die Daten des Objekt an der Position des Mauszeigers bereits eingetragen
-sind. Einige Daten, wie z.B. der Objektname, können nicht geändert
-werden. Hierüber ist auch das Löschen eines Objekts möglich.
+sind. Einige Daten, wie z.B. der Objektname, kÃ¶nnen nicht geÃ¤ndert
+werden. HierÃ¼ber ist auch das LÃ¶schen eines Objekts mÃ¶glich.
 
-Objekte und Items können auch mit der Maus auf der Karte verschoben
+Objekte und Items kÃ¶nnen auch mit der Maus auf der Karte verschoben
 werden, wenn der Schaltknopf "Bewegen" auf der oberen Leiste aktiviert
 ist.
 
-Erläuterung der einzelnen Einträge im Objekt-Dialog:
+ErlÃ¤uterung der einzelnen EintrÃ¤ge im Objekt-Dialog:
 
 = Signpost-Objekt =
 Durch Aktivieren wird aus dem Objekt ein Signpost-Objekt, auf einem
-Hinweisschild können drei Zeichen dargestellt werden, die sichtbar
+Hinweisschild kÃ¶nnen drei Zeichen dargestellt werden, die sichtbar
 werden, wenn an der betreffenden Position hineingezoomt wird. Hinweis:
 Das funktioniert SO noch nicht...
 
-= Flächenobjekt =
-Hierdurch wird das Objekt als ein Flächenobjekt definiert, zusätzlich
-werden die unten erläuterten Steuerfunktionen für Flächenobjekte
+= FlÃ¤chenobjekt =
+Hierdurch wird das Objekt als ein FlÃ¤chenobjekt definiert, zusÃ¤tzlich
+werden die unten erlÃ¤uterten Steuerfunktionen fÃ¼r FlÃ¤chenobjekte
 eingeschaltet.
 
 = Peil-Objekt =
 Hierbei handelt es sich um eine Peilmeldung, die mit dem DF-Symbol
-markiert wird. Sie können zwischen einer Meldung mit Rundstrahl- oder
-Richtantenne wählen und die spezifischen Daten eintragen. Nähere Details
-über diese Techniken finden sich unter
+markiert wird. Sie kÃ¶nnen zwischen einer Meldung mit Rundstrahl- oder
+Richtantenne wÃ¤hlen und die spezifischen Daten eintragen. NÃ¤here Details
+Ã¼ber diese Techniken finden sich unter
    http://web.usna.navy.mil/~bruninga/dfing.html
 und in der APRSdos Dokumentation.
 
 = Name =
 Dies ist der Name des Objekts, der aus bis zu neun Zeichen bestehen kann,
-wobei auch Leerzeichen innerhalb des Namens zulässig sind. Beim Ändern
-eines Objekts kann der Name nicht mehr geändert werden. Falls trotzdem
-erforderlich, muß das Objekt zunächst gelöscht und dann mit neuem Namen
-neu erstellt werden. Wenn Sie das Objekt als Flächenobjekt, Signpost-
-oder Peil-Objekt definieren, wird der dann unnötige Name gelöscht.
+wobei auch Leerzeichen innerhalb des Namens zulÃ¤ssig sind. Beim Ã„ndern
+eines Objekts kann der Name nicht mehr geÃ¤ndert werden. Falls trotzdem
+erforderlich, muÃŸ das Objekt zunÃ¤chst gelÃ¶scht und dann mit neuem Namen
+neu erstellt werden. Wenn Sie das Objekt als FlÃ¤chenobjekt, Signpost-
+oder Peil-Objekt definieren, wird der dann unnÃ¶tige Name gelÃ¶scht.
 
 = Stations-Symbol =
-Wählen sie ein Symbol für das Objekt, hierzu ist die Angabe der
-Gruppe und des eigentlichen Symbolzeichens erforderlich. Sie können
-dies manuell eintragen, oder nach Drücken auf "Auswahl" aus einer
-grafischen Symbolübersicht auswählen. Es stehen zwei Gruppen von
-Symbolen zur Verfügung. Eine Beschreibung der Symbolbedeutung findet
-sich im Hilfetext "Symboltabelle". Bei Signpost-, Flächen- und
-Peil-Objekten läßt sich das Symbol nicht ändern.
+WÃ¤hlen sie ein Symbol fÃ¼r das Objekt, hierzu ist die Angabe der
+Gruppe und des eigentlichen Symbolzeichens erforderlich. Sie kÃ¶nnen
+dies manuell eintragen, oder nach DrÃ¼cken auf "Auswahl" aus einer
+grafischen SymbolÃ¼bersicht auswÃ¤hlen. Es stehen zwei Gruppen von
+Symbolen zur VerfÃ¼gung. Eine Beschreibung der Symbolbedeutung findet
+sich im Hilfetext "Symboltabelle". Bei Signpost-, FlÃ¤chen- und
+Peil-Objekten lÃ¤ÃŸt sich das Symbol nicht Ã¤ndern.
 
 = Position =
 Hier wird die Position des Objekts eingegeben. Wenn Sie ein neues Objekt
 erstellen, so wurde dort bereits die Position eingetragen, an der Sie
 mit der rechten Maustaste geklickt hatten, um das Mauszeiger-Menu
 aufzurufen. Wenn Sie das Objekt verschoben haben, so steht dort die neue
-Position. Sie können die Daten aber auch manuell eintragen, z.B. wenn
-Ihnen jemand eine Position über Sprechfunk durchgegeben hat.
+Position. Sie kÃ¶nnen die Daten aber auch manuell eintragen, z.B. wenn
+Ihnen jemand eine Position Ã¼ber Sprechfunk durchgegeben hat.
 
 = Allgemeine Optionen =
-Hier können Sie die Geschwindigkeit, die Bewegungsrichtung und die Höhe
+Hier kÃ¶nnen Sie die Geschwindigkeit, die Bewegungsrichtung und die HÃ¶he
 des Objekts eintragen. Bei einigen Objekten ist die Angabe von
-Geschwindigkeit und Richtung nicht möglich, die Felder sind dann in Grau
+Geschwindigkeit und Richtung nicht mÃ¶glich, die Felder sind dann in Grau
 dargestellt.
 
 = Signpost Text =
-Hier können Sie für ein Signpost-Objekt den Text (ein bis drei Zeichen)
-angeben, der auf dem Hinweisschild erscheinen soll. Beachten Sie, daß
+Hier kÃ¶nnen Sie fÃ¼r ein Signpost-Objekt den Text (ein bis drei Zeichen)
+angeben, der auf dem Hinweisschild erscheinen soll. Beachten Sie, daÃŸ
 Xastir Signpost-Objekte momentan noch nicht richtig anzeigt.
 
-= Flächenobjekt =
-Flächenobjekte werden eingesetzt, um spezielle Teile einer Karte
-herauszuheben oder zusätzliche Details zu zeichnen. Hierzu dienen die
-folgenden Einträge:
+= FlÃ¤chenobjekt =
+FlÃ¤chenobjekte werden eingesetzt, um spezielle Teile einer Karte
+herauszuheben oder zusÃ¤tzliche Details zu zeichnen. Hierzu dienen die
+folgenden EintrÃ¤ge:
 
   = Helle Farben =
-    Wenn aktiviert, werden hellere, sonst dunklere Farben für die Flächen
+    Wenn aktiviert, werden hellere, sonst dunklere Farben fÃ¼r die FlÃ¤chen
     verwendet.
 
-  = Flächen füllen =
-    Wenn markiert, werden die Flächen mit Objektfarbe gefüllt, ansonsten
+  = FlÃ¤chen fÃ¼llen =
+    Wenn markiert, werden die FlÃ¤chen mit Objektfarbe gefÃ¼llt, ansonsten
     wird nur die Umrandung dargestellt.
 
   = Objekt-Typ =
-    Verschiedene geometrische Grundformen können hier gewählt werden:
+    Verschiedene geometrische Grundformen kÃ¶nnen hier gewÃ¤hlt werden:
     Kreis/Ellipse, Linie nach rechts, Linie nach links, Dreieck, Rechteck
 
   = Objektfarbe =
-    Hier wird die Farbe gewählt in der das Objekt gezeichnet wird. Dies
+    Hier wird die Farbe gewÃ¤hlt in der das Objekt gezeichnet wird. Dies
     wird auch durch das Markieren von "Helle Farben" (siehe oben)
-    beeinflußt. Es stehen zur Verfügung:
-    Schwarz, Blau, Grün, Cyan, Rot, Violett, Gelb, Grau
+    beeinfluÃŸt. Es stehen zur VerfÃ¼gung:
+    Schwarz, Blau, GrÃ¼n, Cyan, Rot, Violett, Gelb, Grau
 
   = nach oben =
-    Ausdehnung des Flächenobjekts nach oben in 1/100 Grad. 
+    Ausdehnung des FlÃ¤chenobjekts nach oben in 1/100 Grad. 
 
   = nach links =
-    Ausdehnung des Flächenobjekts nach links in 1/100 Grad. 
+    Ausdehnung des FlÃ¤chenobjekts nach links in 1/100 Grad. 
 
   = Korridor =
     Gibt die Breite eines Linienobjekts an und wird in Meilen
     spezifiziert.
 
-Denken Sie daran, Ihre Objekte zu löschen, wenn sie nicht mehr benötigt
+Denken Sie daran, Ihre Objekte zu lÃ¶schen, wenn sie nicht mehr benÃ¶tigt
 werden. Anderenfalls werden sie wiederholt gesendet und erscheinen auf
 dem Bildschirm anderer Stationen bis sie verfallen.
 
@@ -836,55 +836,55 @@ HELP-INDEX>Listendarstellungen
 
                          Listendarstellungen
                          
-Über den Menupunkt "Zeige" können verschiedene Daten der Stationen meist
+Ãœber den Menupunkt "Zeige" kÃ¶nnen verschiedene Daten der Stationen meist
 in Form von Listen dargestellt werden.
 
 = Berichte =
-Berichte (bulletin boards) sind eine Möglichkeit, über APRS Nachrichten
-und wichtige Ankündigungen an alle zu senden. Wenn Sie mit dem Internet
+Berichte (bulletin boards) sind eine MÃ¶glichkeit, Ã¼ber APRS Nachrichten
+und wichtige AnkÃ¼ndigungen an alle zu senden. Wenn Sie mit dem Internet
 verbunden sind, ist es sinnvoll, den Einzugsbereich auf wenige 100km
 einzustellen um so Berichte aus anderen Teilen der Welt zu ignorieren.
-Der Eintrag einer '0' im Feld Bereich bedeutet keinerlei Einschränkungen,
+Der Eintrag einer '0' im Feld Bereich bedeutet keinerlei EinschrÃ¤nkungen,
 d.h. alle Berichte werden empfangen. Klicken Sie auf "neuen Bereich
-setzen" um den eingegebenen Wert zu übernehmen.
-Xastir unterstützt das Senden von Berichten momentan noch nicht.
+setzen" um den eingegebenen Wert zu Ã¼bernehmen.
+Xastir unterstÃ¼tzt das Senden von Berichten momentan noch nicht.
 
 = Packet Radio =
-Hier werden die über Packet Radio oder das Internet ankommenden Rohdaten
-dargestellt. Es kann gewählt werden, ob nur Daten vom TNC, nur
+Hier werden die Ã¼ber Packet Radio oder das Internet ankommenden Rohdaten
+dargestellt. Es kann gewÃ¤hlt werden, ob nur Daten vom TNC, nur
 Daten aus dem Internet, oder beides angezeigt werden soll.
 
 = Mobilstationen =
 Dies ist eine Liste von Stationen, die sich bewegen, typischerweise also
 Mobilstationen. Die Bedeutung des Symbols wird dabei ignoriert, es wird
 nur festgestellt, ob sich die Station bewegt. Die angezeigte Information
-umfaßt neben der letzten bekannten Position auch Geschwindigkeit,
-Bewegungsrichtung, Höhe, Anzahl der empfangenen Pakete, Anzahl der
+umfaÃŸt neben der letzten bekannten Position auch Geschwindigkeit,
+Bewegungsrichtung, HÃ¶he, Anzahl der empfangenen Pakete, Anzahl der
 sichtbaren Satelliten sowie Abstand und Richtung von unserer eigenen
 Station.
 
 = Alle Stationen =
 Hier wird eine Tabelle mit allen Stationen in alphabetischer Reihenfolge
-angezeigt. Es umfaßt auch die Anzahl der gehörten Pakete, die Zeit zu der
-die Station zuletzt gehört wurde, den Pfad, den das letzte Paket genommen
-hatte, PHG und natürlich den Kommentar.
+angezeigt. Es umfaÃŸt auch die Anzahl der gehÃ¶rten Pakete, die Zeit zu der
+die Station zuletzt gehÃ¶rt wurde, den Pfad, den das letzte Paket genommen
+hatte, PHG und natÃ¼rlich den Kommentar.
 
 = Lokale Stationen =
-Eine ähnliche Tabelle wie zuvor, allerdings werden nur Stationen
-angezeigt, die über den eigenen TNC gehört wurden.
+Eine Ã¤hnliche Tabelle wie zuvor, allerdings werden nur Stationen
+angezeigt, die Ã¼ber den eigenen TNC gehÃ¶rt wurden.
 
 = Letzte Stationen =
-Eine Liste mit allen Stationen in der Reihenfolge, in der sie gehört
-wurden. Die zuletzt gehörten Stationen stehen oben am Beginn der Liste.
-Angezeigt wird wiederum die Anzahl der gehörten Pakete, die Zeit zu der
-die Station zuletzt gehört wurde, den Pfad, den das letzte Paket genommen
+Eine Liste mit allen Stationen in der Reihenfolge, in der sie gehÃ¶rt
+wurden. Die zuletzt gehÃ¶rten Stationen stehen oben am Beginn der Liste.
+Angezeigt wird wiederum die Anzahl der gehÃ¶rten Pakete, die Zeit zu der
+die Station zuletzt gehÃ¶rt wurde, den Pfad, den das letzte Paket genommen
 hatte, PHG und der Kommentar.
 
 = Wetterstationen =
-Diese Liste umfaßt nur APRS Wetterstationen mit deren Daten. Aufgeführt
-werden Windgeschwindigkeit- und richtung, Geschwindigkeit von Böen, die
-Temperatur, die Luftfeuchtigkeit, den Druck, Regenmenge während der
-letzten Stunde, seit Mitternacht und während der letzten 24 Stunden.
+Diese Liste umfaÃŸt nur APRS Wetterstationen mit deren Daten. AufgefÃ¼hrt
+werden Windgeschwindigkeit- und richtung, Geschwindigkeit von BÃ¶en, die
+Temperatur, die Luftfeuchtigkeit, den Druck, Regenmenge wÃ¤hrend der
+letzten Stunde, seit Mitternacht und wÃ¤hrend der letzten 24 Stunden.
 
 = Eigene Wetterdaten =
 Wenn eine eigene Wetterstation vorhanden ist und in Xastir konfiguriert
@@ -895,13 +895,13 @@ Zeigt die empfangenen Wetterwarnungen des amerikanischen NWS an.
 
 = Nachrichten =
 Zeigt den Nachrichtenverkehr zwischen den verschiedenen Stationen solange
-das Fenster geöffnet ist. Dies beinhaltet Quelle und Ziel, über welche
-Schnittstelle sie lif und den Inhalt der Nachricht. Über "Bereich" kann
-die Anzeige auf Nachrichten von Stationen in der Umgebung beschränkt
+das Fenster geÃ¶ffnet ist. Dies beinhaltet Quelle und Ziel, Ã¼ber welche
+Schnittstelle sie lif und den Inhalt der Nachricht. Ãœber "Bereich" kann
+die Anzeige auf Nachrichten von Stationen in der Umgebung beschrÃ¤nkt
 werden, bei Eingabe von '0' werden alle Nachrichten angezeigt.
 
 = Laufzeit =
-Zeigt an, seit wie lange Xastir bereits läuft.
+Zeigt an, seit wie lange Xastir bereits lÃ¤uft.
 
 HELP-INDEX>Kartenauswahl und Einstellungen
 
@@ -910,10 +910,10 @@ HELP-INDEX>Kartenauswahl und Einstellungen
 = Kartenauswahl =
 Hiermit erhalten sie eine Liste aller Dateien im Kartenverzeichnis. Wenn
 sie einen Dateinamen markieren, so wird die Karte beim Klicken auf OK
-geladen und angezeigt, wenn sie in den aktuellen Bildauschnitt fällt.
-Sie können mehrere Karten gleichzeitig auswählen. Abbruch verwirft die
-Änderungen in der Kartenauswahl. Es gibt auch Buttons um alle Karten
-gleichzeitig abzuwählen oder bestimmte Kartentypen zu laden.
+geladen und angezeigt, wenn sie in den aktuellen Bildauschnitt fÃ¤llt.
+Sie kÃ¶nnen mehrere Karten gleichzeitig auswÃ¤hlen. Abbruch verwirft die
+Ã„nderungen in der Kartenauswahl. Es gibt auch Buttons um alle Karten
+gleichzeitig abzuwÃ¤hlen oder bestimmte Kartentypen zu laden.
 
 = Ausschnitte =
 Genaueres siehe im Hilfetext zu "Gespeicherte Kartenausschnitten"
@@ -921,24 +921,24 @@ Genaueres siehe im Hilfetext zu "Gespeicherte Kartenausschnitten"
 = Objekt in Karte suchen =
 Hiermit erhalten Sie einen Dialog zur Suche eines bestimmten Objekts in
 einer GNIS Datei. Falls gefunden wird die Karte an dieser Stelle neu
-zentriert. Die zuletzt befragte GNIS-Datei wird beim nächsten Aufruf
-wiederum als Vorgabe gewählt.
+zentriert. Die zuletzt befragte GNIS-Datei wird beim nÃ¤chsten Aufruf
+wiederum als Vorgabe gewÃ¤hlt.
 
 = Alle Karten verbergen =
-Hiermit kann das Laden aller Karten vorübergehend verhindert werden. Dies
+Hiermit kann das Laden aller Karten vorÃ¼bergehend verhindert werden. Dies
 ist vor allem dann vorteilhaft, wenn man die Karte oft verschiebt oder
-zoomt und der langsame Kartenaufbau dazwischen störend wirkt. Bei einem
+zoomt und der langsame Kartenaufbau dazwischen stÃ¶rend wirkt. Bei einem
 Neustart von Xastir ist diese Option immer ausgeschaltet.
 
 = Automatische Karte (An/Aus) =
 Falls eingeschaltet, wird jede Karte im Kartenverzeichnis oder einem
-Unterverzeichnis geladen, die für den aktuell dargestellten Ausschnitt
-gültig ist. Sie können beliebig viele Uterverzeichnis-Ebenen unterhalb
+Unterverzeichnis geladen, die fÃ¼r den aktuell dargestellten Ausschnitt
+gÃ¼ltig ist. Sie kÃ¶nnen beliebig viele Uterverzeichnis-Ebenen unterhalb
 des Kartenverzeichnisses anlegen, die automatisch durchsucht werden. Alle
-Karten werden im dargestellten Ausschnitt überlagert. Die Reihenfolge
-hängt von der alphabetischen Sortierung ab, gegebenenfalls kann man Links
+Karten werden im dargestellten Ausschnitt Ã¼berlagert. Die Reihenfolge
+hÃ¤ngt von der alphabetischen Sortierung ab, gegebenenfalls kann man Links
 auf andere Namen anlegen, um die Sortierung flexibler handhaben zu
-können. Wenn sie viele oder komplexe Karten haben, oder einen langsamen
+kÃ¶nnen. Wenn sie viele oder komplexe Karten haben, oder einen langsamen
 Computer, dann kann das Laden der Karten sehr lange dauern. Wenn diese
 Option ausgeschaltet ist, werden die in der Kartenauswahl markierten
 Karten geladen.
@@ -949,104 +949,104 @@ bzw. 1 Grad Abstand gezeichnet.
 
 = Ebenen (An/Aus) =
 Falls eingeschaltet, werden Details bei der Darstellung herausgefiltert
-wenn größere Bereiche durch herauszoomen dargestellt werden. Dies
+wenn grÃ¶ÃŸere Bereiche durch herauszoomen dargestellt werden. Dies
 funktioniert nicht mit allen Karten, es verringert auch nicht die
-Ladezeit, sondern sorgt nur dafür, daß der Bildschirm lesbar bleibt. Ein
-Beispiel hierfür sind Karten die aus den Tiger Line Karten von
+Ladezeit, sondern sorgt nur dafÃ¼r, daÃŸ der Bildschirm lesbar bleibt. Ein
+Beispiel hierfÃ¼r sind Karten die aus den Tiger Line Karten von
 aprs.rutgers.edu erzeugt wurden.
 
 = Kartenbeschriftungen =
-Hiermit können Kartenbeschriftungen ein- oder ausgeschaltet werden, die
+Hiermit kÃ¶nnen Kartenbeschriftungen ein- oder ausgeschaltet werden, die
 in Karten im dosAPRS, WinAPRS, GNIS und ESRI Shapefile Format enthalten
 sind.
 
-= Flächen einfärben (An/Aus) =
-Diese Option legt das Einfärben bei Vektorkarten fest. In manchen Fällen
-ist es sinnvoll, die Füllung zu entfernen, um darunterliegende weitere
-Karten sehen zu können. Die Karten werden in alphabetischer Reihenfolge
-geladen, so daß ein Umbenennen oder ein Link eine weitere Möglichkeit in
+= FlÃ¤chen einfÃ¤rben (An/Aus) =
+Diese Option legt das EinfÃ¤rben bei Vektorkarten fest. In manchen FÃ¤llen
+ist es sinnvoll, die FÃ¼llung zu entfernen, um darunterliegende weitere
+Karten sehen zu kÃ¶nnen. Die Karten werden in alphabetischer Reihenfolge
+geladen, so daÃŸ ein Umbenennen oder ein Link eine weitere MÃ¶glichkeit in
 diesem Fall darstellt.
 
 = Wetterwarnung Counties =
-Bei Wetterwarnungen des amerikanischen NWS können einzelne Counties, für
-die eine Wetterwarnung vorliegt, eingefärbt werden. Dies kann hiermit
+Bei Wetterwarnungen des amerikanischen NWS kÃ¶nnen einzelne Counties, fÃ¼r
+die eine Wetterwarnung vorliegt, eingefÃ¤rbt werden. Dies kann hiermit
 gesteuert werden.
 
 = Hintergrundfarbe (An/Aus) =
-Ermöglicht die Auswahl der bei transparenten Karten durchscheinenden
+ErmÃ¶glicht die Auswahl der bei transparenten Karten durchscheinenden
 Hintergrundfarbe.
 
-= Intensität =
-Hiermit kann die Farbsättigung der Karte gesteuert werden. Dieser
-Menupunkt erscheint nur, wenn Xastir mit GeoTIFF-Unterstützung und/oder
+= IntensitÃ¤t =
+Hiermit kann die FarbsÃ¤ttigung der Karte gesteuert werden. Dieser
+Menupunkt erscheint nur, wenn Xastir mit GeoTIFF-UnterstÃ¼tzung und/oder
 ImageMagick zusammen kompiliert wurde.
 
 = Textdarstellung =
-Ermöglicht die Auswahl zwischen zwei verschiedenen Arten der
-Schriftdarstellung für Stationsinformationen auf der Karte.
+ErmÃ¶glicht die Auswahl zwischen zwei verschiedenen Arten der
+Schriftdarstellung fÃ¼r Stationsinformationen auf der Karte.
 
 = Mauszeiger-Menu =
-Öffnet das Mauszeiger-Menu, das sonst beim Klick mit der rechten
+Ã–ffnet das Mauszeiger-Menu, das sonst beim Klick mit der rechten
 Maustaste erscheint.
 
 
 Eine Anmerkung zu Karten:
-Viele der zur Zeit erhältlichen Vektorkarten für die USA sind mit dem
-NAD-27 Datum erstellt worden, während Xastir und andere APRS Programme
+Viele der zur Zeit erhÃ¤ltlichen Vektorkarten fÃ¼r die USA sind mit dem
+NAD-27 Datum erstellt worden, wÃ¤hrend Xastir und andere APRS Programme
 das aktuelle WGS-84 Datum verwenden. Wenn man sehr weit auf einen kleinen
 Kartenausschnitt herein zoomt werden die Abweichungen durch das falsche
 Kartendatum deutlich. Bei den USGS Topographischen Karten wird die
-Datumsabweichung von Xastir korrigiert, so daß Positionen hiermit im
+Datumsabweichung von Xastir korrigiert, so daÃŸ Positionen hiermit im
 Allgemeinen genauer sind als mit anderen topographischen Karten.
 
-HELP-INDEX>Kartendateien und County-Daten für Wetterwarnungen
+HELP-INDEX>Kartendateien und County-Daten fÃ¼r Wetterwarnungen
 
-          Kartendateien und County-Daten für Wetterwarnungen
+          Kartendateien und County-Daten fÃ¼r Wetterwarnungen
 
 Kartentypen
 Xastir kann mit den verschiedensten Kartentypen arbeiten. Alle DosAPRS-,
-WinAPRS- und MacAPRS-Karten werden unterstützt. Zusätzlich unterstützt
+WinAPRS- und MacAPRS-Karten werden unterstÃ¼tzt. ZusÃ¤tzlich unterstÃ¼tzt
 Xastir von Haus aus Karten im PocketAPRS-Format, Bezeichnungen aus GNIS-
 Dateien (Geographic Names Information System) und Karten im XPixmap-
-Grafikformat. Xastir kann so kompiliert werden, daß externe Bibliotheken
-eingebunden werden können, um topographische Karten im GeoTIFF-Format und
-ESRI Shapefiles zu unterstützen. Die Fähigkeit mit Karten in den
+Grafikformat. Xastir kann so kompiliert werden, daÃŸ externe Bibliotheken
+eingebunden werden kÃ¶nnen, um topographische Karten im GeoTIFF-Format und
+ESRI Shapefiles zu unterstÃ¼tzen. Die FÃ¤higkeit mit Karten in den
 verschiedensten Grafikformaten umzugehen kann durch das Kompilieren mit
-ImageMagick-Unterstützung stark erweitert werden (siehe
-"http://www.imagemagick.org/www/formats.html"). Xastir unterstützt die
-Darstellung von Bereichen von Wetterwarnungen auf Karten, hierzu können
+ImageMagick-UnterstÃ¼tzung stark erweitert werden (siehe
+"http://www.imagemagick.org/www/formats.html"). Xastir unterstÃ¼tzt die
+Darstellung von Bereichen von Wetterwarnungen auf Karten, hierzu kÃ¶nnen
 die Daten im klassischen dosAPRS/WinAPRS-Format vorliegen, die Einbindung
-im neuen ESRI Shapefile-Format wird in Kürze vollständig sein. Einen
+im neuen ESRI Shapefile-Format wird in KÃ¼rze vollstÃ¤ndig sein. Einen
 Hinweis auf die Quellen von verschiedenen Kartenformaten finden Sie in
 der Datei README.1ST.
 
 Karten-Verzeichnisse
 Alle Kartendateien sollten unter /usr/local/share/xastir/maps auf Ihrm
 Computer gespeichert werden. Zur besseren Organisation und Trennung der
-Karten können sie dort auch beliebige Unterverzeichnisse anlegen. Bei der
+Karten kÃ¶nnen sie dort auch beliebige Unterverzeichnisse anlegen. Bei der
 Kartenauswahl werden die Karten mit ihrem ralativen Pfad alphabetisch
-sortiert angezeigt. Symbolische Links können helfen, um die Reihenfolge
-gegebenenfalls zu ändern.
+sortiert angezeigt. Symbolische Links kÃ¶nnen helfen, um die Reihenfolge
+gegebenenfalls zu Ã¤ndern.
 
 Hinweise zur Installation und Organisation der Karten finden sich
 ebenfalls in README.1ST.
 
-Für Karten im Pixelgrafikformat werden immer zwei Dateien benötigt, zum
+FÃ¼r Karten im Pixelgrafikformat werden immer zwei Dateien benÃ¶tigt, zum
 einen die Grafikdatei im .xpm Format (oder andere Formate bei
-ImageMagick-Unterstützung) und eine Kalibrierungsdatei (.geo). Das
-Standardgrafikformat ohne zusätzliche Bibliotheken ist .xpm, um Platz zu
-sparen können diese Dateien aber auch mit gzip gepackt werden
+ImageMagick-UnterstÃ¼tzung) und eine Kalibrierungsdatei (.geo). Das
+Standardgrafikformat ohne zusÃ¤tzliche Bibliotheken ist .xpm, um Platz zu
+sparen kÃ¶nnen diese Dateien aber auch mit gzip gepackt werden
 ("gzip map.xpm" erzeugt die komprimierte Datei "map.xpm.gz"). Dies wird
-von Xastir automatisch erkannt und beim Laden der Karte berücksichtigt.
-Sie können XView, Gimp, ImageMagick oder andere Programme benutzen, um
+von Xastir automatisch erkannt und beim Laden der Karte berÃ¼cksichtigt.
+Sie kÃ¶nnen XView, Gimp, ImageMagick oder andere Programme benutzen, um
 Grafiken zu konvertieren, die als gif, jpg oder tiff-Dateien vorliegen,
 wenn Sie nicht ImageMagick hinzukompilieren wollen. Sollten Sie Probleme
-mit Karten im .xpm-Format haben, versuchen Sie zunächst, die Grafik in
+mit Karten im .xpm-Format haben, versuchen Sie zunÃ¤chst, die Grafik in
 Gimp zu laden und wieder abzuspeichern, hierdurch werden alle, evtl.
-unbekannten, Farbnamen in Binärdarstellung umgewandelt.
+unbekannten, Farbnamen in BinÃ¤rdarstellung umgewandelt.
 
 Die .geo-Datei ist eine Textdatei, die Kartenposition in der Welt
-festlegt. Zur Erläuterung hier die Datei world1.geo:
+festlegt. Zur ErlÃ¤uterung hier die Datei world1.geo:
 
 FILENAME   world1.xpm
 #          x          y        lon         lat
@@ -1054,28 +1054,28 @@ TIEPOINT   0          0        -180        90
 TIEPOINT   640        320      180         -90
 
 Dieses einfache Beispiel besteht aus vier grundlegenden Komponenten. Die
-erste Zeile (FILENAME) legt die Grafikdatei fest, die für diese Karte
+erste Zeile (FILENAME) legt die Grafikdatei fest, die fÃ¼r diese Karte
 benutzt werden soll. Bei einer komprimierten .xpm-Datei ist die Angabe
 der Endung ".gz" optional. Wenn kein Pfad angegeben wird, wird die
 Grafikdatei im gleichen Verzeichnis wie die .geo-Datei gesucht.
 Unter FILENAME kann auch eine URL angegeben werden, unter der Xastir die
-Kartengrafik mittels wget herunterladen kann. Dies bedeutet, daß so
-ziemlich jedes Bild, daß über HTTP oder FTP im Internet verfügbar ist,
+Kartengrafik mittels wget herunterladen kann. Dies bedeutet, daÃŸ so
+ziemlich jedes Bild, daÃŸ Ã¼ber HTTP oder FTP im Internet verfÃ¼gbar ist,
 als Karte dienen kann.
 
 Die zweite Zeile ist eine Kommenarzeile, dies wird durch ein '#' als
 erstes Zeichen einer Zeile festgelegt.
 
 Die letzten beiden Zeilen binden x-y-Positionen in der Grafikdatei an
-Koordinaten (Längen- und Breitengrade) in der realen Welt. Zwei solche
-Punkte werden benötigt und sie sollten für eine hohe Genauigkeit
-möglichst weit auseinander in den Ecken der Grafikdatei liegen, z.B. oben
+Koordinaten (LÃ¤ngen- und Breitengrade) in der realen Welt. Zwei solche
+Punkte werden benÃ¶tigt und sie sollten fÃ¼r eine hohe Genauigkeit
+mÃ¶glichst weit auseinander in den Ecken der Grafikdatei liegen, z.B. oben
 links und unten rechts.
 
-Um eine solche Karte zu verwenden, wählen Sie in der Kartenauswahl die
-zugehörige .geo-Datei.
+Um eine solche Karte zu verwenden, wÃ¤hlen Sie in der Kartenauswahl die
+zugehÃ¶rige .geo-Datei.
 
-Die Größe der Grafikdatei kann optional ebenfalls in der .geo-Datei
+Die GrÃ¶ÃŸe der Grafikdatei kann optional ebenfalls in der .geo-Datei
 angegeben werden:
 
 FILENAME        Agnes_Mountain.xpm.gz
@@ -1087,29 +1087,29 @@ TIEPOINT        1337    1999    -120.87619806   48.24982052
 #
 IMAGESIZE       1338    2000
 
-Mit IMAGESIZE wird die Bildgröße in Pixel angegeben. Xastir benutzt diese
+Mit IMAGESIZE wird die BildgrÃ¶ÃŸe in Pixel angegeben. Xastir benutzt diese
 Information, um Karten, die nicht in den aktuell dargestellten Ausschnitt
-fallen, möglichst schnell aussortieren zu können. Wird dies nicht
-angegeben, muß Xastir die Grafikdatei zum Berechnen auf alle Fälle immer
+fallen, mÃ¶glichst schnell aussortieren zu kÃ¶nnen. Wird dies nicht
+angegeben, muÃŸ Xastir die Grafikdatei zum Berechnen auf alle FÃ¤lle immer
 laden.
 
-Wenn Xastir mit Unterstützung von ImageMagick kompiliert wurde, so stehen
-außer .xpm sämtliche Grafikformate zur Verfügung, die von ImageMagick
-selbst oder seinen Bibliotheken unterstützt werden.
+Wenn Xastir mit UnterstÃ¼tzung von ImageMagick kompiliert wurde, so stehen
+auÃŸer .xpm sÃ¤mtliche Grafikformate zur VerfÃ¼gung, die von ImageMagick
+selbst oder seinen Bibliotheken unterstÃ¼tzt werden.
 
 Es gibt verschiedene "spezielle" .geo-Dateien, die von Xastir verwendet
-werden können:
+werden kÃ¶nnen:
 
 o Eine Datei mit dem Wort "FINDU" und einer weiteren Zeile
-  "CALL <callsign>" lädt historische Spurdaten der mit dem Call
-  spezifizierten Station. Dies ist allerdings inzwischen über das
+  "CALL <callsign>" lÃ¤dt historische Spurdaten der mit dem Call
+  spezifizierten Station. Dies ist allerdings inzwischen Ã¼ber das
   Stationsmenu einfacher zu bewerkstelligen.
   
 
 geoTIFF Karten sind ebenfalls eine Kombination aus zwei Dateien, einer
-.tif und einer .fgd Datei. Die .tif-Datei enthält die eigentlichen
-Kartendaten, die .fgd-Kalibrierungsdatei benötigt nur vier Einträge wie
-im folgenden Fall, kann aber viele Andere Einträge zusätzlich enhalten:
+.tif und einer .fgd Datei. Die .tif-Datei enthÃ¤lt die eigentlichen
+Kartendaten, die .fgd-Kalibrierungsdatei benÃ¶tigt nur vier EintrÃ¤ge wie
+im folgenden Fall, kann aber viele Andere EintrÃ¤ge zusÃ¤tzlich enhalten:
 
 1.5.1.1   WEST BOUNDING COORDINATE:  -122.000000
 1.5.1.2   EAST BOUNDING COORDINATE:  -120.000000
@@ -1118,55 +1118,55 @@ im folgenden Fall, kann aber viele Andere Einträge zusätzlich enhalten:
 
 Xastir benutzt diese vier Zeilen, um die Eckpunkte der Karte zu
 berechnen, und um festzustellen, ob die Karte in den gerade angezeigten
-Ausschnitt fällt. Wenn es sich bei Ihren Daten um topographische 
+Ausschnitt fÃ¤llt. Wenn es sich bei Ihren Daten um topographische 
 USGS-Karten handelt, sollten auch die .fgd-Dateien vorliegen. Xastir
-ist in der Lage das Datum von NAD27 in WGS84 umzurechnen, so daß auch
-USGS-Karten unter Xastir eine höhere Genauigkeit erreichen.
+ist in der Lage das Datum von NAD27 in WGS84 umzurechnen, so daÃŸ auch
+USGS-Karten unter Xastir eine hÃ¶here Genauigkeit erreichen.
 
 Wenn Sie keine .fgd-Datei haben, wird die Karte problemlos geladen,
-allerdings werden die weißen Ränder am Kartenrand nicht beschnitten und
-die Karte könnte eine leicht falsche Größe und Rotation besitzen.
+allerdings werden die weiÃŸen RÃ¤nder am Kartenrand nicht beschnitten und
+die Karte kÃ¶nnte eine leicht falsche GrÃ¶ÃŸe und Rotation besitzen.
 
 Xastir kann nun USGS geoTIFF topographische Karten direkt von einer CD
 laden. Mounten Sie das CD-ROM manuell oder automatisch durch automounter,
-und achten Sie darauf, daß ein symbolischer Link im Kartenverzeichnis auf
+und achten Sie darauf, daÃŸ ein symbolischer Link im Kartenverzeichnis auf
 das gemountete Laufwerk zeigt. Das war es!
 
 
 Auch Shapefiles sind eine Kombination aus mehreren Dateien, .shp, .dbf
-und .shx. Sie müssen nur die .shp-Datei auswählen, um die Karte zu laden.
-Die anderen Dateien müssen jedoch vorhanden sein, um die Karte
-ordnungsgemäß laden zu können.
+und .shx. Sie mÃ¼ssen nur die .shp-Datei auswÃ¤hlen, um die Karte zu laden.
+Die anderen Dateien mÃ¼ssen jedoch vorhanden sein, um die Karte
+ordnungsgemÃ¤ÃŸ laden zu kÃ¶nnen.
 
 
 GNIS (Geographic Names Information System) Daten bestehen aus einer
 Sammlung von Namen von Orten oder geographischen Objekten mit ihren
 jeweiligen Positionen. Diese Bezeichnungen werden wie die in Dos/WinAPRS
 Karten dargestellt. Je weiter man hineinzoomt, umso mehr detailiertere
-Bezeichnungen erscheinen, unter der Annahme, daß eine GNIS-Datei als
-Karte gewählt wurde und die Darstellung von Bezeichnungen im Kartenmenu
+Bezeichnungen erscheinen, unter der Annahme, daÃŸ eine GNIS-Datei als
+Karte gewÃ¤hlt wurde und die Darstellung von Bezeichnungen im Kartenmenu
 eingeschaltet wurden.
 
 
-County Karten für Wetterwarnungen
+County Karten fÃ¼r Wetterwarnungen
 Alle County-Karten sollten im Verzeichnis /usr/local/share/xastir/Counties
-gespeichert werden. Es gibt verschiedene Formate für diese Karten, aber
-dieses Verzeichnis wird immer Unterverzeichnisse für jeden Staat/Marine-
-Bereich haben (Abkürzung aus zwei Buchstaben).
-Das alte Format benutzt <ST><COUNTYNAME>.map, während das neue Format
-<ST>Z<NWSZONECODE>.map benutzt. Die Installation wird ausführlicher in
-README.1ST im Abschnitt über die Quelle von Karten beschrieben.
+gespeichert werden. Es gibt verschiedene Formate fÃ¼r diese Karten, aber
+dieses Verzeichnis wird immer Unterverzeichnisse fÃ¼r jeden Staat/Marine-
+Bereich haben (AbkÃ¼rzung aus zwei Buchstaben).
+Das alte Format benutzt <ST><COUNTYNAME>.map, wÃ¤hrend das neue Format
+<ST>Z<NWSZONECODE>.map benutzt. Die Installation wird ausfÃ¼hrlicher in
+README.1ST im Abschnitt Ã¼ber die Quelle von Karten beschrieben.
 
 Wenn eine NWS Nachricht empfangen wird, so werden die entsprechenden
-Bereiche eingefärbt, um den Bereich der Warnung zu kennzeichnen. Die
+Bereiche eingefÃ¤rbt, um den Bereich der Warnung zu kennzeichnen. Die
 verschiedenen Farben beschreiben dabei die Art der Warnung.
-Ursprünglich wurden folgende Farben verwendet:
+UrsprÃ¼nglich wurden folgende Farben verwendet:
 Cyan for advisory, yellow for watch, red for warning, orange for
 cancelled alert, royal blue for tests, and green for undetermined
 alert levels.
-Inzwischen können die Farben davon etwas abweichen, da die Flächen nun
-nicht mehr gefüllt werden, sondern nur noch in der Farbe geändert werden,
-so daß man die darunterliegende Karte noch erkennen kann.
+Inzwischen kÃ¶nnen die Farben davon etwas abweichen, da die FlÃ¤chen nun
+nicht mehr gefÃ¼llt werden, sondern nur noch in der Farbe geÃ¤ndert werden,
+so daÃŸ man die darunterliegende Karte noch erkennen kann.
 Die Darstellung von Wetterwarnungen kann im Kartenmenu ein- bzw.
 ausgeschaltet werden.
 
@@ -1177,7 +1177,7 @@ HELP-INDEX>Ansicht
 Die Optionen in diesem Menu erlauben ihnen festzulegen, welche Daten
 zu den Stationen auf der Karte angezeigt werden sollen. Es erlaubt
 Ihnen auch Stationen zu suchen und zu verfolgen, oder Stationen oder
-deren Spur zu löschen.
+deren Spur zu lÃ¶schen.
 
 = Station finden =
   Siehe hierzu unter "Stationen finden".
@@ -1186,15 +1186,15 @@ deren Spur zu löschen.
   Siehe hierzu unter "Verfolgen von Stationen".
 
 = Spur von Findu holen =
-  Lädt alte Spurdaten einer Station aus dem Internet von findu.com.
+  LÃ¤dt alte Spurdaten einer Station aus dem Internet von findu.com.
   Momentan werden die Daten der letzten beiden Wochen geladen.
 
 = Symbole =
   Hiermit kann festgelegt werden, ob Symbole auf der Karte gezeichnet
-  werden sollen. Die meisten folgenden Optionen hängen hiervon ebenfalls
+  werden sollen. Die meisten folgenden Optionen hÃ¤ngen hiervon ebenfalls
   ab. Bei alten Stationen wird das Symbol nur noch schememhaft in der
-  Standardausrichtung gezeichnet, die zugehörige Spur wird gestrichelt
-  und alle Daten außer dem Rufzeichen verschwinden vom Bildschirm.
+  Standardausrichtung gezeichnet, die zugehÃ¶rige Spur wird gestrichelt
+  und alle Daten auÃŸer dem Rufzeichen verschwinden vom Bildschirm.
 
 = Symbole drehen =
   Wenn eingeschaltet, werden einige Symbole auf der Karte gedreht, um
@@ -1206,128 +1206,128 @@ deren Spur zu löschen.
 = Geschwindigkeit =
   Zeigt die Geschwindigkeit einer Station in roter Schrift unterhalb
   von Rufzeichen und Richtung an, sofern eine Geschwindigkeit
-  übermittelt wird.
+  Ã¼bermittelt wird.
 = - kurz =
   Wenn markiert wird die Geschwindigkeit in Kurzform ohne Einheit
   angezeigt.
 
-= Höhe =
-  Zeigt die Höhe oberhalb des Rufzeichens in blauer Schrift an,
-  sofern sie übermittelt wurde.
+= HÃ¶he =
+  Zeigt die HÃ¶he oberhalb des Rufzeichens in blauer Schrift an,
+  sofern sie Ã¼bermittelt wurde.
 
 = Kurs =
   Zeigt die Richtung, in die sich die Station bewegt, unterhalb des
-  Rufzeichens in grüner Schrift an, sofern die Station einen Kurs
-  übermittelt.
+  Rufzeichens in grÃ¼ner Schrift an, sofern die Station einen Kurs
+  Ã¼bermittelt.
 
 = Entfernung/Richtung =
-  Ermöglicht die Anzeige der Entfernung von der eigenen Station und der
+  ErmÃ¶glicht die Anzeige der Entfernung von der eigenen Station und der
   Richtung, in der sich die Station von der eigenen Station aus befindet.
   Diese beiden Werte werden links vom Symbol dargestellt.
 
 = Wetterdaten =
   Wenn eingeschaltet, werden bei Wetterstationen unterhalb des Symbols
-  die letzten Wetterdaten aufgelistet (Temperatur, Wind- und Böen-
+  die letzten Wetterdaten aufgelistet (Temperatur, Wind- und BÃ¶en-
   geschwindigkeit, Windrichtung und Feuchtigkeit.
 = - nur Temperatur =
   Wenn markiert wird nur die Temperatur angezeigt.
 
 = Leistung/Gewinn =
-  Wenn PHG-Daten übermittelt werden, wird ein Kreis um die Station
-  gezeichnet, dessen Radius aus Leistung, Höhe und Antennengewinn
-  berechnet wird. Wenn sich zwei Kreise überschneiden sind die
-  Stationen theoretisch in Reichweite für eine Simplexverbindung.
-  In der Praxis is dies aber nur eine sehr grobe Näherung, vor allem
-  in Gegenden mit sich änderndem Gelände.
+  Wenn PHG-Daten Ã¼bermittelt werden, wird ein Kreis um die Station
+  gezeichnet, dessen Radius aus Leistung, HÃ¶he und Antennengewinn
+  berechnet wird. Wenn sich zwei Kreise Ã¼berschneiden sind die
+  Stationen theoretisch in Reichweite fÃ¼r eine Simplexverbindung.
+  In der Praxis is dies aber nur eine sehr grobe NÃ¤herung, vor allem
+  in Gegenden mit sich Ã¤nderndem GelÃ¤nde.
 = - mit Standardwert =
-  Für Stationen, die keine PHG-Daten übermitteln, wird stattdessen
-  ein Standardwert genäß den APRS-Spezifikationen verwendet.
+  FÃ¼r Stationen, die keine PHG-Daten Ã¼bermitteln, wird stattdessen
+  ein Standardwert genÃ¤ÃŸ den APRS-Spezifikationen verwendet.
 = - bei Mobilstationen =
-  Hiermit können auch für Mobilstationen Entfernungskreise gezeichnet
+  Hiermit kÃ¶nnen auch fÃ¼r Mobilstationen Entfernungskreise gezeichnet
   werden.
 
 = Positionsverschleierung =
-  Wenn eingeschaltet, wird die Fläche markiert, in der sich eine Station
+  Wenn eingeschaltet, wird die FlÃ¤che markiert, in der sich eine Station
   mit Positionsverschleierung befinden kann. Die betreffende Station
   wird in der Mitte dieses Bereichs positioniert.
   
 = Alte Daten zeigen =
   Xastir zeigt Daten auch noch an, nachdem sie eigentlich bereits als
-  alt deklariert wurden. Diese Zeiten können unter Datei-Einstellungen-
-  Grundeinstellungen geämdert werden.
+  alt deklariert wurden. Diese Zeiten kÃ¶nnen unter Datei-Einstellungen-
+  Grundeinstellungen geÃ¤mdert werden.
 
 = DF Kreise zeigen =
-  Wenn eingeschaltet, werden auch alle Kreise für Peilungen (Direction
+  Wenn eingeschaltet, werden auch alle Kreise fÃ¼r Peilungen (Direction
   Finding) angezeigt.
   
 = Spuren =
-  Wenn markiert, wird für Mobilstationen eine farbige Spur mit den
+  Wenn markiert, wird fÃ¼r Mobilstationen eine farbige Spur mit den
   letzten maximal 100 Positionen gezeichnet. Jeder neuen Mobilstation
   wird hierzu eine neue Farbe aus einer Tabelle zugewiesen.
 
-= Stationen löschen =
-  Dies löscht alle Stationsdaten außer den eigenen. Dies ist
-  z.B. nützlich, wenn der Speicher knapp bemessen ist.
+= Stationen lÃ¶schen =
+  Dies lÃ¶scht alle Stationsdaten auÃŸer den eigenen. Dies ist
+  z.B. nÃ¼tzlich, wenn der Speicher knapp bemessen ist.
 
-= Spuren Löschen =
-  Löschen alle Spuren der Mobilstationen. Dies ist z.B. nützlich,
+= Spuren LÃ¶schen =
+  LÃ¶schen alle Spuren der Mobilstationen. Dies ist z.B. nÃ¼tzlich,
   wenn der Speicher knapp bemessen ist. Die Spur einzelner Stationen
-  kann auch über das StationsInfo Menu gelöscht werden.
+  kann auch Ã¼ber das StationsInfo Menu gelÃ¶scht werden.
 
 HELP-INDEX>Nachrichten
 
                                 Nachrichten
 
 = Schicke Nachricht an =
-  Hiermit können Nachrichten mit einer einzelnen Station ausgetauscht
-  werden. Dies ist auch über das Menu StationsInfo möglich.
+  Hiermit kÃ¶nnen Nachrichten mit einer einzelnen Station ausgetauscht
+  werden. Dies ist auch Ã¼ber das Menu StationsInfo mÃ¶glich.
 
-= Öffne Gruppen Nachricht=
-  Dies funktioniert ähnlich, nur daß die Nachrichten an einen
+= Ã–ffne Gruppen Nachricht=
+  Dies funktioniert Ã¤hnlich, nur daÃŸ die Nachrichten an einen
   Gruppennamen geschickt werden. Die Gruppen werden in der Datei
   "groups" in ~/.xastir/config definiert. Gruppennachrichten sind noch
-  nicht voll implementiert und einige Probleme müssen noch beseitigt
+  nicht voll implementiert und einige Probleme mÃ¼ssen noch beseitigt
   werden.
 
-In Zukunft wird es auch möglich sein, Bulletins zu verschicken, dies ist
+In Zukunft wird es auch mÃ¶glich sein, Bulletins zu verschicken, dies ist
 aber momentan noch nicht implementiert.
 
-Im Nachrichtenfenster muß zunächst das Rufzeichen der Station eingetragen
+Im Nachrichtenfenster muÃŸ zunÃ¤chst das Rufzeichen der Station eingetragen
 werden, der man eine Nachricht schicken will. Darunter kann man dann eine 
 Zeile des Nachrichtentexts (max. 250 Zeichen) eingeben und mit
-"Sende jetzt!" abschicken. Bis zu einer Bestätigung (ACK) durch die
+"Sende jetzt!" abschicken. Bis zu einer BestÃ¤tigung (ACK) durch die
 Gegenstation bleibt dieser Button inaktiv (grau).
 
-Es stehen maximal zehn Fenster für Nachrichten an verschiedene Rufzeichen
-zur Verfügung.
+Es stehen maximal zehn Fenster fÃ¼r Nachrichten an verschiedene Rufzeichen
+zur VerfÃ¼gung.
 
-Beim Empfang einer an die eigene Station gerichteten Nachricht öffnet
+Beim Empfang einer an die eigene Station gerichteten Nachricht Ã¶ffnet
 sich automatisch das Nachrichtenfenster, wobei das Rufzeichen des
 Absenders bereits eingetragen ist.
 
-Im großen Fenster sind oben die ausgehenden und unten die eingetroffenen
+Im groÃŸen Fenster sind oben die ausgehenden und unten die eingetroffenen
 Nachrichten sortiert nach ihrer Zeilennummer aufgelistet.
 
 Mit "Beenden" wird das Nachrichtenfenster verlassen.
 Mit "Neues Rufzeichen" kann man nachschauen, welche Nachrichten eine
-Station früher gesendet hatte. Sie können dies auch einsetzen, um mit
+Station frÃ¼her gesendet hatte. Sie kÃ¶nnen dies auch einsetzen, um mit
 einer anderen Station Nachrichten auszutauschen.
-Mit "Lösche Nachrichten" wird die angezeigte Liste mit Nachrichten
-gelöscht.
+Mit "LÃ¶sche Nachrichten" wird die angezeigte Liste mit Nachrichten
+gelÃ¶scht.
 
-= Lösche alle ausgehenden Nachrichten =
-  Hiermit werden alle noch nicht bestätigten gesendeten Nachrichten
-  gelöscht. Anderenfalls wird mehrfach versucht, diese zuzustellen.
+= LÃ¶sche alle ausgehenden Nachrichten =
+  Hiermit werden alle noch nicht bestÃ¤tigten gesendeten Nachrichten
+  gelÃ¶scht. Anderenfalls wird mehrfach versucht, diese zuzustellen.
 
 = Stationen Allgemein =
   Dies sendet ein ?APRS? Paket, wodurch alle lokalen Stationen mit
   ihrer Position und/oder ihrem Status antworten sollten. Viele
   Programme ignorieren diese Anfrage, da eine Antwort zu einer Flut
-  von Daten führen kann.
+  von Daten fÃ¼hren kann.
 
 = IGate Stationen =
   Dies sendet ein ?IGATE? Paket, wodurch alle IGate-Stationen antworten
-  und ihre Möglichkeiten mitteilen sollten.
+  und ihre MÃ¶glichkeiten mitteilen sollten.
 
 = Wetterstationen =
   Dies sendet ein ?WX? Paket, wodurch alle lokalen Wetterstationen ihre
@@ -1344,25 +1344,25 @@ HELP-INDEX>Schnittstellen
 
                            Schnittstellen
 
-In diesem Menu können Einstellungen zu den vershiedenen Schnittstellen
+In diesem Menu kÃ¶nnen Einstellungen zu den vershiedenen Schnittstellen
 gemacht werden.
 
 = Schnittstellen Ein/Aus =
-  Diese Option öffnet ein Fenster, in dem Sie alle Ihre konfigurierten
-  Schnittstellen ein- oder ausschalten können.
+  Diese Option Ã¶ffnet ein Fenster, in dem Sie alle Ihre konfigurierten
+  Schnittstellen ein- oder ausschalten kÃ¶nnen.
 
 = Einstellungen =
   Eine Liste mit den installierten Schnittstellen erscheint und erlaubt
-  Ihnen deren Einstellungen zu änden und weitere Schnittstellen
-  hinzuzufügen bzw. vorhandene zu löschen. Näheres finden Sie unter
+  Ihnen deren Einstellungen zu Ã¤nden und weitere Schnittstellen
+  hinzuzufÃ¼gen bzw. vorhandene zu lÃ¶schen. NÃ¤heres finden Sie unter
   "Schnittstellen Konfiguration"
 
 = Nicht senden: ALLES =
-  Wenn markiert wird überhaupt NICHT gesendet.
-  Für diese und die folgenden beiden Optionen gilt, daß es sich um
-  globale Einstellungen handelt, die für alle Schnittstellen gelten.
-  Die meisten Schnittstellen bieten auch die Möglichkeit, das Senden
-  über diese spezielle Schnittstelle einzeln auszuschalten.
+  Wenn markiert wird Ã¼berhaupt NICHT gesendet.
+  FÃ¼r diese und die folgenden beiden Optionen gilt, daÃŸ es sich um
+  globale Einstellungen handelt, die fÃ¼r alle Schnittstellen gelten.
+  Die meisten Schnittstellen bieten auch die MÃ¶glichkeit, das Senden
+  Ã¼ber diese spezielle Schnittstelle einzeln auszuschalten.
 
 = Nicht senden: Meine Position =
   Wenn markiert wird die eigene Position nicht gesendet.
@@ -1371,110 +1371,110 @@ gemacht werden.
   Wenn markiert wird die eigenen Objekte nicht gesendet.
 
 = Sende jetzt! =
-  Führt dazu, daß alle eingeschalteten Schnittstellen ein Positions-
-  Paket senden. Es ist nicht funktionsfähig (grau), wenn das Senden
-  grundsätzlich ausgeschaltet ist.  
+  FÃ¼hrt dazu, daÃŸ alle eingeschalteten Schnittstellen ein Positions-
+  Paket senden. Es ist nicht funktionsfÃ¤hig (grau), wenn das Senden
+  grundsÃ¤tzlich ausgeschaltet ist.  
 
 HELP-INDEX>Stations-Info
 
                            Stations-Info
 
-Das Fenster Stations-Info zeigt alle Daten an, die von Xastir für diese
+Das Fenster Stations-Info zeigt alle Daten an, die von Xastir fÃ¼r diese
 Station dekodiert wurden.
 
-Es können die folgenden Informationen angezeigt werden: Die Anzahl der
-gehörten Pakete, die Uhrzeit, zu der die Station zuletzt gehört wurde,
-über welche Schnittstelle dies erfolgte, den Kommentar, PHG (aus
-Leistung, Höhe und Gewinn), Entfernung und Richtung von meiner Station,
+Es kÃ¶nnen die folgenden Informationen angezeigt werden: Die Anzahl der
+gehÃ¶rten Pakete, die Uhrzeit, zu der die Station zuletzt gehÃ¶rt wurde,
+Ã¼ber welche Schnittstelle dies erfolgte, den Kommentar, PHG (aus
+Leistung, HÃ¶he und Gewinn), Entfernung und Richtung von meiner Station,
 Wetterdaten und die letzte Position.
 Bei Stationen, die sich bewegen, folgt ein Tracklog mit den neuesten
 Daten ganz oben. Ein '+' vor einer Zeile markiert den Start eines neuen
-Tracks (wenn zuvor eine große Zeit- bzw. Ortsdifferenz vorlag). Ein Stern
-am Ende einer Zeile weist darauf hin, daß die Station an der jeweiligen
-Position auf direktem Weg gehört werden konnte (ohne Digipeater).
+Tracks (wenn zuvor eine groÃŸe Zeit- bzw. Ortsdifferenz vorlag). Ein Stern
+am Ende einer Zeile weist darauf hin, daÃŸ die Station an der jeweiligen
+Position auf direktem Weg gehÃ¶rt werden konnte (ohne Digipeater).
 
-Nur für die eigene Station gibt es ein Feld "Echo von", das die letzten
-sechs Digipeater aufführt, die mein Paket als erste weitergegeben haben.
+Nur fÃ¼r die eigene Station gibt es ein Feld "Echo von", das die letzten
+sechs Digipeater auffÃ¼hrt, die mein Paket als erste weitergegeben haben.
 
 Am unteren Rand des Fensters befinden sich zwei Reihen mit vier Aktions-
-feldern, deren Funktion abhängig von der Art der dargestellten Station
+feldern, deren Funktion abhÃ¤ngig von der Art der dargestellten Station
 ist.
 
-Für Objekte/Items:
+FÃ¼r Objekte/Items:
 
-Track speichern    Objekt ändern         --leer--           Schließen
+Track speichern    Objekt Ã¤ndern         --leer--           SchlieÃŸen
 ? Stationsversion  ? Trace         ? unbest. Nachrichten  Stationsanfrage
 
 
-Für andere Stationen:
+FÃ¼r andere Stationen:
 
-Track speichern    Nachricht senden    FCC/RAC Datenbank       Schließen
+Track speichern    Nachricht senden    FCC/RAC Datenbank       SchlieÃŸen
 ? Stationsversion  ? Trace           ? unbest. Nachrichten  Stationsanfrage
 
 Bei sich bewegenden Stationen fehlt die Anfrage nach der Stationsversion,
-stattdessen findet sich dort "Spur löschen". Hiermit werden alle
+stattdessen findet sich dort "Spur lÃ¶schen". Hiermit werden alle
 Bewegungsdaten dieser Station in der Datenbank und vom Bildschirm
-gelöscht.
+gelÃ¶scht.
 
 Mit "Spur speichern" wird die Position und falls vorhanden, alle
 Bewegungsdaten in einer Datei auf der Festplatte gespeichert. Das
-derzeit benutzte Format ist dem ähnlich, das bei GPS-Empfängern zum
-Einsatz kommt, die Spezifikationen könnten sich aber in zukünftigen
-Versionen noch ändern. Es gibt momentan keinen Weg, diese Daten wieder
-einzulesen, dies ist aber für die Zukunft geplant. Das Ziel ist es auch
-GPS Tracklog-Dateien in ähnlicher Art laden und darstellen zu können.
+derzeit benutzte Format ist dem Ã¤hnlich, das bei GPS-EmpfÃ¤ngern zum
+Einsatz kommt, die Spezifikationen kÃ¶nnten sich aber in zukÃ¼nftigen
+Versionen noch Ã¤ndern. Es gibt momentan keinen Weg, diese Daten wieder
+einzulesen, dies ist aber fÃ¼r die Zukunft geplant. Das Ziel ist es auch
+GPS Tracklog-Dateien in Ã¤hnlicher Art laden und darstellen zu kÃ¶nnen.
 Diese Tracklog-Dateien werden im Verzeichnis ~/.xastir/tracklogs
 abgelegt, der Dateiname besteht aus dem jeweiligen Rufzeichen mit der
 Erweiterung ".trk".
 
-"Objekt/Item ändern" öffnet das Fenster zum Ändern von Objekten.
+"Objekt/Item Ã¤ndern" Ã¶ffnet das Fenster zum Ã„ndern von Objekten.
 
-"Sende Nachricht" öffnet für diese Station ein Nachrichtenfenster und
-ermöglicht an diese Station eine Nachricht zu senden.
+"Sende Nachricht" Ã¶ffnet fÃ¼r diese Station ein Nachrichtenfenster und
+ermÃ¶glicht an diese Station eine Nachricht zu senden.
 
 Wenn die FCC (U.S. Federal Communications Commission) oder RAC (Radio
 Amateurs of Canada) Datenbank installiert ist und das Rufzeichen aus
 dem US-amerikanischen bzw. kanadischen Kontingent stammt, so ist das
 "FCC/RAC Suche"-Feld vorhanden, sonst nicht. Die FCC- und RAC-Dateien
 sollten sich im Verzeichnis /usr/local/share/xastir/fcc befinden, wobei auf
-Groß-/Kleinschreibung zu achten ist. Wenn die Suche erfolgreich ist,
+GroÃŸ-/Kleinschreibung zu achten ist. Wenn die Suche erfolgreich ist,
 wird Name und Adresse der Station im Stations-Info Fenster angezeigt.
 Anweisungen zur Installation dieser Datenbanken finden sich in der
 Datei README.1ST.
 
-Xastir erzeugt beim Start eine Indexdatei für jede dieser Datenbanken.
-Wenn eine Rufzeichendatei aktualisiert wird, während Xastir läuft, so
-wird der Index bei der nächsten Suche erstellt oder neu aufgebaut.
-Spezielle Präfixe werden NICHT berücksichtigt.
+Xastir erzeugt beim Start eine Indexdatei fÃ¼r jede dieser Datenbanken.
+Wenn eine Rufzeichendatei aktualisiert wird, wÃ¤hrend Xastir lÃ¤uft, so
+wird der Index bei der nÃ¤chsten Suche erstellt oder neu aufgebaut.
+Spezielle PrÃ¤fixe werden NICHT berÃ¼cksichtigt.
 
 HELP-INDEX>Erstellen von Protokolldateien
 
                     Erstellen von Protokolldateien
 
-Xastir kann empfangene Daten in Protokolldateien schreiben, so daß sie
-später wieder eingespielt werden, oder zu Debuggingzwecken analysiert
-werden können. Alle diese Einstellungen werden im Menu "Datei"
+Xastir kann empfangene Daten in Protokolldateien schreiben, so daÃŸ sie
+spÃ¤ter wieder eingespielt werden, oder zu Debuggingzwecken analysiert
+werden kÃ¶nnen. Alle diese Einstellungen werden im Menu "Datei"
 vorgenommen.
 
 = TNC protokollieren =
-  Protokolliert alle Daten, die über den TNC empfangen bzw. gesendet
-  werden. Dieses Protokoll kann über "Protokolldatei laden" zu einem
-  späteren Zeitpunkt wieder eingelesen werden.
+  Protokolliert alle Daten, die Ã¼ber den TNC empfangen bzw. gesendet
+  werden. Dieses Protokoll kann Ã¼ber "Protokolldatei laden" zu einem
+  spÃ¤teren Zeitpunkt wieder eingelesen werden.
 
 = Netz protokollieren =
-  Protokolliert alle Daten, die über das Internet empfangen bzw. gesendet
-  werden. Dieses Protokoll kann über "Protokolldatei laden" zu einem
-  späteren Zeitpunkt wieder eingelesen werden. Wenn Sie keine
+  Protokolliert alle Daten, die Ã¼ber das Internet empfangen bzw. gesendet
+  werden. Dieses Protokoll kann Ã¼ber "Protokolldatei laden" zu einem
+  spÃ¤teren Zeitpunkt wieder eingelesen werden. Wenn Sie keine
   Schnittstelle gestartet haben und Ihre Position oder die eigenen
   Objekte lokal protokollieren wollen, ist dies die geeignete Methode.
 
 = IGate protokollieren =
   Protokolliert alle weitergereichten Daten in beide Richtungen, bei
-  unterdrückten Weiterleitungen auch den Grund hierfür. Dies beinhaltet
+  unterdrÃ¼ckten Weiterleitungen auch den Grund hierfÃ¼r. Dies beinhaltet
   auch NWS Nachrichten, die in Richtung Funk weitergeleitet werden
-  (gemäß ~/.xastir/data/nws-stations.txt: eine Textdatei, die alle
+  (gemÃ¤ÃŸ ~/.xastir/data/nws-stations.txt: eine Textdatei, die alle
   Rufzeichen bzw. NWS Station wie z.B. "SECIND" angibt, deren Daten
-  über Funk weitergegeben werden sollen).
+  Ã¼ber Funk weitergegeben werden sollen).
   
 = Wetter protokollieren =
   Protokolliert alle Wetterdaten, die von Ihrer Wetterstation empfangen
@@ -1485,12 +1485,12 @@ HELP-INDEX>Wiedergeben einer Protokolldatei
                       Wiedergeben einer Protokolldatei
 
 Klicken sie auf Datei, dann auf "Protokolldatei laden". In einem
-Auswahlfenster können sie eine Datei auswählen, deren Inhalt von Xastir
-geladen werden soll. Es muß sich dabei um eine Datei mit TNC Rohdaten
+Auswahlfenster kÃ¶nnen sie eine Datei auswÃ¤hlen, deren Inhalt von Xastir
+geladen werden soll. Es muÃŸ sich dabei um eine Datei mit TNC Rohdaten
 handeln, wie sie auch von Xastir als Protokolldatei geschrieben werden
 kann. Die Station funktioniert dabei weiterhin wie gewohnt, die
 eingespielten Daten werden aber nicht wieder ausgesendet. Wenn sie Daten
-protokollieren, finden sie diese Dateien üblicherweise in ~/.xastir/logs/ 
+protokollieren, finden sie diese Dateien Ã¼blicherweise in ~/.xastir/logs/ 
 
 HELP-INDEX>Finden einer Station
 
@@ -1498,15 +1498,15 @@ HELP-INDEX>Finden einer Station
 
 Klicken sie auf Ansicht, dann auf "Station finden". Ein Fenster
 erscheint, in dem sie das Rufzeichen der zu suchenden Station eingeben
-können. In der Standardeinstellung wird nach Übereinstimmung mit dem
+kÃ¶nnen. In der Standardeinstellung wird nach Ãœbereinstimmung mit dem
 kompletten Rufzeichen (Exact Match) gesucht.
 
-Bei Objekten, die Kleinbuchstaben enthalten, muß "Match Case" gewählt
+Bei Objekten, die Kleinbuchstaben enthalten, muÃŸ "Match Case" gewÃ¤hlt
 werden! Entgegen dem Namen wird ohne "Match Case" der Suchbegriff nur in
-Großbuchstaben umgesetzt...
+GroÃŸbuchstaben umgesetzt...
  
 Mit "Finde jetzt!" wird der Suchvorgang gestarted und bei Erfolg der
-Bildausschnitt so justiert, daß die Station mit einer Übereinstimmung
+Bildausschnitt so justiert, daÃŸ die Station mit einer Ãœbereinstimmung
 in der Mitte zu sehen ist.
 
 HELP-INDEX>Gespeicherte Kartenausschnitte
@@ -1514,19 +1514,19 @@ HELP-INDEX>Gespeicherte Kartenausschnitte
                      Gespeicherte Kartenausschnitte
 
 Klicken sie auf Karten, dann auf "Ausschnitte" und sie erhalten ein
-PopUp-Fenster mit früher gespeicherten Kartenausschnitten. Beim ersten
-Aufruf wird diese Liste noch leer sein. Sie können den aktuellen
+PopUp-Fenster mit frÃ¼her gespeicherten Kartenausschnitten. Beim ersten
+Aufruf wird diese Liste noch leer sein. Sie kÃ¶nnen den aktuellen
 Kartenausschnitt unter einem Namen speichern. Geben sie diesen Namen
-unter "Neuer Name" ein und wählen anschließend "Hinzufügen".
+unter "Neuer Name" ein und wÃ¤hlen anschlieÃŸend "HinzufÃ¼gen".
 
-Nach Markieren eines Namens aus der Liste können sie den gespeicherten
+Nach Markieren eines Namens aus der Liste kÃ¶nnen sie den gespeicherten
 Kartenausschnitt durch "Aktivieren!" wieder herstellen.
 
-Durch Markieren und "Löschen" können Einträge aus der Liste auch wieder
+Durch Markieren und "LÃ¶schen" kÃ¶nnen EintrÃ¤ge aus der Liste auch wieder
 entfernt werden.
 
-"Karte - Objekt in Karte suchen" ist eine weitere Möglichkeit, um einen
-Kartenausschnitt zu ändern, indem ein bestimmtes Objekt bei installierten
+"Karte - Objekt in Karte suchen" ist eine weitere MÃ¶glichkeit, um einen
+Kartenausschnitt zu Ã¤ndern, indem ein bestimmtes Objekt bei installierten
 GNIS-Dateien gesucht werden kann.
 
 HELP-INDEX>Verfolgen einer Station
@@ -1534,9 +1534,9 @@ HELP-INDEX>Verfolgen einer Station
                   Verfolgen einer Station (Tracking)
 
 Klicken sie auf Ansicht, dann auf "Verfolge Station". Geben sie das
-Rufzeichen ein und drücken sie "Verfolge jetzt!". Die verfolgte Station
+Rufzeichen ein und drÃ¼cken sie "Verfolge jetzt!". Die verfolgte Station
 bleibt nun immer auf dem Bildschirm sichtbar. Wenn die Station nahe an
-den Rand des Kartenausschnitts gelangt, wird die Karte nachgeführt. Um
+den Rand des Kartenausschnitts gelangt, wird die Karte nachgefÃ¼hrt. Um
 das Tracking wieder aufzuheben klicken sie auf "Verfolgung aufheben".
 
 HELP-INDEX>Schnittstellen Konfiguration
@@ -1545,176 +1545,176 @@ HELP-INDEX>Schnittstellen Konfiguration
  
 Klicken sie auf Schnittstellen, dann auf Einstellungen
 
-Es erscheint ein Fenster "Installierte Schnittstellen", für die
-verschiedenen Geräte, die sie mit Xastir zusammen benutzen wollen. Dort
-können sie Schnittstellen hinzufügen, löschen und deren Eigenschaften
-ändern.
+Es erscheint ein Fenster "Installierte Schnittstellen", fÃ¼r die
+verschiedenen GerÃ¤te, die sie mit Xastir zusammen benutzen wollen. Dort
+kÃ¶nnen sie Schnittstellen hinzufÃ¼gen, lÃ¶schen und deren Eigenschaften
+Ã¤ndern.
 
-Durch Klick auf "Hinzufügen" können sie ein neues Gerät anmelden,
+Durch Klick auf "HinzufÃ¼gen" kÃ¶nnen sie ein neues GerÃ¤t anmelden,
 es erscheint ein Fenster zur Auswahl des Schnittstellentyps.
 
-Momentan sind verfügbar:
+Momentan sind verfÃ¼gbar:
   Serieller TNC
   Serieller TNC plus GPS mit HSP-Kabel
-  Serieller GPS-Empfänger
+  Serieller GPS-EmpfÃ¤nger
   Serielle Wetterstation
   Internet Server
   AX.25 TNC
-  GPS über Netzwerk (via gpsd)
-  Wetterstation über Netzwerk
+  GPS Ã¼ber Netzwerk (via gpsd)
+  Wetterstation Ã¼ber Netzwerk
 
-Markieren sie das gewünschte Gerät aus der Liste und Klicken auf
-"Hinzufügen", es erscheint dann ein Fenster, indem sie die verschiedene
-Eigenschaften für dieses Gerät festlegen können. Tragen sie die
-benötigten Werte ein und bestätigen sie mit OK.
+Markieren sie das gewÃ¼nschte GerÃ¤t aus der Liste und Klicken auf
+"HinzufÃ¼gen", es erscheint dann ein Fenster, indem sie die verschiedene
+Eigenschaften fÃ¼r dieses GerÃ¤t festlegen kÃ¶nnen. Tragen sie die
+benÃ¶tigten Werte ein und bestÃ¤tigen sie mit OK.
 
-Ein Gerät kann nach Markierung mit einem Klick auf "Löschen" wieder
+Ein GerÃ¤t kann nach Markierung mit einem Klick auf "LÃ¶schen" wieder
 entfernt werden.
 
-Mit "Einstellungen" erhalten sie für das markierte Gerät aus der
-Schnittstellenliste ein Fenster, indem sie verschiedene Parameter ändern
-können.
+Mit "Einstellungen" erhalten sie fÃ¼r das markierte GerÃ¤t aus der
+Schnittstellenliste ein Fenster, indem sie verschiedene Parameter Ã¤ndern
+kÃ¶nnen.
 
-Weiterfürende Hilfe findet man in den Abschnitten für die einzelnen
+WeiterfÃ¼rende Hilfe findet man in den Abschnitten fÃ¼r die einzelnen
 Schnittstellentypen.
 
 HELP-INDEX>Serieller TNC
 
                                Serieller TNC
 
-Dieser Abschnitt behandelt das Hinzufügen oder Ändern von seriellen TNCs
-und seriellen TNCs mit einem GPS über ein HSP-Kabel.
+Dieser Abschnitt behandelt das HinzufÃ¼gen oder Ã„ndern von seriellen TNCs
+und seriellen TNCs mit einem GPS Ã¼ber ein HSP-Kabel.
 
-Wenn sie ein HSP-Kabel besitzen, können sie diesen Eintrag auswählen und
-dann sowohl den TNC als auch den GPS-Empfänger über die gleiche serielle
-Schnittstelle anschließen. Es handelt sich um ein spezielles Kabel, bei
-dem die Empfangsleitung durch den Computer zwischen den beiden Geräten
-umgeschaltet werden kann. Es arbeitet möglicherweise nicht mit allen
-möglichen Kombinationen von Computer, TNC und GPS. Der TNC und der GPS
-müssen auf die gleichen Kommunikationsparameter eingestellt werden,
-üblicherweise also 4800 bps, 8 Datenbits, keine Parität und 1 Stopbit.
+Wenn sie ein HSP-Kabel besitzen, kÃ¶nnen sie diesen Eintrag auswÃ¤hlen und
+dann sowohl den TNC als auch den GPS-EmpfÃ¤nger Ã¼ber die gleiche serielle
+Schnittstelle anschlieÃŸen. Es handelt sich um ein spezielles Kabel, bei
+dem die Empfangsleitung durch den Computer zwischen den beiden GerÃ¤ten
+umgeschaltet werden kann. Es arbeitet mÃ¶glicherweise nicht mit allen
+mÃ¶glichen Kombinationen von Computer, TNC und GPS. Der TNC und der GPS
+mÃ¼ssen auf die gleichen Kommunikationsparameter eingestellt werden,
+Ã¼blicherweise also 4800 bps, 8 Datenbits, keine ParitÃ¤t und 1 Stopbit.
 
-Optionen für die TNC-Schnittstelle:
+Optionen fÃ¼r die TNC-Schnittstelle:
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
 Programmstart versuchen, diese Schnittstelle einzuschalten.
 
-"Senden erlaubt" legt fest, ob über diese Schnittstelle überhaupt Daten
-gesendet werden dürfen.
+"Senden erlaubt" legt fest, ob Ã¼ber diese Schnittstelle Ã¼berhaupt Daten
+gesendet werden dÃ¼rfen.
 
 Als TNC Port wird das Unix Device eingetragen, mit dem der TNC (oder TNC
 und GPS) verbunden ist. Normalerweise geben sie hier /dev/ttyS0 (COM1),
 /dev/ttyS1 (COM2) etc. an.
 
-Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht für
-8 Datenbits, keine Parität und 1 Stopbit, 7E1 für 7 Datenbits, gerade
-Parität und 1 Stopbit und 7O1 arbeitet mit ungerader Parität. Bei
-Verwendung des HSP-Kabels müssen diese Einstellungen für TNC und GPS
+Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht fÃ¼r
+8 Datenbits, keine ParitÃ¤t und 1 Stopbit, 7E1 fÃ¼r 7 Datenbits, gerade
+ParitÃ¤t und 1 Stopbit und 7O1 arbeitet mit ungerader ParitÃ¤t. Bei
+Verwendung des HSP-Kabels mÃ¼ssen diese Einstellungen fÃ¼r TNC und GPS
 identisch sein.
 
-Mit den IGate Optionen können sie festlegen, in welche Richtung
-Internetverkehr über diese Schnittstelle erfolgen kann. Dies kann für
-jedes Gerät getrennt eingestellt werden. Wenn sie kein IGate betreiben,
+Mit den IGate Optionen kÃ¶nnen sie festlegen, in welche Richtung
+Internetverkehr Ã¼ber diese Schnittstelle erfolgen kann. Dies kann fÃ¼r
+jedes GerÃ¤t getrennt eingestellt werden. Wenn sie kein IGate betreiben,
 lassen sie die Einstellungen auf "Disable".
 
 Tragen sie bis zu drei UNPROTO Pfade ein, Xastir gibt dabei das
 Zielrufzeichen vor. Falls mehrere Pfade (bis zu drei) eingetragen wurden,
 so verwendet Xastir diese abwechselnd bei jeder Aussendung, um so auch in
-schwierigen Situationen gehört zu werden. Wenn sie nur lokalen Verkehr
-haben, so genügt ein einzelnes WIDE2-2. Bei wenig Leistung oder größerer
-Entfernung von einem Digipeater dürfte "WIDE1-1,WIDE2-2" besser funktionieren.
-Wenn sie das Rufzeichen eines benachbarten Digis kennen, können sie auch
-alle Pakete über diesen schicken, indem sie es an erster Stelle nennen,
-also z.B. "DB0XYZ,WIDE2-2". Für die meisten Stationen wird ein Pfad genügen,
+schwierigen Situationen gehÃ¶rt zu werden. Wenn sie nur lokalen Verkehr
+haben, so genÃ¼gt ein einzelnes WIDE2-2. Bei wenig Leistung oder grÃ¶ÃŸerer
+Entfernung von einem Digipeater dÃ¼rfte "WIDE1-1,WIDE2-2" besser funktionieren.
+Wenn sie das Rufzeichen eines benachbarten Digis kennen, kÃ¶nnen sie auch
+alle Pakete Ã¼ber diesen schicken, indem sie es an erster Stelle nennen,
+also z.B. "DB0XYZ,WIDE2-2". FÃ¼r die meisten Stationen wird ein Pfad genÃ¼gen,
 in abgelegenen Gegenden oder unter schwierigen Bedingungen kann es
-sinnvoll sein, mehrere einzutragen. Am besten läßt es sich mit örtlichen
-Funkamateuren abklären, welcher Pfad geeignet ist, um einerseits gut
-gehört zu werden, andererseits aber die Frequenzen nicht unnötig zu
+sinnvoll sein, mehrere einzutragen. Am besten lÃ¤ÃŸt es sich mit Ã¶rtlichen
+Funkamateuren abklÃ¤ren, welcher Pfad geeignet ist, um einerseits gut
+gehÃ¶rt zu werden, andererseits aber die Frequenzen nicht unnÃ¶tig zu
 belasten. In Gegenden mit intelligenten Digis, die Wiederholungsschleifen
 weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "WIDE1-1,WIDE3-3"
 verwendet werden.
 
 Die TNC Startup und Shutdown Dateien befinden sich im Verzeichnis
 /usr/local/share/xastir/config und werden beim Starten bzw. Stoppen der
-TNC-Verbindung zur Initialisierung ausgeführt. Es handelt sich um
+TNC-Verbindung zur Initialisierung ausgefÃ¼hrt. Es handelt sich um
 normale Textdateien mit Kommandos, die an den TNC gesendet werden.
 
 HELP-INDEX>AX.25 TNC Schnittstellen
 
                          AX.25 TNC Schnittstellen
 
-Als AX.25 TNC Device kann jedes Gerät verwendet werden, daß über ein
+Als AX.25 TNC Device kann jedes GerÃ¤t verwendet werden, daÃŸ Ã¼ber ein
 Linux AX.25 Treiber angesprochen werden kann. Hierbei handelt es sich um
 einen Kernel-Treiber, der z.B. auch das Baycom-Modem oder ein Packet
-Radio über die Soundkarte unterstützt. Diese Geräte müssen vor dem Start
-von Xastir in Linux eingerichtet werden, bevor sie benutzt werden können.
+Radio Ã¼ber die Soundkarte unterstÃ¼tzt. Diese GerÃ¤te mÃ¼ssen vor dem Start
+von Xastir in Linux eingerichtet werden, bevor sie benutzt werden kÃ¶nnen.
 
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
 Programmstart versuchen, diese Schnittstelle einzuschalten.
 
-"Senden erlaubt" legt fest, ob über diese Schnittstelle überhaupt Daten
-gesendet werden dürfen.
+"Senden erlaubt" legt fest, ob Ã¼ber diese Schnittstelle Ã¼berhaupt Daten
+gesendet werden dÃ¼rfen.
 
-Mit den IGate Optionen können sie festlegen, in welche Richtung
-Internetverkehr über diese Schnittstelle erfolgen kann. Dies kann für
-jedes Gerät getrennt eingestellt werden. Wenn sie kein IGate betreiben,
+Mit den IGate Optionen kÃ¶nnen sie festlegen, in welche Richtung
+Internetverkehr Ã¼ber diese Schnittstelle erfolgen kann. Dies kann fÃ¼r
+jedes GerÃ¤t getrennt eingestellt werden. Wenn sie kein IGate betreiben,
 lassen sie die Einstellungen auf "Disable".
 
-Geben sie den für das AX.25-Gerät festgelegten Device-Namen an, wie er
+Geben sie den fÃ¼r das AX.25-GerÃ¤t festgelegten Device-Namen an, wie er
 in der Datei /etc/ax25/axports steht.
 
 Tragen sie bis zu drei UNPROTO Pfade ein, Xastir gibt dabei das
 Zielrufzeichen vor. Falls mehrere Pfade (bis zu drei) eingetragen wurden,
 so verwendet Xastir diese abwechselnd bei jeder Aussendung, um so auch in
-schwierigen Situationen gehört zu werden. Wenn sie nur lokalen Verkehr
-haben, so genügt ein einzelnes WIDE2-2. Bei wenig Leistung oder größerer
-Entfernung von einem Digipeater dürfte "WIDE1-1,WIDE2-2" besser funktionieren.
-Wenn sie das Rufzeichen eines benachbarten Digis kennen, können sie auch
-alle Pakete über diesen schicken, indem sie es an erster Stelle nennen,
-also z.B. "DB0XYZ,WIDE2-2". Für die meisten Stationen wird ein Pfad genügen,
+schwierigen Situationen gehÃ¶rt zu werden. Wenn sie nur lokalen Verkehr
+haben, so genÃ¼gt ein einzelnes WIDE2-2. Bei wenig Leistung oder grÃ¶ÃŸerer
+Entfernung von einem Digipeater dÃ¼rfte "WIDE1-1,WIDE2-2" besser funktionieren.
+Wenn sie das Rufzeichen eines benachbarten Digis kennen, kÃ¶nnen sie auch
+alle Pakete Ã¼ber diesen schicken, indem sie es an erster Stelle nennen,
+also z.B. "DB0XYZ,WIDE2-2". FÃ¼r die meisten Stationen wird ein Pfad genÃ¼gen,
 in abgelegenen Gegenden oder unter schwierigen Bedingungen kann es
-sinnvoll sein, mehrere einzutragen. Am besten läßt es sich mit örtlichen
-Funkamateuren abklären, welcher Pfad geeignet ist, um einerseits gut
-gehört zu werden, andererseits aber die Frequenzen nicht unnötig zu
+sinnvoll sein, mehrere einzutragen. Am besten lÃ¤ÃŸt es sich mit Ã¶rtlichen
+Funkamateuren abklÃ¤ren, welcher Pfad geeignet ist, um einerseits gut
+gehÃ¶rt zu werden, andererseits aber die Frequenzen nicht unnÃ¶tig zu
 belasten. In Gegenden mit intelligenten Digis, die Wiederholungsschleifen
 weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "WIDE1-1,WIDE3-3"
 verwendet werden.
 
-Anmerkung: Um die AX.25 Treiber verwenden zu können, muß Xastir unter
-"root"-Rechten laufen. Um Xastir als normaler Benutzer zu starten, muß
+Anmerkung: Um die AX.25 Treiber verwenden zu kÃ¶nnen, muÃŸ Xastir unter
+"root"-Rechten laufen. Um Xastir als normaler Benutzer zu starten, muÃŸ
 das suid Bit beim Xastir-Programm gesetzt werden. Hierzu dient das
 folgende Kommando (als root): "chmod a+s /usr/local/bin/xastir".
 
-Beachten sie bitte, daß jedes Programm, das auf diese Weise läuft, als
+Beachten sie bitte, daÃŸ jedes Programm, das auf diese Weise lÃ¤uft, als
 Sicherheitsrisiko angesehen werden kann. Es wurde nicht besonders auf
-mögliche Sicherheitsrisiken hin getestet, benutzen sie es also in einer
+mÃ¶gliche Sicherheitsrisiken hin getestet, benutzen sie es also in einer
 Mehrbenutzer-Umgebung mit Vorsicht und auf eigenes Riskio!
 
 HELP-INDEX>Serieller GPS
 
                               Serieller GPS
 
-Setzen sie die serielle Schnittstelle für den GPS Empfänger. Gängige
-Einträge sind hier /dev/ttyS0 (COM1) oder /dev/ttyS1 (COM2).
+Setzen sie die serielle Schnittstelle fÃ¼r den GPS EmpfÃ¤nger. GÃ¤ngige
+EintrÃ¤ge sind hier /dev/ttyS0 (COM1) oder /dev/ttyS1 (COM2).
 
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
 Programmstart versuchen, diese Schnittstelle einzuschalten.
 
-Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht für
-acht Datenbits, keine Parität und 1 Stopbit, 7E1 für 7 Datenbits, gerade
-Parität und 1 Stopbit und 7O1 arbeitet mit ungerader Parität. Die Daten
-müssen mit denen des GPS-Empfängers übereinstimmen, die meisten Geräte
-verwenden im benötigten NMEA-Modus 4800 bps und 8N1.
+Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht fÃ¼r
+acht Datenbits, keine ParitÃ¤t und 1 Stopbit, 7E1 fÃ¼r 7 Datenbits, gerade
+ParitÃ¤t und 1 Stopbit und 7O1 arbeitet mit ungerader ParitÃ¤t. Die Daten
+mÃ¼ssen mit denen des GPS-EmpfÃ¤ngers Ã¼bereinstimmen, die meisten GerÃ¤te
+verwenden im benÃ¶tigten NMEA-Modus 4800 bps und 8N1.
 
-HELP-INDEX>GPS über Netzwerk
+HELP-INDEX>GPS Ã¼ber Netzwerk
 
-                             GPS über Netzwerk
+                             GPS Ã¼ber Netzwerk
 
-Wenn sie die GPS-Daten für verschiedene Programme bzw. Computer
-benötigen, ist diese Auswahl die geeignetste. Hierzu muß vorher der gpsd
+Wenn sie die GPS-Daten fÃ¼r verschiedene Programme bzw. Computer
+benÃ¶tigen, ist diese Auswahl die geeignetste. Hierzu muÃŸ vorher der gpsd
 eingerichtet worden sein, von dem Xastir dann, neben anderen Programmen,
 die GPS-Daten beziehen kann.
 
-Tragen sie Namen (oder IP-Adresse) und Port-Nummer für den gpsd Rechner
+Tragen sie Namen (oder IP-Adresse) und Port-Nummer fÃ¼r den gpsd Rechner
 in ihrem Netzwerk ein.
 
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
@@ -1733,15 +1733,15 @@ lokale Daten ins Internet zu senden.
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
 Programmstart versuchen, diese Schnittstelle einzuschalten.
 
-"Senden erlaubt" legt fest, ob über diese Schnittstelle überhaupt Daten
-ins Internet gesendet werden dürfen.
+"Senden erlaubt" legt fest, ob Ã¼ber diese Schnittstelle Ã¼berhaupt Daten
+ins Internet gesendet werden dÃ¼rfen.
 
 Tragen sie Namen (oder IP-Adresse) und Port-Nummer des Internet Servers
 ein, den sie ansprechen wollen.
 
-Geben sie einen gültigen Schlüssel (Pass-Code) ein um Daten über ein
-IGate senden zu können. Wenn sie keinen Schlüssel passend zu ihrem
-Rufzeichen haben, können sie einen mit dem beigefügten Programm
+Geben sie einen gÃ¼ltigen SchlÃ¼ssel (Pass-Code) ein um Daten Ã¼ber ein
+IGate senden zu kÃ¶nnen. Wenn sie keinen SchlÃ¼ssel passend zu ihrem
+Rufzeichen haben, kÃ¶nnen sie einen mit dem beigefÃ¼gten Programm
 "callpass" erzeugen. Wenn es noch nicht bereits kompiliert wurde, geben
 hierzu sie im src Verzeicnis "make callpass" ein.
 
@@ -1752,31 +1752,31 @@ HELP-INDEX>Serielle Wetterstation
 
                           Serielle Wetterstation
 
-Tragen sie die serielle Schnittstelle für die Wetterstation ein. Gängige
-Einträge sind hier /dev/ttyS0 (COM1) oder /dev/ttyS1 (COM2).
+Tragen sie die serielle Schnittstelle fÃ¼r die Wetterstation ein. GÃ¤ngige
+EintrÃ¤ge sind hier /dev/ttyS0 (COM1) oder /dev/ttyS1 (COM2).
 
 Durch Markieren von "Beim Start aktivieren" wird Xastir bei jedem
 Programmstart versuchen, diese Schnittstelle einzuschalten.
 
-Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht für
-acht Datenbits, keine Parität und 1 Stopbit, 7E1 für 7 Datenbits, gerade
-Parität und 1 Stopbit und 7O1 arbeitet mit ungerader Parität. Die Daten
-müssen mit denen ihrer Wetterstation übereinstimmen.
+Setzen sie nun die Baudrate und die Anzahl der Datenbits. 8N1 steht fÃ¼r
+acht Datenbits, keine ParitÃ¤t und 1 Stopbit, 7E1 fÃ¼r 7 Datenbits, gerade
+ParitÃ¤t und 1 Stopbit und 7O1 arbeitet mit ungerader ParitÃ¤t. Die Daten
+mÃ¼ssen mit denen ihrer Wetterstation Ã¼bereinstimmen.
 
 Durch die Angabe der "Datenart" kann festgelegt werden, welche Daten das
-Programm über die serielle Schnittstelle erwartet. Bei "Automatisch" wird
-zunächst nach Wetterdaten im Binärformat geschaut, wie es die Radio Shack
-WX-200 Wetterstation liefert. Falls keine Binärdaten im Datenstrom
+Programm Ã¼ber die serielle Schnittstelle erwartet. Bei "Automatisch" wird
+zunÃ¤chst nach Wetterdaten im BinÃ¤rformat geschaut, wie es die Radio Shack
+WX-200 Wetterstation liefert. Falls keine BinÃ¤rdaten im Datenstrom
 gefunden werden, versucht Xastir eine Wetterstation mit ASCII-Daten zu
 finden (wie Peet Bros.).
 
-HELP-INDEX>Wetterstation über Netzwerk
+HELP-INDEX>Wetterstation Ã¼ber Netzwerk
 
-                     Wetterstation über Netzwerk
+                     Wetterstation Ã¼ber Netzwerk
 
 Xastir kann Wetterdaten Server wie den wx200d ansprechen. wx200d erlaubt
-mehrere Netzwerkverbindungen, so daß Wetterdaten gleichzeitig
-verschiednen Programmen oder Computern zur Verfügung steht.
+mehrere Netzwerkverbindungen, so daÃŸ Wetterdaten gleichzeitig
+verschiednen Programmen oder Computern zur VerfÃ¼gung steht.
 
 Tragen sie Namen (oder IP-Adresse) und Port-Nummer des Wetterdaten
 Servers in ihrem Netzwerk ein.
@@ -1788,55 +1788,55 @@ Durch Markieren von "Wiederverbinden nach Fehler" versucht Xastir die
 Netzwerkverbindung nach einem Fehler wieder herzustellen.
 
 Wie im vorigen Abschnitt kann durch Angabe von "Datenart" die
-automatische Auswahl überschrieben werden.
+automatische Auswahl Ã¼berschrieben werden.
 
 HELP-INDEX>Ausdrucken des Bildschirms
 
                       Ausdrucken des Bildschirms
 
-Xastir kann den dargestellten Kartenausschnitt in Schwarz-Weiß oder in
-Farbe ausdrucken. Hierbei wird das Bild zunächst als XPixmap-Datei
+Xastir kann den dargestellten Kartenausschnitt in Schwarz-WeiÃŸ oder in
+Farbe ausdrucken. Hierbei wird das Bild zunÃ¤chst als XPixmap-Datei
 gespeichert, dann werden externen Zusatzprogramme gestartet, um es ins
 PostScript-Format zu konvertieren, zu skalieren und rotieren, eine
-Vorschau zu ermöglichen und es schließlich zu drucken.
+Vorschau zu ermÃ¶glichen und es schlieÃŸlich zu drucken.
 
-Hierfür muß Ihr System so eingerichtet sein, daß Sie PostScript-Dateien
-drucken können, gewöhnlich wird hierfür ghostscript, installierte
-Druckerfilter sowie ein lp oder lpr Druckerspooler benötigt. Für die
-Erstellung der Ausdrucke müssen dann die folgenden Pakete installiert
+HierfÃ¼r muÃŸ Ihr System so eingerichtet sein, daÃŸ Sie PostScript-Dateien
+drucken kÃ¶nnen, gewÃ¶hnlich wird hierfÃ¼r ghostscript, installierte
+Druckerfilter sowie ein lp oder lpr Druckerspooler benÃ¶tigt. FÃ¼r die
+Erstellung der Ausdrucke mÃ¼ssen dann die folgenden Pakete installiert
 sein: ImageMagick (speziell "convert"), Ghostscript nebst Schriften, und
-"gv". Wenn diese Pakete funktionsfähig sind, so sollte kurz nach dem
+"gv". Wenn diese Pakete funktionsfÃ¤hig sind, so sollte kurz nach dem
 Druckbefehl in Xastir ein "gv"-Fenster aufgehen, in dem man das Druckbild
-zunächst begutachten kann. Falls das Ergebnis zufriedenstellend ist, kann
+zunÃ¤chst begutachten kann. Falls das Ergebnis zufriedenstellend ist, kann
 es von gv aus ausgedruckt werden.
 
-Beachten Sie, daß es in Abhängigkeit von den dargestellten Karten
-sinnvoll sein kann, den Kartenhintergrund auf weiße Farbe zu ändern,
+Beachten Sie, daÃŸ es in AbhÃ¤ngigkeit von den dargestellten Karten
+sinnvoll sein kann, den Kartenhintergrund auf weiÃŸe Farbe zu Ã¤ndern,
 hierdurch kann gegebenenfalls einiges an Tinte gespart werden.
 
-HELP-INDEX>Erstellen automatischer Schnappschüsse
+HELP-INDEX>Erstellen automatischer SchnappschÃ¼sse
 
-                Erstellen automatischer Schnappschüsse
+                Erstellen automatischer SchnappschÃ¼sse
 
-Xastir hat die Fähigkeit, wiederholt automatische Schnappschüsse des
+Xastir hat die FÃ¤higkeit, wiederholt automatische SchnappschÃ¼sse des
 dargestellten Kartenausschnitts anzufertigen. Momentan erfolgt dies alle
-fünf Minuten. Unter der Voraussetzung, daß "convert" aus dem ImageMagick-
+fÃ¼nf Minuten. Unter der Voraussetzung, daÃŸ "convert" aus dem ImageMagick-
 Paket installiert ist, erzeugt Xastir eine XPM-Datei in /var/tmp und
 konvertiert diese dann in die PNG-Datei /var/tmp/xastir_snap.png.
-Hiermit kann das aktuelle Geschehen z.B. auf einer regelmäßig
-aktualisierten Webpage dargestellt werden. Schnappschüsse werden über
-Datei - Schnappschüsse eingeschaltet.
+Hiermit kann das aktuelle Geschehen z.B. auf einer regelmÃ¤ÃŸig
+aktualisierten Webpage dargestellt werden. SchnappschÃ¼sse werden Ã¼ber
+Datei - SchnappschÃ¼sse eingeschaltet.
 
 HELP-INDEX>Symboltabelle
 
                           Symboltabelle
 
-Dies sind die Definitionen der für ihre Station oder für Objekte
-wählbaren Symbole. Es stehen zwei Gruppen zur Verfügung, mit teilweise
+Dies sind die Definitionen der fÃ¼r ihre Station oder fÃ¼r Objekte
+wÃ¤hlbaren Symbole. Es stehen zwei Gruppen zur VerfÃ¼gung, mit teilweise
 unterschiedlichen Symbolen bei gleichem Symbolbuchstaben. Die Grafiken
 aus der alternative Gruppe "\" werden auch herangezogen, wenn ein Overlay
 erfolgen soll. Hierzu wird als Gruppe ein Buchstabe [A-Z] oder eine
-Zahl [0-9] eingegeben, dies erscheint dann überlagert über dem Symbol.
+Zahl [0-9] eingegeben, dies erscheint dann Ã¼berlagert Ã¼ber dem Symbol.
 Die aktuelle Liste findet man in der APRS Reference, die es bei
 http://www.tapr.org gibt.
 
@@ -1944,101 +1944,101 @@ HELP-INDEX>Was war neu in Xastir V1.0
 
                      Was war neu in Xastir V1.0
 
-Während des vergangenen Jahres wurde Xastir weiterentwickelt und dieses
-Release ist das Ergebnis dieser Bemühungen. Die Entwicklung wurde von
-Chuck Byam geleitet, der das Projekt mit dem Einverständnis von Frank
-Giannandrea übernommen hat. Viele andere haben zum Erfolg des Projects
+WÃ¤hrend des vergangenen Jahres wurde Xastir weiterentwickelt und dieses
+Release ist das Ergebnis dieser BemÃ¼hungen. Die Entwicklung wurde von
+Chuck Byam geleitet, der das Projekt mit dem EinverstÃ¤ndnis von Frank
+Giannandrea Ã¼bernommen hat. Viele andere haben zum Erfolg des Projects
 beigetragen, eine Auflistung findet sich in der Datei AUTHORS.
 
 Das Xastir Paket benutzt nun GNU autoconf um die Makefiles zu erstellen
 und verschiedene Eigenschaften aufgrund der installierten Bibliotheken
-und Software auszuwählen.
+und Software auszuwÃ¤hlen.
 
-Beim Start von Xastir V1.0 werden sie womöglich nicht sofort größere
-Änderungen entdecken. Die bekannte Bedienoberfläche wurde weitgehend
-beibehalten. Der größte Teil der Änderungen bleibt im Verborgenen und
+Beim Start von Xastir V1.0 werden sie womÃ¶glich nicht sofort grÃ¶ÃŸere
+Ã„nderungen entdecken. Die bekannte BedienoberflÃ¤che wurde weitgehend
+beibehalten. Der grÃ¶ÃŸte Teil der Ã„nderungen bleibt im Verborgenen und
 dient einer Steigerungen der Effizienz:
 
 o Die Startzeit des Programms wurde verbessert
 
-o Der Speicherbedarf wurde durch dynamische Speicherzuweisung für
+o Der Speicherbedarf wurde durch dynamische Speicherzuweisung fÃ¼r
   Stationen, Spuren und Wetterdaten stark verbessert. D.h. es wird kein
-  Speicher mehr verschwendet für nicht vorhandene Spurdaten bei festen
+  Speicher mehr verschwendet fÃ¼r nicht vorhandene Spurdaten bei festen
   Stationen oder Wetterdaten bei den meisten Stationen. Mit diesen
-  Änderungen ist es möglich, Xastir komfortabel mit dem Internet zu
+  Ã„nderungen ist es mÃ¶glich, Xastir komfortabel mit dem Internet zu
   verbinden, auch wenn nur sehr wenig Speicher vorhanden ist.
 
 o Das Laden der Karten wurde verbessert, indem nun nicht mehr bei jeder
-  kleinen Änderung die Karte neu von der Festplatte geladen werden muß.
-  Wetterwarnungen und Änderungen an den Einstellungen für die Darstellung
+  kleinen Ã„nderung die Karte neu von der Festplatte geladen werden muÃŸ.
+  Wetterwarnungen und Ã„nderungen an den Einstellungen fÃ¼r die Darstellung
   und Tracking Optionen erfordern kein Neuladen der Karten, stattdessen
   werden nur die Symbole und die Spuren neu gezeichnet.
 
-o Verschiedene Dialog-Fenster, die früher häufig neu gezeichnet wurden,
+o Verschiedene Dialog-Fenster, die frÃ¼her hÃ¤ufig neu gezeichnet wurden,
   werden nun nur bei Bedarf aktualisiert und sind damit auch auf
-  langsameren Systemen akzeptabel. Dies gilt auch für das Verfolgen einer
+  langsameren Systemen akzeptabel. Dies gilt auch fÃ¼r das Verfolgen einer
   Station (Tracking), wobei die Karte nun nur neu gezeichnet wird, wenn
-  die Station sich dem Rand des Bildschirms nähert.
+  die Station sich dem Rand des Bildschirms nÃ¤hert.
 
-Dank dieser Änderungen kann Xastir problemlos auch auf langsameren
+Dank dieser Ã„nderungen kann Xastir problemlos auch auf langsameren
 Pentium(tm) Rechnern eingesetzt werden.  
   
-Unterstützung für das GeoTIFF Kartenformat ist nun vorhanden und wird
+UnterstÃ¼tzung fÃ¼r das GeoTIFF Kartenformat ist nun vorhanden und wird
 in Xastir einkompiliert, wenn die GeoTiff Bibliotheken auf dem System
-installiert sind. Diese Karten sind von hoher Qualität und besonders für
+installiert sind. Diese Karten sind von hoher QualitÃ¤t und besonders fÃ¼r
 Such- und Rettungsoperationen zu gebrauchen. Karten in diesem Format sind
-vom USGS und kommerziell auf CD-ROM erhältlich. Xastir weiß, wie das
-Datum von NAD-27 in WGS-84 umzurechnen ist, so daß Karten in beiden
-Formaten ohne Genauigkeitsverlust gelesen werden können. Zusätzliche
-Tasten wurden in der Kartenauswahl hinzugefügt, um schnell alle Karten
-einer bestimmten Art auszuwählen.
+vom USGS und kommerziell auf CD-ROM erhÃ¤ltlich. Xastir weiÃŸ, wie das
+Datum von NAD-27 in WGS-84 umzurechnen ist, so daÃŸ Karten in beiden
+Formaten ohne Genauigkeitsverlust gelesen werden kÃ¶nnen. ZusÃ¤tzliche
+Tasten wurden in der Kartenauswahl hinzugefÃ¼gt, um schnell alle Karten
+einer bestimmten Art auszuwÃ¤hlen.
 
-Das oben gesagte gilt in erster Linie für die USA, wo es jede Menge
-Karten gibt. Bei uns gibt es zwar schönere topgraphische Karten, dafür
+Das oben gesagte gilt in erster Linie fÃ¼r die USA, wo es jede Menge
+Karten gibt. Bei uns gibt es zwar schÃ¶nere topgraphische Karten, dafÃ¼r
 gibt es aber so gut wie nichts kostenlos, und damit auch kein
 verbreitetes Standardformat.
   
-Xastir unterstützt nun das Setzen und Löschen von Objekten. Objekte
-können verwendet werden, um Treffen anzuzeigen, Reisenden Hinweise zu
-geben oder Such- und Rettungseinsätze durchzuführen.
+Xastir unterstÃ¼tzt nun das Setzen und LÃ¶schen von Objekten. Objekte
+kÃ¶nnen verwendet werden, um Treffen anzuzeigen, Reisenden Hinweise zu
+geben oder Such- und RettungseinsÃ¤tze durchzufÃ¼hren.
 
 Die amerikanischen County Wetterwarnungs-Karten werden nicht mehr direkt
-auf die Karten gezeichnet, sondern mit der Karte überlagert. Einerseits
-sind die Farben dadurch verfälscht, aber es ist nun möglich, die
-Straßenkarten auch im Warnungsgebiet zu erkennen.
+auf die Karten gezeichnet, sondern mit der Karte Ã¼berlagert. Einerseits
+sind die Farben dadurch verfÃ¤lscht, aber es ist nun mÃ¶glich, die
+StraÃŸenkarten auch im Warnungsgebiet zu erkennen.
 
-Eine neue und nützliche Eigenschaft ist, daß sich die Ausrichtung einiger
-Symbole ändert, je nachdem in welche Richtung sich z.B. ein Fahrzeug
-bewegt. Auch ohne die zurückgelegte Spur kann man die Richtung einer
+Eine neue und nÃ¼tzliche Eigenschaft ist, daÃŸ sich die Ausrichtung einiger
+Symbole Ã¤ndert, je nachdem in welche Richtung sich z.B. ein Fahrzeug
+bewegt. Auch ohne die zurÃ¼ckgelegte Spur kann man die Richtung einer
 Mobilstation mit einem Blick erfassen. Es gibt einige weitere Optionen
 im Menu Darstellung mit denen man genauer festlegen kann, was angezeigt
 werden soll und was nicht.
 
-Das Verschieben und die Kontrolle über den Kartenausschnitt wurde
+Das Verschieben und die Kontrolle Ã¼ber den Kartenausschnitt wurde
 verbessert: Es gibt nun Pfeile oben rechts im Menu, um die Karte mit der
 Maus zu verschieben. Die Karte kann auch mit den Cursortasten verschoben
-werden und die Vergrößerung kann mit den PgUp und PgDn Tasten eingestellt
+werden und die VergrÃ¶ÃŸerung kann mit den PgUp und PgDn Tasten eingestellt
 werden. Im PopUp-Menu der linken Maustaste gibt es neue Optionen um die
 Karte an der aktuellen Position zu zentrieren oder dort ein Pbjekt zu
-platzieren. Die Verschiebemöglichkeiten über dieses Menu wurden zugunsten
+platzieren. Die VerschiebemÃ¶glichkeiten Ã¼ber dieses Menu wurden zugunsten
 der oben genannten entfernt.
 
-Unterstützung für Alternative Netzwerke wurde hinzugefügt, hiermit wird
-es möglich, ein privates APRS(tm) Netzwerk einzurichten für
-Veranstaltungen, für Such- und Rettungseinsätze, Sturmjagd, oder für
+UnterstÃ¼tzung fÃ¼r Alternative Netzwerke wurde hinzugefÃ¼gt, hiermit wird
+es mÃ¶glich, ein privates APRS(tm) Netzwerk einzurichten fÃ¼r
+Veranstaltungen, fÃ¼r Such- und RettungseinsÃ¤tze, Sturmjagd, oder fÃ¼r
 alles wo der Benutzer nicht von Hunderten von APRS(tm)-Stationen um ihn
 herum genervt werden will.
 
-Es gibt viele kleine Änderungen, sichtbar oder unsichtbar für den
+Es gibt viele kleine Ã„nderungen, sichtbar oder unsichtbar fÃ¼r den
 Benutzer. Die Schnittstellen-Steuerung hat nun eine Option, um alle
 Schnittstellen gleichzeitig zu starten oder zu stoppen, um dem Benutzer
-es zu ersparen, dies für jede Schnittstelle einzeln tun zu müssen. Die
-Stationseinstellungen zeigen nun das gewählte Symbol, so daß man das
-Fenster nicht mehr verlassen muß, um es zu sehen. Einige Pufferüberläufe,
-die unvorhersagbares Verhalten oder Programmabstürze hervorgerufen
-hatten, wurden beseitigt. Und viele kleinere Änderungen wurden am
+es zu ersparen, dies fÃ¼r jede Schnittstelle einzeln tun zu mÃ¼ssen. Die
+Stationseinstellungen zeigen nun das gewÃ¤hlte Symbol, so daÃŸ man das
+Fenster nicht mehr verlassen muÃŸ, um es zu sehen. Einige PufferÃ¼berlÃ¤ufe,
+die unvorhersagbares Verhalten oder ProgrammabstÃ¼rze hervorgerufen
+hatten, wurden beseitigt. Und viele kleinere Ã„nderungen wurden am
 Quelltext vorgenommen, damit Xastir auf verschiedenen Systemen fehlerfrei
-übersetzt werden kann.
+Ã¼bersetzt werden kann.
 
 Viel Freude mit dem neuen Xastir!
 

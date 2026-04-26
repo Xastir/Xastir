@@ -32,6 +32,7 @@
 extern int load_language_file(char *filename);
 extern char *langcode(char *code);
 extern char langcode_hotkey(char *code);
+extern void utf8_to_latin1_inplace(char *buf);
 
 
 

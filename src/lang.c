@@ -61,7 +61,7 @@
  * Because every multi-byte UTF-8 sequence is longer than its decoded form,
  * the output is always <= the input length, making in-place conversion safe.
  */
-static void utf8_to_latin1_inplace(char *buf)
+void utf8_to_latin1_inplace(char *buf)
 {
   unsigned char *in  = (unsigned char *)buf;
   unsigned char *out = (unsigned char *)buf;
