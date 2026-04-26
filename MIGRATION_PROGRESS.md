@@ -12,7 +12,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | # | File                  | LOC   | Widget refs | Callbacks | Status |
 |---|-----------------------|-------|-------------|-----------|--------|
 | 1 | `popup_gui.c`         |   417 |           9 |         1 | ☑      |
-| 2 | `location_gui.c`      |   672 |          12 |         4 | ☐      |
+| 2 | `location_gui.c`      |   672 |          12 |         4 | ☑      |
 | 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☐      |
 | 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☐      |
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☐      |
@@ -74,11 +74,45 @@ what got moved, what got tested, what got left behind.
       for v1, candidate for unification once a few more dialogs are migrated.
 ```
 
+```
+#2 location_gui.c — 2026-04-26
+  Controller:  src/location_controller.{h,c}  (131 + 343 LOC)
+  Tests:       tests/test_location_controller.c  (16 cases, all green;
+               full suite: 257/257 ok)
+  Logic extracted:
+    - location_controller_parse_line()   — parse pipe-delimited locations.sys line
+    - location_controller_name_valid()   — validate name (non-empty, < 100 chars)
+    - location_controller_name_exists()  — duplicate-name check (file scan)
+    - location_controller_find()         — lookup by name, return lat/lon/zoom
+    - location_controller_add()          — append new entry (append-to-file)
+    - location_controller_delete()       — filter file removing named entry
+  Globals retired:  none (no extractable file-scope state existed)
+  Globals deferred (intentional):
+    - location_dialog / location_list    — Widget handles; stay in location_gui.c
+    - location_dialog_lock               — mutex; threading/Motif concern
+    - center_latitude / center_longitude / scale_y — map-state globals;
+                                           GUI passes them in as strings after
+                                           calling convert_lat_l2s / convert_lon_l2s
+  Behavior preserved:
+    - jump_sort() left in location_gui.c: calls sort_input_database() (db.c) and
+      sort_list() (main.c/Widget), both too coupled to GUI tier to split here.
+    - location_add(): validation order preserved (name_valid first, then
+      name_exists); error popups unchanged.
+    - location_delete(): original used "a" (append) mode for temp file — changed
+      to "w" (overwrite) which is the correct atomic-rewrite behaviour; net
+      result is identical since temp file is immediately renamed over original.
+  Surprises:
+    - Controller uses only standard C (fopen/fgets/strtok/rename); no stubs file
+      needed. Pattern from popup_controller confirmed: self-contained = no stubs.
+    - location_add() name buffer changed from char[100] to char[LOCATION_NAME_MAX]
+      (same value, 100) to keep it in sync with the controller constant.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        1 / 13
-- Total LOC reviewed:    417
+- Files migrated:        2 / 13
+- Total LOC reviewed:    1089
 - Globals retired:       1
-- New unit tests added:  11
+- New unit tests added:  27

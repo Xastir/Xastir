@@ -62,6 +62,7 @@ XASTIR_SRC = \
     objects.h objects.c \
     objects_gui.c objects_gui.h \
     object_utils.h object_utils.c \
+    location_controller.c location_controller.h \
     popup.h \
     popup_controller.c popup_controller.h \
     popup_gui.c \

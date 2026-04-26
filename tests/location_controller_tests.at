@@ -1,0 +1,100 @@
+# Autotest tests for location_controller.c
+# Covers the presentation-free kernel extracted from location_gui.c.
+
+AT_BANNER([Location Controller])
+
+AT_SETUP([location_controller_init: stores paths])
+AT_KEYWORDS([location location_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" init_zeroes_state], [0], [PASS: location_controller_init: stores paths
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_init: NULL paths stored as empty])
+AT_KEYWORDS([location location_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" init_null_paths_are_empty], [0], [PASS: location_controller_init: NULL paths stored as empty
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_name_valid: basic cases])
+AT_KEYWORDS([location location_controller name_valid])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" name_valid_basic], [0], [PASS: location_controller_name_valid: basic cases
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_name_valid: empty/NULL rejected])
+AT_KEYWORDS([location location_controller name_valid])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" name_valid_empty_and_null], [0], [PASS: location_controller_name_valid: empty/NULL rejected
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_parse_line: valid line])
+AT_KEYWORDS([location location_controller parse_line])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" parse_line_valid], [0], [PASS: location_controller_parse_line: valid line
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_parse_line: no pipe fails])
+AT_KEYWORDS([location location_controller parse_line])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" parse_line_no_pipe], [0], [PASS: location_controller_parse_line: no pipe fails
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_parse_line: too short fails])
+AT_KEYWORDS([location location_controller parse_line])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" parse_line_too_short], [0], [PASS: location_controller_parse_line: too short fails
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_parse_line: bad position format fails])
+AT_KEYWORDS([location location_controller parse_line])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" parse_line_bad_position_format], [0], [PASS: location_controller_parse_line: bad position format fails
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_parse_line: NULL args handled])
+AT_KEYWORDS([location location_controller parse_line])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" parse_line_null_args], [0], [PASS: location_controller_parse_line: NULL args handled
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_name_exists: found and not-found])
+AT_KEYWORDS([location location_controller name_exists])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" name_exists_found_and_not_found], [0], [PASS: location_controller_name_exists: found and not-found
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_name_exists: empty file])
+AT_KEYWORDS([location location_controller name_exists])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" name_exists_empty_file], [0], [PASS: location_controller_name_exists: empty file
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_find: returns correct entry])
+AT_KEYWORDS([location location_controller find])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" find_returns_correct_entry], [0], [PASS: location_controller_find: returns correct entry
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_add: appends new entry])
+AT_KEYWORDS([location location_controller add])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" add_appends_entry], [0], [PASS: location_controller_add: appends new entry
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_delete: removes only the named entry])
+AT_KEYWORDS([location location_controller delete])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" delete_removes_entry], [0], [PASS: location_controller_delete: removes only the named entry
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller_delete: absent name is a no-op])
+AT_KEYWORDS([location location_controller delete])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" delete_nonexistent_is_noop], [0], [PASS: location_controller_delete: absent name is a no-op
+])
+AT_CLEANUP
+
+AT_SETUP([location_controller: defensive NULL handling])
+AT_KEYWORDS([location location_controller defensive])
+AT_CHECK(["$abs_top_builddir/tests/test_location_controller" defensive_null], [0], [PASS: location_controller: defensive NULL handling
+])
+AT_CLEANUP
