@@ -151,6 +151,7 @@ char *xastir_version=VERSION;
 
 #include "x_spider.h"
 #include "map_cache.h"
+#include "lang.h"
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
@@ -20411,6 +20412,7 @@ void help_view( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSED
         while(!feof(f))
         {
           (void)get_line(f,temp2,200);
+          utf8_to_latin1_inplace(temp2);
           if (strncmp(temp2,"HELP-INDEX>",11)==0)
           {
             if(strcmp((temp2+11),temp)==0)
@@ -20588,6 +20590,7 @@ void Help_Index( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointer UNUSE
       while (!feof(f))
       {
         (void)get_line(f,temp,600);
+        utf8_to_latin1_inplace(temp);
         if (strncmp(temp,"HELP-INDEX>",11)==0)
         {
           XmListAddItem(help_list, str_ptr = XmStringCreateLocalized((temp+11)),n++);

@@ -758,7 +758,7 @@ WPUPSTI012|laatste via onbekend||
 WPUPSTI013|, en is van positie veranderd||
 WPUPSTI014|Huidig Vermogen en Winst:||
 WPUPSTI016|Hoogte: %.0f%s ||
-WPUPSTI017|Richting: %sø ||
+WPUPSTI017|Richting: %sÃ¸ ||
 WPUPSTI018|Snelheid: %.1fkm/h||
 WPUPSTI019|Snelheid: %.1fmph||
 WPUPSTI020|%0.1f Mijl||
@@ -770,10 +770,10 @@ WPUPSTI025|Wind Richting: %s Snelheid: %03d km/h||
 WPUPSTI026|Wind Richting: %s Snelheid: %s mph||
 WPUPSTI027| Piek: %03d km/h||
 WPUPSTI028| Piek: %s mph||
-WPUPSTI029|Temperatuur: %02.1føC   ||
-WPUPSTI030|Temperatuur: %søF   ||
+WPUPSTI029|Temperatuur: %02.1fÃ¸C   ||
+WPUPSTI030|Temperatuur: %sÃ¸F   ||
 WPUPSTI031|Vochigheid: %s%%   ||
-WPUPSTI032|Gevoels temperatuur: %02.1føC  ||
+WPUPSTI032|Gevoels temperatuur: %02.1fÃ¸C  ||
 WPUPSTI033|Baro: %s hPa||
 WPUPSTI034|Sneeuw: %0.1f (cm/24h)||
 WPUPSTI035|Sneeuw: %0.0f (inch/24h)||
@@ -801,8 +801,8 @@ WPUPSTI056|Zet automatisch bijwerken aan||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF richting: %s||
 WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
-WPUPSTI060|Ontbrandings temp: %02.1føC  ||
-WPUPSTI061|Ontbrandings temp: %søF   ||
+WPUPSTI060|Ontbrandings temp: %02.1fÃ¸C  ||
+WPUPSTI061|Ontbrandings temp: %sÃ¸F   ||
 WPUPSTI062|Vochtigheids gehalte in brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Vraag NWS waarschuwing||

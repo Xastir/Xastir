@@ -50,6 +50,65 @@
 
 
 
+/*
+ * Convert a UTF-8 encoded string to ISO-8859-1 in-place.
+ * Characters in the range U+0080..U+00FF are preserved as their single-byte
+ * Latin-1 equivalents.  Any codepoint above U+00FF (not representable in
+ * Latin-1) is replaced with '?'.  Invalid UTF-8 byte sequences are passed
+ * through as-is so that legacy ISO-8859-1 files that were never re-encoded
+ * continue to work unchanged.
+ *
+ * Because every multi-byte UTF-8 sequence is longer than its decoded form,
+ * the output is always <= the input length, making in-place conversion safe.
+ */
+void utf8_to_latin1_inplace(char *buf)
+{
+  unsigned char *in  = (unsigned char *)buf;
+  unsigned char *out = (unsigned char *)buf;
+
+  while (*in)
+  {
+    if (*in < 0x80)
+    {
+      /* Plain ASCII byte — copy as-is */
+      *out++ = *in++;
+    }
+    else if ((*in & 0xE0) == 0xC0 && (in[1] & 0xC0) == 0x80)
+    {
+      /* 2-byte sequence: U+0080 .. U+07FF */
+      unsigned int cp = (unsigned int)((*in & 0x1F) << 6) | (in[1] & 0x3F);
+      *out++ = (cp <= 0xFF) ? (unsigned char)cp : (unsigned char)'?';
+      in += 2;
+    }
+    else if ((*in & 0xF0) == 0xE0
+             && (in[1] & 0xC0) == 0x80
+             && (in[2] & 0xC0) == 0x80)
+    {
+      /* 3-byte sequence: U+0800 .. U+FFFF — outside Latin-1 */
+      *out++ = '?';
+      in += 3;
+    }
+    else if ((*in & 0xF8) == 0xF0
+             && (in[1] & 0xC0) == 0x80
+             && (in[2] & 0xC0) == 0x80
+             && (in[3] & 0xC0) == 0x80)
+    {
+      /* 4-byte sequence: U+10000 and above — outside Latin-1 */
+      *out++ = '?';
+      in += 4;
+    }
+    else
+    {
+      /* Not valid UTF-8 — pass the byte through unchanged so that a
+       * legacy file that was never re-encoded still works. */
+      *out++ = *in++;
+    }
+  }
+  *out = '\0';
+}
+
+
+
 char lang_code[MAX_LANG_ENTRIES][MAX_LANG_CODE+1];
 char *lang_code_ptr[MAX_LANG_ENTRIES];
 char lang_buffer[MAX_LANG_BUFFER];
@@ -205,6 +264,11 @@ int load_language_file(char *filename)
                         temp_ptr=strtok(NULL,"|");         /* get string */
                         if (temp_ptr!=NULL)
                         {
+                          /* Convert UTF-8 → ISO-8859-1 so that language
+                           * files saved by modern editors (which default to
+                           * UTF-8) work correctly with Motif/Xlib, which
+                           * expects Latin-1 bytes. */
+                          utf8_to_latin1_inplace(temp_ptr);
                           data_len=(int)strlen(temp_ptr);
                           if ((buffer_len+data_len+1)< MAX_LANG_BUFFER)
                           {

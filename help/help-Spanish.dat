@@ -1,79 +1,79 @@
-HELP-INDEX>L…AME PRIMERO - Licencia
+HELP-INDEX>L√âAME PRIMERO - Licencia
 
-           L…AME PRIMERO - Licencia
+           L√âAME PRIMERO - Licencia
 
-!!! NOTA: °Este Documento se actualizÛ en Fecha 04/09/02 !!
+!!! NOTA: ¬°Este Documento se actualiz√≥ en Fecha 04/09/02 !!
 
-Para la informaciÛn m·s actualizada por favor
+Para la informaci√≥n m√°s actualizada por favor
 lea el archivo README.1ST en el directorio de Xastir.
 
 Recuerde que este programa es usado por la comunidad HAM, en los EE.UU
 la FCC le restringe de transmitir sobre RF si usted no es un HAM con licencia.
-Usuarios autorizados en otros paÌses fuera de los EE.UU.
+Usuarios autorizados en otros pa√≠ses fuera de los EE.UU.
 Deben buscar sus restricciones gubernamentales locales. 
 
 LICENCIA:
 
-XASTIR, EstaciÛn de Aficionado de Rastreo y Reportes de InformaciÛn.
+XASTIR, Estaci√≥n de Aficionado de Rastreo y Reportes de Informaci√≥n.
 Copyright (C) 1999-2000 Frank Giannandrea
 Copyright (C) 2000-2026 The Xastir Group
 
 Este programa es software libre; usted puedes redistribuirlo y/o
-modificarlo bajo los tÈrminos del GNU Licencia P˙blica General
-como publicado por la FundaciÛn del Software Libre; cualquier versiÛn 2
-de la Licencia, o (a su opciÛn) cualquier versiÛn m·s atrazada.
+modificarlo bajo los t√©rminos del GNU Licencia P√∫blica General
+como publicado por la Fundaci√≥n del Software Libre; cualquier versi√≥n 2
+de la Licencia, o (a su opci√≥n) cualquier versi√≥n m√°s atrazada.
 
-pero SIN NINGUNA GARANTIA; a˙n sin la garantÌa implÌcita de
+pero SIN NINGUNA GARANTIA; a√∫n sin la garant√≠a impl√≠cita de
 COMERCIABILIDAD o APTITUD PARA UN PROPOSITO PARTICULAR.
-Vea el (GNU) Licencia P˙blica General para m·s detalles.
+Vea el (GNU) Licencia P√∫blica General para m√°s detalles.
 
-Usted debes de haber recibido una copia del GNU Licencia P˙blica General
+Usted debes de haber recibido una copia del GNU Licencia P√∫blica General
 junto con este programa; si no, escriba al Software Libre
-FundaciÛn, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, EE.UU..
+Fundaci√≥n, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, EE.UU..
 
-M·s informaciÛn sobre el programa puede encontrarse en:
+M√°s informaci√≥n sobre el programa puede encontrarse en:
 
 http://www.xastir.org/
 http://github.com/Xastir/Xastir
 
-Hay algunos Forum de discusiones disponibles que son especÌficamente sobre Xastir.
-Usted puedes subscribirse en uno o en ambos de ellos para recibir las ˙ltimas
+Hay algunos Forum de discusiones disponibles que son espec√≠ficamente sobre Xastir.
+Usted puedes subscribirse en uno o en ambos de ellos para recibir las √∫ltimas
 informaciones y novedades sobre el desarrollo de Xastir.
-Visite esta direcciÛn para subscribirse en http://www.xastir.org/.
+Visite esta direcci√≥n para subscribirse en http://www.xastir.org/.
 
-Para m·s informaciÛn sobre la Licencia GNU busque en:
+Para m√°s informaci√≥n sobre la Licencia GNU busque en:
 
 http://www.gnu.org/
 
 
 HELP-INDEX>Bienvenido! y Notas de los Autores
 
-                      °Bienvenido! y Notas de los Autores
+                      ¬°Bienvenido! y Notas de los Autores
 
-XASTIR, Significa, X-ventanas EstaciÛn de Aficionado de Rastreo y Reportes de InformaciÛn.
+XASTIR, Significa, X-ventanas Estaci√≥n de Aficionado de Rastreo y Reportes de Informaci√≥n.
 
-               El significado en inglÈs es como sigue:
+               El significado en ingl√©s es como sigue:
 XASTIR, or (X)windows (A)mateur (S)tation (T)racking and (I)nformation (R)eporting.
 
 Es un APRS(tm) como programa que es Fuente Abierta y libre para usarlo y pasarlo a otros. 
-Actualmente este programa est· en desarrollo y no debe verse 
-como un producto finalizado! Su ayuda ser· necesaria para hacer de este 
+Actualmente este programa est√° en desarrollo y no debe verse 
+como un producto finalizado! Su ayuda ser√° necesaria para hacer de este 
 un mejor programa.  
 
-Si usted tienes habilidades programando y/o puede escribir documentaciÛn, 
+Si usted tienes habilidades programando y/o puede escribir documentaci√≥n, 
 su ayuda puede ser necesaria! Yo tengo muchas ideas pero el tiempo muy corto. 
-AsÌ que si usted piensas que usted puedes anexar algo al esfuerzo dÈjemelo saber!
+As√≠ que si usted piensas que usted puedes anexar algo al esfuerzo d√©jemelo saber!
 
 73,
 Frank Giannandrea
 fgiannan@eazy.net
 
 
-APRS[tm] es una Marca de f·brica de Bob Bruninga, 
-su p·gina est· en "http://web.usna.navy.mil/~bruninga/aprs.html" 
-Por favor note que mucha de la informaciÛn sobre APRS(tm) puede encontrarse  
-en la documentaciÛn de APRSdos escrita por Bob Bruninga.  Una adicional  
-fuente de informaciÛn es el APRS(tm) especificaciÛn, disponible en  
+APRS[tm] es una Marca de f√°brica de Bob Bruninga, 
+su p√°gina est√° en "http://web.usna.navy.mil/~bruninga/aprs.html" 
+Por favor note que mucha de la informaci√≥n sobre APRS(tm) puede encontrarse  
+en la documentaci√≥n de APRSdos escrita por Bob Bruninga.  Una adicional  
+fuente de informaci√≥n es el APRS(tm) especificaci√≥n, disponible en  
 http://www.tapr.org
 
 HELP-INDEX>What's new in Xastir 2.0.9
@@ -335,26 +335,26 @@ HELP-INDEX>Iniciando a Xastir por primera vez
 Cuando Xastir se inicie por primera vez, usted debes ejecutarlo en una ventana 
 terminal asi que cualquier mensaje de advertencia o error puedan verse.
 
-En la mayorÌa de los sistemas una ruta es configurada para correr el programa 
+En la mayor√≠a de los sistemas una ruta es configurada para correr el programa 
 en /usr/local/bin y todo lo que usted necesitas hacer es tipear "xastir" 
-en la lÌnea de comando.
+en la l√≠nea de comando.
 
 En sistemas que no tienen este tipo de ruta instalado "/usr/local/bin/xastir" 
 para empezar el programa.
 
-Usted tambiÈn puedes poner la opciÛn del Idioma en este momento. 
-Para poner el idioma o cambiar el idioma actual, use Èsta lÌnea:
+Usted tambi√©n puedes poner la opci√≥n del Idioma en este momento. 
+Para poner el idioma o cambiar el idioma actual, use √©sta l√≠nea:
 
 xastir -l  
 
 
 Los Idomas Actuales son:
 
-Alem·n  (German)
-EspaÒol  (Spanish)
-FrancÈs  (French)
-HolandÈs  (Dutch)
-InglÈs  (English)
+Alem√°n  (German)
+Espa√±ol  (Spanish)
+Franc√©s  (French)
+Holand√©s  (Dutch)
+Ingl√©s  (English)
 Italiano  (Italian)
 ElmerFudd (English)
 MuppetsSwedishChef (English)
@@ -362,211 +362,211 @@ OldeEnglish (English)
 PigLatin (English)
 PirateEnglish (English)
 
-Si Usted quieres correr el Xastir en espaÒol use Èsta lÌnea:
+Si Usted quieres correr el Xastir en espa√±ol use √©sta l√≠nea:
 
 Ej: xastir -lSpanish o xastir -l Spanish
 
-Esta opciÛn ser· guardada en el archivo de  configuraciÛn de usuario 
-para que la prÛxima vez que Xastir se ejecute corra con el idioma EspaÒol. 
+Esta opci√≥n ser√° guardada en el archivo de  configuraci√≥n de usuario 
+para que la pr√≥xima vez que Xastir se ejecute corra con el idioma Espa√±ol. 
 
-En nueva instalaciÛn xastir tendr· como valor predefinido el idioma inglÈs 
-a menos que usted uses Èsta opciÛn de lÌnea de comando.
+En nueva instalaci√≥n xastir tendr√° como valor predefinido el idioma ingl√©s 
+a menos que usted uses √©sta opci√≥n de l√≠nea de comando.
 
-NOTA: En men˙s, se seleccionan artÌculos que son encanecido,
+NOTA: En men√∫s, se seleccionan art√≠culos que son encanecido,
 como en las opciones del ON/OFF, si 'ON' es seleccionado
-se opacar· o se pondr· transparente (encanecido).
+se opacar√° o se pondr√° transparente (encanecido).
 
-HELP-INDEX>Configurando la informaciÛn de la EstaciÛn
+HELP-INDEX>Configurando la informaci√≥n de la Estaci√≥n
 
-           Configure la InformaciÛn de la EstaciÛn   
+           Configure la Informaci√≥n de la Estaci√≥n   
 
-Pulse el botÛn del ratÛn en Archivo luego Configurar despuÈs en EstaciÛn  
+Pulse el bot√≥n del rat√≥n en Archivo luego Configurar despu√©s en Estaci√≥n  
 llene la casilla con su Indicativo de Radioaficionado.
 
-llene su posiciÛn de la estaciÛn si usted no est·s usando Xastir con una unidad de GPS. 
-Si usted no la conoce, usted puedes localizar su posiciÛn general en el mapa 
-con Xastir y puedes usar la posiciÛn dada por colocar el puntero del ratÛn sobre el mapa.
+llene su posici√≥n de la estaci√≥n si usted no est√°s usando Xastir con una unidad de GPS. 
+Si usted no la conoce, usted puedes localizar su posici√≥n general en el mapa 
+con Xastir y puedes usar la posici√≥n dada por colocar el puntero del rat√≥n sobre el mapa.
 
-Esta posiciÛn ser· visible en la barra del fondo de Xastir cuadro 2
-de la izquierda. Si usted tienes un GPS usted puedes saltar esta opciÛn.
+Esta posici√≥n ser√° visible en la barra del fondo de Xastir cuadro 2
+de la izquierda. Si usted tienes un GPS usted puedes saltar esta opci√≥n.
 
-Los sÌmbol/grupo de la estaciÛn pueden configurarse aquÌ. Pulse seleccionar gr·ficamente y  
-escoja un sÌmbolo, o manualmente rellene los campos. Una descripciÛn de texto de cada uno  
-de los sÌmbolos pueden encontrarse en la "Tabla de sÌmbolo" tema de ayuda. Las cubiertas son cumplidas seleccionando un sÌmbolo
+Los s√≠mbol/grupo de la estaci√≥n pueden configurarse aqu√≠. Pulse seleccionar gr√°ficamente y  
+escoja un s√≠mbolo, o manualmente rellene los campos. Una descripci√≥n de texto de cada uno  
+de los s√≠mbolos pueden encontrarse en la "Tabla de s√≠mbolo" tema de ayuda. Las cubiertas son cumplidas seleccionando un s√≠mbolo
  de la tabla alternada, y poniendo el campo de la tabla a  
-el car·cter que usted desea recubrir encima del sÌmbolo. Letras may˙sculas y  
-los n˙meros pueden ser recubierto. El APRS(tm) especificaciÛn sÛlo permite cubiertas sobre  
-sÌmbolos especÌficos; Xastir no forza esto, pero algunos otros programas pueden.  
-Note que no todos los sÌmbolos se han llevado a cabo en el selector gr·fico  
-todavÌa, y algunos de ellos no est·n por el APRS(tm) especificaciÛn todavÌa.  
+el car√°cter que usted desea recubrir encima del s√≠mbolo. Letras may√∫sculas y  
+los n√∫meros pueden ser recubierto. El APRS(tm) especificaci√≥n s√≥lo permite cubiertas sobre  
+s√≠mbolos espec√≠ficos; Xastir no forza esto, pero algunos otros programas pueden.  
+Note que no todos los s√≠mbolos se han llevado a cabo en el selector gr√°fico  
+todav√≠a, y algunos de ellos no est√°n por el APRS(tm) especificaci√≥n todav√≠a.  
 
-Luego, entre en los datos para la potencia/altura/ganancia de su estaciÛn. Esta es  
-una informaciÛn ˙til pero no se requiere; absolutamente seleccione "Desactive PHG"  
-desactivarlo. Estas opciones presentan una representaciÛn granular de su estaciÛn.  
-Seleccione la combinaciÛn de valores cerca a la descripciÛn de su estaciÛn.  
+Luego, entre en los datos para la potencia/altura/ganancia de su estaci√≥n. Esta es  
+una informaci√≥n √∫til pero no se requiere; absolutamente seleccione "Desactive PHG"  
+desactivarlo. Estas opciones presentan una representaci√≥n granular de su estaci√≥n.  
+Seleccione la combinaci√≥n de valores cerca a la descripci√≥n de su estaci√≥n.  
 
-Otra opciÛn serÌa especificar el RNG en el campo de comentario en millas  
-en lugar de usar PHG. Vea el APRS(tm) especificaciÛn para detalles.  
+Otra opci√≥n ser√≠a especificar el RNG en el campo de comentario en millas  
+en lugar de usar PHG. Vea el APRS(tm) especificaci√≥n para detalles.  
   
 Por favor use altura sobre el promedio del  terreno para el valor de altura.  No  
 use el promedio de altura sobre el nivel del mar o altura sobre tierra.  
   
 Para el uso de Ganancia la ganancia de su antena en dBi.   
-ø(CORRIGEME:  dBd? la especificaciÛn no es clara, 
-yo pienso que est· implicando dBi porque dice "en ausencia de cualquier datos,
+¬ø(CORRIGEME:  dBd? la especificaci√≥n no es clara, 
+yo pienso que est√° implicando dBi porque dice "en ausencia de cualquier datos,
 las estaciones son asumida a estar corriendo 10w a un 3dB omni en  20pies.
-Una antena omni tÌpica es sÛlo 3dBi.....)   
-Para Altura, use el HAAT (altura sobre el promedio del terreno) de su estaciÛn,  
+Una antena omni t√≠pica es s√≥lo 3dBi.....)   
+Para Altura, use el HAAT (altura sobre el promedio del terreno) de su estaci√≥n,  
 NO la altura sobre el nivel del mar o altura sobre geo-id.  
 
 Nota: La ganancia puesta es realmente pensada para las antenas verticales; la ganancia  
-puesta para una antena direcional deberÌa ser por debajo de la ganancia hacia delante de una antena direcional.  
-Esto es porque con la direccionabilidad puesta, el cÌrculo de PHG es compensado sÛlo a travÈs de 1/3rd  
-de su tamaÒo hacia la direcciÛn especificada. Poniendo la Ganancia m·s alta agrandar·  
-el cÌrculo entero no-realisticamente, en lugar del aumentado direccionalmente.  
-HabÌa charla hace varios aÒos sobre el enmendando las especificaciones para mejorar  
+puesta para una antena direcional deber√≠a ser por debajo de la ganancia hacia delante de una antena direcional.  
+Esto es porque con la direccionabilidad puesta, el c√≠rculo de PHG es compensado s√≥lo a trav√©s de 1/3rd  
+de su tama√±o hacia la direcci√≥n especificada. Poniendo la Ganancia m√°s alta agrandar√°  
+el c√≠rculo entero no-realisticamente, en lugar del aumentado direccionalmente.  
+Hab√≠a charla hace varios a√±os sobre el enmendando las especificaciones para mejorar  
 trato con antenas direccional, pero nada fue cambiado.  
   
-Entrar un comentario, no requerido pero agregar· visiÛn en su estaciÛn.  
-Una cosa com˙n para entrar aquÌ es su direcciÛn de e-mail preferida.  Que  
-ser· transmitido a lo largo con su postula.  
+Entrar un comentario, no requerido pero agregar√° visi√≥n en su estaci√≥n.  
+Una cosa com√∫n para entrar aqu√≠ es su direcci√≥n de e-mail preferida.  Que  
+ser√° transmitido a lo largo con su postula.  
   
-La ambig¸edad de la posiciÛn permitir· usted controlar que tan exacto usted transmite su  
-posiciÛn. Si usted no pone nada, xastir permitir· a su estaciÛn transmitir la exacta  
-posiciÛn que usted ha entrado o ha recibido de un GPS. Las otras opciones lo pondr·n  
-en alguna parte en el rango de la opciÛn que usted seleccionÛ.  Note que  
-esto puede tirar estaciones dÛciles a alguna no-especificaciÛn para un bucle.  Findu.com  
-no entiende la ambig¸edad de posiciÛn.  
+La ambig√ºedad de la posici√≥n permitir√° usted controlar que tan exacto usted transmite su  
+posici√≥n. Si usted no pone nada, xastir permitir√° a su estaci√≥n transmitir la exacta  
+posici√≥n que usted ha entrado o ha recibido de un GPS. Las otras opciones lo pondr√°n  
+en alguna parte en el rango de la opci√≥n que usted seleccion√≥.  Note que  
+esto puede tirar estaciones d√≥ciles a alguna no-especificaci√≥n para un bucle.  Findu.com  
+no entiende la ambig√ºedad de posici√≥n.  
   
-Pulsando el botÛn "Aceptar" guardar·s sus cambios.
-Pulsando el botÛn en "Cancelar" conservar·s las actuales configuraciones.
+Pulsando el bot√≥n "Aceptar" guardar√°s sus cambios.
+Pulsando el bot√≥n en "Cancelar" conservar√°s las actuales configuraciones.
 
-HELP-INDEX>Configurar OperaciÛn Predefinida
+HELP-INDEX>Configurar Operaci√≥n Predefinida
 
-              Configurar OperaciÛn Predefinida  
+              Configurar Operaci√≥n Predefinida  
   
-Pulse el botÛn en Archivo despuÈs en Configurar luego en Predefinidos
+Pulse el bot√≥n en Archivo despu√©s en Configurar luego en Predefinidos
   
-Esta p·gina prepara algunos valores por defecto normales para el funcionamiento 
-del programa. Viejas estaciones se desplegar·n con un icono fantasma, 
-y el sendero correspondiente se fragmentar·.  
+Esta p√°gina prepara algunos valores por defecto normales para el funcionamiento 
+del programa. Viejas estaciones se desplegar√°n con un icono fantasma, 
+y el sendero correspondiente se fragmentar√°.  
 
 El primer juego de botones de barra especifica el intervalo de desdoblamiento.  El segundo  
-juego de botones que especifica cuando una estaciÛn ser· removida de la pantalla.  
-Las estaciones tambiÈn son removida del banco de datos interno en el doble este tiempo,  
-asÌ si usted lo pusiera durante 6 horas, se anular·n estaciones del banco de datos  
+juego de botones que especifica cuando una estaci√≥n ser√° removida de la pantalla.  
+Las estaciones tambi√©n son removida del banco de datos interno en el doble este tiempo,  
+as√≠ si usted lo pusiera durante 6 horas, se anular√°n estaciones del banco de datos  
 a las 12 horas.  
   
-El tercer juego de botones especifica quÈ a menudo la identificaciÛn de su estaciÛn ser·  
-transmitido.  Para las estaciones fijas una recomendaciÛn buena es cada 30 minutos,  
+El tercer juego de botones especifica qu√© a menudo la identificaci√≥n de su estaci√≥n ser√°  
+transmitido.  Para las estaciones fijas una recomendaci√≥n buena es cada 30 minutos,  
 y definitivamente ninguno menos de 10 minutos.  
-Las estaciones mÛviles pueden desear una m·s r·pida proporciÛn.
+Las estaciones m√≥viles pueden desear una m√°s r√°pida proporci√≥n.
 
-Este intervalo tambiÈn se usa para mandar objetos y artÌculos.  Pruebe  
+Este intervalo tambi√©n se usa para mandar objetos y art√≠culos.  Pruebe  
 mantener este intervalo algo razonable, como transmitir hacia un largo camino,  
-cada 30 segundo realmente subir· mucho el tiempo aÈreo.
+cada 30 segundo realmente subir√° mucho el tiempo a√©reo.
 
-GPS Tiempo pondr· el intervalo de tiempo mirar el GPS por nuevos datos.  
+GPS Tiempo pondr√° el intervalo de tiempo mirar el GPS por nuevos datos.  
 Esto es disponible para estaciones que usan un cable compartido HSP con su TNC.  
   
-La OpciÛn Trasmite EstaciÛn fija el tipo de paquete que su estaciÛn transmitir· sus datos como.
-Transmite datos Raw WX  si seleccionado tambiÈn enviar· un paquete que contiene Datos raw
-de una EstaciÛn MeteorolÛgica. Esto es ˙til en los tipos de ASCII de estaciones WX, como la Peet Bros.
+La Opci√≥n Trasmite Estaci√≥n fija el tipo de paquete que su estaci√≥n transmitir√° sus datos como.
+Transmite datos Raw WX  si seleccionado tambi√©n enviar√° un paquete que contiene Datos raw
+de una Estaci√≥n Meteorol√≥gica. Esto es √∫til en los tipos de ASCII de estaciones WX, como la Peet Bros.
 
-EstaciÛn WX. Las Opciones de IGate preparar·n su estaciÛn como un portal de Internet-RF.
-Esta opciÛn podrÌa ser usada con cuatela, Como un HAM usted es responsable
-por el data que viene vÌa el Internet y es transmitido hacia el Puerto de RF. 
+Estaci√≥n WX. Las Opciones de IGate preparar√°n su estaci√≥n como un portal de Internet-RF.
+Esta opci√≥n podr√≠a ser usada con cuatela, Como un HAM usted es responsable
+por el data que viene v√≠a el Internet y es transmitido hacia el Puerto de RF. 
 
-Usted tambiÈn necesitar·   
-escoger una opciÛn del igate en cada interface para que el igate funcione.  
-Si usted quiere tener su igate envÌe NWS alarmas WX  hacia el RF, usted debe  
-crear un archivo ~/.xastir/data/nws-stations.txt listando cada llamada o estaciÛn de NWS  
-(como "PHISVR") que le gustarÌa transmitir vÌa RF.
+Usted tambi√©n necesitar√°   
+escoger una opci√≥n del igate en cada interface para que el igate funcione.  
+Si usted quiere tener su igate env√≠e NWS alarmas WX  hacia el RF, usted debe  
+crear un archivo ~/.xastir/data/nws-stations.txt listando cada llamada o estaci√≥n de NWS  
+(como "PHISVR") que le gustar√≠a transmitir v√≠a RF.
     
-"Transmitir datos de WX RAW", si seleccionado, tambiÈn enviar· un paquete que contiene crudo (raw)  
-Datos de estaciÛn meteorolÛgica. Esto es ˙til en los tipos de ASCII de estaciones WX,   
-como la Peet Bros. estaciÛn meteorolÛgica.
+"Transmitir datos de WX RAW", si seleccionado, tambi√©n enviar√° un paquete que contiene crudo (raw)  
+Datos de estaci√≥n meteorol√≥gica. Esto es √∫til en los tipos de ASCII de estaciones WX,   
+como la Peet Bros. estaci√≥n meteorol√≥gica.
 
-"Los datos de posiciÛn comprimida pueden ser transmitida"?, si es seleccionado, transmitir· en  
-el m·s nuevo formato comprimido. Este formato reducir· la cantidad de datos en  
-el aire, por eso aumentando la capacidad de la red APRS(tm). La m·xima  
-precisiÛn de la posiciÛn transmitida tambiÈn es m·s alta. Algunos programas m·s viejos,  
-incluyendo las recientes versiones de WinAPRS, no decodificar· este formato todavÌa.  
-Findu.com tambiÈn podrÌan tener problema con el.
+"Los datos de posici√≥n comprimida pueden ser transmitida"?, si es seleccionado, transmitir√° en  
+el m√°s nuevo formato comprimido. Este formato reducir√° la cantidad de datos en  
+el aire, por eso aumentando la capacidad de la red APRS(tm). La m√°xima  
+precisi√≥n de la posici√≥n transmitida tambi√©n es m√°s alta. Algunos programas m√°s viejos,  
+incluyendo las recientes versiones de WinAPRS, no decodificar√° este formato todav√≠a.  
+Findu.com tambi√©n podr√≠an tener problema con el.
 
 Activar Red Alternada ?
-esta opciÛn se usa para desplegar grupos de estaciones que muestran
-en el unproto en el campo '>To' la versiÛn del software como el Xastir
-que muestra la versiÛn en el unproto como esto: HI8GN>APX090.
+esta opci√≥n se usa para desplegar grupos de estaciones que muestran
+en el unproto en el campo '>To' la versi√≥n del software como el Xastir
+que muestra la versi√≥n en el unproto como esto: HI8GN>APX090.
 
-Usted tambiÈn puede seleccionar Altnet y puede escoger una llamada del altnet de este di·logo.
-Altnet le permite tener un privado APRS(tm) red entre las estaciones que tambiÈn  
+Usted tambi√©n puede seleccionar Altnet y puede escoger una llamada del altnet de este di√°logo.
+Altnet le permite tener un privado APRS(tm) red entre las estaciones que tambi√©n  
 tenga altnet configurado, y tiene la misma llamada del altnet entrada.
 
 Si cambiamos el valor por defecto que es XASTIR por ejemplo por APX110
-desplegar· toda las estaciones que tengan versiones de APX11x
+desplegar√° toda las estaciones que tengan versiones de APX11x
 donde valor de 'x' puede ser desde 0-9.
 
 HELP-INDEX>Configurando las Alarmas de Audio
 
                          Configurando las alarmas de Audio
 
-Para usar esta opciÛn usted debes tener una tarjeta de sonido y un programa que 
+Para usar esta opci√≥n usted debes tener una tarjeta de sonido y un programa que 
 reproduzcan los archivos wav. El programa reproductor de Audio debe tener 
 comando el cual usted quieres ejecutar para tocar el audio archivo (y cualquier 
-opciÛn en la lÌnea de comando).
+opci√≥n en la l√≠nea de comando).
 
-Los campos tendr·n el nombre del archivo a reproducir, campos bajo la opciÛn 
-pondr· par·metros para la opciÛn.
+Los campos tendr√°n el nombre del archivo a reproducir, campos bajo la opci√≥n 
+pondr√° par√°metros para la opci√≥n.
 
 Las opciones Actuales son:
 
-  Reproducir mensaje al encontrar una nueva estaciÛn. 
+  Reproducir mensaje al encontrar una nueva estaci√≥n. 
 
   Reproducir mensaje al recibir un nuevo mensaje.
 
-  Reproducir mensaje de datos recibidos de una estaciÛn dentro de la distancia  
+  Reproducir mensaje de datos recibidos de una estaci√≥n dentro de la distancia  
  min/max de su proximidad.
 
-  Reproducir mensaje de datos recibidos de una estaciÛn (vÌa TNC) con la 
+  Reproducir mensaje de datos recibidos de una estaci√≥n (v√≠a TNC) con la 
 distancia de min/max de su banda abrierta.
 
 HELP-INDEX>Configurar el Sintetizador de Voz
 
                          Configurar el Sintetizador de Voz
 
-Para usar esta opciÛn del sintetizador de voz usted debes tener una tarjeta de sonido
+Para usar esta opci√≥n del sintetizador de voz usted debes tener una tarjeta de sonido
 configurada para poder reproducir sonido.
 
-TambiÈn usted necesita tener instalado y corriendo al Servidor Festival m·s
-el Speech_tools con su biblioteca de soporte para el Sistema Festival de Voz SÌntetizada
+Tambi√©n usted necesita tener instalado y corriendo al Servidor Festival m√°s
+el Speech_tools con su biblioteca de soporte para el Sistema Festival de Voz S√≠ntetizada
 
 y asi poder escuchar el sintetizador de voz anunciar
-nuevas estaciones y aperturas de banda proximidad de una estaci·n. 
+nuevas estaciones y aperturas de banda proximidad de una estaci√°n. 
 
-El sistema de alarmas de sonidos ha sido tambiÈn retenido.
+El sistema de alarmas de sonidos ha sido tambi√©n retenido.
 
 Con el Sintetizador de Voz adaptado por Curt Mills (we7u) 
 
 ajuste las casillas en las cuales usted quieres ejecutar el sintetizador para las alarmas
 
-(y cualquier opciÛn en la lÌnea de comando).
+(y cualquier opci√≥n en la l√≠nea de comando).
 
-Los campos tendr·n el nombre del archivo a reproducir, campos bajo la opciÛn 
-pondr· par·metros para la opciÛn.
+Los campos tendr√°n el nombre del archivo a reproducir, campos bajo la opci√≥n 
+pondr√° par√°metros para la opci√≥n.
 
 Las opciones Actuales son:
 
-  Anunciar un mensaje al encontrar una nueva estaciÛn. 
+  Anunciar un mensaje al encontrar una nueva estaci√≥n. 
   Anunciar un mensaje al recibir un nuevo mensaje.
   Anunciar un mensaje al recibir el cuerpo un nuevo mensaje.
-  Anunciar un mensaje de datos recibidos de una estaciÛn dentro de la distancia  
+  Anunciar un mensaje de datos recibidos de una estaci√≥n dentro de la distancia  
   min/max de su proximidad.
 
-  Anunciar un mensaje de datos recibidos de una estaciÛn (vÌa TNC o INET)
+  Anunciar un mensaje de datos recibidos de una estaci√≥n (v√≠a TNC o INET)
   con la distancia de min/max de su banda abierta.
 
-  Anunciar un mensaje al recibir una nueva alerta sobre el tiempo climatolÛgico.
+  Anunciar un mensaje al recibir una nueva alerta sobre el tiempo climatol√≥gico.
 
 Info sobre Festival puede ser obtenida desde: http://www.speech.cs.cmu.edu/festival/
 
@@ -574,273 +574,273 @@ HELP-INDEX>Configurando las Unidades de Medida
 
                     Configure Unidades de Medida  
   
-La selecciÛn predefinida es para el Sistema MÈtrico, mm, cm, KPH, etc. 
-Seleccionar InglÈs, pulgadas, pies, MPH, etc. Pulse el botÛn de Configurar, 
-luego en Unidades, despuÈs la unidad de medida que usted quieres usar.
+La selecci√≥n predefinida es para el Sistema M√©trico, mm, cm, KPH, etc. 
+Seleccionar Ingl√©s, pulgadas, pies, MPH, etc. Pulse el bot√≥n de Configurar, 
+luego en Unidades, despu√©s la unidad de medida que usted quieres usar.
 Recuerde encanecida opciones son selecciona actualmente. 
 
-HELP-INDEX>Salvar ConfiguraciÛn Ahora!
+HELP-INDEX>Salvar Configuraci√≥n Ahora!
 
-                      Salvar ConfiguraciÛn Ahora!
+                      Salvar Configuraci√≥n Ahora!
 
-Este botÛn salvar· todas la configuraciÛn actual al archivo de configuraciÛn.  
-Note que cuando Xastir est· cerrado, tambiÈn salva configuraciÛn al archivo
-de configuraciÛn.
+Este bot√≥n salvar√° todas la configuraci√≥n actual al archivo de configuraci√≥n.  
+Note que cuando Xastir est√° cerrado, tambi√©n salva configuraci√≥n al archivo
+de configuraci√≥n.
 
 HELP-INDEX>Barra de Estado de fondo
 
                          Barra de Estado de fondo  
   
-En el fondo de la ventana varios mensajes de estado est·n disponibles:  
+En el fondo de la ventana varios mensajes de estado est√°n disponibles:  
   
 En la primera parte en la barra de estados general los mensajes son desplegados.
 
-La segunda parte se muestra la posiciÛn lat/long
-actual moviendo el ratÛn sobre el mapa.
+La segunda parte se muestra la posici√≥n lat/long
+actual moviendo el rat√≥n sobre el mapa.
 
 En la tercera parte es usada para mostrar
-cu·ntas estaciones est·n en el banco de datos.
+cu√°ntas estaciones est√°n en el banco de datos.
 
-La cuarta parte de la barra desplegar· el nivel de enfoque actual y desplegar·
-"Tr" si el rastreo de estaciÛn est· encendida (on).   
+La cuarta parte de la barra desplegar√° el nivel de enfoque actual y desplegar√°
+"Tr" si el rastreo de estaci√≥n est√° encendida (on).   
   
-El ˙ltima ·rea desplegar· el estado de dispositivo para cada interf·z. Cada una  
-desplegar· en orden primero hasta el ˙ltimo o de 0 a 9. El estado de la interface est· separado  
-en tres ·reas, tipo de dispositivo cima, datos de centro fluyendo, y interface de fondo  
-estado operacional. El tipo de dispositivo mostrar· quÈ interfaces se configuraron.  
-El color mostrar· quÈ tipo de dispositivo de la interface se configurÛ. Azul  
-es para los varios dispositivos TNC; Verde mostrar· los dispositivos de GPS; Amarillo para los   
-Servidores de Internet; Naranja para las interfaces de WX. El centro mostrar· que los datos fluyen en rx (flecha que apunta a l
-a izquierda) o los datos fluyen fuera tx (flecha que apunta a la derecha) para eso interface. Una caja verde al fondo mostrar· 
+El √∫ltima √°rea desplegar√° el estado de dispositivo para cada interf√°z. Cada una  
+desplegar√° en orden primero hasta el √∫ltimo o de 0 a 9. El estado de la interface est√° separado  
+en tres √°reas, tipo de dispositivo cima, datos de centro fluyendo, y interface de fondo  
+estado operacional. El tipo de dispositivo mostrar√° qu√© interfaces se configuraron.  
+El color mostrar√° qu√© tipo de dispositivo de la interface se configur√≥. Azul  
+es para los varios dispositivos TNC; Verde mostrar√° los dispositivos de GPS; Amarillo para los   
+Servidores de Internet; Naranja para las interfaces de WX. El centro mostrar√° que los datos fluyen en rx (flecha que apunta a l
+a izquierda) o los datos fluyen fuera tx (flecha que apunta a la derecha) para eso interface. Una caja verde al fondo mostrar√° 
 si esa interface es activa.  
-Una caja roja mostrar· si la interface es activa pero en una condiciÛn de error.  
-Por otra parte nada mostrar· si la interface no est· activa.  
+Una caja roja mostrar√° si la interface es activa pero en una condici√≥n de error.  
+Por otra parte nada mostrar√° si la interface no est√° activa.  
 
-Las ˙ltimas dos partes mostrar·n el estado del tnc y de la red. Una "=>" 
-indicar· si el dato est· siendo enviado, y una "<=" si el dato est· entrando 
+Las √∫ltimas dos partes mostrar√°n el estado del tnc y de la red. Una "=>" 
+indicar√° si el dato est√° siendo enviado, y una "<=" si el dato est√° entrando 
 desde la interfaz.
 
   
-HELP-INDEX>Moviendo el Mapa y el Men˙ de Opciones
+HELP-INDEX>Moviendo el Mapa y el Men√∫ de Opciones
 
-                    Moviendo el Mapa y el Men˙ de Opciones  
+                    Moviendo el Mapa y el Men√∫ de Opciones  
   
 Movimiento en el mapa es muy simple, la facilidad y rapidez de movimiento son dependientes de  
 la velocidad de su procesador y la cantidad de detalle que usted carga.  
   
 Subiendo verticalmente:  
-Subiendo verticalmente puede ser logrado por pulsar el botÛn derecho de ratÛn sobre el mapa (y sosteniendo el botÛn abajo). Est
-o plantear· un men˙ de opciones, con opciones para hacer subir verticalmente o fuera a un solo nivel, o para cambiar a uno de l
+Subiendo verticalmente puede ser logrado por pulsar el bot√≥n derecho de rat√≥n sobre el mapa (y sosteniendo el bot√≥n abajo). Est
+o plantear√° un men√∫ de opciones, con opciones para hacer subir verticalmente o fuera a un solo nivel, o para cambiar a uno de l
 os niveles del enfoque prefijado.  
   
-Todas las funciones de enfoque desde el men˙ de opciones har·n acercarse o alejarse al punto  
-en el mapa donde usted pulsÛ el botÛn del ratÛn correcto. El  nivel de enfoque tiene una men˙ en  cascada. Niveles 1-64 son par
-a las ·reas muy locales y niveles 256 y superior es para  
-·reas grandes. El n˙mero m·s bajo del nivel, la ·rea m·s local.  
+Todas las funciones de enfoque desde el men√∫ de opciones har√°n acercarse o alejarse al punto  
+en el mapa donde usted puls√≥ el bot√≥n del rat√≥n correcto. El  nivel de enfoque tiene una men√∫ en  cascada. Niveles 1-64 son par
+a las √°reas muy locales y niveles 256 y superior es para  
+√°reas grandes. El n√∫mero m√°s bajo del nivel, la √°rea m√°s local.  
   
-Una funciÛn de enfoque m·s r·pida es empujar y sostener el botÛn del ratÛn izquierdo, arr·strelo  
-por el ·rea de interÈs y permitida vaya.  El mapa har· subir verticalmente aproximadamente a  
-el tamaÒo del cuadrado usted apenas descrito con el ratÛn la funciÛn de arrastre.  
+Una funci√≥n de enfoque m√°s r√°pida es empujar y sostener el bot√≥n del rat√≥n izquierdo, arr√°strelo  
+por el √°rea de inter√©s y permitida vaya.  El mapa har√° subir verticalmente aproximadamente a  
+el tama√±o del cuadrado usted apenas descrito con el rat√≥n la funci√≥n de arrastre.  
 El programa usa el componente vertical para decidir en el nivel de enfoque, y el  
 componentes verticales y horizontales para computar el nuevo centro del mapa.  El "movimiento"  
 y "medida" que deben desactivarse checkboxes de la bara de herramienta de este rasgo para trabajar.  
   
-El mapa tambiÈn puede acercarse con el teclado las llaves de PageUp/PageDown.  El  
+El mapa tambi√©n puede acercarse con el teclado las llaves de PageUp/PageDown.  El  
 acercar en este caso guarda el mismo centro del mapa.   
   
 Paneando/Centrando:  
-El mapa puede centrarse a una situaciÛn especÌfica por pulsar el botÛn izquierdo del ratÛn.  
-Pulsando el botÛn los enfoques del botÛn medio aleja con un factor de 2, centrando donde usted  
-pulsÛ el botÛn.  
+El mapa puede centrarse a una situaci√≥n espec√≠fica por pulsar el bot√≥n izquierdo del rat√≥n.  
+Pulsando el bot√≥n los enfoques del bot√≥n medio aleja con un factor de 2, centrando donde usted  
+puls√≥ el bot√≥n.  
   
-Paneando tambiÈn es cumplido usando el men˙ de opciones, o usando la flecha  
-botones en la tope de la pantalla. La posiciÛn del mapa cambiar· una porciÛn de  
+Paneando tambi√©n es cumplido usando el men√∫ de opciones, o usando la flecha  
+botones en la tope de la pantalla. La posici√≥n del mapa cambiar√° una porci√≥n de  
 pantalla. Bastantes datos de pantalla anterior deben estar disponibles reorientarlo  
 .  
   
-El mapa tambiÈn puede ser paneado con las llaves de flecha del teclado.  
+El mapa tambi√©n puede ser paneado con las llaves de flecha del teclado.  
   
-M·s Sobre el Men˙ de Opciones:  
-La selecciÛn de "EstaciÛn Info" en el men˙ de opciones buscar· la estaciÛn  
-cerca a donde usted pulsÛ el botÛn derecho del ratÛn. Si m·s de una estaciÛn est·  
-cerca de esa posiciÛn un "escogedor de EstaciÛn" de lista aparecer·, entonces usted puede  
-escoger los datos de quÈ estaciÛn que usted quiere ver. Si sÛlo una estaciÛn es vista entonces el indicador del ratÛn es cerrad
-o y los datos de esa estaciÛn se desplegar·n inmediatamente. Note  
-que expiradas estaciones todavÌa tienen sus datos guardados en el banco de datos de Xastir, y  
-si uno sabe la situaciÛn anterior de una estaciÛn, uno todavÌa puede ver su info de esta  
-manera. TambiÈn es posible desplegar estaciones viejas encendiendo el "el Despliegue  
-de Datos Expirados" opciÛn en el men˙ de las estaciones. CORRIGEME: Si no es completamente verdad.  Esto sÛlo despliega algunos
+M√°s Sobre el Men√∫ de Opciones:  
+La selecci√≥n de "Estaci√≥n Info" en el men√∫ de opciones buscar√° la estaci√≥n  
+cerca a donde usted puls√≥ el bot√≥n derecho del rat√≥n. Si m√°s de una estaci√≥n est√°  
+cerca de esa posici√≥n un "escogedor de Estaci√≥n" de lista aparecer√°, entonces usted puede  
+escoger los datos de qu√© estaci√≥n que usted quiere ver. Si s√≥lo una estaci√≥n es vista entonces el indicador del rat√≥n es cerrad
+o y los datos de esa estaci√≥n se desplegar√°n inmediatamente. Note  
+que expiradas estaciones todav√≠a tienen sus datos guardados en el banco de datos de Xastir, y  
+si uno sabe la situaci√≥n anterior de una estaci√≥n, uno todav√≠a puede ver su info de esta  
+manera. Tambi√©n es posible desplegar estaciones viejas encendiendo el "el Despliegue  
+de Datos Expirados" opci√≥n en el men√∫ de las estaciones. CORRIGEME: Si no es completamente verdad.  Esto s√≥lo despliega algunos
  de los datos que desaparecen como estaciones fantasma,   
 Velocidad/altitud, etc.,  
   
-Para informaciÛn de Objeto y ArtÌculo, por favor vea el tema de ayuda "Objetos y ArtÌculos"  
+Para informaci√≥n de Objeto y Art√≠culo, por favor vea el tema de ayuda "Objetos y Art√≠culos"  
 
-HELP-INDEX>Objetos y ArtÌculos
+HELP-INDEX>Objetos y Art√≠culos
 
-                                Objetos y ArtÌculos
+                                Objetos y Art√≠culos
 
-La opciÛn de crear Objeto/ArtÌculo en el botÛn derecho pulsado el men˙ traear· un di·logo  
-con la posiciÛn de basado objeto en donde usted pulsÛ el botÛn del ratÛn.  
-Usted puede rellenar los detalles, y agregar un objeto/artÌculo desde este men˙.  
+La opci√≥n de crear Objeto/Art√≠culo en el bot√≥n derecho pulsado el men√∫ traear√° un di√°logo  
+con la posici√≥n de basado objeto en donde usted puls√≥ el bot√≥n del rat√≥n.  
+Usted puede rellenar los detalles, y agregar un objeto/art√≠culo desde este men√∫.  
   
-La opciÛn de modificar Objeto/ArtÌculo le traer· un di·logo de modificaciÛn de objeto.  
-Es similar al di·logo de creaciÛn de objeto, excepto por la actual informaciÛn de objeto que  
-ya est·n publicada, y el nombre del objeto y unas de las pocas otras opciones que no pueden ser cambiada.  
+La opci√≥n de modificar Objeto/Art√≠culo le traer√° un di√°logo de modificaci√≥n de objeto.  
+Es similar al di√°logo de creaci√≥n de objeto, excepto por la actual informaci√≥n de objeto que  
+ya est√°n publicada, y el nombre del objeto y unas de las pocas otras opciones que no pueden ser cambiada.  
   
-Los objetos son retransmitido dentro de la proporciÛn de posiciÛn de la estaciÛn reportada, configurada en Archivo|Configurar|P
-redefinidos, y cesar· la retransmisiÛn despuÈs doblar el  
-tiempo de despliegue de la estaciÛn, tambiÈn configurada allÌ. "muerta" los objetos tambiÈn son  
+Los objetos son retransmitido dentro de la proporci√≥n de posici√≥n de la estaci√≥n reportada, configurada en Archivo|Configurar|P
+redefinidos, y cesar√° la retransmisi√≥n despu√©s doblar el  
+tiempo de despliegue de la estaci√≥n, tambi√©n configurada all√≠. "muerta" los objetos tambi√©n son  
 retransmitido de esta manera, hasta que ellos expiren desde la cola.  
   
 Generalmente se usan los objetos para movimiento o cosas inconstantes como tormentas,  
-mientras que los artÌculos generalmente son usando para las cosas m·s inanimadas, como agua,  
-estaciones. Cualquiera puede moverse con el ratÛn si el "Movimiento" el checkbox en la  
-barra de botones se habilita.  Note que los artÌculos no pueden ser descifrados por uno cuantos  programas APRS(tm) .  
+mientras que los art√≠culos generalmente son usando para las cosas m√°s inanimadas, como agua,  
+estaciones. Cualquiera puede moverse con el rat√≥n si el "Movimiento" el checkbox en la  
+barra de botones se habilita.  Note que los art√≠culos no pueden ser descifrados por uno cuantos  programas APRS(tm) .  
   
-Las ·rea de objetos son ˙tiles para una variedad de funcionamientos en lo que usted quiere dibujar  
-o resaltar una ·rea de interÈs en el mapa. Ellos tambiÈn pueden ser personalizados para dibujar  
-rastros/caminos/fronteras, sitios de vijilancia para mal el tiempo, las pistas de aterrizaje, perÌmetros, de una ·rea de b˙sque
-da o de un evento de servicio p˙blico, ·reas de daÒo, ·reas para quedarse fuera de, edificios que no est·n en el mapa, la tabla
- checker/chess para juego por dinero en APRS(tm).: -) Note que las ·rea de objetos no son llevada a cabo en todas las versiones
- de programas APRS(tm), y algunos de los detalles de cÛmo ellos se despliegan tambiÈn pueden  
+Las √°rea de objetos son √∫tiles para una variedad de funcionamientos en lo que usted quiere dibujar  
+o resaltar una √°rea de inter√©s en el mapa. Ellos tambi√©n pueden ser personalizados para dibujar  
+rastros/caminos/fronteras, sitios de vijilancia para mal el tiempo, las pistas de aterrizaje, per√≠metros, de una √°rea de b√∫sque
+da o de un evento de servicio p√∫blico, √°reas de da√±o, √°reas para quedarse fuera de, edificios que no est√°n en el mapa, la tabla
+ checker/chess para juego por dinero en APRS(tm).: -) Note que las √°rea de objetos no son llevada a cabo en todas las versiones
+ de programas APRS(tm), y algunos de los detalles de c√≥mo ellos se despliegan tambi√©n pueden  
 ser diferente en otros programas.  
   
 Nombre  
-…ste es el nombre del objeto o artÌculo. Puede depender de hasta 9 car·cteres. Cuando  
+√âste es el nombre del objeto o art√≠culo. Puede depender de hasta 9 car√°cteres. Cuando  
 modifica un objeto, este no puede ser cambiado. Para renombrar un objeto usted debe  
 anular el original y entonces crear un nuevo objeto. Note que si usted selecciona  
-Signpost/Area Object/DF Objeto que este campo y quiz·s otros ser·n aclarado.  
-Entre en el nombre DESPU…S que usted ha seleccionado el tipo de objeto que volver·.  
+Signpost/Area Object/DF Objeto que este campo y quiz√°s otros ser√°n aclarado.  
+Entre en el nombre DESPU√âS que usted ha seleccionado el tipo de objeto que volver√°.  
   
 Poste indicador  
-Este hace al objeto un poste indicador de objeto. Estas seÒales pueden ser 3 car·cteres,  
-visible en un poste indicador a la locaciÛn cuando el enfoque es acercado. (CORRIGEME: Nosotros no hacemos el despliegue de los
- postes indicadores todavÌa de esta manera).  
+Este hace al objeto un poste indicador de objeto. Estas se√±ales pueden ser 3 car√°cteres,  
+visible en un poste indicador a la locaci√≥n cuando el enfoque es acercado. (CORRIGEME: Nosotros no hacemos el despliegue de los
+ postes indicadores todav√≠a de esta manera).  
   
-Objeto del ·rea  
-Esto hace un objeto del ·rea al objeto, y habilita los mandos de objeto de ·rea  
+Objeto del √°rea  
+Esto hace un objeto del √°rea al objeto, y habilita los mandos de objeto de √°rea  
 descrito debajo.  
   
 Objeto DF  
-…ste es un informe de contrada-direcciÛn. Habilit·ndolo le permite escoger reporte Omni o  
+√âste es un informe de contrada-direcci√≥n. Habilit√°ndolo le permite escoger reporte Omni o  
 direccional, y le permite poner en el especifico para cada uno.  Vea:  
     http://web.usna.navy.mil/~bruninga/dfing.html  
-y la documentaciÛn de APRSdos para los detalles en estas tÈcnicas ˙tiles.  
-(CORRIGEME: la secciÛn Separada en las tÈcnicas de DFing?)  
+y la documentaci√≥n de APRSdos para los detalles en estas t√©cnicas √∫tiles.  
+(CORRIGEME: la secci√≥n Separada en las t√©cnicas de DFing?)  
   
-SÌmbolo EstaciÛn  
-Usted puede seleccionar un sÌmbolo para el objeto. Pulse seleccionar para escoger gr·ficamente,  
-o ver la secciÛn tabla de ayuda de sÌmbolo para las descripciones de cada sÌmbolo. Note  
-que no todos los sÌmbolos se han llevado a cabo todavÌa en el escogedor de gr·ficos,  
-y algunos no est·n por el APRS(tm) especificaciÛn. TambiÈn note esa ·rea de objeto, poste indicador de objetos, y los objetos d
-e DF tienen sÌmbolos fijos especiales y por consiguiente no pueden ser seleccionado aquÌ.  
+S√≠mbolo Estaci√≥n  
+Usted puede seleccionar un s√≠mbolo para el objeto. Pulse seleccionar para escoger gr√°ficamente,  
+o ver la secci√≥n tabla de ayuda de s√≠mbolo para las descripciones de cada s√≠mbolo. Note  
+que no todos los s√≠mbolos se han llevado a cabo todav√≠a en el escogedor de gr√°ficos,  
+y algunos no est√°n por el APRS(tm) especificaci√≥n. Tambi√©n note esa √°rea de objeto, poste indicador de objetos, y los objetos d
+e DF tienen s√≠mbolos fijos especiales y por consiguiente no pueden ser seleccionado aqu√≠.  
   
-LocalizaciÛn  
-La localizaciÛn del objeto se especifica aquÌ. Si usted seleccionara "Crear   
-Objeto/ArtÌculo" pulsando el botÛn derecho del men˙, la locaciÛn que usted pulsado se llenar·  
-. Si usted moviera un objeto con el ratÛn, la nueva posiciÛn estar· en esos campos.  Usted tambiÈn puede teclear en una posiciÛ
+Localizaci√≥n  
+La localizaci√≥n del objeto se especifica aqu√≠. Si usted seleccionara "Crear   
+Objeto/Art√≠culo" pulsando el bot√≥n derecho del men√∫, la locaci√≥n que usted pulsado se llenar√°  
+. Si usted moviera un objeto con el rat√≥n, la nueva posici√≥n estar√° en esos campos.  Usted tambi√©n puede teclear en una posici√≥
 n, por ejemplo usted puede estar poniendo un  
 objeto de un informe de voz sobre el aire.  
   
-Opciones genÈricas  
-Usted puede especificar la velocidad, direcciÛn, y altitud de objetos aquÌ. Algunos tipos de objetos  
-no pueden tener una velocidad o direcciÛn en tales casos los campos son desgrisado  
+Opciones gen√©ricas  
+Usted puede especificar la velocidad, direcci√≥n, y altitud de objetos aqu√≠. Algunos tipos de objetos  
+no pueden tener una velocidad o direcci√≥n en tales casos los campos son desgrisado  
 .  
   
 Objeto del poste indicador  
-Si el objeto es un objeto de poste indicador, usted puede especificar de 1 a 3 car·cter  
-de mensaje que aparece en la seÒal aquÌ.  Note que Xastir no despliega los objetos  
-de poste indicador a propiamente todavÌa.  
+Si el objeto es un objeto de poste indicador, usted puede especificar de 1 a 3 car√°cter  
+de mensaje que aparece en la se√±al aqu√≠.  Note que Xastir no despliega los objetos  
+de poste indicador a propiamente todav√≠a.  
   
-Objeto ·rea  
-Se usan Objetos de ·rea para resaltar partes especÌficas del mapas, o para dibujar excepcionalmente detalle dentro de los mapas
+Objeto √°rea  
+Se usan Objetos de √°rea para resaltar partes espec√≠ficas del mapas, o para dibujar excepcionalmente detalle dentro de los mapas
 .  
   Color luminoso.  
-    Use la versiÛn m·s luminosa de los colores permitidos.  
+    Use la versi√≥n m√°s luminosa de los colores permitidos.  
   Colorido  
-    El ·rea debe llenarse, no sÛlo perfilado. Esto puede ser ˙til para  
-    excluir una ·rea de una b˙squeda u otro evento.  
+    El √°rea debe llenarse, no s√≥lo perfilado. Esto puede ser √∫til para  
+    excluir una √°rea de una b√∫squeda u otro evento.  
   Tipo de objeto  
-    Escoge desde las formas geomÈtricas permitidas.  
+    Escoge desde las formas geom√©tricas permitidas.  
   Color del objeto  
-    Escoge el color en el que el objeto se desplegar·. Esto tambiÈn es afectado  
-    por el "Color Luminoso" la opciÛn anteriormente.  
+    Escoge el color en el que el objeto se desplegar√°. Esto tambi√©n es afectado  
+    por el "Color Luminoso" la opci√≥n anteriormente.  
   El objeto Compensado  
-    En centÈsima de un grado latitud.  Un detalle infortunado de la especificaciÛn,  
-    y duro de calcular f·cilmente.  Basta decir que usted puede cambiar  
-    el tamaÒo del objeto una vez usted lo ponga.  
+    En cent√©sima de un grado latitud.  Un detalle infortunado de la especificaci√≥n,  
+    y duro de calcular f√°cilmente.  Basta decir que usted puede cambiar  
+    el tama√±o del objeto una vez usted lo ponga.  
   El Desplazamiento izquierdo del objeto excepto /  
-    En centÈsima de un grado latitud.  Vea anteriormente.  
+    En cent√©sima de un grado latitud.  Vea anteriormente.  
   Objeto corredor  
-    …ste es el ancho de una lÌnea de ·rea de objeto. Util para las pistas de aterrizaje, tiempo  
-    watchboxes, describiendo una ·rea de interÈs o una ·rea de exclusiÛn, etc.,  
-(CORRIGEME: Escriba esta parte! (el ·rea objeto) La especificaciÛn es incierta a mÌ, el cÛdigo,  
-es incierto a mÌ, pero en el futuro yo lo deducirÈ todos!)  
+    √âste es el ancho de una l√≠nea de √°rea de objeto. Util para las pistas de aterrizaje, tiempo  
+    watchboxes, describiendo una √°rea de inter√©s o una √°rea de exclusi√≥n, etc.,  
+(CORRIGEME: Escriba esta parte! (el √°rea objeto) La especificaci√≥n es incierta a m√≠, el c√≥digo,  
+es incierto a m√≠, pero en el futuro yo lo deducir√© todos!)  
   
-°Siempre anule sus objetos y artÌculos cuando usted halla terminado con ellos!  
+¬°Siempre anule sus objetos y art√≠culos cuando usted halla terminado con ellos!  
 No les permita simplemente expirar desde su escondite, como ellos pueden colgarse  
 alrededor de las pantallas de otras personas por un periodo extendido.  
     
 
-HELP-INDEX>Men˙ Visualizador
+HELP-INDEX>Men√∫ Visualizador
 
-                     Opciones del Men˙ de Visualizar  
+                     Opciones del Men√∫ de Visualizar  
   
-El men˙ de Visualizar presenta varias maneras de ver datos en Xastir.  
+El men√∫ de Visualizar presenta varias maneras de ver datos en Xastir.  
   
 Boletines  
-…ste es el APRS(tm) tabla de anuncios, donde importantes anuncios son puesto.  
-Si usted se conecta con la interf·z del internet, es una buena idea para poner el  
+√âste es el APRS(tm) tabla de anuncios, donde importantes anuncios son puesto.  
+Si usted se conecta con la interf√°z del internet, es una buena idea para poner el  
 rango del campo a unas cientas millas, para ignorar postes de otras porciones del  
-mundo. "0" es el rango del campo, significa el mundo entero. Pulse el botÛn "Cambio de rango"  
-pulse para hacer cambios a este campo eficaz. Xastir actualmente no soporta el envÌo de boletines.  
+mundo. "0" es el rango del campo, significa el mundo entero. Pulse el bot√≥n "Cambio de rango"  
+pulse para hacer cambios a este campo eficaz. Xastir actualmente no soporta el env√≠o de boletines.  
   
 Datos de paquete entrantes  
-Esto despliega los datos entrantes en su TNC o interf·z del internet. Los botones radio  
-debajo selecciona si usted quiere ver sÛlo datos de TNC, sÛlo datos del internet, o  
+Esto despliega los datos entrantes en su TNC o interf√°z del internet. Los botones radio  
+debajo selecciona si usted quiere ver s√≥lo datos de TNC, s√≥lo datos del internet, o  
 ambos.  
   
-Estaciones mÛviles  
-…sta es una lista de estaciones que se est·n moviendo. Las estaciones califican para esta lista si  
-ellas se han movido (m·s de una posiciÛn recibida para ellas), el sÌmbolo de  
-la estaciÛn no es considerada. InformaciÛn mostrada incluyendo curso, velocidad, altitud,  
-posiciÛn, n˙mero de paquetes recibido, n˙mero de satÈlites de GPS visibles, curso,  
-de su estaciÛn, y distancia de su estaciÛn.   
+Estaciones m√≥viles  
+√âsta es una lista de estaciones que se est√°n moviendo. Las estaciones califican para esta lista si  
+ellas se han movido (m√°s de una posici√≥n recibida para ellas), el s√≠mbolo de  
+la estaci√≥n no es considerada. Informaci√≥n mostrada incluyendo curso, velocidad, altitud,  
+posici√≥n, n√∫mero de paquetes recibido, n√∫mero de sat√©lites de GPS visibles, curso,  
+de su estaci√≥n, y distancia de su estaci√≥n.   
   
 Todas las Estaciones  
-Esta opciÛn despliega una tabla de todas las estaciones ordenada alfabÈticamente. Incluyendo  
-el n˙mero de paquetes oÌdo, el tiempo que la estaciÛn fue oÌda ˙ltima vez, el camino   
-m·s reciente paquete tomado, el PHG, y el comentario de la estaciÛn.  
+Esta opci√≥n despliega una tabla de todas las estaciones ordenada alfab√©ticamente. Incluyendo  
+el n√∫mero de paquetes o√≠do, el tiempo que la estaci√≥n fue o√≠da √∫ltima vez, el camino   
+m√°s reciente paquete tomado, el PHG, y el comentario de la estaci√≥n.  
   
 Estaciones locales  
-Esta opciÛn despliega sÛlo estaciones que se oyen vÌa su TNC. Incluye  
-el n˙mero de paquetes oÌdo, el tiempo que la estaciÛn fue oÌda ˙ltima vez, el camino  
-m·s reciente paquete tomado, el PHG, y el comentario de la estaciÛn.  
+Esta opci√≥n despliega s√≥lo estaciones que se oyen v√≠a su TNC. Incluye  
+el n√∫mero de paquetes o√≠do, el tiempo que la estaci√≥n fue o√≠da √∫ltima vez, el camino  
+m√°s reciente paquete tomado, el PHG, y el comentario de la estaci√≥n.  
   
 Ultimas Estaciones  
-Esta opciÛn despliega una tabla de todas las estaciones ordenada recientemente oÌda  
-a menor recientemente escuchada. Incluye el n˙mero de paquetes oÌdo, el tiempo,  
-la estaciÛn fue oÌda ˙ltima vez, el camino que el m·s reciente paquete tomÛ, el PHG,  
-y el comentario de la estaciÛn.  
+Esta opci√≥n despliega una tabla de todas las estaciones ordenada recientemente o√≠da  
+a menor recientemente escuchada. Incluye el n√∫mero de paquetes o√≠do, el tiempo,  
+la estaci√≥n fue o√≠da √∫ltima vez, el camino que el m√°s reciente paquete tom√≥, el PHG,  
+y el comentario de la estaci√≥n.  
   
-EstaciÛn WX  
-Esta opciÛn despliega una tabla de todo el APRS(tm) estaciones del tiempo y sus datos.  
-El datos incluyen curso del viento, velocidad del viento, velocidad de r·faga dle viento, temperatura, humedad, presiÛn baromÈt
-rica, lluvia en la ˙ltima hora, lluvia medianoche subsecuentemente, y lluvia en las ˙ltimas 24 horas.  
+Estaci√≥n WX  
+Esta opci√≥n despliega una tabla de todo el APRS(tm) estaciones del tiempo y sus datos.  
+El datos incluyen curso del viento, velocidad del viento, velocidad de r√°faga dle viento, temperatura, humedad, presi√≥n barom√©t
+rica, lluvia en la √∫ltima hora, lluvia medianoche subsecuentemente, y lluvia en las √∫ltimas 24 horas.  
   
-EstaciÛn MeteorolÛgica Propia  
-Despliega sus datos del tiempo si usted tiene una estaciÛn del tiempo y la ha configurado  
+Estaci√≥n Meteorol√≥gica Propia  
+Despliega sus datos del tiempo si usted tiene una estaci√≥n del tiempo y la ha configurado  
 Xastir para accederla.  
   
 Alerta del Tiempo  
 Los despliegues alarmas recibidas, incluso las banderas de alertas, la alerta fuente/tipo,  
-destino alerta, expiraciÛn, mensaje, y efectuada situaciÛn. Esto datos  
-se usa por el resalto de condado, y no es particularmente humanamente-leÌble.  
-Usted generalmente puede deducir el estado y condado para la mayorÌa de las alarmas.  
+destino alerta, expiraci√≥n, mensaje, y efectuada situaci√≥n. Esto datos  
+se usa por el resalto de condado, y no es particularmente humanamente-le√≠ble.  
+Usted generalmente puede deducir el estado y condado para la mayor√≠a de las alarmas.  
   
-Tr·fico de mensaje  
-Muestras todo el tr·fico de mensaje mientras la ventana est· abierta. Incluye la fuente,  
-destino, interf·z, y mensaje. La opciÛn de rango puede limitar este despliegue  
+Tr√°fico de mensaje  
+Muestras todo el tr√°fico de mensaje mientras la ventana est√° abierta. Incluye la fuente,  
+destino, interf√°z, y mensaje. La opci√≥n de rango puede limitar este despliegue  
 a las estaciones cercanas, mucho como el mando del rango en boletines. Un rango de 0  
 causas todos los mensajes a ser desplegados.  
   
@@ -855,27 +855,27 @@ Mapas Opciones:
 
 Auto mapas (on/off)
  Cuando cualquier mapa es encontrado, en el directorio de mapas
-(o cualquier directorio bajo Èl) ser· desplegado,
-si el cae dentro de la regiÛn de despliegue actual.
+(o cualquier directorio bajo √©l) ser√° desplegado,
+si el cae dentro de la regi√≥n de despliegue actual.
 
-Usted puedes agregar cualquier n˙mero de niveles de directorios bajo
+Usted puedes agregar cualquier n√∫mero de niveles de directorios bajo
 el directorio del mapa principal para sus mapas.
-El Auto mapa pasar· por todos ellos y hallar· que mapa (o parte) debe desplegarse.
+El Auto mapa pasar√° por todos ellos y hallar√° que mapa (o parte) debe desplegarse.
 
-Todos los Mapas se unir·n en el ·rea de visiÛn.
+Todos los Mapas se unir√°n en el √°rea de visi√≥n.
 Si usted tienes una cantidad grandes de mapas, mapas muy detallados
 o una computadora muy lenta, esto puede ser mostrado bastante lento.
 
-Cuando esta opciÛn est· apagada, se desplegar·n mapas seleccionados
+Cuando esta opci√≥n est√° apagada, se desplegar√°n mapas seleccionados
 con el selector de Mapas.
 
 Rejillas sobre Mapa (on/off)
- Cuando estÈ en 'ON', esta opciÛn desplegar· una lÌnea de reja cada 10 grados.
+ Cuando est√© en 'ON', esta opci√≥n desplegar√° una l√≠nea de reja cada 10 grados.
 
  Niveles de mapas (on/off)
- Cuando estÈ en 'ON', esta opciÛn intentar· filtrar fuera los datos cuando el 
-nivel de enfoque muesta grandes ·reas. Esto no trabajar· con todos los mapas 
-pero trabajar· con los mapas generados de 'Tiger line maps'  en el sitio de 
+ Cuando est√© en 'ON', esta opci√≥n intentar√° filtrar fuera los datos cuando el 
+nivel de enfoque muesta grandes √°reas. Esto no trabajar√° con todos los mapas 
+pero trabajar√° con los mapas generados de 'Tiger line maps'  en el sitio de 
 aprs.rutgers.edu.
 
 Areas rellena en colores (on/off)
@@ -885,12 +885,12 @@ Los mapas son cargados en orden alfabertico por tipo, asi que renombrando
 mapas es un segundo pero la via es menos elegante archivar la vista deseada.
 
 Seleccionar Mapas
-Esta se presentar· con una lista de todos los archivos en su directorio de 
-mapas. Cualquier mapa que usted desearÌas incluirlo en los datos desplegados, 
-simplemente tiene que pulsar el botÛn del ratÛn sobre el nombre.
-Esto resaltar· el nombre del mapa, Usted puedes seleccionar cualquier n˙mero de mapas.
-Pulsando en el botÛn "Aceptar"  se desplegar·n los mapas seleccionados.
-Oprimiendo el BotÛn de "Cancelar" abandonarÌa cualquier cambio.
+Esta se presentar√° con una lista de todos los archivos en su directorio de 
+mapas. Cualquier mapa que usted desear√≠as incluirlo en los datos desplegados, 
+simplemente tiene que pulsar el bot√≥n del rat√≥n sobre el nombre.
+Esto resaltar√° el nombre del mapa, Usted puedes seleccionar cualquier n√∫mero de mapas.
+Pulsando en el bot√≥n "Aceptar"  se desplegar√°n los mapas seleccionados.
+Oprimiendo el Bot√≥n de "Cancelar" abandonar√≠a cualquier cambio.
 
 Tambien hay botones de atajo para seleccionar todos de un cierto tipo de mapa,
 o de-seleccionar todos los mapas de una vez.
@@ -898,31 +898,31 @@ o de-seleccionar todos los mapas de una vez.
 Una nota sobre mapas: Muchos de los actuales mapas de vectores disponibles para
 los EE.UU. fueron creado en NAD 1927 datum, mientras Xastir y otros programas de APRS
 usan el WGS 1984 datum. 
-Si es enfocado hacia una ·rea pequeÒa en el mapa la variaci·n del datum
+Si es enfocado hacia una √°rea peque√±a en el mapa la variaci√°n del datum
 puede ser muy notable. Los mapas topo USGS tienen sus datum corregido por Xastir
 como ellos son desplegados,
-asi que la posiciones generalmente ser·n m·s exacta con los mapas topo.
+asi que la posiciones generalmente ser√°n m√°s exacta con los mapas topo.
 
 HELP-INDEX>Archivos Mapas, Dos, Windows, Pixmaps, geoTIFF y Condados WX  
 
              Archivos mapas, Dos, Windows, Pixmaps, geoTIFF y Condados WX  
 
 Tipos de mapas  
-Xastir trabajar· con varios tipos archivos de mapas.
+Xastir trabajar√° con varios tipos archivos de mapas.
 Todo el Dos, Windows/MacAPRS[TM] son archivos de  Mapas que son soportados.
 
-Un nuevo formato de Pixmap se ha agregado en versiÛn 0.3.2.
-Xastir tambiÈn soportar· mapas para las Alertas de condados WX.  
-El ˙ltimo formato de mapa soportado es geoTIFF, tales mapas como son
+Un nuevo formato de Pixmap se ha agregado en versi√≥n 0.3.2.
+Xastir tambi√©n soportar√° mapas para las Alertas de condados WX.  
+El √∫ltimo formato de mapa soportado es geoTIFF, tales mapas como son
 USGS DRG topo mapas.
 
 Locaciones de Mapas 
 Cualquier Dos, Windows/Mac o archivo Pixmap y geoTIFF, deben guardarse en el  
 Directorio de /usr/local/share/xastir/maps en su computadora.
-Usted puedes crear cualquier n˙meros de directorios bajo este directorio
+Usted puedes crear cualquier n√∫meros de directorios bajo este directorio
 para ayudar a separar sus datos.
 Por ejemplo usted puedes querer crear un directorio de USA.
-y despuÈs uno por cada estado bajo el Directorio de USA.
+y despu√©s uno por cada estado bajo el Directorio de USA.
 O tiene un directorio separado para DOS o Pixmaps y geoTIFF.
 
 
@@ -936,14 +936,14 @@ O tiene un directorio separado para DOS o Pixmaps y geoTIFF.
                                                 /pixmaps/NJ/
 
 
-Pixmaps realmente son una combinaciÛn de dos archivos, un archivo de dato con un,  
-pixmap (.xpm), gr·fico y un archivo de locaciÛn (.geo).
-El archivo .xpm es una estructura de gr·fico normal,
+Pixmaps realmente son una combinaci√≥n de dos archivos, un archivo de dato con un,  
+pixmap (.xpm), gr√°fico y un archivo de locaci√≥n (.geo).
+El archivo .xpm es una estructura de gr√°fico normal,
 con una imagen de cualquier tipo.
 
-Usted puedes usar XView para convertir gif, jpg, y tif im·genes en este formato.
-El archivo geo es un archivo de dato que atar· la imagen a una locaciÛn en el mundo.
-AquÌ est· un ejemplo de mi archivo world1.geo
+Usted puedes usar XView para convertir gif, jpg, y tif im√°genes en este formato.
+El archivo geo es un archivo de dato que atar√° la imagen a una locaci√≥n en el mundo.
+Aqu√≠ est√° un ejemplo de mi archivo world1.geo
 
 
 ARCHIVO   world1.xpm
@@ -951,24 +951,24 @@ ARCHIVO   world1.xpm
 TIEPOINT   0          0        -180        90
 TIEPOINT   640        320      180         -90
 
-Este es un archivo simple, con 4 componentes b·sicos.
-La primera lÌnea especifica este archivo data .geo es usado,
+Este es un archivo simple, con 4 componentes b√°sicos.
+La primera l√≠nea especifica este archivo data .geo es usado,
 este archivo debe estar en el mismo directorio como el archivo de .geo.  
 
-La segunda lÌnea muestra un comentario;
-cualquier lÌnea con el car·cter como un "#" ser· ignorado.  
+La segunda l√≠nea muestra un comentario;
+cualquier l√≠nea con el car√°cter como un "#" ser√° ignorado.  
   
-Las ˙ltimas dos lÌneas son para conectar un pixel en la posiciÛn x,y  
-en la imagen a una posiciÛn lat y long en la mundo. Dos puntos unidos  
+Las √∫ltimas dos l√≠neas son para conectar un pixel en la posici√≥n x,y  
+en la imagen a una posici√≥n lat y long en la mundo. Dos puntos unidos  
 son necesitado y debe estar cerca de la esquina izquierda superior 
-y la esquina derecha m·s abajo de la imagen.  
+y la esquina derecha m√°s abajo de la imagen.  
   
 Usar archivo pixmap con xastir, use el selector de mapa y seleccione el archivo .geo
 para incluir la imagen en la vista del mapa actual.  
 
-Por razones de velocidad, otras lÌneas de opciones pueden ser anexada
+Por razones de velocidad, otras l√≠neas de opciones pueden ser anexada
 en el archivo .geo.
-AquÌ algunos ejemplos del formato modificado:
+Aqu√≠ algunos ejemplos del formato modificado:
 
 ARCHIVO         Agnes_Mountain.xpm.gz
 #
@@ -980,32 +980,32 @@ TIEPOINT        1337    1999    -120.87619806   48.24982052
 #EDGES  BOTTOM          TOP             LEFT            RIGHT
 EDGES  48.24982052  48.37481943  -121.00120491  -120.87619806
 
-La lÌnea EDGES especifica el min/max bordes del mapa. El mencionado
-mapa arriba es inclinado ligeramente, el cual es el porquÈ los n˙meros
-no corresponden a la esquina 'tiepoints' exactamente. Xastir usar· esa
-informaciÛn saltar el mapa si no encaja en la vista actual.
+La l√≠nea EDGES especifica el min/max bordes del mapa. El mencionado
+mapa arriba es inclinado ligeramente, el cual es el porqu√© los n√∫meros
+no corresponden a la esquina 'tiepoints' exactamente. Xastir usar√° esa
+informaci√≥n saltar el mapa si no encaja en la vista actual.
 
-Mapas geoTIFF son una combinaciÛn de dos archivos tambiÈn:
+Mapas geoTIFF son una combinaci√≥n de dos archivos tambi√©n:
 un archivo .tif y un .fgd. El archivo .tif es el actual data mapa.
-El archivo .fgd necesita solamente tener cuatro lÌneas como estas:
+El archivo .fgd necesita solamente tener cuatro l√≠neas como estas:
 
 1.5.1.1   WEST BOUNDING COORDINATE:  -122.000000
 1.5.1.2   EAST BOUNDING COORDINATE:  -120.000000
 1.5.1.3   NORTH BOUNDING COORDINATE:  48.000000
 1.5.1.4   SOUTH BOUNDING COORDINATE:  47.000000
 
-Xastir usa esas cuatro lÌneas en su calculaciones para determinar los puntos
+Xastir usa esas cuatro l√≠neas en su calculaciones para determinar los puntos
 de la esquina del mapa, y si o no el mapa vuelve al actual punto de vista
 (asi que el puede decidir si saltarlo). Si su data mapa es un mapa topo USGS,
-el archivo .fgd podrÌa ser leÌdamente disponible a usted.
+el archivo .fgd podr√≠a ser le√≠damente disponible a usted.
 Una forma anexada en Xastir es la abilidad hacer traslaciones datum desde
-NAD 1927 a WGS 84 datum, el cual hace el mapa topo USGS mucho m·s posicionalmente
+NAD 1927 a WGS 84 datum, el cual hace el mapa topo USGS mucho m√°s posicionalmente
 exacto sobre la pantalla en Xastir.
 
 Mapas Condado WX  
 Todos los mapas Condado WX deben guardarse en el directorio de
 /usr/local/share/xastir/Counties.  Hay formatos diferentes para los mapas,
-pero de cualquier modo este directorio tendr· directorios (usted podrÌas
+pero de cualquier modo este directorio tendr√° directorios (usted podr√≠as
 necesitar crearlos) bajo este  para cada estado (2 abreviaciones de letras).
 
                /usr/local/share/xastir/Counties
@@ -1030,8 +1030,8 @@ Aqui estan dos lugares en el Internet donde usted puedes obtener esos mapas:
 ftp://aprs.rutgers.edu/pub/hamradio/APRS/NWSCounties/
 http://home.att.net/~kg5qd1/Maps.html
 
-Como los mensajes NWS son recibidos, diferentes areas obtendr·n un tintado
-hacia las ·reas designadas.
+Como los mensajes NWS son recibidos, diferentes areas obtendr√°n un tintado
+hacia las √°reas designadas.
 Ellas son coloreadas para especificar diferentes tipos de alertas. 
 
 Los colores originales fueron:
@@ -1040,51 +1040,51 @@ Cian para el asesor, amarillo para alerta del tiempo,
 rojo para advertencia, naranja para alerta cancelada, azul real para pruebas,
 y verde para niveles de indeterminadas alarmas.
 
-Con la ˙ltima versiÛn de Xastir los colores pueden ser diferentes
+Con la √∫ltima versi√≥n de Xastir los colores pueden ser diferentes
 debido a un cambio mayor: 
-Las ·reas que ahora son tintadas en lugar de relleno de color,
+Las √°reas que ahora son tintadas en lugar de relleno de color,
 y la dependencia en el tintado debajo los colores.
 
 Este cambio fue hecho asi que los mapas estando debajo de esto pueden
-mantenerse visible debajo en las ·reas de alertas del tiempo. 
-Las alertas del tiempo podrÌan ser fijada en on/off vÌa el men˙ del mapa tambiÈn.
+mantenerse visible debajo en las √°reas de alertas del tiempo. 
+Las alertas del tiempo podr√≠an ser fijada en on/off v√≠a el men√∫ del mapa tambi√©n.
 
 
 HELP-INDEX>Configurar Interfaces
 
                            Configurar Interfaces  
   
-Pulse el botÛn en Configurar luego en Interfaces  
+Pulse el bot√≥n en Configurar luego en Interfaces  
   
-Un di·logo de "Interfaces Instalados" debe aparecer. 
-Este di·logo le permitir·s a usted Agregar, Anular, y modificar las Propiedades 
+Un di√°logo de "Interfaces Instalados" debe aparecer. 
+Este di√°logo le permitir√°s a usted Agregar, Anular, y modificar las Propiedades 
 en varios dispositivos que usted puedes querer usar con Xastir.  
   
 Las opciones actuales son:  
-TNC vÌa el Puerto Serial
-TNC vÌa un Puerto Serial con (GPS m·s cable HSP)
-GPS vÌa un Puerto Serial
-EstaciÛn MeteorolÛgica vÌa Puerto Serial
-ConexiÛn a un Servidor en Internet
-TNC vÌa la Uilidades del AX.25
-GPS Enlazado vÌa el Servidor gpsd
-EstaciÛn MeteorolÛgica Enlazada a una RED
-TNC vÌa un Puerto Serial con (GPS m·s AUX puerto)
+TNC v√≠a el Puerto Serial
+TNC v√≠a un Puerto Serial con (GPS m√°s cable HSP)
+GPS v√≠a un Puerto Serial
+Estaci√≥n Meteorol√≥gica v√≠a Puerto Serial
+Conexi√≥n a un Servidor en Internet
+TNC v√≠a la Uilidades del AX.25
+GPS Enlazado v√≠a el Servidor gpsd
+Estaci√≥n Meteorol√≥gica Enlazada a una RED
+TNC v√≠a un Puerto Serial con (GPS m√°s AUX puerto)
   
-Para agregar un dispositivo, pulse el botÛn de agregar. 
-Un di·logo "Elegir Tipo de Interfaz" aparecer·. 
-Pulse el botÛn en el tipo de dispositivo que le gustarÌa agregar. 
-Luego pulse el botÛn de Agregar en el di·logo "Elegir Tipo de Interfaz". 
-Las propiedades para ese dispositivo aparecer·. 
+Para agregar un dispositivo, pulse el bot√≥n de agregar. 
+Un di√°logo "Elegir Tipo de Interfaz" aparecer√°. 
+Pulse el bot√≥n en el tipo de dispositivo que le gustar√≠a agregar. 
+Luego pulse el bot√≥n de Agregar en el di√°logo "Elegir Tipo de Interfaz". 
+Las propiedades para ese dispositivo aparecer√°. 
 
-Rellene la informaciÛn pedida y pulse el botÛn en Aceptar, anular el dispositivo, 
-pulse el botÛn en el dispositivo usted deseas anular y entonces pulse el botÛn Anular.
+Rellene la informaci√≥n pedida y pulse el bot√≥n en Aceptar, anular el dispositivo, 
+pulse el bot√≥n en el dispositivo usted deseas anular y entonces pulse el bot√≥n Anular.
 Para modificar las propiedades de un dispositivo, 
-pulse el botÛn en el dispositivo usted deseas modificar, 
-luego pulse sobre el botÛn de propiedades. 
+pulse el bot√≥n en el dispositivo usted deseas modificar, 
+luego pulse sobre el bot√≥n de propiedades. 
 
-Las propiedades para ese dispositivo aparecer·.
-Cambie la informaciÛn que usted quieres y pulsar el botÛn en Aceptar.
+Las propiedades para ese dispositivo aparecer√°.
+Cambie la informaci√≥n que usted quieres y pulsar el bot√≥n en Aceptar.
 
 HELP-INDEX>Configurando el Serial sobre un TNC
 
@@ -1092,37 +1092,37 @@ HELP-INDEX>Configurando el Serial sobre un TNC
 
 SERIAL TNC CONFIGURACION
 
-Pulse el botÛn "Configurar" luego en "Interfaces" despuÈs en "Agregar"
-despuÈs en "Serial TNC" luego "Agregar" y por ˙ltimo en "Puerto TNC"
+Pulse el bot√≥n "Configurar" luego en "Interfaces" despu√©s en "Agregar"
+despu√©s en "Serial TNC" luego "Agregar" y por √∫ltimo en "Puerto TNC"
 
 Si usted tienes un TNC y planea usarlo con XASTIR seleccione "Puerto TNC".
 El valor por defecto no, es seleccionado.
 
-Ahora entre en el puerto que el TNC est·, es decir /dev/ttyS0 para com1
+Ahora entre en el puerto que el TNC est√°, es decir /dev/ttyS0 para com1
 
 Seleccione los valores del puerto que se acoplan a su TNCs velocidad del puerto.
 
 Entre en tres rutas de UNPROTO.
 
-Xastir asumir· los XX VIA la parte de la ruta de UNPROTO. Hay tres Rutas 
-permitidas para que su seÒal sea escuchada si las condiciones son mala.
-Si cualquiera de Èstos es llenado en XASTIR ciclar· a travÈs de uno de ellos
+Xastir asumir√° los XX VIA la parte de la ruta de UNPROTO. Hay tres Rutas 
+permitidas para que su se√±al sea escuchada si las condiciones son mala.
+Si cualquiera de √©stos es llenado en XASTIR ciclar√° a trav√©s de uno de ellos
 a cada intervalo de transmision.
 
-Si usted est·s local, sÛlo un WIDE2-2 puede ser una buena opciÛn.
-Si usted est·s usando baja potencia y/o est·s distante de un digi entonces
+Si usted est√°s local, s√≥lo un WIDE2-2 puede ser una buena opci√≥n.
+Si usted est√°s usando baja potencia y/o est√°s distante de un digi entonces
 WIDE1-1,WIDE2-2 puede trabajar mejor.
 
-O si usted conoces el indicativo de su digi m·s cercano que usted
+O si usted conoces el indicativo de su digi m√°s cercano que usted
 puedes usar XXXCALL,WIDE2-2.
-La mayorÌa de ustedes necesitar·n sÛlo una ruta.
+La mayor√≠a de ustedes necesitar√°n s√≥lo una ruta.
 
-Si usted est·s en una ·rea remota y su seÒal es difÌcil de conseguirla
-usted puedes necesitar m·s.
+Si usted est√°s en una √°rea remota y su se√±al es dif√≠cil de conseguirla
+usted puedes necesitar m√°s.
 
-Verifique con un grupo local y preg˙ntele que ruta 
-puede ser mejor para su ·rea. Algunas areas
-usan el flujo de protocolos m·s eficientes, en tales caso usted podrÌa usar
+Verifique con un grupo local y preg√∫ntele que ruta 
+puede ser mejor para su √°rea. Algunas areas
+usan el flujo de protocolos m√°s eficientes, en tales caso usted podr√≠a usar
 WIDE3-3 o WIDE1-1,WIDE3-3.
 
 Los archivos de Inicio y Salida del TNC. Estos campos especifican a nombre
@@ -1131,36 +1131,36 @@ Cada archivo es un archivo de texto estandar conteniendo algunos comandos que
 usted le gustaria enviarle a su TNC a la vez que el dispositivo es activado
 (Archivo de Inicio - Startup file) o de deshabilitar (shut down).
 
-Pulsando el botÛn "Aceptar" guardar·s sus cambios.
-Pulsando el botÛn en "Cancelar" guardar· la configuracion actual.
+Pulsando el bot√≥n "Aceptar" guardar√°s sus cambios.
+Pulsando el bot√≥n en "Cancelar" guardar√° la configuracion actual.
 
 HELP-INDEX>Opciones del TNC
 
                    Opciones del TNC
 
-Permitir TransmisiÛn (on/off)
- Esto controla la transmisiÛn de datos a travÈs del TNC. Usted puedes querer
+Permitir Transmisi√≥n (on/off)
+ Esto controla la transmisi√≥n de datos a trav√©s del TNC. Usted puedes querer
 Simplemente escuchar en RF o si usted no es un HAM y no debes transmitir. Con
-Esta opciÛn (el cual est· apagado por defecto) usted puedes controlar 
-transmisiÛn de cualquier datos vÌa RF. 
+Esta opci√≥n (el cual est√° apagado por defecto) usted puedes controlar 
+transmisi√≥n de cualquier datos v√≠a RF. 
 
-Bit·cora (log) del TNC (on/off)
- Si est· en 'ON', un archivo de log (Bit·cora) se crear· en el directorio logs. 
-El archivo se llamar· tnc.log y se aÒadir· con toda la informaciÛn oÌda vÌa RF.
+Bit√°cora (log) del TNC (on/off)
+ Si est√° en 'ON', un archivo de log (Bit√°cora) se crear√° en el directorio logs. 
+El archivo se llamar√° tnc.log y se a√±adir√° con toda la informaci√≥n o√≠da v√≠a RF.
 
 Transmitir Ahora!
- Este transmitir· su position/info de su estacion cuando usted pulses el botÛn 
-en esta selecciÛn. No transmitir· si la opciÛn "Serial TNC" no est· seleccionada
-(en la secciÛn Configurar/Interfaces/Agregar/Serial TNC/Adregar/Puerto TNC)
-o si la opciÛn arriba mencionada permitir transmisiÛn est· fijada en off.
+ Este transmitir√° su position/info de su estacion cuando usted pulses el bot√≥n 
+en esta selecci√≥n. No transmitir√° si la opci√≥n "Serial TNC" no est√° seleccionada
+(en la secci√≥n Configurar/Interfaces/Agregar/Serial TNC/Adregar/Puerto TNC)
+o si la opci√≥n arriba mencionada permitir transmisi√≥n est√° fijada en off.
 
 HELP-INDEX>Configurar TNC via Serial c/GPS en HSP cable o AUX puerto
 
             Configurar TNC via Serial c/GPS en HSP cable o AUX puerto
 
-Esos tipos de interfaces hÌbridos implementan las opciones de ambos serial TNCs
-y GPSs. Por favor consulte la configuraciÛn de ayuda para ambos serial TNCs y
-serial GPSs para m·s detalles de informaciÛn sobre la configuraciÛn
+Esos tipos de interfaces h√≠bridos implementan las opciones de ambos serial TNCs
+y GPSs. Por favor consulte la configuraci√≥n de ayuda para ambos serial TNCs y
+serial GPSs para m√°s detalles de informaci√≥n sobre la configuraci√≥n
 de esos dispositivos.
 
 HELP-INDEX>Configurando el AX.25 TNC
@@ -1169,61 +1169,61 @@ HELP-INDEX>Configurando el AX.25 TNC
 
 AX.25 TNC CONFIGURACION    
     
-Esta secciÛn cubre agregando o modificando AX.25 TNC dispositivos.
+Esta secci√≥n cubre agregando o modificando AX.25 TNC dispositivos.
 AX.25 dispositivos pueden sea cualquier dispositivo que use controladores AX.25
 en Linux.
 
-…ste es un controlador de nivel del n˙cleo (kernel),
-y el dispositivo como un Baycom o una tarjeta de sonido como mÛdem 
+√âste es un controlador de nivel del n√∫cleo (kernel),
+y el dispositivo como un Baycom o una tarjeta de sonido como m√≥dem 
 puede usarse como un TNC.
 Estos dispositivos deben ser configurado y correrlo
  antes de que Xastir pueda usarlos.    
     
-Seleccionando Activar en Inicio, le dir· a Xastir que busque este dispositivo
-y fije las comunicaciones con Èl cuando el programa de su primer inicio.
+Seleccionando Activar en Inicio, le dir√° a Xastir que busque este dispositivo
+y fije las comunicaciones con √©l cuando el programa de su primer inicio.
     
-Seleccionando Permite Transmitir, le dir· a Xastir que cualquier
-salida de datos de RF puede ser enviado a este dispositivo para la transmisiÛn.
+Seleccionando Permite Transmitir, le dir√° a Xastir que cualquier
+salida de datos de RF puede ser enviado a este dispositivo para la transmisi√≥n.
     
-Escoja la operaciÛn correcta de IGate para este dispositivo.
-Usted puedes tener varios dispositivos TNC, y esta opciÛn puede ser diferente 
-por cada dispositivo. Si usted no est·s ejecutando un IGate 
-usted puedes dejar Èsta opciÛn predefinida de "Desactivar todo el tr·fico".    
+Escoja la operaci√≥n correcta de IGate para este dispositivo.
+Usted puedes tener varios dispositivos TNC, y esta opci√≥n puede ser diferente 
+por cada dispositivo. Si usted no est√°s ejecutando un IGate 
+usted puedes dejar √©sta opci√≥n predefinida de "Desactivar todo el tr√°fico".    
     
 Entre el nombre del Dispositivo AX.25 
-que usted especificÛ en el archivo del axports para este dispositivo.
+que usted especific√≥ en el archivo del axports para este dispositivo.
     
-Entre en tres rutas de UNPROTO. Xastir asumir· el XX VIA parte de la ruta
-del UNPROTO. Hay tres rutas permitidas para que su seÒal sea escuchada
+Entre en tres rutas de UNPROTO. Xastir asumir√° el XX VIA parte de la ruta
+del UNPROTO. Hay tres rutas permitidas para que su se√±al sea escuchada
 si las condiciones son mala.
 
-Si cualquiera de Èsas son llenada en XASTIR ciclar· a travÈs de uno de ellos 
-en cada momento de la transmisiÛn. Si usted es local, sÛlo un
-WIDE2-2 puede ser una buena opciÛn.
+Si cualquiera de √©sas son llenada en XASTIR ciclar√° a trav√©s de uno de ellos 
+en cada momento de la transmisi√≥n. Si usted es local, s√≥lo un
+WIDE2-2 puede ser una buena opci√≥n.
 
-Si usted est·s usando baja potencia y/o est·s distante de un digi
+Si usted est√°s usando baja potencia y/o est√°s distante de un digi
 entonces WIDE1-1,WIDE2-2 pueden trabajar mejor.
-O si usted sabes el indicativo de su digi m·s cercano
-a usted puedes usar XXXCALL,WIDE2-2. La mayorÌa de ustedes necesitar·n sÛlo una ruta.
+O si usted sabes el indicativo de su digi m√°s cercano
+a usted puedes usar XXXCALL,WIDE2-2. La mayor√≠a de ustedes necesitar√°n s√≥lo una ruta.
 
-Si usted est·s en una ·rea remota y su seÒal es difÌcil de conseguir usted puedes 
-necesitar m·s. Verifique con un grupo local y preg˙ntele quÈ 
-ruta puede ser mejor para su ·rea. Algunas areas
-usan el flujo de protocolos m·s eficientes, en tales caso usted podrÌa usar
+Si usted est√°s en una √°rea remota y su se√±al es dif√≠cil de conseguir usted puedes 
+necesitar m√°s. Verifique con un grupo local y preg√∫ntele qu√© 
+ruta puede ser mejor para su √°rea. Algunas areas
+usan el flujo de protocolos m√°s eficientes, en tales caso usted podr√≠a usar
 WIDE3-3 o WIDE1-1,WIDE3-3.
 
     
-NOTA: Para usar dispositivos AX.25 con Xastir usted necesitar·s ejecutar el programa como "raÌz" ("root").
+NOTA: Para usar dispositivos AX.25 con Xastir usted necesitar√°s ejecutar el programa como "ra√≠z" ("root").
 
-Si usted quieres ejecutar Xastir como otro usuario usted necesitar·s
+Si usted quieres ejecutar Xastir como otro usuario usted necesitar√°s
 fijar el suid en ON  en el archivo de programa de xastir.
-El orden siguiente como raÌz debe fijar esto para usted. chmod a+s /usr/local/bin/xastir.
+El orden siguiente como ra√≠z debe fijar esto para usted. chmod a+s /usr/local/bin/xastir.
 
 como con cualquier programa que este corriendo de esta forma, por favor note que
 esto puede ser considerado como una seguridad de riesgo, como el programa no ha sido
 probado para explotar. Uselo en este modo en un multi-usuarios en su propio riesgo!
 
-HELP-INDEX>CÛmo uso yo mi GPS con Xastir?  
+HELP-INDEX>C√≥mo uso yo mi GPS con Xastir?  
   
                              Usando UN GPS con Xastir  
   
@@ -1235,114 +1235,114 @@ o a un serial GPS con un TNC y cable HSP.
   
 La ventaja de usar un GPS conectado a una red
 es que usted puedes compartir el GPS con otros programas.   
-Xastir usa un programa llamado gpsd para hacer una connexiÛn a una red.   
+Xastir usa un programa llamado gpsd para hacer una connexi√≥n a una red.   
   
-Este programa entrega datos de GPS normales en un sÛcalo de conexiÛn de redes.
-Algunas versiones tambiÈn permiten correcciÛn de GPS vÌa un servidor de Internet.   
+Este programa entrega datos de GPS normales en un s√≥calo de conexi√≥n de redes.
+Algunas versiones tambi√©n permiten correcci√≥n de GPS v√≠a un servidor de Internet.   
   
-Una vez que usted tengas bajado e Instalado el gpsd en su m·quina
-(u otra m·quina), usted puedes fijar el Xastir
-para conectar a Èl creando una interfaz.   
+Una vez que usted tengas bajado e Instalado el gpsd en su m√°quina
+(u otra m√°quina), usted puedes fijar el Xastir
+para conectar a √©l creando una interfaz.   
   
-Pulse el botÛn en "Configurar" y despuÈs en "Interfaces".
-Cuando el di·logo de Interfaces aparezca Pulse el botÛn de "Agregar".   
-Un nuevo di·logo aparecer· con los tipos de Interfaces,
-Elegir en "Enlazado GPS (via el gpsd)", y luego pulse el botÛn en Agregar.
+Pulse el bot√≥n en "Configurar" y despu√©s en "Interfaces".
+Cuando el di√°logo de Interfaces aparezca Pulse el bot√≥n de "Agregar".   
+Un nuevo di√°logo aparecer√° con los tipos de Interfaces,
+Elegir en "Enlazado GPS (via el gpsd)", y luego pulse el bot√≥n en Agregar.
 
 Hay 4 opciones a elegir.
-Primero entre el nombre del servidor del programa gpsd que est· ejecutando.   
-Si est· en el mismo computador que Xastir entonces  entre localhost.   
+Primero entre el nombre del servidor del programa gpsd que est√° ejecutando.   
+Si est√° en el mismo computador que Xastir entonces  entre localhost.   
   
 Luego entre en el puerto que usted puso el programa gpsd para escuchar.
-Si usted seleccionas "Activar en Inicio", Xastir tratar· de conectar
+Si usted seleccionas "Activar en Inicio", Xastir tratar√° de conectar
 al programa gpsd tan pronto se inicia y tan pronto usted hagas click
-en el botÛn "Aceptar". La ˙ltima opciÛn, si seleccionado,
-intentar· hacer la reconexiÛn al gpsd si un fallo fuÈ encontrado.  
+en el bot√≥n "Aceptar". La √∫ltima opci√≥n, si seleccionado,
+intentar√° hacer la reconexi√≥n al gpsd si un fallo fu√© encontrado.  
   
 Serial GPS: Un serial GPS es cualquier unidad de GPS normal 
 que conecte al puerto serial y transmita datos en el NMEA normal. 
-Permitir a Xastir a usar este tipo de GPS pulse el botÛn
-de "Configurar" luego en "Interfaces". Cuando el di·logo
-de Interfaces aparezca pulse el botÛn de "Agregar".
+Permitir a Xastir a usar este tipo de GPS pulse el bot√≥n
+de "Configurar" luego en "Interfaces". Cuando el di√°logo
+de Interfaces aparezca pulse el bot√≥n de "Agregar".
 
-Un di·logo con los tipos de Interfaces aparecer·,
-Pulse sobre el "Serial GPS" y despuÈs en el botÛn Agregar.   
+Un di√°logo con los tipos de Interfaces aparecer√°,
+Pulse sobre el "Serial GPS" y despu√©s en el bot√≥n Agregar.   
   
                Unas pocas opciones para fijar.
                
 Primero entre el puerto serial en donde el dispositivo
-est· conectado (como "/dev/ttyS1 (COM2)"). 
-PrÛximo si usted seleccionas "Activar en Inicio",
-Xastir intentar· inicializar el "serial GPS" cuando Èl se
-inicie y cuando usted pulses el botÛn "Aceptar".
-Las prÛximas opciones pondr·n la velocidad del puerto serial y modo.   
+est√° conectado (como "/dev/ttyS1 (COM2)"). 
+Pr√≥ximo si usted seleccionas "Activar en Inicio",
+Xastir intentar√° inicializar el "serial GPS" cuando √©l se
+inicie y cuando usted pulses el bot√≥n "Aceptar".
+Las pr√≥ximas opciones pondr√°n la velocidad del puerto serial y modo.   
   
-Para la mayorÌa de las unidades de GPS los valores predefinidos est·n bien.
-Pero Chequee usted el manual del GPS sÛlo en caso de dudas.
+Para la mayor√≠a de las unidades de GPS los valores predefinidos est√°n bien.
+Pero Chequee usted el manual del GPS s√≥lo en caso de dudas.
 
 HSP TNC/GPS: 
-Mire en "CÛmo uso yo mi TNC con Xastir?"  
+Mire en "C√≥mo uso yo mi TNC con Xastir?"  
 
 
 HELP-INDEX>Configurando el Puerto/GPS
 
               Configurando el Puerto/GPS
 
-Pulse el botÛn en "Configurar" luego en "Interfaces" luego en "Agregar" 
-elija "Serial GPS" luego "Agregar" despuÈs ajuste los par·metros del Puerto/GPS.
+Pulse el bot√≥n en "Configurar" luego en "Interfaces" luego en "Agregar" 
+elija "Serial GPS" luego "Agregar" despu√©s ajuste los par√°metros del Puerto/GPS.
 
-Para usar una posiciÛn "Serial GPS" en el puerto serial,
-pulse el botÛn en PosiciÛn Serial GPS.
-Este puerto puede especificarse en la PosiciÛn "SÛlo el puerto de GPS".
+Para usar una posici√≥n "Serial GPS" en el puerto serial,
+pulse el bot√≥n en Posici√≥n Serial GPS.
+Este puerto puede especificarse en la Posici√≥n "S√≥lo el puerto de GPS".
 Usted puedes usar un dispositivo serial como /dev/ttyS1 (COM2).
 
 Si usted tienes un cable de HSP que le permitas compartir el Serial TNC con una 
-unidad GPS usted puedes seleccionar "Serial TNC c/GPS m·s (Cable HSP).
-…ste es un cable especial y el mÌo no trabaja en todas las combinaciones
+unidad GPS usted puedes seleccionar "Serial TNC c/GPS m√°s (Cable HSP).
+√âste es un cable especial y el m√≠o no trabaja en todas las combinaciones
 de computadores/GPS/TNC.
 
-Ahora usted puedes escoger un GPS muestreo y TNC relaciÛn, Recuerde usarlo con 
-precauciÛn aqui, que sean amigables por sus estaciones cercanas.
+Ahora usted puedes escoger un GPS muestreo y TNC relaci√≥n, Recuerde usarlo con 
+precauci√≥n aqui, que sean amigables por sus estaciones cercanas.
 
-øActivar el uso de los datos de GPS seleccione el "Uso PosiciÛn GPS?" opciÛn.
-Con esta selecciÛn hecha la unidad de GPS pondr· al dÌa su posiciÛn.
-Si esto no se selecciona la posiciÛn actual vendr· desde la locaciÛn 
-en configuraciÛn informaciÛn de la EstaciÛn.
+¬øActivar el uso de los datos de GPS seleccione el "Uso Posici√≥n GPS?" opci√≥n.
+Con esta selecci√≥n hecha la unidad de GPS pondr√° al d√≠a su posici√≥n.
+Si esto no se selecciona la posici√≥n actual vendr√° desde la locaci√≥n 
+en configuraci√≥n informaci√≥n de la Estaci√≥n.
 
-Cuando active los datos de GPS tambiÈn pondr·s al dÌa 
-la posiciÛn en configuraciÛn de informaciÛn de la EstaciÛn.
+Cuando active los datos de GPS tambi√©n pondr√°s al d√≠a 
+la posici√≥n en configuraci√≥n de informaci√≥n de la Estaci√≥n.
 
-Cuando use el GPS sus paquetes cambian, usted obtendr·s una estaciÛn mÛvil con 
-curso y velocidad a˙n cuando la suya no estÈ moviendose (yo puedo cambiar esto 
-despuÈs a una opciÛn).
+Cuando use el GPS sus paquetes cambian, usted obtendr√°s una estaci√≥n m√≥vil con 
+curso y velocidad a√∫n cuando la suya no est√© moviendose (yo puedo cambiar esto 
+despu√©s a una opci√≥n).
 
-El tiempo del GPS le permitir· seleccionar proporciones de la relaciÛn
+El tiempo del GPS le permitir√° seleccionar proporciones de la relaci√≥n
 de muestra  para el GPS y sobre pasar el tiempo del paquete normal 
-por transmitir su estaciÛn.
+por transmitir su estaci√≥n.
 
-Si usted est·s estacionado entonces use 10 minutos.
-Si usted est·s haciendo alg˙n especial/rastreo etc..
-use la selecciÛn que encajar·n mejor los datos que usted necesitas.
-Por favor no haga sobre transmisiÛn, si usted no lo necesitas hacer. 
+Si usted est√°s estacionado entonces use 10 minutos.
+Si usted est√°s haciendo alg√∫n especial/rastreo etc..
+use la selecci√≥n que encajar√°n mejor los datos que usted necesitas.
+Por favor no haga sobre transmisi√≥n, si usted no lo necesitas hacer. 
 
 
-Pulsando el botÛn "Aceptar" guardar·s sus cambios.
-Pulsando el botÛn en "Cancelar" guardar·s las configuraciones actuales.
+Pulsando el bot√≥n "Aceptar" guardar√°s sus cambios.
+Pulsando el bot√≥n en "Cancelar" guardar√°s las configuraciones actuales.
 
-HELP-INDEX>CÛmo uso yo mi TNC con Xastir?  
+HELP-INDEX>C√≥mo uso yo mi TNC con Xastir?  
   
                 Usando UN TNC con Xastir  
   
 Para usar un TNC con Xastir usted tienes tres opciones,
-un "serial TNC" o un "Serial TNC c/GPS m·s (cable HSP)"
+un "serial TNC" o un "Serial TNC c/GPS m√°s (cable HSP)"
 o un TNC Conectado a una red "AX.25 TNC".
 
 AX.25 o un TNC en una red:
-Este tipo de tnc le permitir· compartir el TNC con otros programas.
-Al usarlo usted debes tener la librerÌa AX.25 , y el
-HamRadio soporte instalado en el n˙cleo (kernel) de su Linux OS.
+Este tipo de tnc le permitir√° compartir el TNC con otros programas.
+Al usarlo usted debes tener la librer√≠a AX.25 , y el
+HamRadio soporte instalado en el n√∫cleo (kernel) de su Linux OS.
 
-Ellos son un poco m·s difÌciles de configurar para usarlo 
+Ellos son un poco m√°s dif√≠ciles de configurar para usarlo 
 pero hay muy buenas opciones y ventajas en su uso. 
 
 Usando el soporte del "AX.25 TNC", usted tienes varios
@@ -1350,392 +1350,392 @@ dispositivos que usted puedes usar con Xastir.
 Algunos de ellos son serial TNC que usan AX.25,
 tarjetas de sonidos como TNC's, Baycom, etc.  
   
-SERIAL TNC: SERIAL TNC con (GPS m·s cable HSP):
+SERIAL TNC: SERIAL TNC con (GPS m√°s cable HSP):
 
-HELP-INDEX>Configurando la conexiÛn de Internet
+HELP-INDEX>Configurando la conexi√≥n de Internet
 
-             Configurando la conexiÛn de Internet
+             Configurando la conexi√≥n de Internet
 
 La conexion a los Servicios de Internet le permite a usted enviar
 y recibir datos desde y hacia todo el mundo.
 
-Para configurar el Internet usted necesitar·s conocer un host y un n˙mero de 
+Para configurar el Internet usted necesitar√°s conocer un host y un n√∫mero de 
 puerto. El host predefinido es www.aprs.net y el puerto es 10151. Usted puedes 
-escoger otros pero este debe trabajar. Una Palabra de paso v·lida le permitir·
-a su estaciÛn transmitir por el Internet.
+escoger otros pero este debe trabajar. Una Palabra de paso v√°lida le permitir√°
+a su estaci√≥n transmitir por el Internet.
 
-Permitir· a su estaciÛn salir de una I-Gate y conseguir retransmitir vÌa RF.
-Para conseguir un cÛdigo de paso usted necesitar·s contactar con Frank, 
+Permitir√° a su estaci√≥n salir de una I-Gate y conseguir retransmitir v√≠a RF.
+Para conseguir un c√≥digo de paso usted necesitar√°s contactar con Frank, 
 email fgiannan@earthlink.net, Enviarle su nombre, Indicativo, etc.
 
-Una vez Èl verifique su estado como un HAM Èl puede enviarle su cÛdigo. 
-Usted puedes mantenerse recibiendo y transmitiendo datos vÌa el 
-Internet aunque usted no tengas un passcode. Pero sin el cÛdigo de paso sus 
-datos no ser·n directamente retransmitido vÌa RF.
-Cualquiera que estÈ conectado al Internet directamente conseguir· su mensaje.
+Una vez √©l verifique su estado como un HAM √©l puede enviarle su c√≥digo. 
+Usted puedes mantenerse recibiendo y transmitiendo datos v√≠a el 
+Internet aunque usted no tengas un passcode. Pero sin el c√≥digo de paso sus 
+datos no ser√°n directamente retransmitido v√≠a RF.
+Cualquiera que est√© conectado al Internet directamente conseguir√° su mensaje.
 
-Host1 y Host2 son servidores opcionales que ser·n contactado si el servidor 
-primario est· fuera. Cada servidor ser· intentado dos veces, siguiendo al 
-prÛximo si la conexiÛn fracasa.
+Host1 y Host2 son servidores opcionales que ser√°n contactado si el servidor 
+primario est√° fuera. Cada servidor ser√° intentado dos veces, siguiendo al 
+pr√≥ximo si la conexi√≥n fracasa.
 
-Si usted quieres que XASTIR reconecte despuÈs de una conexiÛn perdida
-en el net entonces seleccione la opciÛn "Reconecte en fracaso de la RED?"
-en la que por defecto est· en ON.
+Si usted quieres que XASTIR reconecte despu√©s de una conexi√≥n perdida
+en el net entonces seleccione la opci√≥n "Reconecte en fracaso de la RED?"
+en la que por defecto est√° en ON.
 
-Las ˙ltimas opciones son para preparar su estaciÛn para ser un IGate. Esto 
-permite a su estaciÛn con su cÛdigo de paso simplemente actuar como una puerta 
-(gateway), pero en lugar de otra banda sus datos atravesar·n el Internet.
-Esta opciÛn no debe ser tomada ligeramente.
+Las √∫ltimas opciones son para preparar su estaci√≥n para ser un IGate. Esto 
+permite a su estaci√≥n con su c√≥digo de paso simplemente actuar como una puerta 
+(gateway), pero en lugar de otra banda sus datos atravesar√°n el Internet.
+Esta opci√≥n no debe ser tomada ligeramente.
 
 Primero usted debes coordinar con otros 
-en su ·rea para que usted puedas agregar verdadera informaciÛn que puede estar 
-perdiendo. Usted tambiÈn debes avisar a Steve sobre esto. Esta versiÛn puede 
-enviar informaciÛn recibida desde su TNC hacia el Internet y transmitir· 
-cualquier mensaje procedente de Internet a travÈs de su estaciÛn via RF.
+en su √°rea para que usted puedas agregar verdadera informaci√≥n que puede estar 
+perdiendo. Usted tambi√©n debes avisar a Steve sobre esto. Esta versi√≥n puede 
+enviar informaci√≥n recibida desde su TNC hacia el Internet y transmitir√° 
+cualquier mensaje procedente de Internet a trav√©s de su estaci√≥n via RF.
 
-Enviar· sÛlo datos vÌa RF si usted tienes el opciÛn seleccionada de transmisiÛn 
-de mensajes. SÛlo estaciones que usted has oÌdo (vÌa RF) en las ˙ltimas horas 
-tendr·n mensajes enviados a ellos en Èsta vÌa.
+Enviar√° s√≥lo datos v√≠a RF si usted tienes el opci√≥n seleccionada de transmisi√≥n 
+de mensajes. S√≥lo estaciones que usted has o√≠do (v√≠a RF) en las √∫ltimas horas 
+tendr√°n mensajes enviados a ellos en √©sta v√≠a.
 
-Note tambiÈn usted es responsable por los datos transmitidos
-por su estaciÛn asi que tenga cuidado con esta 
-opciÛn (otros pueden enviarle mensajes que usted no quieres transmitir).
+Note tambi√©n usted es responsable por los datos transmitidos
+por su estaci√≥n asi que tenga cuidado con esta 
+opci√≥n (otros pueden enviarle mensajes que usted no quieres transmitir).
 
-Si usted quieres ver que su I-Gate esta haciendo encienda la opciÛn Log I-Gate 
-de transacciones. esto construir· un archivo de igate.log en su "logs" los 
-directorios  mostrar·n todos los datos pasados de RF local hacia la red con 
-lÌnea que tiene "IGATE-RF->NET": y conteniendo todo los datos.
+Si usted quieres ver que su I-Gate esta haciendo encienda la opci√≥n Log I-Gate 
+de transacciones. esto construir√° un archivo de igate.log en su "logs" los 
+directorios  mostrar√°n todos los datos pasados de RF local hacia la red con 
+l√≠nea que tiene "IGATE-RF->NET": y conteniendo todo los datos.
 
-TambiÈn mostrar· todo el tr·fico entrante desde la red con "NET->RF-IGATE:".
-Note aquÌ usted no ver·s la completa salida de paquetes, como su estaciÛn y ruta son 
-asumida. Solamente mostrar· el data como un mensaje de tercera persona.
-
-
-Pulsando el botÛn "Aceptar" guardar·s sus cambios.
-Pulsando el botÛn en "Cancelar" guardar·s los cambios actuales.
+Tambi√©n mostrar√° todo el tr√°fico entrante desde la red con "NET->RF-IGATE:".
+Note aqu√≠ usted no ver√°s la completa salida de paquetes, como su estaci√≥n y ruta son 
+asumida. Solamente mostrar√° el data como un mensaje de tercera persona.
 
 
-APRS[tm] es una Marca de f·brica de Bob Bruninga, 
-su p·gina est· en "http://web.usna.navy.mil/~bruninga/aprs.html"
+Pulsando el bot√≥n "Aceptar" guardar√°s sus cambios.
+Pulsando el bot√≥n en "Cancelar" guardar√°s los cambios actuales.
+
+
+APRS[tm] es una Marca de f√°brica de Bob Bruninga, 
+su p√°gina est√° en "http://web.usna.navy.mil/~bruninga/aprs.html"
 
 
 HELP-INDEX>Opciones de RED
 
                    Opciones de RED
 
-Permitir TransmisiÛn (on/off)
-Esto controla la transmisiÛn de datos a travÈs del Internet.
+Permitir Transmisi√≥n (on/off)
+Esto controla la transmisi√≥n de datos a trav√©s del Internet.
 El valor por defecto es apagado.
-Con esto en (off) apagado ning˙n dato ser· enviado al Internet.
+Con esto en (off) apagado ning√∫n dato ser√° enviado al Internet.
 
-Bit·cora de Internet (on/off)
- Si esto est· en 'ON', un archivo log se crear· en el directorio logs. El archivo
-se llamar· net.log y se aÒadir· con toda la informaciÛn oÌda vÌa el Internet.
+Bit√°cora de Internet (on/off)
+ Si esto est√° en 'ON', un archivo log se crear√° en el directorio logs. El archivo
+se llamar√° net.log y se a√±adir√° con toda la informaci√≥n o√≠da v√≠a el Internet.
 
 Transmitir Ahora!
- Esto transmitir· su position/info de la estaciÛn cuando usted pulses el 
-botÛn en esta selecciÛn. No transmitir· si la opciÛn est· apagada en Permitir 
-transmisiÛn.
+ Esto transmitir√° su position/info de la estaci√≥n cuando usted pulses el 
+bot√≥n en esta selecci√≥n. No transmitir√° si la opci√≥n est√° apagada en Permitir 
+transmisi√≥n.
 
-HELP-INDEX>Configurando una EstaciÛn MeteorolÛgica sobre un Puerto Serial.
+HELP-INDEX>Configurando una Estaci√≥n Meteorol√≥gica sobre un Puerto Serial.
 
-Configurando una EstaciÛn MeteorolÛgica sobre un Puerto Serial.
+Configurando una Estaci√≥n Meteorol√≥gica sobre un Puerto Serial.
 
-Configurar el puerto serial para su estaciÛn MeteorolÛgica. A los valores 
+Configurar el puerto serial para su estaci√≥n Meteorol√≥gica. A los valores 
 comunes de /dev/ttyS0 (COM1) o /dev/ttyS1 (COM2) pueden ser usado.
 
-Seleccionado "Activar en Inicio" le dir·s a Xastir buscar este dispositivo y
+Seleccionado "Activar en Inicio" le dir√°s a Xastir buscar este dispositivo y
 fijar comunicanciones con el cuando el programa se inicie primero.
 
-Ahora fije el bps bajo el puerto de configuraciÛn, y los par·metros bajo el
+Ahora fije el bps bajo el puerto de configuraci√≥n, y los par√°metros bajo el
 puerto estilo. El seteo del puerto estilo 8N1, es usado para 8 bitios de datos,
 No paridad y 1 bitio de parada (stop bit). 7E1 es usado para 7 bitios de datos,
 even paridad y 1 bitio de parada. 7O1 es usado para 7 bitios de datos, odd paridad
-y 1 bitio de parada. Esos par·metros deben de machar con su estaciÛn MeteorolÛgica.
-El tipo de opciÛn de data le perimitir· sobrepasar que tipo de serial data el progrma
-ver·. La forma de auto-detecciÛn primero buscar· datos del tiempo en un modo binario
+y 1 bitio de parada. Esos par√°metros deben de machar con su estaci√≥n Meteorol√≥gica.
+El tipo de opci√≥n de data le perimitir√° sobrepasar que tipo de serial data el progrma
+ver√°. La forma de auto-detecci√≥n primero buscar√° datos del tiempo en un modo binario
 como lo usa el Radio Shack WX-200. Si no dato binario es encontrado,
-Xastir buscar· un tipo ASCII de estaciÛn MeteorolÛgica (como la Peet Bros.)
+Xastir buscar√° un tipo ASCII de estaci√≥n Meteorol√≥gica (como la Peet Bros.)
 
-HELP-INDEX>Configurando una EstaciÛn MeteorlÛgica en la RED
+HELP-INDEX>Configurando una Estaci√≥n Meteorl√≥gica en la RED
 
-Configurando una EstaciÛn MeteorlÛgica en la RED
+Configurando una Estaci√≥n Meteorl√≥gica en la RED
 
-Xastir puede usar servicios de dato de una estaciÛn MeteorolÛgica
-tales como la wx200d. La wx200d le permitir·s varias conexiones de redes,
+Xastir puede usar servicios de dato de una estaci√≥n Meteorol√≥gica
+tales como la wx200d. La wx200d le permitir√°s varias conexiones de redes,
 asi compartiendo el informe del tiempo con varios programas o computadores.
 
-Entre el nombre del host (o la direcciÛn numÈrica IP) y el n˙mero del puerto
-de la estaciÛn MeteorolÛgica servidora que usted quieres contactar.
+Entre el nombre del host (o la direcci√≥n num√©rica IP) y el n√∫mero del puerto
+de la estaci√≥n Meteorol√≥gica servidora que usted quieres contactar.
 
-Seleccionado "Activar en Inicio" le dir·s a Xastir buscar este dispositivo y
+Seleccionado "Activar en Inicio" le dir√°s a Xastir buscar este dispositivo y
 fijar comunicanciones con el cuando el programa se inicie primero.
 
-Seleccionado "Reconectar en fallo de la RED" le dir· a Xastir tratar de reconectar cuando
-el data conexiÛn haya fracasado.
-Como antes el tipo de data sobrepasar· el auto-detecciÛn.
+Seleccionado "Reconectar en fallo de la RED" le dir√° a Xastir tratar de reconectar cuando
+el data conexi√≥n haya fracasado.
+Como antes el tipo de data sobrepasar√° el auto-detecci√≥n.
 
-HELP-INDEX>Di·logo info estaciÛn - b˙squeda FCC y RAC  
+HELP-INDEX>Di√°logo info estaci√≥n - b√∫squeda FCC y RAC  
   
-                  Di·logo info estaciÛn - b˙squeda FCC y RAC  
+                  Di√°logo info estaci√≥n - b√∫squeda FCC y RAC  
   
-Info estaciÛn desplegar· cualquier dato descifrado por Xastir.
-Actualmente dos o tres botones aparecen aquÌ adem·s del botÛn Cerrar.
+Info estaci√≥n desplegar√° cualquier dato descifrado por Xastir.
+Actualmente dos o tres botones aparecen aqu√≠ adem√°s del bot√≥n Cerrar.
 
-Los botones de Anular Rastro anular·n cualquier lÌnea de rastro para esa estaciÛn 
+Los botones de Anular Rastro anular√°n cualquier l√≠nea de rastro para esa estaci√≥n 
 que es actualmente guardada o en el despliegue de mapa.
 
-EnvÌe mensaje abrir· la ventana de mensaje y le permitir· enviar a mensje a esta estaciÛn.
-El llenar· en el indicativo por usted. 
+Env√≠e mensaje abrir√° la ventana de mensaje y le permitir√° enviar a mensje a esta estaci√≥n.
+El llenar√° en el indicativo por usted. 
 
 Si el banco de datos de FCC se instala,
-un botÛn de B˙squeda en el Banco de datos FCC aparecer· en este Di·logo.
-Si el RAC (RadioAficionados de Canad·) banco de datos se instala, 
-un botÛn de b˙squeda RAC Banco de datos aparecer· para indicativo 
+un bot√≥n de B√∫squeda en el Banco de datos FCC aparecer√° en este Di√°logo.
+Si el RAC (RadioAficionados de Canad√°) banco de datos se instala, 
+un bot√≥n de b√∫squeda RAC Banco de datos aparecer√° para indicativo 
 que empiezan con una "V".  
 
 El archivo FCC y  RAC deben colocarse en el directorio
 /usr/local/share/xastir/fcc, y el caso es importante!  
   
-Usted puedes usar este botÛn para agregar los nombres de estaciones
-y dirÌjase al Di·logo de EstaciÛn Info. 
+Usted puedes usar este bot√≥n para agregar los nombres de estaciones
+y dir√≠jase al Di√°logo de Estaci√≥n Info. 
 
-Para usar la b˙squeda de FCC bajelo de aqui:
+Para usar la b√∫squeda de FCC bajelo de aqui:
 ftp://ftp.fcc.gov/pub/XFS_AlphaTest/amateur/appl.zip
 
  o el Nuevo banco de datos en:
 ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip  
   
-(El ˙nico archivo necesitado forma este 40Meg zip es el archivo EN.dat)  
+(El √∫nico archivo necesitado forma este 40Meg zip es el archivo EN.dat)  
   
 * * * * NOTA para usar el NUEVO archivo base de datos debe ordenarse primero!!! * * * *
 
-°Aseg˙rese que usted tienes espacio en el disco suficiente 
+¬°Aseg√∫rese que usted tienes espacio en el disco suficiente 
 para esto como el archivo es GRANDE!  
 
 Para ordenar el archivo: sort +4 -t \ | EN.dat >EN.dat.ordenado  
 rm EN.dat  
 mv EN.dat.ordenado EN.dat  
   
-Para usar la b˙squeda de RAC b·jelo de: ftp://ftp.rac.ca/pub/cdncaldb.zip  
-Xastir crear· archivos Ìndice por cada archivo del banco de datos en el inicio.  
+Para usar la b√∫squeda de RAC b√°jelo de: ftp://ftp.rac.ca/pub/cdncaldb.zip  
+Xastir crear√° archivos √≠ndice por cada archivo del banco de datos en el inicio.  
   
-Si un archivo de indicativo es eliminado mientras Xastir est· corriendo,
-crear· o reconstruir· el Ìndice en la prÛxima b˙squeda. No se manejan prefijos especiales.
+Si un archivo de indicativo es eliminado mientras Xastir est√° corriendo,
+crear√° o reconstruir√° el √≠ndice en la pr√≥xima b√∫squeda. No se manejan prefijos especiales.
 
 HELP-INDEX>Opciones de Despliegue
 
                         Opciones de Despliegue
 
-Estas opciones le permitir·n desplegar datos sobre la estaciÛn alrededor del 
-Ìcono de las estaciones en el mapa.
+Estas opciones le permitir√°n desplegar datos sobre la estaci√≥n alrededor del 
+√≠cono de las estaciones en el mapa.
 
 Indicativo (on/off)
- Cuando estÈ en 'ON', todo los indicativos de las estaciones se desplegar·n.  
-Si este esta en 'OFF' los indicativos no se desplegar·n sobre el mapa.
+ Cuando est√© en 'ON', todo los indicativos de las estaciones se desplegar√°n.  
+Si este esta en 'OFF' los indicativos no se desplegar√°n sobre el mapa.
 
-Para viejas estaciones el sÌmbolo es dibujado
-como fantasma y en su orientaciÛn estandar.
+Para viejas estaciones el s√≠mbolo es dibujado
+como fantasma y en su orientaci√≥n estandar.
 
-Corespondiendo al arrastre que son subrayado m·s que sÛlido y todo el data
+Corespondiendo al arrastre que son subrayado m√°s que s√≥lido y todo el data
 excepto el indicativo desaparece de la pantalla.
 
 Callsign (on/off)
 Determines if the callsign is displayed on the right side of the symbol.
 
 Altura (on/off)
- Cuando estÈ en 'ON', una lÌnea azul de datos aparecer·  sobre el indicativo.  
-Este desplegar· la ˙ltima altitud conocida de la estaciÛn.
+ Cuando est√© en 'ON', una l√≠nea azul de datos aparecer√°  sobre el indicativo.  
+Este desplegar√° la √∫ltima altitud conocida de la estaci√≥n.
 
 Curso (on/off)
- Cuando estÈ en 'ON', una lÌnea verde de dato aparecer· debajo del indicativo. 
-Esto desplegar· el ˙ltimo curso conocido (en grados) de la estaciÛn que est· en 
+ Cuando est√© en 'ON', una l√≠nea verde de dato aparecer√° debajo del indicativo. 
+Esto desplegar√° el √∫ltimo curso conocido (en grados) de la estaci√≥n que est√° en 
 movimiento.
 
 Velocidad (on/off)
- Cuando estÈ en 'ON', una lÌnea roja aparecer· debajo del indicativo (o curso). 
-Esto despliegar· la ˙ltima velocidad conocida de la estaciÛn que est· en 
+ Cuando est√© en 'ON', una l√≠nea roja aparecer√° debajo del indicativo (o curso). 
+Esto despliegar√° la √∫ltima velocidad conocida de la estaci√≥n que est√° en 
 movimiento.
 
 Dist/curso (on/off)
- Cuando estÈ en 'ON', se desplegar·n dos lÌneas de informaciÛn en el lado 
-izquierdo del Ìcono de la estaciÛn. La lÌnea de arriba tendr· la distancia 
-de su estaciÛn hacia esta estaciÛn. La lÌnea de abajo tendr· el curso desde su 
-estaciÛn hacia esta estaciÛn. 
+ Cuando est√© en 'ON', se desplegar√°n dos l√≠neas de informaci√≥n en el lado 
+izquierdo del √≠cono de la estaci√≥n. La l√≠nea de arriba tendr√° la distancia 
+de su estaci√≥n hacia esta estaci√≥n. La l√≠nea de abajo tendr√° el curso desde su 
+estaci√≥n hacia esta estaci√≥n. 
 
 Rastros de estaciones (on/off)
- Cuando estÈ en 'ON', cualquier estaciÛn en movimiento arrastrar· una lÌnea 
-coloreada con las ˙ltimas 100+ localizaciones. Cuando la estaciÛn se pone vieja 
-el Ìcono es opaco la lÌnea de rastro se volver· intermitente en lugar de la 
-lÌnea contÌnua.
+ Cuando est√© en 'ON', cualquier estaci√≥n en movimiento arrastrar√° una l√≠nea 
+coloreada con las √∫ltimas 100+ localizaciones. Cuando la estaci√≥n se pone vieja 
+el √≠cono es opaco la l√≠nea de rastro se volver√° intermitente en lugar de la 
+l√≠nea cont√≠nua.
 
 
-EstaciÛn Potencia/Ganancia (on/off)
- Cuando estÈ en 'ON', se desplegar·n CÌrculos de Poder/Ganancia.
- Sobrepasando los cÌrculos indicado que las estaciones est·n teÛricamente
+Estaci√≥n Potencia/Ganancia (on/off)
+ Cuando est√© en 'ON', se desplegar√°n C√≠rculos de Poder/Ganancia.
+ Sobrepasando los c√≠rculos indicado que las estaciones est√°n te√≥ricamente
  con simple rango uno del otro.
- Esto es aproximandaemnte exacto, especialmente in ·reas de terreno variable.
+ Esto es aproximandaemnte exacto, especialmente in √°reas de terreno variable.
  
-Rastreo EstaciÛn
- Traer· una caja abierta similar a la opciÛn localizar estaciÛn. Usted puedes 
+Rastreo Estaci√≥n
+ Traer√° una caja abierta similar a la opci√≥n localizar estaci√≥n. Usted puedes 
 entrar  todos o parte del indicativo. Al seleccionar "Rastrear Ahora!" El 
-despliegue saltar· a la posiciÛn de la estaciÛn (si es encuentrada). Cuando 
-nuevos datos para esa estaciÛn son encuentrados el despliegar· el rastro a lo largo 
-de esa estaciÛn.
+despliegue saltar√° a la posici√≥n de la estaci√≥n (si es encuentrada). Cuando 
+nuevos datos para esa estaci√≥n son encuentrados el despliegar√° el rastro a lo largo 
+de esa estaci√≥n.
 
- El botÛn "Borrar Rastro" limpiar· todo el rastro.
+ El bot√≥n "Borrar Rastro" limpiar√° todo el rastro.
 
- El botÛn de "Cancelar" terminar· sin cambios realizados.
+ El bot√≥n de "Cancelar" terminar√° sin cambios realizados.
 
 Informe del Tiempo (on/off)
-Cuando estÈ en 'ON', los ˙ltimos datos del tiempo 
-(velocidad/curso/r·faga,Humedad,temperatura,viento) 
+Cuando est√© en 'ON', los √∫ltimos datos del tiempo 
+(velocidad/curso/r√°faga,Humedad,temperatura,viento) 
  son desplegados.
 
-SÌmbolos (on/off)
-Determina si los sÌmbolos podrÌan ser dibujado en el mapa.
+S√≠mbolos (on/off)
+Determina si los s√≠mbolos podr√≠an ser dibujado en el mapa.
 
-Rotar SÌmbolos (on/off)
-Si 'ON', algunos sÌmbolos deberÌan cambiar su orientaciÛn y mostrar la
-direcciÛn en la cual una estaciÛn mÛvil se est· moviendo.
+Rotar S√≠mbolos (on/off)
+Si 'ON', algunos s√≠mbolos deber√≠an cambiar su orientaci√≥n y mostrar la
+direcci√≥n en la cual una estaci√≥n m√≥vil se est√° moviendo.
 
 HELP-INDEX>Mensajes
 
                         Mensajes
 
 Enviar mensaje a y Mensajes De grupo abierto
-…stos son muy similares. El "Enviar mensaje a" enviar· sus mensajes a una 
-estaciÛn y recibir· sÛlo forma de datos de la estaciÛn. Los mensajes de grupo 
-son m·s en general usted puedes recibir cualquier mensaje para el grupo y usted 
-enviar·s sus mensajes a ese nombre de grupo. Los mensajes de grupo no pueden 
+√âstos son muy similares. El "Enviar mensaje a" enviar√° sus mensajes a una 
+estaci√≥n y recibir√° s√≥lo forma de datos de la estaci√≥n. Los mensajes de grupo 
+son m√°s en general usted puedes recibir cualquier mensaje para el grupo y usted 
+enviar√°s sus mensajes a ese nombre de grupo. Los mensajes de grupo no pueden 
 trabajar mejor por el momento hay varios problemas que necesitan ser 
-solucionado. Sin embargo, volviendo atr·s al
+solucionado. Sin embargo, volviendo atr√°s al
 uso de estas pantallas. 
 
-Cada una de estas pantallas contienen una caja de mensaje, una lÌnea de 
-llamada, una lÌnea de mensaje, y varios botones. Usted debes primero entrar  la 
-llamada del grupo o estaciÛn que usted quieres avisar. Una vez que eso se hace 
-cualquier nuevo mensaje que ha entrado de esa estaciÛn hacia usted ser·s 
-desplegado. Si la estaciÛn est· envi·ndole informaciÛn y ninguna ventana de 
-mensaje est· abierta Èl abrir· autom·ticamente a una nueva ventana (hasta 10) 
+Cada una de estas pantallas contienen una caja de mensaje, una l√≠nea de 
+llamada, una l√≠nea de mensaje, y varios botones. Usted debes primero entrar  la 
+llamada del grupo o estaci√≥n que usted quieres avisar. Una vez que eso se hace 
+cualquier nuevo mensaje que ha entrado de esa estaci√≥n hacia usted ser√°s 
+desplegado. Si la estaci√≥n est√° envi√°ndole informaci√≥n y ninguna ventana de 
+mensaje est√° abierta √©l abrir√° autom√°ticamente a una nueva ventana (hasta 10) 
 con esos indicativos de estaciones para usted. Usted puedes ahora entrar un 
-mensaje en la lÌnea de mensaje. El mensaje puede ser m·s largo que la lÌnea de 
-mensaje, y la m·xima salida es aproximadamente 250+ car·cteres. Una vez su 
-mensaje es entrado, pulsando el botÛn "Enviar Ahora!" mandar· su mensaje.
+mensaje en la l√≠nea de mensaje. El mensaje puede ser m√°s largo que la l√≠nea de 
+mensaje, y la m√°xima salida es aproximadamente 250+ car√°cteres. Una vez su 
+mensaje es entrado, pulsando el bot√≥n "Enviar Ahora!" mandar√° su mensaje.
 
-El botÛn "Enviar Ahora!" se pondr· opaco hasta que su mensaje sea completamente Reconocido.
-Cualquier mensaje que usted recibas ser· ordenado por la lÌnea # y ser· puesto 
-en la ventana de mensaje. Si usted est·s en un modo de grupo cada lÌnea 
-desplegar· el indicativo de donde el mensaje se enviÛ seguido por el propio 
-mensaje. Los mensajes de grupos actuales son ordenados por llamada y despuÈs   
-la lÌnea #. Cuando usted hayas enviado el mensaje pulsando el botÛn de "Cerrar" 
-cerrar· la ventana.
+El bot√≥n "Enviar Ahora!" se pondr√° opaco hasta que su mensaje sea completamente Reconocido.
+Cualquier mensaje que usted recibas ser√° ordenado por la l√≠nea # y ser√° puesto 
+en la ventana de mensaje. Si usted est√°s en un modo de grupo cada l√≠nea 
+desplegar√° el indicativo de donde el mensaje se envi√≥ seguido por el propio 
+mensaje. Los mensajes de grupos actuales son ordenados por llamada y despu√©s   
+la l√≠nea #. Cuando usted hayas enviado el mensaje pulsando el bot√≥n de "Cerrar" 
+cerrar√° la ventana.
 
-Dos otros botones son tambiÈn disponible. El botÛn "Nuevo Indicativo" 
-le permitir· mirar datos viejos que una estaciÛn ha enviado.
-Teclee el indicativo y pulse en este botÛn, cualquier 
-informaciÛn vieja ser· desplegada.
-Usted tambiÈn puedes usar este botÛn para cambiar el indicativo de la estaciÛn
-con la que usted est·s hablando.
-Entre el nuevo indicativo y pulse el botÛn. El botÛn de "Borrar Mensajes"
-limpiar· cualquier mensaje desplegado en la ventana de mensajes.
+Dos otros botones son tambi√©n disponible. El bot√≥n "Nuevo Indicativo" 
+le permitir√° mirar datos viejos que una estaci√≥n ha enviado.
+Teclee el indicativo y pulse en este bot√≥n, cualquier 
+informaci√≥n vieja ser√° desplegada.
+Usted tambi√©n puedes usar este bot√≥n para cambiar el indicativo de la estaci√≥n
+con la que usted est√°s hablando.
+Entre el nuevo indicativo y pulse el bot√≥n. El bot√≥n de "Borrar Mensajes"
+limpiar√° cualquier mensaje desplegado en la ventana de mensajes.
 
 
 Borrar todos los mensajes salientes
- Esto limpiar· todo los mensajes no-conocidos que usted has enviado.
+ Esto limpiar√° todo los mensajes no-conocidos que usted has enviado.
 
-Auto ContestaciÛn de Msj
-Esto encender· una contestaciÛn autom·tica
+Auto Contestaci√≥n de Msj
+Esto encender√° una contestaci√≥n autom√°tica
 cuando un mensaje entrante se recibe.
 
-Fijar Mensaje en  contestaciÛn Autom·tica
- Esto fijar· un mensaje que se enviar· en ausencia autom·ticamente.
+Fijar Mensaje en  contestaci√≥n Autom√°tica
+ Esto fijar√° un mensaje que se enviar√° en ausencia autom√°ticamente.
 
-HELP-INDEX>Limpiando el despliegue de lÌnea de rastros
+HELP-INDEX>Limpiando el despliegue de l√≠nea de rastros
 
-            Limpiando el despliegue de lÌnea de rastros
+            Limpiando el despliegue de l√≠nea de rastros
 
-Pulse el botÛn en "Archivo" y despuÈs "Borrar Todo rastro". Esto limpiar· 
-todo el dato de la lÌnea de rastreo del banco de datos de la estaciÛn y 
+Pulse el bot√≥n en "Archivo" y despu√©s "Borrar Todo rastro". Esto limpiar√° 
+todo el dato de la l√≠nea de rastreo del banco de datos de la estaci√≥n y 
 actualiza la pantalla.
 
 HELP-INDEX>Limpiando el despliegue de estaciones
 
              Limpiando el despliegue de estaciones
 
-Pulse el botÛn en "Archivo" y luego el botÛn "Borrar Toda las Estaciones". Esto 
-limpiar· todo los datos del banco de datos de las estaciones excepto la suya.
+Pulse el bot√≥n en "Archivo" y luego el bot√≥n "Borrar Toda las Estaciones". Esto 
+limpiar√° todo los datos del banco de datos de las estaciones excepto la suya.
 
-HELP-INDEX>Reenviando un log (Bit·cora) 
+HELP-INDEX>Reenviando un log (Bit√°cora) 
 
-                     Reenviando una Bit·cora
+                     Reenviando una Bit√°cora
 
-Pulse el botÛn en "Archivo" y despuÈs en "Abrir Bit·cora"
-una ventana de selecciÛn de archivo se desplegar·.
+Pulse el bot√≥n en "Archivo" y despu√©s en "Abrir Bit√°cora"
+una ventana de selecci√≥n de archivo se desplegar√°.
 
 Usted puedes usarlo hojear su unidad de disco duro y seleccionar cualquier archivo
-que contenga un TNC datos raw  como aquÈllos creados por el TNC y opciones de red.
+que contenga un TNC datos raw  como aqu√©llos creados por el TNC y opciones de red.
 
-Su estaciÛn todavÌa funcionar· de la misma manera, recibiendo y transmitiendo.
-Y debe haber una palabra de advertencia aquÌ, si su dato contiene una sessiÛn 
-de mensaje y usted tienes su estaciÛn lista para transmitir, responder· al 
-archivo como si el dato fuÈ recibido sobre el TNC o Internet. 
+Su estaci√≥n todav√≠a funcionar√° de la misma manera, recibiendo y transmitiendo.
+Y debe haber una palabra de advertencia aqu√≠, si su dato contiene una sessi√≥n 
+de mensaje y usted tienes su estaci√≥n lista para transmitir, responder√° al 
+archivo como si el dato fu√© recibido sobre el TNC o Internet. 
 
-HELP-INDEX>Localizando una EstaciÛn
+HELP-INDEX>Localizando una Estaci√≥n
 
-                  Localizando una EstaciÛn
+                  Localizando una Estaci√≥n
 
-Pulse el botÛn sobre "Visualizador" luego en, "Localizar EstaciÛn"
-o sobre el botÛn de "Desplegar" luego en "EstaciÛn Rastreo" una ventana se abrir·.
-Usted puedes ahora entrar una estaciÛn o parte de una estaciÛn. Por 
-defecto buscar· un macheo exacto (llamada completa, no parcial) y no es caso 
-sensible. Si usted est·s buscando un macheo parcial, "Macheo Exacto" podrÌa no 
+Pulse el bot√≥n sobre "Visualizador" luego en, "Localizar Estaci√≥n"
+o sobre el bot√≥n de "Desplegar" luego en "Estaci√≥n Rastreo" una ventana se abrir√°.
+Usted puedes ahora entrar una estaci√≥n o parte de una estaci√≥n. Por 
+defecto buscar√° un macheo exacto (llamada completa, no parcial) y no es caso 
+sensible. Si usted est√°s buscando un macheo parcial, "Macheo Exacto" podr√≠a no 
 ser seleccionado.
 
-Realmente usted puedes usar esto para localizar una estaciÛn o un objeto. QuÈ es
-donde nosotros venimos a la opciÛn "Macheo Sensible". Yo he notado que algunos 
-objetos est·n en caso mixto o min˙scula. Con "Macheo Sensible" seleccionado, 
-el localizador buscar· may˙scula y min˙scula cuando usted la entrÛ. Si
-"Macheo Sensible" no se selecciona, el localizador asumir· cualquier caso que usted 
-teclees es may˙scula y investigar· en eso. Pulsando el botÛn "Localizar Ahora!"
-centrar· la primera estaciÛn encontrada en el centro de su pantalla
-al nivel del enfoque actual. Pulsando el botÛn "Cancelar" cerrar· la ventana.
+Realmente usted puedes usar esto para localizar una estaci√≥n o un objeto. Qu√© es
+donde nosotros venimos a la opci√≥n "Macheo Sensible". Yo he notado que algunos 
+objetos est√°n en caso mixto o min√∫scula. Con "Macheo Sensible" seleccionado, 
+el localizador buscar√° may√∫scula y min√∫scula cuando usted la entr√≥. Si
+"Macheo Sensible" no se selecciona, el localizador asumir√° cualquier caso que usted 
+teclees es may√∫scula y investigar√° en eso. Pulsando el bot√≥n "Localizar Ahora!"
+centrar√° la primera estaci√≥n encontrada en el centro de su pantalla
+al nivel del enfoque actual. Pulsando el bot√≥n "Cancelar" cerrar√° la ventana.
 
 HELP-INDEX>Creando y usando Salto a Localizaciones  
   
                      Creando y usando Salto a Localizaciones  
   
-Pulse el botÛn "Visualizador", luego en "Saltar a la posiciÛn" una ventana aparecer·.
-Si Èsta es la primera vez usted has usado este di·logo no tendr·s ninguna entrada en Èl.
-Agregar una posiciÛn en la lista de posiciÛn vaya al ·rea del mapa principal 
+Pulse el bot√≥n "Visualizador", luego en "Saltar a la posici√≥n" una ventana aparecer√°.
+Si √©sta es la primera vez usted has usado este di√°logo no tendr√°s ninguna entrada en √©l.
+Agregar una posici√≥n en la lista de posici√≥n vaya al √°rea del mapa principal 
 y enfoque el nivel que usted quieres usar.
 
-Entre un ˙nico nombre en el ·rea "Nombre de Nueva localizaciÛn",
-luego pulse el botÛn agregar.
-Su entrada se agregar· a la lista (en orden alfabÈtico).
-Usted puedes agregar tantas locaciÛn de mapas que usted quieras de esta manera.
+Entre un √∫nico nombre en el √°rea "Nombre de Nueva localizaci√≥n",
+luego pulse el bot√≥n agregar.
+Su entrada se agregar√° a la lista (en orden alfab√©tico).
+Usted puedes agregar tantas locaci√≥n de mapas que usted quieras de esta manera.
 
-Para usar uno de la posiciÛn pulsar el botÛn en el nombre de la posiciÛn 
-y pulsar el botÛn  "IR!", el mapa principal entonces mostrar· esa posiciÛn. 
+Para usar uno de la posici√≥n pulsar el bot√≥n en el nombre de la posici√≥n 
+y pulsar el bot√≥n  "IR!", el mapa principal entonces mostrar√° esa posici√≥n. 
 
-Usted puedes anular una posiciÛn similarmente pulsando el botÛn 
-sobre el nombre de la posiciÛn y luego el botÛn "Anular".
+Usted puedes anular una posici√≥n similarmente pulsando el bot√≥n 
+sobre el nombre de la posici√≥n y luego el bot√≥n "Anular".
 
-HELP-INDEX>Rastreando una EstaciÛn  
+HELP-INDEX>Rastreando una Estaci√≥n  
   
-Rastreando una EstaciÛn  
+Rastreando una Estaci√≥n  
   
-Pulse sobre el botÛn de "Desplegar" luego en "Rastreo EstaciÛn".
-Entre en el indicativo para rastrear (todos o parte) luego pulse el botÛn "Rastrear Ahora!".
-Como la estaciÛn lo mueve ser· centrado en la ventana del mapa principal.
-Dejar de rastrear esta estaciÛn pulsar el botÛn  "Anular Rastro".
+Pulse sobre el bot√≥n de "Desplegar" luego en "Rastreo Estaci√≥n".
+Entre en el indicativo para rastrear (todos o parte) luego pulse el bot√≥n "Rastrear Ahora!".
+Como la estaci√≥n lo mueve ser√° centrado en la ventana del mapa principal.
+Dejar de rastrear esta estaci√≥n pulsar el bot√≥n  "Anular Rastro".
 
-HELP-INDEX>Tr·fico de mensajes
+HELP-INDEX>Tr√°fico de mensajes
   
-    Tr·fico de todos los mensajes
+    Tr√°fico de todos los mensajes
     
-Pulse sobre la opciÛn de "Tr·fico de Mensajes"
-luego un di·logo se abrir· e iniciar· el Monitoreo
+Pulse sobre la opci√≥n de "Tr√°fico de Mensajes"
+luego un di√°logo se abrir√° e iniciar√° el Monitoreo
 de todas las estaciones alrededor del mundo, en chat o enviando
 mensaje de prueba etc.
   
@@ -1743,61 +1743,61 @@ HELP-INDEX>Imprimiendo
   
               Imprimiendo la Pantalla del Mapa  
   
-Xastir puede imprimir el ·rea de dibujo en cualquier blanco y negro o color.  Hace  
+Xastir puede imprimir el √°rea de dibujo en cualquier blanco y negro o color.  Hace  
 esto primero descargando la imagen a un archivo XPixmap en disco, entonces usando una  
-herramienta externa para convertirlo al posdata, balancearlo, rotarlo, prevista, entonces la impresiÛn  
-.  Usted debe tener su sistema que configure la impresiÛn para manejar posdata (normalmente  
-esto requiere Ghostscript y un filtro de impresiÛn instalados, asÌ como lp o lpr  
-imprime spoolers). Usted tambiÈn debe tener las herramientas siguientes instaladas para esta  
-capacidad:  Herramientas de ImageMagick (especÌficamente "convertido"), "Ghostscript",  
+herramienta externa para convertirlo al posdata, balancearlo, rotarlo, prevista, entonces la impresi√≥n  
+.  Usted debe tener su sistema que configure la impresi√≥n para manejar posdata (normalmente  
+esto requiere Ghostscript y un filtro de impresi√≥n instalados, as√≠ como lp o lpr  
+imprime spoolers). Usted tambi√©n debe tener las herramientas siguientes instaladas para esta  
+capacidad:  Herramientas de ImageMagick (espec√≠ficamente "convertido"), "Ghostscript",  
 Conjuntos de caracteres de Ghostscript, y "gv". Una vez todos esos paquetes son instalando y  
-funcional, usted debe una "gv" ventana sobre salte brevemente despuÈs que usted le diga a  
-Xastir crear un archivo de impresiÛn.  De allÌ usted puede ver la imagen impresa, y  
+funcional, usted debe una "gv" ventana sobre salte brevemente despu√©s que usted le diga a  
+Xastir crear un archivo de impresi√≥n.  De all√≠ usted puede ver la imagen impresa, y  
 si aceptable, diga a "gv" imprimirlo.  Note que algunas veces cambiando a un blanco  
-el fondo predefinido para los mapas se recomienda, dependiendo de quÈ mapas usted tienen  
+el fondo predefinido para los mapas se recomienda, dependiendo de qu√© mapas usted tienen  
 visualizable.  Esto puede ahorrar le grandemente la tinta.  
   
-HELP-INDEX>Creando Captura Instant·nea Autom·ticamente
+HELP-INDEX>Creando Captura Instant√°nea Autom√°ticamente
 
-             Creando Captura Instant·nea Autom·ticamente
+             Creando Captura Instant√°nea Autom√°ticamente
   
-Xastir tiene la capacidad para crear captura instant·nea autom·ticamente en pantalla del mapa  
-recurriendo al algo b·sico.  Este periodo de tiempo es actualmente fijado por cinco  
+Xastir tiene la capacidad para crear captura instant√°nea autom√°ticamente en pantalla del mapa  
+recurriendo al algo b√°sico.  Este periodo de tiempo es actualmente fijado por cinco  
 minutos.  Asumiendo que usted tiene "convertir" de la herramienta de ImageMagick  
-instalado, Xastir crear· un archivo de formato XPM en /var/tmp, entonces lo converte,  
-al archivo de PNG /var/tmp/xastir_snap.png. Este archivo es ˙til para ponerlo  
-en p·ginas web para mostrar una imagen viva de lo que est· en su pantalla de Xastir.  Habilite  
-este rasgo vÌa el "Archivo->Activar PNG Instant·nea".  
+instalado, Xastir crear√° un archivo de formato XPM en /var/tmp, entonces lo converte,  
+al archivo de PNG /var/tmp/xastir_snap.png. Este archivo es √∫til para ponerlo  
+en p√°ginas web para mostrar una imagen viva de lo que est√° en su pantalla de Xastir.  Habilite  
+este rasgo v√≠a el "Archivo->Activar PNG Instant√°nea".  
   
 
-HELP-INDEX>Tabla de SÌmbolo
+HELP-INDEX>Tabla de S√≠mbolo
 
-Eso son los sÌmbolos que usted puedes selecionar para su estaciÛn bajo la
-"InformaciÛn de la EstaciÛn" men˙ de configuraciÛn.
+Eso son los s√≠mbolos que usted puedes selecionar para su estaci√≥n bajo la
+"Informaci√≥n de la Estaci√≥n" men√∫ de configuraci√≥n.
 
 La lista actual puede ser encontrada en el APRS Referencia en el cual usted
 puedes obtenerlo desde http://www.tapr.org/
 
-                   Tabla de sÌmbolo
+                   Tabla de s√≠mbolo
 
-SÌmbolo Grupo/                          Grupo/
+S√≠mbolo Grupo/                          Grupo/
 
-!       Tri·ngulo w/!                   Tri·ngulo w/!
+!       Tri√°ngulo w/!                   Tri√°ngulo w/!
 "       Lluvia Nube                     Lluvia Nube
 #       Digi                            DIGI         
-$       SÌmbolo  telefÛnico             $ SÌmbolo
+$       S√≠mbolo  telef√≥nico             $ S√≠mbolo
 %       DX                              DX 
 &       GATE-HF                         GATE
-'       AviÛn pequeÒo                   AviÛn CaÌdo
+'       Avi√≥n peque√±o                   Avi√≥n Ca√≠do
 (       Nube                            nube
 )       TBD                           
 *       NIEVE Hojuela                   NIEVE Hojuela  
 +       Cruz roja                     
 ,       Inverso  L
 -       w/omni casa                  
-.       X pequeÒa
+.       X peque√±a
 /       Punto rojo                       
-0       0 en una caja                    CÌrculo
+0       0 en una caja                    C√≠rculo
 1       1 en una caja
 2       2 en una caja
 3       3 en una caja
@@ -1809,70 +1809,70 @@ $       SÌmbolo  telefÛnico             $ SÌmbolo
 9       9 en un GAS de la caja
 :       Bombero                         ?
 ;       Tienda                          tienda
-<       motocicleta                     BanderÌn
-=       M·quina de tren                  
->       AutomÛvil                       automÛvil 
+<       motocicleta                     Bander√≠n
+=       M√°quina de tren                  
+>       Autom√≥vil                       autom√≥vil 
 ?       Antena POS                      ? en una caja
 @       HURRICAN/TORMENTA               HURRICAN/TORMENTA 
 A       Primero auxilio                 Caja
 B       BBS                             Blowing Nieve 
 C       Canoa                         
-D       D en un cÌrculo                 
+D       D en un c√≠rculo                 
 E       E en un circulo                 Pila de Humo
-F       F en un cÌrculo                 
+F       F en un c√≠rculo                 
 G       Reja Antena Cuadrada            ?
 H       Hotel/Cama                     
 I       TCP/IP                          ?
-J       J en un cÌrculo                 descarga
+J       J en un c√≠rculo                 descarga
 K       Escuela                  
 L       Casa Iluminada                  Casa Iluminada
 M       Mac                           
 N       NTS                             ?
 O       Globo                       
 P       Carro  de  Patrulla             Rx
-Q       Circle con CÌrculos             CÌrculo con CÌrculos
+Q       Circle con C√≠rculos             C√≠rculo con C√≠rculos
 R       RV                              Restaurante
-S       Transbordador                   SatÈlite
+S       Transbordador                   Sat√©lite
 T       Tormenta (cloud/bolt)           Tormenta (cloud/bolt)
-U       Autob˙s escolar                 Sol
-V       VOR TAC                         VOR TAC SÌmbolo
+U       Autob√∫s escolar                 Sol
+V       VOR TAC                         VOR TAC S√≠mbolo
 W       Servicio  del Tiempo Nacional   NWS-Digi
-X       HelicÛptero
+X       Helic√≥ptero
 Y       Velero                     
 Z       Windows
 [       corredor                        WC
-\       DF Tri·ngulo
+\       DF Tri√°ngulo
 ]       Packet Mail Box
-^       AviÛn grande                    AviÛn Grande
-_       EstaciÛn MeteorolÛgica          WS-Digi
-`       Plato de satÈlite              
+^       Avi√≥n grande                    Avi√≥n Grande
+_       Estaci√≥n Meteorol√≥gica          WS-Digi
+`       Plato de sat√©lite              
 a       Ambulancia
 b       Bicicleta                       vuela nube
 c       antena de DX                     
 d       depto de bombero.               Antena de DX
 e       Caballo                         Aguanieve nube 
-f       CamiÛn de bombero               FC Nube
-g       planeador                       BanderÌn (2)
+f       Cami√≥n de bombero               FC Nube
+g       planeador                       Bander√≠n (2)
 h       Hospital                        HAM
 i       Isla                            Isla
 j       Jeep                            Jeep
-k       CamiÛn                          CamiÛn 
-l       Punto pequeÒo                   Punto pequeÒo
+k       Cami√≥n                          Cami√≥n 
+l       Punto peque√±o                   Punto peque√±o
 m       MIC                             Milla Poste
-n       N                               Tri·ngulo PequeÒo
-o       EOC                             Punto en CÌrculos 
-p       Cachorro                        Punto en CÌrculos 
+n       N                               Tri√°ngulo Peque√±o
+o       EOC                             Punto en C√≠rculos 
+p       Cachorro                        Punto en C√≠rculos 
 q       GS Antena                       Antena de GS
 r       Antena Torre                    Antena Torre
 s       Bote                            Barco
 t       TS                              ?
-u       18 Rueda de CamiÛn
-v       Carro de mudanzas               Punto en CÌrculos 
+u       18 Rueda de Cami√≥n
+v       Carro de mudanzas               Punto en C√≠rculos 
 w       H20                             Diluvio
 x       X Windows                       Punto Rojo
 y       Casa w/Yagi                     Casa w/yagi 
 z                                       X Windows
 {       NIEBLA                          NIEBLA
-|       LÌnea Negra                     LÌnea negra
+|       L√≠nea Negra                     L√≠nea negra
 }       TCP                             TCP
 ~       Velero                          Velero
