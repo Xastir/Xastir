@@ -54,7 +54,7 @@ PULDNVI015|GPS Status||
 PULDNVI016|ALOHA Statistics||
 #
 # Menu de configuracao
-PULDNCF004|Estação|E|
+PULDNCF004|EstaÃ§Ã£o|E|
 PULDNCF001|Pre-definidos|P|
 PULDNCF003|Momento certo|T|
 PULDNCF002|Sistema de coordenadas|S|
@@ -91,7 +91,7 @@ PULDNMP028|Flush Entire Map Cache!||
 PULDNMP029|Pesquisar local||
 PULDNMP030|Configure USGS DRG||
 PULDNMP031|Enable Map Border||
-PULDNMP032|Configurações de geocodificação||
+PULDNMP032|ConfiguraÃ§Ãµes de geocodificaÃ§Ã£o||
 MPUPTGR017|Internet Map Timeout (sec)||
 #
 # PopUp "Configure USGS DRG"
@@ -176,7 +176,7 @@ PULDNDP045|Mostrar objectos/items||
 PULDNDP026|- Mostrar objectos/items metereologicos||
 PULDNDP039|- Mostrar objectos de medida de agua/Items||
 PULDNDP031|- Mostrar outros objectos/Items||
-PULDNDP057|- Selecionar objetos avião / Itens||
+PULDNDP057|- Selecionar objetos aviÃ£o / Itens||
 PULDNDP058|- Seleccione navio Objetos / Itens||
 PULDNDP033|Filtrar monitor||
 PULDNDP010|Mostrar indicativo|i|
@@ -334,7 +334,7 @@ BBARSTA017|Rede desligada do servidor||
 BBARSTA018|Ligacao fechada por excesso de tempo!||
 BBARSTA019|A procurar servidor %s||
 BBARSTA020|Ligado a %s||
-BBARSTA021|Falha na ligacao à rede!||
+BBARSTA021|Falha na ligacao Ã  rede!||
 BBARSTA022|Pode nao ligar ao socket!||
 BBARSTA023|Nao ha IP para o servidor!||
 BBARSTA024|Nao ha servidor especificado||
@@ -366,7 +366,7 @@ BBARSTA049|Reading tiles...||
 BBARSTA050|Downloading tiles...||
 BBARSTA051|Downloading tile %li of %li||
 #
-# Visualização do trafego de packet
+# VisualizaÃ§Ã£o do trafego de packet
 WPUPDPD001|Visualizacao do trafego||
 WPUPDPD002|So dados do TNC||
 WPUPDPD003|So dados da rede||
@@ -682,7 +682,7 @@ WPUPCFSP03|&lt;- Anuncia nova estacao||
 WPUPCFSP04|&lt;- Anuncia alerta de nova mensagem||
 WPUPCFSP05|&lt;- Anuncia corpo de nova mensagem||
 WPUPCFSP06|&lt;- Anuncia a proximidade de estacoes||
-WPUPCFSP07|&lt;- Anuncia DX condição de banda aberta||
+WPUPCFSP07|&lt;- Anuncia DX condiÃ§Ã£o de banda aberta||
 WPUPCFSP08|&lt;- Anuncia alerta sobre condicoes do tempo||
 WPUPCFSP09|Alerta de proximidade da estacao rastreada||
 #
@@ -705,7 +705,7 @@ WPUPMSB003|Indicativo de estacao:||
 WPUPMSB004|Indicativos de grupos:||
 WPUPMSB005|Novo/Refresh indicativo||
 WPUPMSB006|Novo grupo||
-WPUPMSB007|Limpar história da mensagem||
+WPUPMSB007|Limpar histÃ³ria da mensagem||
 WPUPMSB008|Mensagem:||
 WPUPMSB009|Enviar agora!||
 WPUPMSB010|Encaminhamento:||
@@ -740,29 +740,29 @@ WPUPSTI005|%d: pacotes recebidos, ultimo recebido na data: ||
 WPUPSTI006|Ouvido via TNC no dispositivo: %d, ||
 WPUPSTI007|Ouvido ||
 WPUPSTI008|Ultima vez via local||
-WPUPSTI009|UÚltima vez via TNC no dispositivo: %d||
+WPUPSTI009|UÃšltima vez via TNC no dispositivo: %d||
 WPUPSTI010|Ultima vez via internet no dispositivo: %d||
 WPUPSTI011|Ultima vez via ficheiro||
 WPUPSTI012|Ultima vez via desconhecida||
 WPUPSTI013|, e mudou de posicao||
 WPUPSTI014|Actual potencia/ganho:||
 WPUPSTI016|Altitude: %.1f%s ||
-WPUPSTI017|Curso: %s° ||
+WPUPSTI017|Curso: %sÂ° ||
 WPUPSTI018|Velocidade: %.1f km/h||
 WPUPSTI019|Velocidade: %.1f mph||
 WPUPSTI020|%0.1f milhas||
 WPUPSTI021|%0.1f km||
-WPUPSTI022|Distancia desde a minha estacaão %s, curso desde a minha estacao %s||
+WPUPSTI022|Distancia desde a minha estacaÃ£o %s, curso desde a minha estacao %s||
 WPUPSTI023|Ultima posicao: ||
 WPUPSTI024|Dados da estacao meteorologica %c:%s||
-WPUPSTI025|Curso do vento: %s°  Velocidade: %03d km/h||
-WPUPSTI026|Curso do vento: %s°  Velocidade: %s mph||
+WPUPSTI025|Curso do vento: %sÂ°  Velocidade: %03d km/h||
+WPUPSTI026|Curso do vento: %sÂ°  Velocidade: %s mph||
 WPUPSTI027| Rajada: %03d Km/h||
 WPUPSTI028| Rajada: %s mph||
-WPUPSTI029|Temperatura: %02.1f°C   ||
-WPUPSTI030|Temperatura: %s°F   ||
+WPUPSTI029|Temperatura: %02.1fÂ°C   ||
+WPUPSTI030|Temperatura: %sÂ°F   ||
 WPUPSTI031|Humidade: %s%%   ||
-WPUPSTI032|Indice da humidade: %02.1f°C  ||
+WPUPSTI032|Indice da humidade: %02.1fÂ°C  ||
 WPUPSTI033|Pressao barometrica: %s mb||
 WPUPSTI034|Neve: %0.1f (cm/24h)||
 WPUPSTI035|Neve: %0.0f (plg/24h)||
@@ -790,8 +790,8 @@ WPUPSTI056|Activar actualizacao automatica||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF dirigido: %s||
 WPUPSTI059|Estados %02d/%02d %02d:%02d : %s||
-WPUPSTI060|Temp do combustivel: %02.1f°C  ||
-WPUPSTI061|Temp do combustivel: %s°F   ||
+WPUPSTI060|Temp do combustivel: %02.1fÂ°C  ||
+WPUPSTI061|Temp do combustivel: %sÂ°F   ||
 WPUPSTI062|Mistura do combustevel: %s%%   ||
 WPUPSTI063|Baro: %0.2f em Hg||
 WPUPSTI064|Procurar alerta de NWS||
@@ -840,7 +840,7 @@ WPUPALO666|ALOHA radius not calculated yet||
 STIFCC0001|Procurar FCC banco de datos||
 STIFCC0002|Procurar RAC banco de datos||
 STIFCC0003|Nome:||
-STIFCC0004|Rua/Avª:||
+STIFCC0004|Rua/AvÂª:||
 STIFCC0005|Cidade:||
 STIFCC0006|Estado:||
 STIFCC0007|Codigo postal:||
@@ -957,7 +957,7 @@ IGPUPCF002|So permite trafego de RF para Inet||
 IGPUPCF003|Permite trafego de RF->Inet e Inet->RF||
 IGPUPCF004|Caminho Igate -> RF   ||
 #
-# Estação meteorologica
+# EstaÃ§Ã£o meteorologica
 WXPUPSI000|Estacao meteorologica||
 WXPUPSI001|Tipo de estacao meteorologica||
 WXPUPSI002|Datos actuais||
@@ -1053,7 +1053,7 @@ POPEM00022|Erro de entrada!|
 POPEM00023|Nome de localizacao nao especificada!|
 POPEM00024|Nome de localizacao especificada em uso!|
 POPEM00025|Nao encontrado!||
-POPEM00026|O rastreamento começara quando ele aparecer||
+POPEM00026|O rastreamento comeÃ§ara quando ele aparecer||
 POPEM00027|Info impropia. Alguns campos vazios?||
 POPEM00028|Nao se pode abrir o ficheiro||
 POPEM00029|Encontrado!||
@@ -1119,7 +1119,7 @@ SPCHDIRNW0|nordoeste of||
 SPCHDIRSE0|sudeste of||
 SPCHDIRSW0|sudoeste of||
 #
-# Dialogo da seleção do simbolo
+# Dialogo da seleÃ§Ã£o do simbolo
 SYMSEL0001|Selecionar simbolo||
 SYMSEL0002|Tabela de simbolo primario||
 SYMSEL0003|Tabela de simbolo secundario||
@@ -1128,7 +1128,7 @@ SYMSEL0003|Tabela de simbolo secundario||
 PRINT0001|Propriedades da impressora||
 PRINT0002|Largura do papel||
 PRINT0003|Auto-rodar imagem
-PRINT0004|Rodar imagem 90° CCW||
+PRINT0004|Rodar imagem 90Â° CCW||
 PRINT0005|Auto-balancear imagem||
 PRINT0006|Balanca:||
 PRINT0007|Forcar a pre-definida cor de fundo a branco||
@@ -1162,7 +1162,7 @@ FEATURE011|Geocoding File||
 # Geocoding Dialog (Nominatim)
 GEOCODE001|Pesquisar local||
 GEOCODE002|Consulta de pesquisa:||
-GEOCODE003|Filtro de país:||
+GEOCODE003|Filtro de paÃ­s:||
 GEOCODE004|Pesquisar||
 GEOCODE005|Limpar||
 GEOCODE006|Resultados:||
@@ -1175,28 +1175,28 @@ GEOCODE012|Erro: %s||
 GEOCODE013|%d resultado(s) encontrado(s)||
 GEOCODE014|Dados (C) Colaboradores do OpenStreetMap||
 GEOCODE015|Nenhum (Mundial)||
-GEOCODE023|Serviço não disponível||
+GEOCODE023|ServiÃ§o nÃ£o disponÃ­vel||
 GEOCODE024|Digite um local para pesquisar||
 GEOCODE025|Limpar cache||
 GEOCODE026|Cache limpo com sucesso||
 GEOCODE027|Falha ao limpar o cache||
 GEOCODE028|Servidor Nominatim:||
 GEOCODE029|Cache habilitado:||
-GEOCODE030|Expiração do cache (dias):||
-GEOCODE031|E-mail do usuário:||
-GEOCODE032|País padrão:||
-GEOCODE033|Configurações||
+GEOCODE030|ExpiraÃ§Ã£o do cache (dias):||
+GEOCODE031|E-mail do usuÃ¡rio:||
+GEOCODE032|PaÃ­s padrÃ£o:||
+GEOCODE033|ConfiguraÃ§Ãµes||
 GEOCODE034|Salvar||
 GEOCODE035|Cancelar||
 GEOCODE036|Aplicar||
-GEOCODE037|Configurações de geocodificação||
+GEOCODE037|ConfiguraÃ§Ãµes de geocodificaÃ§Ã£o||
 #
 # Geocoding Configuration Dialog
-GEOCFG001|Configurações de geocodificação||
+GEOCFG001|ConfiguraÃ§Ãµes de geocodificaÃ§Ã£o||
 GEOCFG002|URL do servidor:||
-GEOCFG003|Endereço de e-mail:||
+GEOCFG003|EndereÃ§o de e-mail:||
 GEOCFG004|(Opcional mas recomendado)||
-GEOCFG005|País padrão:||
+GEOCFG005|PaÃ­s padrÃ£o:||
 #
 # Dialogo do calculo de coordenadas
 COORD001|Calcular coordenadas||
