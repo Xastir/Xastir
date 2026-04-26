@@ -1826,12 +1826,12 @@ void draw_complete_lat_lon_grid(Widget w)
 // is used.
 //
 // For MGRS and UTM-Special grid only:
-// UTM Zone 32 has been widened to 9ï¿½ (at the expense of zone 31)
-// between latitudes 56ï¿½ and 64ï¿½ (band V) to accommodate southwest
-// Norway. Thus zone 32 extends westwards to 3ï¿½E in the North Sea.
-// Similarly, between 72ï¿½ and 84ï¿½ (band X), zones 33 and 35 have
-// been widened to 12ï¿½ to accommodate Svalbard. To compensate for
-// these 12ï¿½ wide zones, zones 31 and 37 are widened to 9ï¿½ and zones
+// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
+// between latitudes 56° and 64° (band V) to accommodate southwest
+// Norway. Thus zone 32 extends westwards to 3°E in the North Sea.
+// Similarly, between 72° and 84° (band X), zones 33 and 35 have
+// been widened to 12° to accommodate Svalbard. To compensate for
+// these 12° wide zones, zones 31 and 37 are widened to 9° and zones
 // 32, 34, and 36 are eliminated. Thus the W and E boundaries of
 // zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33 -
 // 42 E.
@@ -3987,7 +3987,7 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
     /* Use the same two-call pattern as draw_nice_string:
      * first pass draws the outline (same color for fg+outline so it
      * fills evenly), second pass draws the foreground text clean.
-     * A single compound call with fgâ‰ outline produced invisible text. */
+     * A single compound call with fg!=outline produced invisible text. */
     if (draw_outline)
     {
       xastir_cairo_draw_text(
