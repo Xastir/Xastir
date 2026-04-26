@@ -4,7 +4,7 @@
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at popup_controller_tests.at
 
 if HAVE_NOMINATIM
 TESTSUITE_AT += nominatim_tests.at
@@ -13,7 +13,7 @@ endif
 EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
-check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects
+check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_popup_controller
 
 # Conditionally add nominatim test program
 if HAVE_NOMINATIM
@@ -42,6 +42,12 @@ test_util_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_bui
 
 test_objects_SOURCES = test_objects.c test_objects_stubs.c $(top_srcdir)/src/objects.c $(top_srcdir)/src/util.c $(top_srcdir)/src/object_utils.c $(top_srcdir)/src/db.c
 test_objects_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+
+# Presentation/logic-separation migration: popup_controller is the kernel
+# extracted from popup_gui.c. It has no Xastir-side dependencies, so no
+# stubs file is needed.
+test_popup_controller_SOURCES = test_popup_controller.c $(top_srcdir)/src/popup_controller.c
+test_popup_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
 # Nominatim tests (conditional on HAVE_NOMINATIM)
 if HAVE_NOMINATIM

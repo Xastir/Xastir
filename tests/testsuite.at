@@ -24,6 +24,9 @@ m4_include([util_tests.at])
 # Include basic objects function tests
 m4_include([objects_tests.at])
 
+# Include popup controller tests (presentation/logic-separation migration)
+m4_include([popup_controller_tests.at])
+
 # Include nominatim geocoding tests (conditionally compiled if HAVE_NOMINATIM)
 m4_ifdef([HAVE_NOMINATIM], [
 m4_include([nominatim_tests.at])
