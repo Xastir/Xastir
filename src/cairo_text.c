@@ -244,16 +244,16 @@ static char *normalize_text_for_cairo(const char *text)
 /*
  * Draw text at (x,y) with optional outline.
  *
- * Outline is painted as 4 copies offset by ±0.5px in the cardinal directions
- * (cairo_show_text, which is confirmed to render correctly on Xlib surfaces).
- * Then the foreground text is painted on top.  Half-pixel offsets keep the
- * halo narrow so copies don't merge into a solid rectangle.
+ * Outline is painted using cairo_text_path() + cairo_stroke() in the outline
+ * colour, then the foreground text is painted on top with cairo_show_text().
+ * The stroke width is proportional to the font size (size/4), so the halo
+ * scales correctly at any size and covers the full glyph perimeter including
+ * diagonal corners — the approach used by QGIS, OsmAnd, and other GIS
+ * renderers.
  *
- * NOTE: cairo_text_path() + fill was tried but produces no output when using
- * the toy font API with CAIRO_FILL_RULE_WINDING: glyph paths from FreeType
- * have counter-clockwise exterior contours, so Cairo's winding counter hits
- * zero at the interior and the fill is a no-op.  cairo_show_text() does not
- * have this issue.
+ * NOTE: cairo_text_path() + cairo_fill() does not work with the toy font API
+ * (winding-rule counter hits zero inside the glyph, so fill is a no-op).
+ * cairo_stroke() is not affected by the fill rule.
  */
 static void cairo_draw_text_at(cairo_t *cr,
                                 int x, int y,
@@ -314,16 +314,15 @@ static void cairo_draw_text_at(cairo_t *cr,
 
   if (draw_outline)
   {
-    /* 4-copy cardinal outline at ±0.5px — thin halo, won't merge into
-     * a solid block even at large font sizes. */
-    static const double od = 0.75;
-    static const double offsets[4][2] = {{od,0},{-od,0},{0,od},{0,-od}};
+    /* Stroke the glyph paths in the outline colour, then fill with
+     * cairo_show_text().  Stroke width scales with font size so the halo
+     * is proportional and covers all edges including diagonal corners. */
+    cairo_move_to(cr, tx, ty);
+    cairo_text_path(cr, text);
+    cairo_set_line_width(cr, size / 4.0);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
     cairo_set_source_rgb(cr, or_, og, ob);
-    for (int i = 0; i < 4; i++)
-    {
-      cairo_move_to(cr, tx + offsets[i][0], ty + offsets[i][1]);
-      cairo_show_text(cr, text);
-    }
+    cairo_stroke(cr);
   }
 
   /* Foreground text */
