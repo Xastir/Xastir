@@ -1,0 +1,166 @@
+# Autotest tests for bulletin_controller.c
+# Covers the presentation-free kernel extracted from bulletin_gui.c.
+
+AT_BANNER([Bulletin Controller])
+
+AT_SETUP([bulletin_controller_init: default values])
+AT_KEYWORDS([bulletin bulletin_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" init_default_values], [0], [PASS: bulletin_controller_init: default values
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_init: NULL is safe])
+AT_KEYWORDS([bulletin bulletin_controller init null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" init_null_safe], [0], [PASS: bulletin_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: zero dist without view_zero])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_zero_dist_without_view_zero], [0], [PASS: bulletin_controller_in_range: zero dist rejected without view_zero
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: zero dist with view_zero])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_zero_dist_with_view_zero], [0], [PASS: bulletin_controller_in_range: zero dist accepted with view_zero
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: range==0 unlimited])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_unlimited], [0], [PASS: bulletin_controller_in_range: range==0 unlimited
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: within range])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_within], [0], [PASS: bulletin_controller_in_range: within range accepted
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: outside range])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_outside], [0], [PASS: bulletin_controller_in_range: outside range rejected
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: exact boundary])
+AT_KEYWORDS([bulletin bulletin_controller in_range])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_exact_boundary], [0], [PASS: bulletin_controller_in_range: exact boundary accepted
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_in_range: NULL safe])
+AT_KEYWORDS([bulletin bulletin_controller in_range null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" in_range_null_safe], [0], [PASS: bulletin_controller_in_range: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_record_new: first call sets both brackets])
+AT_KEYWORDS([bulletin bulletin_controller record_new])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" record_new_first_call], [0], [PASS: bulletin_controller_record_new: first call sets both brackets
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_record_new: later time extends last only])
+AT_KEYWORDS([bulletin bulletin_controller record_new])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" record_new_later_extends_last], [0], [PASS: bulletin_controller_record_new: later time extends last_new_time only
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_record_new: earlier time extends first only])
+AT_KEYWORDS([bulletin bulletin_controller record_new])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" record_new_earlier_extends_first], [0], [PASS: bulletin_controller_record_new: earlier time extends first_new_time only
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_record_new: NULL safe])
+AT_KEYWORDS([bulletin bulletin_controller record_new null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" record_new_null_safe], [0], [PASS: bulletin_controller_record_new: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_count_one: out-of-range skipped])
+AT_KEYWORDS([bulletin bulletin_controller count_one])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" count_one_out_of_range], [0], [PASS: bulletin_controller_count_one: out-of-range skipped
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_count_one: too-old skipped])
+AT_KEYWORDS([bulletin bulletin_controller count_one])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" count_one_too_old], [0], [PASS: bulletin_controller_count_one: too-old bulletin skipped
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_count_one: valid bulletins counted])
+AT_KEYWORDS([bulletin bulletin_controller count_one])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" count_one_valid], [0], [PASS: bulletin_controller_count_one: valid bulletins counted
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_count_one: NULL safe])
+AT_KEYWORDS([bulletin bulletin_controller count_one null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" count_one_null_safe], [0], [PASS: bulletin_controller_count_one: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_should_check: within interval returns 0])
+AT_KEYWORDS([bulletin bulletin_controller should_check])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" should_check_too_soon], [0], [PASS: bulletin_controller_should_check: within interval returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_should_check: no flag returns 0])
+AT_KEYWORDS([bulletin bulletin_controller should_check])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" should_check_no_flag], [0], [PASS: bulletin_controller_should_check: no flag returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_should_check: settle period not elapsed])
+AT_KEYWORDS([bulletin bulletin_controller should_check])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" should_check_settle_not_elapsed], [0], [PASS: bulletin_controller_should_check: settle period not elapsed returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_should_check: all gates pass])
+AT_KEYWORDS([bulletin bulletin_controller should_check])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" should_check_all_gates_pass], [0], [PASS: bulletin_controller_should_check: all gates pass returns 1
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_should_check: NULL safe])
+AT_KEYWORDS([bulletin bulletin_controller should_check null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" should_check_null_safe], [0], [PASS: bulletin_controller_should_check: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_reset_batch: clears state])
+AT_KEYWORDS([bulletin bulletin_controller reset_batch])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" reset_batch], [0], [PASS: bulletin_controller_reset_batch: clears flag, count, advances first_new_time
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_controller_reset_batch: NULL safe])
+AT_KEYWORDS([bulletin bulletin_controller reset_batch null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" reset_batch_null_safe], [0], [PASS: bulletin_controller_reset_batch: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_format_line: basic output correct])
+AT_KEYWORDS([bulletin bulletin_controller format_line])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" format_line_basic], [0], [PASS: bulletin_format_line: basic output correct
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_format_line: NULL args return error])
+AT_KEYWORDS([bulletin bulletin_controller format_line null])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" format_line_null_args], [0], [PASS: bulletin_format_line: NULL args return error
+])
+AT_CLEANUP
+
+AT_SETUP([bulletin_format_line: outsz==0 returns error])
+AT_KEYWORDS([bulletin bulletin_controller format_line])
+AT_CHECK(["$abs_top_builddir/tests/test_bulletin_controller" format_line_zero_outsz], [0], [PASS: bulletin_format_line: outsz==0 returns error
+])
+AT_CLEANUP

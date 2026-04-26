@@ -14,7 +14,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 1 | `popup_gui.c`         |   417 |           9 |         1 | ☑      |
 | 2 | `location_gui.c`      |   672 |          12 |         4 | ☑      |
 | 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☑      |
-| 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☐      |
+| 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☑      |
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☐      |
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☐      |
 | 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☐      |
@@ -145,11 +145,59 @@ what got moved, what got tested, what got left behind.
     - No stubs file needed: controller is pure standard C.
 ```
 
+```
+#4 bulletin_gui.c — 2026-05-09
+  Controller:  src/bulletin_controller.{h,c}  (170 + 212 LOC)
+  Tests:       tests/test_bulletin_controller.c  (27 cases, all green;
+               full suite: 310/310 ok)
+  Logic extracted:
+    - bulletin_controller_in_range()    — unified range/zero-distance filter
+      replacing identical 3-condition check duplicated in bulletin_message(),
+      count_bulletin_messages(), bulletin_data_add(), and zero_bulletin_processing()
+    - bulletin_controller_record_new()  — bracket tracking for new-bulletin batch
+      (first_new_time / last_new_time)
+    - bulletin_controller_count_one()   — per-message "new & in-range" counter
+    - bulletin_controller_should_check()  — three-gate timing guard (interval,
+      new_flag, settle period) that was inlined in check_for_new_bulletins()
+    - bulletin_controller_mark_checked()  — records the last check timestamp
+    - bulletin_controller_reset_batch()   — advances first_new_time past batch,
+      clears new_flag and new_count
+    - bulletin_format_line()  — formats "%-9s:%-4s (time dist unit) msg\n";
+      preserves original tag+3 ("BLN" prefix stripped from display)
+  Globals retired:  none (deferred intentionally — xa_config.c pass)
+  Globals deferred (intentional):
+    - bulletin_range              — owned by bulletin_gui.c, exported via
+                                    bulletin_gui.h; synced into bc before filter
+    - new_bulletin_flag           — file-scope int; synced to/from bc.new_flag
+    - new_bulletin_count          — file-scope int; synced to/from bc.new_count
+    - first_new_bulletin_time     — file-scope time_t; synced to/from bc.first_new_time
+    - last_new_bulletin_time      — file-scope time_t; synced to/from bc.last_new_time
+    - last_bulletin_check         — file-scope time_t; synced to/from bc.last_check
+    - pop_up_new_bulletins / view_zero_distance_bulletins  — defined in main.c,
+      declared extern in main.h; synced into bc before each decision
+    - Display_bulletins_dialog / Display_bulletins_text / dist_data — Widget
+      handles; stay in bulletin_gui.c
+    - display_bulletins_dialog_lock — mutex; threading/Motif concern
+  Behavior preserved:
+    - range==0 means unlimited (no upper bound on distance).
+    - distance==0.0 path gated by view_zero_distance_bulletins.
+    - Boundary condition: (int)distance <= bc->range  (matches original cast).
+    - check_for_new_bulletins() settle period 15 s and interval 15 s now live
+      as BULLETIN_CHECK_INTERVAL / BULLETIN_SETTLE_TIME in the header (same
+      values, now named and testable).
+    - zero_bulletin_processing() first_new_time back-extension preserved;
+      range check delegated to bulletin_controller_in_range().
+  Surprises:
+    - The same 3-condition range expression appeared verbatim in four functions;
+      de-duplication was the main structural win.
+    - No stubs file needed: controller is pure standard C.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        3 / 13
-- Total LOC reviewed:    1919
+- Files migrated:        4 / 13
+- Total LOC reviewed:    2809
 - Globals retired:       1
-- New unit tests added:  53
+- New unit tests added:  80

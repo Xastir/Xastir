@@ -54,6 +54,7 @@
 #include "xastir.h"
 #include "main.h"
 #include "bulletin_gui.h"
+#include "bulletin_controller.h"
 #include "interface.h"
 #include "util.h"
 #include "mutex_utils.h"
@@ -76,11 +77,17 @@ int new_bulletin_count = 0;
 static time_t first_new_bulletin_time = 0;
 static time_t last_new_bulletin_time = 0;
 
+/* Presentation/logic controller — mirrors the persistent globals.
+ * Synced from globals before every logical operation.
+ * A future pass will have xa_config write directly to this struct. */
+static bulletin_controller_t bc;
+
 
 
 void bulletin_gui_init(void)
 {
   init_critical_section(&display_bulletins_dialog_lock);
+  bulletin_controller_init(&bc);
 }
 
 
@@ -122,8 +129,7 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
   char time_str[20];
   char *temp_ptr;
 
-
-  timehd=sec_heard;
+  timehd = sec_heard;
   tmp = localtime(&timehd);
 
   if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) )
@@ -135,94 +141,99 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
     return;
   }
 
-  (void)strftime(time_str,sizeof(time_str),"%b %d %H:%M",tmp);
+  (void)strftime(time_str, sizeof(time_str), "%b %d %H:%M", tmp);
 
-  distance = distance_from_my_station(call_sign,temp_my_course, english_units);
-  xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
-                  call_sign, &tag[3], time_str, distance,
-                  english_units ? langcode("UNIOP00004"): langcode("UNIOP00005"),
-                  packet_message);
+  distance = distance_from_my_station(call_sign, temp_my_course, english_units);
 
-  // Operands of <= have incompatible types (double, int):
-  if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
-       || (view_zero_distance_bulletins && distance == 0.0)
-       || ( (bulletin_range == 0) && (distance > 0.0) ) )
+  /* Sync controller from persistent globals before filtering. */
+  bc.range              = bulletin_range;
+  bc.view_zero_distance = view_zero_distance_bulletins;
+
+  if (bulletin_format_line(call_sign, tag, time_str, distance,
+                           english_units ? langcode("UNIOP00004") : langcode("UNIOP00005"),
+                           packet_message,
+                           temp, sizeof(temp)) != 0)
+  {
+    return;
+  }
+
+  if (!bulletin_controller_in_range(&bc, distance))
+  {
+    return;
+  }
+
+  begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
+
+  if ((Display_bulletins_dialog != NULL) && Display_bulletins_text != NULL)     // Dialog is up
   {
 
-    begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
+    eod = XmTextGetLastPosition(Display_bulletins_text);
+    memcpy(temp_text, temp, 15);
+    temp_text[14] = '\0'; // Terminate string
 
-    if ((Display_bulletins_dialog != NULL) && Display_bulletins_text != NULL)     // Dialog is up
+    // Look for this bulletin ID.  "pos" will hold the first char position if found.
+    if (XmTextFindString(Display_bulletins_text, 0, temp_text, XmTEXT_FORWARD, &pos))
     {
 
-      eod = XmTextGetLastPosition(Display_bulletins_text);
-      memcpy(temp_text, temp, 15);
-      temp_text[14] = '\0'; // Terminate string
-
-      // Look for this bulletin ID.  "pos" will hold the first char position if found.
-      if (XmTextFindString(Display_bulletins_text, 0, temp_text, XmTEXT_FORWARD, &pos))
+      // Found it, so now find the end-of-line for it
+      if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
       {
-
-        // Found it, so now find the end-of-line for it
-        if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
-        {
-          eol++;
-        }
-        else
-        {
-          eol = eod;
-        }
-
-        // And replace the old bulletin with a new copy
-        if (eol == eod)
-        {
-          temp[strlen(temp)-1] = '\0';
-        }
-        XmTextReplace(Display_bulletins_text, pos, eol, temp);
+        eol++;
       }
       else
       {
-        for (pos = 0; strlen(temp_text) > 12 && pos < eod;)
+        eol = eod;
+      }
+
+      // And replace the old bulletin with a new copy
+      if (eol == eod)
+      {
+        temp[strlen(temp)-1] = '\0';
+      }
+      XmTextReplace(Display_bulletins_text, pos, eol, temp);
+    }
+    else
+    {
+      for (pos = 0; strlen(temp_text) > 12 && pos < eod;)
+      {
+        if (XmCOPY_SUCCEEDED == XmTextGetSubstring(Display_bulletins_text, pos, 14, 30, temp_text))
         {
-          if (XmCOPY_SUCCEEDED == XmTextGetSubstring(Display_bulletins_text, pos, 14, 30, temp_text))
-          {
-            if (temp_text[0] && strncmp(temp, temp_text, 14) < 0)
-            {
-              break;
-            }
-          }
-          else
+          if (temp_text[0] && strncmp(temp, temp_text, 14) < 0)
           {
             break;
           }
-
-          if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
-          {
-            pos = ++eol;
-          }
-          else
-          {
-            pos = eod;
-          }
         }
-        if (pos == eod)
+        else
         {
-          temp[strlen(temp)-1] = '\0'; // End-of-Data remove trailing LF
-          if (pos > 0)   // Already have text. Need to insert LF between items
-          {
-            memmove(&temp[1], temp, strlen(temp));
-            temp[0] = '\n';
-          }
+          break;
         }
-        XmTextInsert(Display_bulletins_text,pos,temp);
+
+        if (XmTextFindString(Display_bulletins_text, pos, "\n", XmTEXT_FORWARD, &eol))
+        {
+          pos = ++eol;
+        }
+        else
+        {
+          pos = eod;
+        }
       }
-      temp_ptr = XmTextFieldGetString(dist_data);
-      bulletin_range = atoi(temp_ptr);
-      XtFree(temp_ptr);
+      if (pos == eod)
+      {
+        temp[strlen(temp)-1] = '\0'; // End-of-Data remove trailing LF
+        if (pos > 0)   // Already have text. Need to insert LF between items
+        {
+          memmove(&temp[1], temp, strlen(temp));
+          temp[0] = '\n';
+        }
+      }
+      XmTextInsert(Display_bulletins_text, pos, temp);
     }
-
-    end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
-
+    temp_ptr = XmTextFieldGetString(dist_data);
+    bulletin_range = atoi(temp_ptr);
+    XtFree(temp_ptr);
   }
+
+  end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 }
 
 
@@ -274,23 +285,27 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
   {
     char temp[10];
 
-
     //fprintf(stderr,"We think it's a new bulletin!\n");
 
     // We add to the distance in order to come up with 0.0
     // if the distance is not known at all (no position
     // found yet).
-    distance = (int)(distance_from_my_station(from_call,temp,english_units) + 0.9999);
+    distance = (int)(distance_from_my_station(from_call, temp, english_units) + 0.9999);
 
-    if ( (bulletin_range == 0)
-         || (distance <= bulletin_range && distance > 0)
-         || (view_zero_distance_bulletins && distance == 0.0) )
+    /* Sync controller from persistent globals before filtering. */
+    bc.range              = bulletin_range;
+    bc.view_zero_distance = view_zero_distance_bulletins;
+
+    if (bulletin_controller_in_range(&bc, (double)distance))
     {
       // We have a _new_ bulletin that's within our
-      // current range setting.  Note that it's also possible
-      // to have a zero distance for the bulletin (we haven't
-      // heard a posit from the sending station yet), then get
-      // a posit later.
+      // current range setting.
+
+      /* Record it in the controller; write back to legacy globals. */
+      bulletin_controller_record_new(&bc, sec_now());
+      first_new_bulletin_time = bc.first_new_time;
+      last_new_bulletin_time  = bc.last_new_time;
+      new_bulletin_flag       = bc.new_flag;
 
       if (debug_level & 1)
       {
@@ -306,7 +321,8 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
         fprintf(stderr,"  Distance ok:%d miles",distance);
       }
 
-      if (pop_up_new_bulletins)
+      bc.pop_up_enabled = pop_up_new_bulletins;
+      if (bc.pop_up_enabled)
       {
         //fprintf(stderr,"bulletin_data_add: popping up bulletins\n");
         popup_bulletins();
@@ -357,20 +373,17 @@ void count_bulletin_messages(char *call_sign, char *packet_message, time_t sec_h
     return;
   }
 
-  distance = distance_from_my_station(call_sign,temp_my_course,english_units);
+  distance = distance_from_my_station(call_sign, temp_my_course, english_units);
 
-  // Operands of <= have incompatible types (double, int):
-  if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
-       || (view_zero_distance_bulletins && distance == 0.0)
-       || ( (bulletin_range == 0) && (distance > 0.0) ) )
-  {
+  /* Sync controller from persistent globals before filtering. */
+  bc.range              = bulletin_range;
+  bc.view_zero_distance = view_zero_distance_bulletins;
+  bc.first_new_time     = first_new_bulletin_time;
 
-    // Is it newer than our first new_bulletin timestamp?
-    if (sec_heard >= first_new_bulletin_time)
-    {
-      new_bulletin_count++;
-    }
-  }
+  bulletin_controller_count_one(&bc, distance, sec_heard);
+
+  /* Write count back to the legacy global so the rest of the code sees it. */
+  new_bulletin_count = bc.new_count;
 }
 
 
@@ -402,7 +415,6 @@ static void zero_bulletin_processing(Message *fill)
 {
   DataRow *p_station; // Pointer to station data
 
-
   if (!fill->position_known)
   {
 
@@ -410,17 +422,8 @@ static void zero_bulletin_processing(Message *fill)
     //    fill->from_call_sign,
     //    fill->message_line);
 
-    // Check to see if we _now_ have a position for this non-new
-    // bulletin.  If so, change the position_known flag on that
-    // record to a one, update the record, set the proper timers
-    // and then schedule a popup if it fits within our current
-    // parameters.
-
-    if ( search_station_name(&p_station,fill->from_call_sign,1) )
+    if ( search_station_name(&p_station, fill->from_call_sign, 1) )
     {
-      // Found a bulletin for which we get to fill in a new
-      // position!
-
       if ( (p_station->coord_lon == 0l)
            && (p_station->coord_lat == 0l) )
       {
@@ -428,25 +431,20 @@ static void zero_bulletin_processing(Message *fill)
       }
       else   // Found valid position for this bulletin
       {
-
         //fprintf(stderr,"Found it now! %s:%s\n",
         //    fill->from_call_sign,
         //    fill->message_line);
 
-        // Mark it as found
         fill->position_known = 1;
 
-        // Fake the timestamp so that we check messages back
-        // to at least this one we just found.  Allow for the
-        // fact that we might find several older messages, so
-        // we only want to keep taking the timestamp backwards
-        // in time here.
-        if (first_new_bulletin_time > (fill->sec_heard) )
+        /* Extend first_new_time backwards to include this bulletin. */
+        if (first_new_bulletin_time == (time_t)0
+            || first_new_bulletin_time > fill->sec_heard)
         {
           first_new_bulletin_time = fill->sec_heard;
+          bc.first_new_time = first_new_bulletin_time;
         }
 
-        // Check whether we really wish to pop them up
         if (pop_up_new_bulletins)
         {
           int distance;
@@ -456,8 +454,11 @@ static void zero_bulletin_processing(Message *fill)
                                                     temp_my_course,
                                                     english_units) + 0.9999);
 
-          if ( (bulletin_range == 0)
-               || (distance <= bulletin_range && distance > 0) )
+          /* Sync controller and use it for the range check. */
+          bc.range              = bulletin_range;
+          bc.view_zero_distance = view_zero_distance_bulletins;
+
+          if (bulletin_controller_in_range(&bc, (double)distance))
           {
             if (debug_level & 1)
             {
@@ -465,10 +466,6 @@ static void zero_bulletin_processing(Message *fill)
                       distance);
             }
 
-            // If view_zero_distance_bulletins was not
-            // turned on, then we probably haven't seen
-            // this bulletin until now.  Popup up the
-            // Bulletin dialog.
             if (!view_zero_distance_bulletins)
             {
               //fprintf(stderr,"zero_bulletin_processing: popping up bulletins\n");
@@ -511,13 +508,18 @@ time_t last_bulletin_check = (time_t)0l;
 
 void check_for_new_bulletins(int curr_sec)
 {
+  /* Sync controller from persistent globals before the timing gate. */
+  bc.new_flag       = new_bulletin_flag;
+  bc.last_new_time  = last_new_bulletin_time;
+  bc.last_check     = last_bulletin_check;
 
-  // Check every 15 seconds max
-  if ( (last_bulletin_check + 15) > curr_sec )
+  /* Outer throttle: check at most every BULLETIN_CHECK_INTERVAL seconds. */
+  if ( (last_bulletin_check + BULLETIN_CHECK_INTERVAL) > curr_sec )
   {
     return;
   }
-  last_bulletin_check = curr_sec;
+  bulletin_controller_mark_checked(&bc, (time_t)curr_sec);
+  last_bulletin_check = bc.last_check;
 
   // Look first to see if we might be able to fill in positions on
   // any older bulletins, then cause a popup for those that fit
@@ -534,7 +536,7 @@ void check_for_new_bulletins(int curr_sec)
 
   // Enough time passed since most recent bulletin?  Need to have
   // enough time to perhaps fill in a distance for each bulletin.
-  if ( (last_new_bulletin_time + 15) > curr_sec )
+  if ( (last_new_bulletin_time + BULLETIN_SETTLE_TIME) > curr_sec )
   {
     //fprintf(stderr,"Not enough time has passed\n");
     return;
@@ -547,6 +549,7 @@ void check_for_new_bulletins(int curr_sec)
   // fit within our range.
 
   new_bulletin_count = 0;
+  bc.new_count       = 0;
 
   //fprintf(stderr,"Checking for new bulletins\n");
 
@@ -572,10 +575,12 @@ void check_for_new_bulletins(int curr_sec)
     }
   }
 
-  // Reset so that we can do it all over again later.  We need
-  // mutex locks protecting these variables.
-  first_new_bulletin_time = last_new_bulletin_time + 1;
-  new_bulletin_flag = 0;
+  // Reset so that we can do it all over again later.
+  bc.last_new_time = last_new_bulletin_time;
+  bulletin_controller_reset_batch(&bc);
+  first_new_bulletin_time = bc.first_new_time;
+  new_bulletin_flag       = bc.new_flag;
+  new_bulletin_count      = bc.new_count;
 }
 
 
