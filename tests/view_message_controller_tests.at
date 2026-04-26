@@ -1,0 +1,160 @@
+# Autotest tests for view_message_controller.c
+# Covers the presentation-free kernel extracted from view_message_gui.c.
+
+AT_BANNER([View Message Controller])
+
+AT_SETUP([view_message_controller_init: default values correct])
+AT_KEYWORDS([view_message view_message_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" init_default_values], [0], [PASS: view_message_controller_init: default values correct
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_controller_init: NULL is a safe no-op])
+AT_KEYWORDS([view_message view_message_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" init_null_safe], [0], [PASS: view_message_controller_init: NULL is a safe no-op
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_strip_ssid: strip SSID suffix])
+AT_KEYWORDS([view_message view_message_controller strip_ssid])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" strip_ssid_with_ssid], [0], [PASS: view_message_strip_ssid: strip SSID suffix
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_strip_ssid: no SSID present])
+AT_KEYWORDS([view_message view_message_controller strip_ssid])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" strip_ssid_without_ssid], [0], [PASS: view_message_strip_ssid: no SSID present
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_strip_ssid: NULL src])
+AT_KEYWORDS([view_message view_message_controller strip_ssid])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" strip_ssid_null_src], [0], [PASS: view_message_strip_ssid: NULL src
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_strip_ssid: single-digit SSID])
+AT_KEYWORDS([view_message view_message_controller strip_ssid])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" strip_ssid_exact_minus], [0], [PASS: view_message_strip_ssid: single-digit SSID
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: range=0 allows any distance])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_range_zero_allows_any], [0], [PASS: should_display: range=0 allows any distance
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: range filter excludes far message])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_range_excludes_far], [0], [PASS: should_display: range filter excludes far message
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: range filter passes near messages])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_range_includes_near], [0], [PASS: should_display: range filter passes near messages
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: TNC-only filter drops NET sources])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_tnc_only_drops_net], [0], [PASS: should_display: TNC-only filter drops NET sources
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: TNC-only filter passes TNC source])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_tnc_only_passes_tnc], [0], [PASS: should_display: TNC-only filter passes TNC source
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: NET-only filter drops TNC source])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_net_only_drops_tnc], [0], [PASS: should_display: NET-only filter drops TNC source
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: NET-only filter passes NET source])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_net_only_passes_net], [0], [PASS: should_display: NET-only filter passes NET source
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: mine_only passes matching call_sign])
+AT_KEYWORDS([view_message view_message_controller should_display mine_only])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_mine_only_match_call], [0], [PASS: should_display: mine_only passes matching call_sign
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: mine_only passes matching from_call])
+AT_KEYWORDS([view_message view_message_controller should_display mine_only])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_mine_only_match_from], [0], [PASS: should_display: mine_only passes matching from_call
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: mine_only drops unrelated messages])
+AT_KEYWORDS([view_message view_message_controller should_display mine_only])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_mine_only_no_match], [0], [PASS: should_display: mine_only drops unrelated messages
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: mine_only bypasses range filter])
+AT_KEYWORDS([view_message view_message_controller should_display mine_only])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_mine_only_ignores_range], [0], [PASS: should_display: mine_only bypasses range filter
+])
+AT_CLEANUP
+
+AT_SETUP([should_display: NULL vc is safe])
+AT_KEYWORDS([view_message view_message_controller should_display])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" should_display_null_vc], [0], [PASS: should_display: NULL vc is safe
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_record: basic formatting])
+AT_KEYWORDS([view_message view_message_controller format_record])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_record_basic], [0], [PASS: view_message_format_record: basic formatting
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_record: NULL arg handling])
+AT_KEYWORDS([view_message view_message_controller format_record])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_record_null_args], [0], [PASS: view_message_format_record: NULL arg handling
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: normal message])
+AT_KEYWORDS([view_message view_message_controller format_line])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_normal], [0], [PASS: view_message_format_line: normal message
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: java broadcast])
+AT_KEYWORDS([view_message view_message_controller format_line broadcast])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_broadcast_java], [0], [PASS: view_message_format_line: java broadcast
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: USER broadcast])
+AT_KEYWORDS([view_message view_message_controller format_line broadcast])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_broadcast_user], [0], [PASS: view_message_format_line: USER broadcast
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: broadcast with NULL label uses raw call_sign])
+AT_KEYWORDS([view_message view_message_controller format_line broadcast])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_broadcast_null_label], [0], [PASS: view_message_format_line: broadcast with NULL label uses raw call_sign
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: long message split at char 95])
+AT_KEYWORDS([view_message view_message_controller format_line])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_long_message_split], [0], [PASS: view_message_format_line: long message split at char 95
+])
+AT_CLEANUP
+
+AT_SETUP([view_message_format_line: NULL arg handling])
+AT_KEYWORDS([view_message view_message_controller format_line])
+AT_CHECK(["$abs_top_builddir/tests/test_view_message_controller" format_line_null_args], [0], [PASS: view_message_format_line: NULL arg handling
+])
+AT_CLEANUP

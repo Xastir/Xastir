@@ -51,6 +51,7 @@
 #include "db_funcs.h"
 #include "util.h"
 #include "mutex_utils.h"
+#include "view_message_controller.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -69,6 +70,12 @@ int view_message_limit = 10000;
 int Read_messages_packet_data_type = 0; // 1=tnc_only, 2=net_only, 0=tnc&net
 int Read_messages_mine_only = 0;
 
+/* Presentation/logic controller — mirrors the four persistent globals.
+ * Synced from globals before every filtering decision in this file.
+ * A future pass will have xa_config set this struct directly and retire
+ * the plain-int globals. */
+static view_message_controller_t vm_controller;
+
 
 
 
@@ -76,6 +83,7 @@ int Read_messages_mine_only = 0;
 void view_message_gui_init(void)
 {
   init_critical_section( &All_messages_dialog_lock );
+  view_message_controller_init(&vm_controller);
 }
 
 
@@ -91,104 +99,66 @@ void view_message_print_record(Message *m_fill)
   char temp_my_course[10];
   XmTextPosition drop_ptr;
   int distance;
+  char short_call[MAX_CALLSIGN + 1];
 
+  // Sync controller from persistent globals before filtering.
+  vm_controller.range            = vm_range;
+  vm_controller.message_limit    = view_message_limit;
+  vm_controller.packet_data_type = Read_messages_packet_data_type;
+  vm_controller.mine_only        = Read_messages_mine_only;
 
   // Make sure it's within our distance range we have set
-  distance = distance_from_my_station(m_fill->from_call_sign,temp_my_course,
+  distance = distance_from_my_station(m_fill->from_call_sign, temp_my_course,
                                       english_units);
 
-  if (Read_messages_mine_only
-      || (!Read_messages_mine_only
-          && ( (vm_range == 0) || (distance <= vm_range) ) ) )
+  view_message_strip_ssid(my_callsign, short_call, sizeof(short_call));
+
+  if (!view_message_controller_should_display(&vm_controller,
+                                              m_fill->data_via,
+                                              m_fill->call_sign,
+                                              m_fill->from_call_sign,
+                                              distance,
+                                              short_call))
   {
-
-    // Check that it's coming from the correct type of interface
-    // Compare Read_messages_packet_data_type against the port
-    // type associated with data_port to determine whether or
-    // not to display it.
-    //
-    // I = Internet
-    // L = Local
-    // T = TNC
-    // F = File
-    //
-    switch (Read_messages_packet_data_type)
-    {
-
-      case 2:     // Display NET data only
-        // if not network_interface, return
-        if (m_fill->data_via != 'I')
-        {
-          return;  // Don't display it
-        }
-        break;
-
-      case 1:     // Display TNC data only
-        // if not local_tnc_interface, return
-        if (m_fill->data_via != 'T')
-        {
-          return;  // Don't display it
-        }
-        break;
-
-      case 0:     // Display both TNC and NET data
-      default:
-        break;
-    }
-
-    // Check for my stations only if set
-    if (Read_messages_mine_only)
-    {
-      char short_call[MAX_CALLSIGN];
-      char *p;
-
-      memcpy(short_call, my_callsign, sizeof(short_call));
-      short_call[sizeof(short_call)-1] = '\0';  // Terminate string
-      if ( (p = index(short_call,'-')) )
-      {
-        *p = '\0';  // Terminate it
-      }
-
-      if (!strstr(m_fill->call_sign, short_call)
-          && !strstr(m_fill->from_call_sign, short_call))
-      {
-        return;
-      }
-    }
-
-    if ((temp = malloc((size_t)my_size)) == NULL)
-    {
-      return;
-    }
-
-    sprintf(temp,"%-9s>%-9s %s:%5s %s:%c :%s\n",
-            m_fill->from_call_sign,
-            m_fill->call_sign,
-            langcode("WPUPMSB013"),
-            m_fill->seq,
-            langcode("WPUPMSB014"),
-            m_fill->type,
-            m_fill->message_line);
-
-    pos = (int)XmTextGetLastPosition(view_messages_text);
-
-
-    XmTextInsert(view_messages_text, pos, temp);
-    pos += strlen(temp);
-    while (pos > view_message_limit)
-    {
-      for (drop_ptr = i = 0; i < 3; i++)
-      {
-        (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
-        drop_ptr++;
-      }
-      XmTextReplace(view_messages_text, 0, drop_ptr, "");
-      pos = (int)XmTextGetLastPosition(view_messages_text);
-    }
-    XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
-
-    free(temp);
+    return;
   }
+
+  if ((temp = malloc((size_t)my_size)) == NULL)
+  {
+    return;
+  }
+
+  if (view_message_format_record(m_fill->from_call_sign,
+                                 m_fill->call_sign,
+                                 m_fill->seq,
+                                 m_fill->type,
+                                 m_fill->message_line,
+                                 langcode("WPUPMSB013"),
+                                 langcode("WPUPMSB014"),
+                                 temp,
+                                 (size_t)my_size) != 0)
+  {
+    free(temp);
+    return;
+  }
+
+  pos = (int)XmTextGetLastPosition(view_messages_text);
+
+  XmTextInsert(view_messages_text, pos, temp);
+  pos += strlen(temp);
+  while (pos > vm_controller.message_limit)
+  {
+    for (drop_ptr = i = 0; i < 3; i++)
+    {
+      (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
+      drop_ptr++;
+    }
+    XmTextReplace(view_messages_text, 0, drop_ptr, "");
+    pos = (int)XmTextGetLastPosition(view_messages_text);
+  }
+  XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
+
+  free(temp);
 }
 
 
@@ -215,179 +185,65 @@ void all_messages(char from, char *call_sign, char *from_call, char *message)
 {
   char temp_my_course[10];
   char *temp;
-  char data1[97];
-  char data2[97];
   int pos;
   int i;
   int my_size = 200;
   XmTextPosition drop_ptr;
+  int distance;
+  char short_call[MAX_CALLSIGN + 1];
 
+  // Sync controller from persistent globals before filtering.
+  vm_controller.range            = vm_range;
+  vm_controller.message_limit    = view_message_limit;
+  vm_controller.packet_data_type = Read_messages_packet_data_type;
+  vm_controller.mine_only        = Read_messages_mine_only;
 
-  if (Read_messages_mine_only
-      || (!Read_messages_mine_only
-          && ((vm_range == 0)
-              || (distance_from_my_station(call_sign,temp_my_course,
-                                           english_units) <= vm_range)) ) )
+  distance = distance_from_my_station(call_sign, temp_my_course, english_units);
+  view_message_strip_ssid(my_callsign, short_call, sizeof(short_call));
+
+  if (!view_message_controller_should_display(&vm_controller, from,
+                                              call_sign, from_call,
+                                              distance, short_call))
   {
-
-    // Check that it's coming from the correct type of interface
-    // Compare Read_messages_packet_data_type against the port
-    // type associated with data_port to determine whether or
-    // not to display it.
-    //
-    // I = Internet
-    // L = Local
-    // T = TNC
-    // F = File
-    //
-    switch (Read_messages_packet_data_type)
-    {
-
-      case 2:     // Display NET data only
-        // if not network_interface, return
-        if (from != 'I')
-        {
-          return;  // Don't display it
-        }
-        break;
-
-      case 1:     // Display TNC data only
-        // if not local_tnc_interface, return
-        if (from != 'T')
-        {
-          return;  // Don't display it
-        }
-        break;
-
-      case 0:     // Display both TNC and NET data
-      default:
-        break;
-    }
-
-    // Check for my stations only if set
-    if (Read_messages_mine_only)
-    {
-      char short_call[MAX_CALLSIGN];
-      char *p;
-
-      memcpy(short_call, my_callsign, sizeof(short_call));
-      short_call[sizeof(short_call)-1] = '\0';  // Terminate string
-      if ( (p = index(short_call,'-')) )
-      {
-        *p = '\0';  // Terminate it
-      }
-
-      if (!strstr(call_sign, short_call)
-          && !strstr(from_call, short_call))
-      {
-        return;
-      }
-    }
-
-    if ((temp = malloc((size_t)my_size)) == NULL)
-    {
-      return;
-    }
-
-    if (strlen(message)>95)
-    {
-      xastir_snprintf(data1,
-                      sizeof(data1),
-                      "%s",
-                      message);
-      data1[95]='\0';
-      xastir_snprintf(data2,
-                      sizeof(data2),
-                      "\n\t%s",
-                      message+95);
-    }
-    else
-    {
-      xastir_snprintf(data1,
-                      sizeof(data1),
-                      "%s",
-                      message);
-      data2[0] = '\0';
-    }
-
-    if (strncmp(call_sign, "java",4) == 0)
-    {
-      xastir_snprintf(call_sign,
-                      MAX_CALLSIGN+1,
-                      "%s", langcode("WPUPMSB015") );   // Broadcast
-      xastir_snprintf(temp,
-                      my_size,
-                      "%s %s\t%s%s\n",
-                      from_call,
-                      call_sign,
-                      data1,
-                      data2);
-    }
-    else if (strncmp(call_sign, "USER", 4) == 0)
-    {
-      xastir_snprintf(call_sign,
-                      MAX_CALLSIGN+1,
-                      "%s", langcode("WPUPMSB015") );   // Broadcast
-      xastir_snprintf(temp,
-                      my_size,
-                      "%s %s\t%s%s\n",
-                      from_call,
-                      call_sign,
-                      data1,
-                      data2);
-    }
-    else
-    {
-      char from_str[10];
-
-      xastir_snprintf(from_str, sizeof(from_str), "%c", from);
-
-      strcpy(temp, from_call);
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, " to ");
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, call_sign);
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, " via:");
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, from_str);
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, "\t");
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, data1);
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, data2);
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-      strcat(temp, "\n");
-      temp[sizeof(temp)-1] = '\0';  // Terminate string
-    }
-
-    if ((All_messages_dialog != NULL))
-    {
-
-      begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages" );
-
-      pos = (int)XmTextGetLastPosition(view_messages_text);
-      XmTextInsert(view_messages_text, pos, temp);
-      pos += strlen(temp);
-      while (pos > view_message_limit)
-      {
-        for (drop_ptr = i = 0; i < 3; i++)
-        {
-          (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
-          drop_ptr++;
-        }
-        XmTextReplace(view_messages_text, 0, drop_ptr, "");
-        pos = (int)XmTextGetLastPosition(view_messages_text);
-      }
-      XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
-      XmTextShowPosition(view_messages_text, pos);
-
-      end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages" );
-
-    }
-    free(temp);
+    return;
   }
+
+  if ((temp = malloc((size_t)my_size)) == NULL)
+  {
+    return;
+  }
+
+  if (view_message_format_line(from, call_sign, from_call, message,
+                               langcode("WPUPMSB015"),
+                               temp, (size_t)my_size) != 0)
+  {
+    free(temp);
+    return;
+  }
+
+  if ((All_messages_dialog != NULL))
+  {
+    begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages" );
+
+    pos = (int)XmTextGetLastPosition(view_messages_text);
+    XmTextInsert(view_messages_text, pos, temp);
+    pos += strlen(temp);
+    while (pos > vm_controller.message_limit)
+    {
+      for (drop_ptr = i = 0; i < 3; i++)
+      {
+        (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
+        drop_ptr++;
+      }
+      XmTextReplace(view_messages_text, 0, drop_ptr, "");
+      pos = (int)XmTextGetLastPosition(view_messages_text);
+    }
+    XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
+    XmTextShowPosition(view_messages_text, pos);
+
+    end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:all_messages" );
+  }
+  free(temp);
 }
 
 

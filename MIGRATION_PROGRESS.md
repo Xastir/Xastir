@@ -13,7 +13,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 |---|-----------------------|-------|-------------|-----------|--------|
 | 1 | `popup_gui.c`         |   417 |           9 |         1 | ☑      |
 | 2 | `location_gui.c`      |   672 |          12 |         4 | ☑      |
-| 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☐      |
+| 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☑      |
 | 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☐      |
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☐      |
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☐      |
@@ -108,11 +108,48 @@ what got moved, what got tested, what got left behind.
       (same value, 100) to keep it in sync with the controller constant.
 ```
 
+```
+#3 view_message_gui.c — 2026-04-26
+  Controller:  src/view_message_controller.{h,c}  (146 + 251 LOC)
+  Tests:       tests/test_view_message_controller.c  (26 cases, all green;
+               full suite: 283/283 ok)
+  Logic extracted:
+    - view_message_controller_should_display() — unified filter kernel replacing
+      duplicated range/packet-type/mine-only logic that existed independently in
+      both view_message_print_record() and all_messages()
+    - view_message_format_record() — formats the "%-9s>%-9s …" record-view line
+    - view_message_format_line()   — formats the "all messages" display line
+      including broadcast detection (java/USER prefixes) and 95-char split
+    - view_message_strip_ssid()    — SSID-stripping helper used by should_display
+  Globals retired:  none
+  Globals deferred (intentional):
+    - vm_range / view_message_limit / Read_messages_packet_data_type /
+      Read_messages_mine_only  — still owned by view_message_gui.c and read by
+      xa_config.c; synced into vm_controller before each filtering decision.
+      A future pass will have xa_config write directly to the struct and retire
+      the plain-int globals.
+    - All_messages_dialog / view_messages_text / vm_dist_data / button_range
+      — Widget handles; stay in view_message_gui.c
+    - All_messages_dialog_lock  — mutex; Motif/threading concern
+  Behavior preserved:
+    - Mine-only mode bypasses range check (original legacy behaviour kept).
+    - Broadcast detection: "java" or "USER" prefix → label substitution.
+    - Long message (>95 chars) split with "\n\t" prefix on continuation.
+    - Message-limit scroll trim unchanged.
+  Surprises:
+    - Original all_messages() used unsafe strcat chains with "sizeof(temp)"
+      on a char* (always 8 on 64-bit); all replaced by snprintf in the
+      controller, which is both safer and correct.
+    - The filtering logic was byte-for-byte identical in view_message_print_record
+      and all_messages — de-duplication was the main win here.
+    - No stubs file needed: controller is pure standard C.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        2 / 13
-- Total LOC reviewed:    1089
+- Files migrated:        3 / 13
+- Total LOC reviewed:    1919
 - Globals retired:       1
-- New unit tests added:  27
+- New unit tests added:  53
