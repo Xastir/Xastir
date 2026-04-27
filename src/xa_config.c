@@ -1755,7 +1755,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_TINY],
                     sizeof(rotated_label_fontname[FONT_TINY]),
+#ifdef HAVE_CAIRO
+                    "sans:size=8");
+#else
                     "-adobe-helvetica-medium-r-normal--8-*-*-*-*-*-iso8859-1");
+#endif
   }
 
   if (!get_string ("MAPS_LABEL_FONT_SMALL", rotated_label_fontname[FONT_SMALL], sizeof(rotated_label_fontname[FONT_SMALL]))
@@ -1763,7 +1767,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_SMALL],
                     sizeof(rotated_label_fontname[FONT_SMALL]),
+#ifdef HAVE_CAIRO
+                    "sans:size=10");
+#else
                     "-adobe-helvetica-medium-r-normal--10-*-*-*-*-*-iso8859-1");
+#endif
   }
 
   if (!get_string ("MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM], sizeof(rotated_label_fontname[FONT_MEDIUM]))
@@ -1771,7 +1779,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_MEDIUM],
                     sizeof(rotated_label_fontname[FONT_MEDIUM]),
+#ifdef HAVE_CAIRO
+                    "sans:size=12");
+#else
                     "-adobe-helvetica-medium-r-normal--12-*-*-*-*-*-iso8859-1");
+#endif
   }
   // NOTE:  FONT_DEFAULT points to FONT_MEDIUM
 
@@ -1780,7 +1792,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_LARGE],
                     sizeof(rotated_label_fontname[FONT_LARGE]),
+#ifdef HAVE_CAIRO
+                    "sans:size=14");
+#else
                     "-adobe-helvetica-medium-r-normal--14-*-*-*-*-*-iso8859-1");
+#endif
   }
 
   if (!get_string ("MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE], sizeof(rotated_label_fontname[FONT_HUGE]))
@@ -1788,7 +1804,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_HUGE],
                     sizeof(rotated_label_fontname[FONT_HUGE]),
+#ifdef HAVE_CAIRO
+                    "sans:size=24");
+#else
                     "-adobe-helvetica-medium-r-normal--24-*-*-*-*-*-iso8859-1");
+#endif
   }
 
   if (!get_string ("MAPS_LABEL_FONT_BORDER", rotated_label_fontname[FONT_BORDER], sizeof(rotated_label_fontname[FONT_BORDER]))
@@ -1796,7 +1816,11 @@ void load_data_or_default(void)
   {
     xastir_snprintf(rotated_label_fontname[FONT_BORDER],
                     sizeof(rotated_label_fontname[FONT_BORDER]),
+#ifdef HAVE_CAIRO
+                    "sans:size=14");
+#else
                     "-adobe-helvetica-medium-r-normal--14-*-*-*-*-*-iso8859-1");
+#endif
   }
 
   if (!get_string ("SYSTEM_FIXED_FONT", rotated_label_fontname[FONT_SYSTEM], sizeof(rotated_label_fontname[FONT_SYSTEM]))

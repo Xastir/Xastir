@@ -152,6 +152,9 @@ char *xastir_version=VERSION;
 #include "x_spider.h"
 #include "map_cache.h"
 #include "lang.h"
+#ifdef HAVE_CAIRO
+  #include "cairo_text.h"
+#endif
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>

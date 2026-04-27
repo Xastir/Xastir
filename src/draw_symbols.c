@@ -44,6 +44,7 @@
 #include "dr_utils.h"
 #include "color.h"
 #include "maps.h"
+#include "cairo_text.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -103,123 +104,113 @@ void clear_symbol_data(void)
  */
 void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *text, int bgcolor, int fgcolor, int length)
 {
-  GContext gcontext;
-  XFontStruct *xfs_ptr;
-  int font_width, font_height;
-
-  if (x > screen_width)
-  {
+  if (x > screen_width || x < 0 || y > screen_height || y < 0)
     return;
-  }
-  if (x < 0)
+
+#ifdef HAVE_CAIRO
   {
-    return;
+    Display *dpy = XtDisplay(w);
+    const char *fontspec = rotated_label_fontname[FONT_STATION];
+
+    int font_height = xastir_cairo_text_height(fontspec);
+    int text_w      = xastir_cairo_text_width(text, fontspec);
+
+    switch (style)
+    {
+      case 0:
+        /* outline style: 8 copies in bgcolor, then text in fgcolor */
+        xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
+                               colors[bgcolor], 1, colors[bgcolor], NONE);
+        break;
+
+      case 1:
+        /* gray box background */
+        (void)XSetForeground(XtDisplay(w), gc, colors[0xff]);
+        (void)XFillRectangle(XtDisplay(w), where, gc,
+                             x, y - (font_height - font_height/4),
+                             text_w, font_height);
+        /* fall through: draw text over box */
+        xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
+                               colors[bgcolor], 0, 0, NONE);
+        return;
+
+      case 2:
+        /* black box - box drawn by caller via XFillRectangle, just draw text */
+        (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w, "black"));
+        (void)XFillRectangle(XtDisplay(w), where, gc,
+                             x, y - (font_height - font_height/4),
+                             text_w, font_height);
+        xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
+                               colors[fgcolor], 0, 0, NONE);
+        return;
+
+      case 3:
+      default:
+        /* shadow: draw offset copy in bgcolor first */
+        xastir_cairo_draw_text(dpy, where,
+                               x + font_height/10, y + font_height/10,
+                               0.0f, text, fontspec,
+                               colors[bgcolor], 0, 0, NONE);
+        break;
+    }
+
+    /* final foreground text */
+    xastir_cairo_draw_text(dpy, where, x, y, 0.0f, text, fontspec,
+                           colors[fgcolor], 0, 0, NONE);
   }
-  if (y > screen_height)
+#else  /* !HAVE_CAIRO */
   {
-    return;
+    GContext gcontext;
+    XFontStruct *xfs_ptr;
+    int font_width, font_height;
+
+    gcontext = XGContextFromGC(gc);
+    xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
+    font_width = (int)((xfs_ptr->max_bounds.width * 3
+                        + xfs_ptr->min_bounds.width) / 4);
+    font_height = xfs_ptr->max_bounds.ascent + xfs_ptr->max_bounds.descent;
+
+    switch (style)
+    {
+      case 0:
+        (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
+        (void)XDrawString(XtDisplay(w),where,gc,x+1,y-1,text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x+1,y,  text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x+1,y+1,text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x-1,y,  text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x-1,y-1,text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x-1,y+1,text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x,  y+1, text,length);
+        (void)XDrawString(XtDisplay(w),where,gc,x,  y-1, text,length);
+        break;
+      case 1:
+        (void)XSetForeground(XtDisplay(w),gc,colors[0xff]);
+        (void)XFillRectangle(XtDisplay(w),where,gc,
+                             x, y-(font_height-(font_height/4)),
+                             get_text_width(w,text), font_height);
+        (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
+        (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/10),y+(font_width/8),text,length);
+        break;
+      case 2:
+        (void)XSetForeground(XtDisplay(w),gc,GetPixelByName(w,"black"));
+        (void)XFillRectangle(XtDisplay(w),where,gc,
+                             x, y-(font_height-(font_height/4)),
+                             get_text_width(w,text), font_height);
+        break;
+      case 3:
+      default:
+        (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
+        (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/10),y+(font_width/8),text,length);
+        break;
+    }
+    (void)XSetForeground(XtDisplay(w),gc,colors[fgcolor]);
+    (void)XDrawString(XtDisplay(w),where,gc,x,y,text,length);
+    if (xfs_ptr)
+      XFreeFontInfo(NULL, xfs_ptr, 1);
   }
-  if (y < 0)
-  {
-    return;
-  }
-
-  // With a large font, the background rectangle is too small.  Need
-  // to include the font metrics in this drawing algorithm.
-
-  gcontext = XGContextFromGC(gc);
-  xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
-  font_width = (int)((xfs_ptr->max_bounds.width
-                      + xfs_ptr->max_bounds.width
-                      + xfs_ptr->max_bounds.width
-                      + xfs_ptr->min_bounds.width) / 4);
-
-  font_height = xfs_ptr->max_bounds.ascent
-                + xfs_ptr->max_bounds.descent;
-
-  switch (style)
-  {
-
-    case 0:
-      // make outline style
-      (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
-      // draw an outline 1 pixel bigger than text
-      (void)XDrawString(XtDisplay(w),where,gc,x+1,y-1,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x+1,y,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x+1,y+1,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x-1,y,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x-1,y-1,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x-1,y+1,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x,y+1,text,length);
-      (void)XDrawString(XtDisplay(w),where,gc,x,y-1,text,length);
-      break;
-
-    case 1:
-      // draw text the old way in a gray box
-      // Leave this next one hard-coded to 0xff.  This keeps
-      // the background as gray.
-
-      (void)XSetForeground(XtDisplay(w),gc,colors[0xff]);
-      (void)XFillRectangle( XtDisplay(w),
-                            where,
-                            gc,
-                            x,                    // X
-                            y-(font_height-(font_height/4)),          // Y
-                            // Get the actual width of the text in pixels
-                            get_text_width(w,text),  // width
-                            font_height);         // height
-
-      (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
-      (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/10),y+(font_width/8),text,length);
-
-      break;
-
-    case 2:
-      // draw white or colored text in a black box
-
-      (void)XSetForeground( XtDisplay(w),
-                            gc,
-                            GetPixelByName(w,"black") );
-
-      (void)XFillRectangle( XtDisplay(w),
-                            where,
-                            gc,
-                            x,                    // X
-                            y-(font_height-(font_height/4)),          // Y
-                            // Get the actual width of the text in pixels
-                            get_text_width(w,text),
-                            font_height);         // height
-
-      break;
-
-    // Case three will be used in a future release with an additional
-    // Station Text Style selection
-    case 3:
-    default:
-      // Real Shadow text on a transparent background
-
-      (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
-      (void)XDrawString(XtDisplay(w),where,gc,x+(font_height/10),y+(font_width/8),text,length);
-
-
-      break;
-
-  }
-
-  // finally draw the text
-  (void)XSetForeground(XtDisplay(w),gc,colors[fgcolor]);
-  (void)XDrawString(XtDisplay(w),where,gc,x,y,text,length);
-
-  // And free our font info
-
-  if (xfs_ptr)
-  {
-    // This leaks memory if the last parameter is a "0"
-    XFreeFontInfo(NULL, xfs_ptr, 1);
-  }
-
-
+#endif /* HAVE_CAIRO */
 }
+
 
 /* symbol drawing routines */
 
@@ -2832,26 +2823,25 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 // This helps us take into account proportional or non-proportional fonts
 long get_text_width(Widget w,char *text)
 {
+#ifdef HAVE_CAIRO
+  return (long)xastir_cairo_text_width(text, rotated_label_fontname[FONT_STATION]);
+#else
   long width;
-
   GContext gcontext;
   XFontStruct *xfs_ptr;
-  int dir, asc, desc;   // parameters returned by XTextExtents, but not used here.
-  XCharStruct overall;  // description of the space occupied by the string.
+  int dir, asc, desc;
+  XCharStruct overall;
 
   gcontext = XGContextFromGC(gc);
   xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
 
   XTextExtents(xfs_ptr, text, strlen(text), &dir, &asc, &desc, &overall);
-  //printf("%s Width = %d\n",text,overall.width);
-  width =overall.width;
+  width = overall.width;
 
   if (xfs_ptr)
-  {
-    // This leaks memory if the last parameter is a "0"
     XFreeFontInfo(NULL, xfs_ptr, 1);
-  }
   return width;
+#endif
 }
 
 
@@ -2875,10 +2865,16 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
 // the font height and width
 // N7IPB - 4/7/2016
 //
+#ifndef HAVE_CAIRO
   GContext gcontext;
   XFontStruct *xfs_ptr;
+#endif
   int font_width, font_height;
 
+#ifdef HAVE_CAIRO
+  font_width  = xastir_cairo_text_width("0", rotated_label_fontname[FONT_STATION]);
+  font_height = xastir_cairo_text_height(rotated_label_fontname[FONT_STATION]);
+#else
   gcontext = XGContextFromGC(gc);
 
   xfs_ptr = XQueryFont(XtDisplay(w), gcontext);
@@ -2897,6 +2893,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
     // This leaks memory if the last parameter is a "0"
     XFreeFontInfo(NULL, xfs_ptr, 1);
   }
+#endif /* HAVE_CAIRO */
 
   if ((x_long>NW_corner_longitude) && (x_long<SE_corner_longitude))
   {
@@ -3999,5 +3996,4 @@ void draw_deadreckoning_features(DataRow *p_station,
                 0);  // Don't bump the station count
   }
 }
-
 

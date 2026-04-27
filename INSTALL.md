@@ -85,6 +85,7 @@ these packages for which both are available.
 * festival (enables text-to-speech options)
 * Berkeley DB version 5 (enables caching of some online map imagery)
   or version 18.1
+* Cairo with Xlib support (enables antialiased map text rendering)
 
 In some cases, there are alternatives that can provide the same
 features:

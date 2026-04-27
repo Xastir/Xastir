@@ -185,6 +185,28 @@ fi
 
 
 
+# Check for Cairo xlib (antialiased text rendering).  Skipped entirely if
+# pkg-config (or its m4 macros) are not available on the build host.
+use_cairo=no
+AC_ARG_WITH(cairo,[  --without-cairo           Disable Cairo antialiased text rendering.],cairo_desired=$withval,cairo_desired=yes)
+if test "${cairo_desired}" = "yes"; then
+  m4_ifdef([PKG_PROG_PKG_CONFIG], [PKG_PROG_PKG_CONFIG])
+  m4_ifdef([PKG_CHECK_MODULES],
+    [if test -n "$PKG_CONFIG"; then
+       PKG_CHECK_MODULES([CAIRO], [cairo-xlib],
+         [use_cairo=yes
+          AC_DEFINE([HAVE_CAIRO], [1], [Define if Cairo xlib is available for antialiased text])
+          CPPFLAGS="$CPPFLAGS $CAIRO_CFLAGS"
+          LIBS="$LIBS $CAIRO_LIBS"],
+         [use_cairo=no
+          AC_MSG_WARN([cairo-xlib not found; antialiased map text rendering will be disabled])])
+     else
+       AC_MSG_WARN([pkg-config not found; Cairo detection skipped])
+     fi],
+    [AC_MSG_WARN([pkg-config m4 macros not available; Cairo detection skipped])])
+fi
+
+
 use_curl=no
 curl_desired=yes
 # Note: Had to move AC_CHECK_HEADER here instead of inside the first
@@ -902,6 +924,7 @@ echo "  AX25 (Linux Kernel I/O Drivers) ........... : $use_ax25"
 echo "  libproj (used by libgeotif) ............... : $use_proj"
 echo "  GeoTiff (Georeferenced TIFF files) ........ : $use_geotiff"
 echo "  Festival (Text-to-speech) ................. : $use_festival"
+echo "  Cairo (Antialiased map text) .............. : $use_cairo"
 echo "  GPSMan/gpsmanshp (GPS downloads) .......... : $use_gpsman"
 #echo "  GPSD Client (libgps) ...................... : $use_libgps"
 
