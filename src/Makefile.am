@@ -67,6 +67,7 @@ XASTIR_SRC = \
     popup_controller.c popup_controller.h \
     popup_gui.c \
     bulletin_controller.c bulletin_controller.h \
+    track_controller.c track_controller.h \
     rac_data.c rac_data.h \
     rotated.c rotated.h \
     rpl_malloc.c rpl_malloc.h \

@@ -15,7 +15,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 2 | `location_gui.c`      |   672 |          12 |         4 | ☑      |
 | 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☑      |
 | 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☑      |
-| 5 | `track_gui.c`         |  1088 |          21 |         6 | ☐      |
+| 5 | `track_gui.c`         |  1088 |          21 |         6 | ☑      |
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☐      |
 | 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☐      |
 | 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☐      |
@@ -193,11 +193,58 @@ what got moved, what got tested, what got left behind.
     - No stubs file needed: controller is pure standard C.
 ```
 
+```
+#5 track_gui.c — 2025-01-01
+  Controller:  src/track_controller.{h,c}
+  Tests:       tests/test_track_controller.c  (23 cases, all green;
+               full suite: 333/333 ok)
+  Stubs:       tests/test_track_controller_stubs.c  — valid_object, valid_call,
+               valid_item (controllable return values, not abort stubs)
+  Logic extracted:
+    - track_controller_set_station()     — callsign trim (internal statics;
+      no util.c dependency) + valid_object/valid_call/valid_item gate;
+      sets station_on and station_call; returns 1/0
+    - track_controller_clear_station()   — zero station_on and station_call
+    - track_controller_clamp_posit_length() — mirrors Reset_posit_length_max()
+      logic: if posit_start > MAX_FINDU_DURATION → length = MAX_FINDU_DURATION;
+      else length = posit_start
+    - track_controller_can_start_download() — two-gate busy guard:
+      fetching_now || read_file_busy → 0
+    - track_controller_build_findu_url() — snprintf the findu raw-packet URL
+      from download_call / posit_start / posit_length
+  Globals retired:  none
+  Globals deferred (intentional):
+    - track_station_on / track_me / track_case / track_match /
+      tracking_station_call  — defined in track_gui.c, exported via
+      track_gui.h; consumed heavily by db.c and main.c; synced from/to
+      tc after each controller call.
+    - posit_start / posit_length / fetching_findu_trail_now /
+      download_trail_station_call  — file-scope, synced to tc fields
+      before each controller call.
+  Constants promoted:
+    - MAX_FINDU_DURATION and MAX_FINDU_START_TIME moved from #defines in
+      track_gui.c to track_controller.h.
+  Behavior preserved:
+    - Trimming order: spaces first, then "-0" suffix (matches original
+      remove_trailing_spaces / remove_trailing_dash_zero call order).
+    - Clamping: posit_length cannot exceed posit_start, and neither
+      can exceed MAX_FINDU_DURATION (mirrors the slider callback exactly).
+    - findu URL template: identical to the original xastir_snprintf call.
+    - Busy guard: two separate conditions (fetching_now, read_file) kept
+      visible in the GUI for distinct error messages; controller provides
+      the combined check for test coverage.
+  Surprises:
+    - valid_object / valid_call / valid_item needed stubs — first use of
+      the stubs pattern in this migration series.
+    - remove_trailing_spaces and remove_trailing_dash_zero were inlined as
+      private static helpers in track_controller.c to keep it self-contained.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        4 / 13
-- Total LOC reviewed:    2809
+- Files migrated:        5 / 13
+- Total LOC reviewed:    3897
 - Globals retired:       1
-- New unit tests added:  80
+- New unit tests added:  103

@@ -1,0 +1,142 @@
+# Autotest tests for track_controller.c
+# Covers the presentation-free kernel extracted from track_gui.c.
+
+AT_BANNER([Track Controller])
+
+AT_SETUP([track_controller_init: default values])
+AT_KEYWORDS([track track_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" init_default_values], [0], [PASS: track_controller_init: default values
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_init: NULL is safe])
+AT_KEYWORDS([track track_controller init null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" init_null_safe], [0], [PASS: track_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: valid call accepted])
+AT_KEYWORDS([track track_controller set_station])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_valid_call], [0], [PASS: track_controller_set_station: valid call accepted
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: valid object accepted])
+AT_KEYWORDS([track track_controller set_station])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_valid_object], [0], [PASS: track_controller_set_station: valid object accepted
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: valid item accepted])
+AT_KEYWORDS([track track_controller set_station])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_valid_item], [0], [PASS: track_controller_set_station: valid item accepted
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: invalid call rejected])
+AT_KEYWORDS([track track_controller set_station])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_invalid], [0], [PASS: track_controller_set_station: invalid call rejected
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: trailing spaces stripped])
+AT_KEYWORDS([track track_controller set_station trim])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_trims_spaces], [0], [PASS: track_controller_set_station: trailing spaces stripped
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: '-0' suffix stripped])
+AT_KEYWORDS([track track_controller set_station trim])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_trims_dash_zero], [0], [PASS: track_controller_set_station: '-0' suffix stripped
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: spaces + '-0' both stripped])
+AT_KEYWORDS([track track_controller set_station trim])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_trims_both], [0], [PASS: track_controller_set_station: trailing spaces + '-0' both stripped
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_set_station: NULL is safe])
+AT_KEYWORDS([track track_controller set_station null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" set_station_null_safe], [0], [PASS: track_controller_set_station: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clear_station: clears station state])
+AT_KEYWORDS([track track_controller clear_station])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clear_station], [0], [PASS: track_controller_clear_station: clears station state
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clear_station: NULL is safe])
+AT_KEYWORDS([track track_controller clear_station null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clear_station_null_safe], [0], [PASS: track_controller_clear_station: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clamp_posit_length: within MAX uses posit_start])
+AT_KEYWORDS([track track_controller clamp])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clamp_within_max], [0], [PASS: track_controller_clamp_posit_length: within MAX uses posit_start
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clamp_posit_length: exactly at MAX])
+AT_KEYWORDS([track track_controller clamp])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clamp_at_max], [0], [PASS: track_controller_clamp_posit_length: exactly at MAX
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clamp_posit_length: exceeds MAX capped])
+AT_KEYWORDS([track track_controller clamp])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clamp_exceeds_max], [0], [PASS: track_controller_clamp_posit_length: exceeds MAX capped
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_clamp_posit_length: NULL is safe])
+AT_KEYWORDS([track track_controller clamp null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" clamp_null_safe], [0], [PASS: track_controller_clamp_posit_length: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_can_start_download: idle returns 1])
+AT_KEYWORDS([track track_controller can_start_download])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" can_start_idle], [0], [PASS: track_controller_can_start_download: idle returns 1
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_can_start_download: fetching_now blocks])
+AT_KEYWORDS([track track_controller can_start_download])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" can_start_blocked_fetching], [0], [PASS: track_controller_can_start_download: fetching_now blocks download
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_can_start_download: read_file_busy blocks])
+AT_KEYWORDS([track track_controller can_start_download])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" can_start_blocked_read_file], [0], [PASS: track_controller_can_start_download: read_file_busy blocks download
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_can_start_download: NULL is safe])
+AT_KEYWORDS([track track_controller can_start_download null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" can_start_null_safe], [0], [PASS: track_controller_can_start_download: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_build_findu_url: basic URL correct])
+AT_KEYWORDS([track track_controller build_url])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" build_url_basic], [0], [PASS: track_controller_build_findu_url: basic URL correct
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_build_findu_url: NULL/zero args return error])
+AT_KEYWORDS([track track_controller build_url null])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" build_url_null_args], [0], [PASS: track_controller_build_findu_url: NULL/zero args return error
+])
+AT_CLEANUP
+
+AT_SETUP([track_controller_build_findu_url: empty call returns error])
+AT_KEYWORDS([track track_controller build_url])
+AT_CHECK(["$abs_top_builddir/tests/test_track_controller" build_url_empty_call], [0], [PASS: track_controller_build_findu_url: empty call returns error
+])
+AT_CLEANUP

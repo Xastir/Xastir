@@ -45,6 +45,7 @@
 #include "util.h"
 #include "mutex_utils.h"
 #include "xa_config.h"
+#include "track_controller.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -75,14 +76,14 @@ int track_case;                 /* used for tracking stations */
 int track_match;                /* used for tracking stations */
 char tracking_station_call[30]; /* Tracking station callsign */
 char download_trail_station_call[30];   /* Trail station callsign */
-//N0VH
-#define MAX_FINDU_DURATION 120
-#define MAX_FINDU_START_TIME 336
+/* posit window constants are now defined in track_controller.h */
 // Make these two match, as that will be the most desired case: Snag
 // the track for as far back as possible up to the present in one
 // shot...
 int posit_start = MAX_FINDU_DURATION;
 int posit_length = MAX_FINDU_DURATION;
+
+static track_controller_t tc;
 
 
 
@@ -93,6 +94,8 @@ void track_gui_init(void)
   init_critical_section( &track_station_dialog_lock );
   init_critical_section( &download_findu_dialog_lock );
 
+  track_controller_init(&tc);
+
   if (temp_tracking_station_call[0] != '\0')
   {
     xastir_snprintf(tracking_station_call,
@@ -100,6 +103,10 @@ void track_gui_init(void)
                     "%s",
                     temp_tracking_station_call);
     track_station_on = 1;
+    /* Sync controller with the pre-loaded callsign. */
+    xastir_snprintf(tc.station_call, sizeof(tc.station_call),
+                    "%s", tracking_station_call);
+    tc.station_on = 1;
   }
   else
   {
@@ -134,11 +141,9 @@ void track_station_destroy_shell( Widget UNUSED(widget), XtPointer clientData, X
 
 void Track_station_clear(Widget w, XtPointer clientData, XtPointer callData)
 {
-
-  /* clear station */
-  track_station_on=0;
-  //track_station_data=NULL;
-  //tracking_station_call[0] = '\0';
+  /* Clear station via controller and sync back to legacy globals. */
+  track_controller_clear_station(&tc);
+  track_station_on = tc.station_on;   /* 0 */
 
   // Clear the TrackMe button as well
   XmToggleButtonSetState(trackme_button,FALSE,TRUE);
@@ -166,29 +171,31 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData)
                   temp_ptr);
   XtFree(temp_ptr);
 
-  (void)remove_trailing_spaces(temp);
-  (void)remove_trailing_dash_zero(temp);
-
-  xastir_snprintf(tracking_station_call,
-                  sizeof(tracking_station_call),
-                  "%s",
-                  temp);
   track_case  = (int)XmToggleButtonGetState(track_case_data);
   track_match = (int)XmToggleButtonGetState(track_match_data);
+
+  /* Visual map locate (GUI only — doesn't affect validation). */
   found = locate_station(da, temp, track_case, track_match, 0);
 
-  if ( valid_object(tracking_station_call)    // Name of object is legal
-       || valid_call(tracking_station_call)
-       || valid_item(tracking_station_call ) )
+  /* Delegate trimming + validation to the controller. */
+  tc.case_sensitive = track_case;
+  tc.match_exact    = track_match;
+
+  if (track_controller_set_station(&tc, temp))
   {
-    track_station_on = 1;   // Track it whether we've seen it yet or not
+    /* Valid: sync back to legacy globals. */
+    track_station_on = 1;
+    xastir_snprintf(tracking_station_call,
+                    sizeof(tracking_station_call),
+                    "%s", tc.station_call);
+
     if (!found)
     {
-      xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00026"), temp);
+      xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00026"), tc.station_call);
       popup_message_always(langcode("POPEM00025"),temp2);
     }
     // Check for exact match, includes SSID
-    if ( track_me & !is_my_call( tracking_station_call, 1) )
+    if ( track_me & !is_my_call( tc.station_call, 1) )
     {
       XmToggleButtonSetState( trackme_button, FALSE, FALSE );
       track_me = 0;
@@ -196,7 +203,8 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData)
   }
   else
   {
-    tracking_station_call[0] = '\0';    // Empty it out again
+    /* Invalid: clear legacy globals. */
+    tracking_station_call[0] = '\0';
     track_station_on = 0;
     xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), temp);
     popup_message_always(langcode("POPEM00003"),temp2);
@@ -471,6 +479,7 @@ static void* findu_transfer_thread(void *arg)
 
   // Set global "busy" variable
   fetching_findu_trail_now = 1;
+  tc.fetching_now          = 1;
 
   if (fetch_remote_file(fileimg, log_filename))
   {
@@ -493,6 +502,7 @@ static void* findu_transfer_thread(void *arg)
 
     // Reset global "busy" variable
     fetching_findu_trail_now = 0;
+    tc.fetching_now          = 0;
 
     // End the thread
     return(NULL);
@@ -656,6 +666,7 @@ static void* findu_transfer_thread(void *arg)
 
   // Reset global "busy" variable
   fetching_findu_trail_now = 0;
+  tc.fetching_now          = 0;
 
   // End the thread
   return(NULL);
@@ -729,10 +740,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData)
   log_filename[sizeof(log_filename)-1] = '\0';  // Terminate string
 
   // Erase any previously existing local file by the same name.
-  // This avoids the problem of having an old tracklog here and
-  // the code trying to display it when the download fails.
   unlink( log_filename );
-
 
   XmScaleGetValue(posit_start_value, &posit_start);
   XmScaleGetValue(posit_length_value, &posit_length);
@@ -751,36 +759,17 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData)
                   sizeof(download_trail_station_call),
                   "%s",
                   temp);
-  //Download_trail_destroy_shell(w, clientData, callData);
 
+  /* Build the findu URL via the controller. */
+  xastir_snprintf(tc.download_call, sizeof(tc.download_call), "%s", temp);
+  tc.posit_start  = posit_start;
+  tc.posit_length = posit_length;
 
-// New URL's for findu.  The second one looks very promising.
-//http://www.findu.com/cgi-bin/raw.cgi?call=k4hg-8&time=1
-//http://www.findu.com/cgi-bin/rawposit.cgi?call=k4hg-8&time=1
-//
-// The last adds this to the beginning of the line:
-//
-//      "20030619235323,"
-//
-// which is a date/timestamp.  We'll need to do some extra stuff
-// here in order to actually use that date/timestamp though.
-// Setting the read_file_ptr to the downloaded file won't do it.
-
-
-
-//        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1", // New, with timestamp
-  xastir_snprintf(fileimg, sizeof(fileimg),
-                  //
-                  // Posits only:
-                  // "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",
-                  //
-                  // Posits plus timestamps (we can't handle timestamps yet):
-                  // "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1", // New, with timestamp
-                  //
-                  // Download all packets, not just posits:
-                  "http://www.findu.com/cgi-bin/raw.cgi?call=%s&start=%d&length=%d",
-                  //
-                  download_trail_station_call,posit_start,posit_length);
+  if (track_controller_build_findu_url(&tc, fileimg, sizeof(fileimg)) != 0)
+  {
+    fprintf(stderr,"track_controller_build_findu_url: bad arguments or empty callsign\n");
+    return;
+  }
 
   if (debug_level & 1024)
   {
@@ -818,27 +807,15 @@ void Reset_posit_length_max(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPo
   XmScaleGetValue(posit_length_value, &posit_length);
   XmScaleGetValue(posit_start_value, &posit_start);
 
-  // Check whether start hours is greater than max findu allows
-  // for duration
-  //
-  if (posit_start > MAX_FINDU_DURATION)      // Set the duration slider to
-  {
-    // findu's max duration hours
+  /* Delegate clamping logic to the controller. */
+  tc.posit_start  = posit_start;
+  tc.posit_length = posit_length;
+  track_controller_clamp_posit_length(&tc);
+  posit_length = tc.posit_length;
 
-    XtVaSetValues(posit_length_value,
-                  XmNvalue, MAX_FINDU_DURATION,
-                  NULL);
-    posit_length = MAX_FINDU_DURATION;
-  }
-  else    // Not near the max, so set the duration slider to match
-  {
-    // the start hours
-
-    XtVaSetValues(posit_length_value,
-                  XmNvalue, posit_start,
-                  NULL);
-    posit_length = posit_start;
-  }
+  XtVaSetValues(posit_length_value,
+                XmNvalue, posit_length,
+                NULL);
 }
 
 
