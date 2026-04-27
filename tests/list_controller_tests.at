@@ -1,0 +1,201 @@
+AT_BANNER([list_controller tests])
+
+AT_SETUP([init: default values])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" init_defaults], [0], [PASS: list_controller_init: defaults to metric
+])
+AT_CLEANUP
+
+AT_SETUP([init: NULL is safe])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" init_null_safe], [0], [PASS: list_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([format_pos_time: valid 14-char string formats correctly])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_pos_time_valid], [0], [PASS: format_pos_time: valid 14-char string formats correctly
+])
+AT_CLEANUP
+
+AT_SETUP([format_pos_time: short string produces space and returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_pos_time_short], [0], [PASS: format_pos_time: short string produces space and returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_pos_time: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_pos_time_null], [0], [PASS: format_pos_time: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_pos_time: NULL buf returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_pos_time_null_buf], [0], [PASS: format_pos_time: NULL buf returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: 10 knots -> km/h (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_speed_metric], [0], [PASS: format_speed: 10 knots -> km/h (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: 10 knots -> mph (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_speed_imperial], [0], [PASS: format_speed: 10 knots -> mph (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_speed_empty_returns_zero], [0], [PASS: format_speed: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_speed_null_returns_zero], [0], [PASS: format_speed: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: 100m verbatim (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_altitude_metric], [0], [PASS: format_altitude: 100m verbatim (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: 100m -> ~328.1ft (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_altitude_imperial], [0], [PASS: format_altitude: 100m -> ~328.1ft (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_altitude_empty_returns_zero], [0], [PASS: format_altitude: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_altitude: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_altitude_null_returns_zero], [0], [PASS: format_altitude: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_distance: 10 NM -> km (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_distance_metric], [0], [PASS: format_distance: 10 NM -> km (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_distance: 10 NM -> miles (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_distance_imperial], [0], [PASS: format_distance: 10 NM -> miles (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_distance: NULL buf returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_distance_null_buf_returns_zero], [0], [PASS: format_distance: NULL buf returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_wind: 62 mph -> 99 km/h (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_wind_metric], [0], [PASS: format_wx_wind: 62 mph -> 99 km/h (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_wind: 55 mph verbatim (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_wind_imperial], [0], [PASS: format_wx_wind: 55 mph verbatim (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_wind: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_wind_empty_returns_zero], [0], [PASS: format_wx_wind: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_wind: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_wind_null_returns_zero], [0], [PASS: format_wx_wind: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_temp: 32F -> 0C (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_temp_metric], [0], [PASS: format_wx_temp: 32F -> 0C (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_temp: 72F verbatim (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_temp_imperial], [0], [PASS: format_wx_temp: 72F verbatim (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_temp: 212F -> 100C (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_temp_freezing_metric], [0], [PASS: format_wx_temp: 212F -> 100C (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_temp: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_temp_empty_returns_zero], [0], [PASS: format_wx_temp: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_temp: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_temp_null_returns_zero], [0], [PASS: format_wx_temp: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_baro: 1013.2 hPa verbatim (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_baro_metric], [0], [PASS: format_wx_baro: 1013.2 hPa verbatim (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_baro: 1013.2 hPa -> ~29.92 inHg (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_baro_imperial], [0], [PASS: format_wx_baro: 1013.2 hPa -> ~29.92 inHg (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_baro: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_baro_empty_returns_zero], [0], [PASS: format_wx_baro: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_baro: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_baro_null_returns_zero], [0], [PASS: format_wx_baro: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_rain: 100 -> 25.40 mm (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_rain_metric], [0], [PASS: format_wx_rain: 100 -> 25.40 mm (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_rain: 100 -> 1.00 inch (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_rain_imperial], [0], [PASS: format_wx_rain: 100 -> 1.00 inch (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_rain: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_rain_empty_returns_zero], [0], [PASS: format_wx_rain: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_wx_rain: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" format_wx_rain_null_returns_zero], [0], [PASS: format_wx_rain: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: redo + elapsed triggers update])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_redo_and_elapsed], [0], [PASS: needs_update: redo + elapsed triggers update
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: redo but insufficient elapsed -> no update])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_redo_insufficient_time], [0], [PASS: needs_update: redo but insufficient elapsed -> no update
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: height change triggers update])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_height_changed], [0], [PASS: needs_update: height change triggers update
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: width change triggers update])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_width_changed], [0], [PASS: needs_update: width change triggers update
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: units change triggers update])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_units_changed], [0], [PASS: needs_update: units change triggers update
+])
+AT_CLEANUP
+
+AT_SETUP([needs_update: no change -> no update needed])
+AT_CHECK(["$abs_top_builddir/tests/test_list_controller" needs_update_nothing_changed], [0], [PASS: needs_update: no change -> no update needed
+])
+AT_CLEANUP

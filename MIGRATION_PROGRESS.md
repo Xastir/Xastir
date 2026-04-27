@@ -19,7 +19,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☑      |
 | 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☑      |
 | 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☑      |
-| 9 | `list_gui.c`          |  2808 |          42 |        18 | ☐      |
+| 9 | `list_gui.c`          |  2808 |          42 |        18 | ☑      |
 |10 | `messages_gui.c`      |  2872 |          53 |        22 | ☐      |
 |11 | `db_gui.c`            |  4978 |          62 |        21 | ☐      |
 |12 | `objects_gui.c`       |  6181 |          48 |        88 | ☐      |
@@ -350,11 +350,58 @@ what got moved, what got tested, what got left behind.
     - All Motif widget construction, callbacks, and extern wx_* globals
 ```
 
-## Aggregate counters
+```
+#9 list_gui.c — 2026-04-26
+  Controller:  src/list_controller.{h,c}  (148 + 175 LOC)
+  Tests:       tests/test_list_controller.c + tests/list_controller_tests.at
+               40 new tests (420 → 460 passing)
+  Stubs:       none — controller is pure standard C
+  Logic extracted:
+    - list_controller_format_pos_time()  — extract "MM/DD HH:MM" from 14-char
+      pos_time string; short/NULL input produces " " and returns 0
+    - list_controller_format_speed()     — knots → km/h (×1.852) or mph
+      (×1.1508), "%.1f"; replaces two inline snprintf blocks in LST_MOB row
+    - list_controller_format_altitude()  — metres verbatim or → feet (×3.28084),
+      "%.1f"; replaces inline imperial/metric branch in LST_MOB row
+    - list_controller_format_distance()  — NM → km (×1.852) or miles
+      (×1.15078), "%0.1f"; replaces inline branch after calc_distance_course()
+    - list_controller_format_wx_wind()   — mph → km/h (×1.6094, "%d") or
+      verbatim; covers both wx_speed and wx_gust columns in LST_WX row
+    - list_controller_format_wx_temp()   — °F → °C ((F-32)*5/9, "%d") or
+      verbatim; replaces inline branch in LST_WX row
+    - list_controller_format_wx_baro()   — hPa verbatim or → inHg (×0.02953,
+      "%0.2f"); removes local float tempf + temp2 buffer in LST_WX row
+    - list_controller_format_wx_rain()   — hundredths-of-inch → mm (×0.254)
+      or inches (÷100), "%0.2f"; covers wx_rain, wx_prec_00, wx_prec_24
+    - list_controller_needs_update()     — four-gate update guard:
+      (redo_list && elapsed≥cycle) || height_changed || width_changed ||
+      units_changed; replaces inline condition in update_station_scroll_list()
+  Globals retired:  none
+  Globals deferred (intentional):
+    - english_units — global from main.c; synced into lc.english_units at
+      the top of Station_List_fill() before each conversion call
+    - redo_list / last_list_upd / units_last — file-scope state;
+      passed directly as arguments to list_controller_needs_update()
+    - list_size_h / list_size_w — widget dimension cache; Widget-layer concern
+    - All SL_* Widget arrays, station_list_dialog[], mutexes — stay in
+      list_gui.c (Motif/threading concern)
+  Behavior preserved:
+    - Station_List_fill(): all 12 inline unit-conversion blocks replaced;
+      logic and arithmetic identical to originals.
+    - update_station_scroll_list(): timing/unit/size guard now delegates to
+      list_controller_needs_update(); observable behaviour unchanged.
+    - pos_time formatting: " " fallback for short strings preserved.
+  Notes:
+    - wx_wind guard reused for both wx_speed and wx_gust columns —
+      de-duplication of two identical branches.
+    - list_controller_format_wx_rain() reused for wx_rain, wx_prec_00, and
+      wx_prec_24 — de-duplication of three identical branches.
+    - No stubs file needed: controller is pure standard C.
+```
 
 Update after each file lands.
 
-- Files migrated:        8 / 13
-- Total LOC reviewed:    8789
+- Files migrated:        9 / 13
+- Total LOC reviewed:    11597
 - Globals retired:       6
-- New unit tests added:  190
+- New unit tests added:  230

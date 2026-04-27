@@ -46,6 +46,7 @@
 #include "messages.h"
 #include "draw_symbols.h"
 #include "list_gui.h"
+#include "list_controller.h"
 #include "database.h"
 #include "db_funcs.h"
 #include "db_gui.h"
@@ -557,6 +558,9 @@ void Station_List_fill(int type, int new_offset)
   Dimension count, inview;
   int to_move, rows;
   int strwid;
+  list_controller_t lc;
+  list_controller_init(&lc);
+  lc.english_units = english_units;
 
   assert(ROWS <= SL_MAX);
 #define HGT 26
@@ -831,27 +835,7 @@ void Station_List_fill(int type, int new_offset)
             XmTextFieldSetString(SL_packets[type][row],stemp);
             XtManageChild(SL_packets[type][row]);
 
-            if (strlen(p_station->pos_time) > 13)
-            {
-              xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
-                              //sprintf(stemp,"%c%c/%c%c/%c%c%c%c %c%c:%c%c",
-                              p_station->pos_time[0],
-                              p_station->pos_time[1],
-                              p_station->pos_time[2],
-                              p_station->pos_time[3],
-                              //p_station->pos_time[4],
-                              //p_station->pos_time[5],
-                              //p_station->pos_time[6],
-                              //p_station->pos_time[7],
-                              p_station->pos_time[8],
-                              p_station->pos_time[9],
-                              p_station->pos_time[10],
-                              p_station->pos_time[11]);
-            }
-            else
-            {
-              xastir_snprintf(stemp, sizeof(stemp), " ");
-            }
+            list_controller_format_pos_time(p_station->pos_time, stemp, sizeof(stemp));
 
             XmTextFieldSetString(SL_pos_time[type][row],stemp);
             XtManageChild(SL_pos_time[type][row]);
@@ -895,13 +879,8 @@ void Station_List_fill(int type, int new_offset)
             XtManageChild(SL_course[type][row]);
             if (strlen(p_station->speed)>0)
             {
-              if (!english_units)
-                xastir_snprintf(stemp, sizeof(stemp), "%.1f",
-                                atof(p_station->speed)*1.852);
-              else
-                xastir_snprintf(stemp, sizeof(stemp), "%.1f",
-                                atof(p_station->speed)*1.1508);
-
+              list_controller_format_speed(&lc, p_station->speed,
+                                           stemp, sizeof(stemp));
               XmTextFieldSetString(SL_speed[type][row],stemp);
             }
             else
@@ -913,15 +892,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(p_station->altitude)>0)
             {
-              if (!english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->altitude);
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%.1f", atof(p_station->altitude)*3.28084);
-              }
-
+              list_controller_format_altitude(&lc, p_station->altitude,
+                                              stemp, sizeof(stemp));
               XmTextFieldSetString(SL_alt[type][row],stemp);
             }
             else
@@ -1001,14 +973,8 @@ void Station_List_fill(int type, int new_offset)
             value = (float)calc_distance_course(l_lat,l_lon,
                                                 p_station->coord_lat,p_station->coord_lon,stemp,sizeof(stemp));
 
-            if (english_units)
-            {
-              xastir_snprintf(stemp1, sizeof(stemp1), "%0.1f", (value * 1.15078));
-            }
-            else
-            {
-              xastir_snprintf(stemp1, sizeof(stemp1), "%0.1f", (value * 1.852));
-            }
+            list_controller_format_distance(&lc, (double)value,
+                                             stemp1, sizeof(stemp1));
 
             XmTextFieldSetString(SL_my_course[type][row],stemp);
             XtManageChild(SL_my_course[type][row]);
@@ -1039,15 +1005,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_speed) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", (int)atoi(weather->wx_speed));
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(atof(weather->wx_speed)*1.6094));
-              }
-
+              list_controller_format_wx_wind(&lc, weather->wx_speed,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_wind_speed[type][row],stemp);
             }
             else
@@ -1059,15 +1018,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_gust) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", atoi(weather->wx_gust));
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(atof(weather->wx_gust)*1.6094));
-              }
-
+              list_controller_format_wx_wind(&lc, weather->wx_gust,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_wind_gust[type][row],stemp);
             }
             else
@@ -1079,15 +1031,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_temp) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", atoi(weather->wx_temp));
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(((atof(weather->wx_temp)-32)*5.0)/9.0));
-              }
-
+              list_controller_format_wx_temp(&lc, weather->wx_temp,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_temp[type][row],stemp);
             }
             else
@@ -1112,24 +1057,9 @@ void Station_List_fill(int type, int new_offset)
 // Change this to inches mercury when English Units is selected
             if (strlen(weather->wx_baro) > 0)
             {
-              if (!english_units)      // hPa
-              {
-                XmTextFieldSetString(SL_wx_baro[type][row],
-                                     weather->wx_baro);
-              }
-              else    // Inches Mercury
-              {
-                float tempf;
-                char temp2[15];
-
-                tempf = atof(weather->wx_baro)*0.02953;
-                xastir_snprintf(temp2,
-                                sizeof(temp2),
-                                "%0.2f",
-                                tempf);
-                XmTextFieldSetString(SL_wx_baro[type][row],
-                                     temp2);
-              }
+              list_controller_format_wx_baro(&lc, weather->wx_baro,
+                                             stemp, sizeof(stemp));
+              XmTextFieldSetString(SL_wx_baro[type][row], stemp);
             }
             else
             {
@@ -1140,15 +1070,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_rain) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_rain)/100.0);
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_rain)*.254);
-              }
-
+              list_controller_format_wx_rain(&lc, weather->wx_rain,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_rain_h[type][row],stemp);
             }
             else
@@ -1160,15 +1083,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_prec_00) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_00)/100.0);
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_00)*.254);
-              }
-
+              list_controller_format_wx_rain(&lc, weather->wx_prec_00,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_rain_00[type][row],stemp);
             }
             else
@@ -1180,15 +1096,8 @@ void Station_List_fill(int type, int new_offset)
 
             if (strlen(weather->wx_prec_24) > 0)
             {
-              if (english_units)
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_24)/100.0);
-              }
-              else
-              {
-                xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_24)*.254);
-              }
-
+              list_controller_format_wx_rain(&lc, weather->wx_prec_24,
+                                             stemp, sizeof(stemp));
               XmTextFieldSetString(SL_wx_rain_24[type][row],stemp);
             }
             else
@@ -1315,9 +1224,11 @@ void update_station_scroll_list(void)           // called from UpdateTime() [mai
     {
       XtVaGetValues(station_list_dialog[i], XmNheight, &last_h, XmNwidth, &last_w, NULL);
       XtVaGetValues(SL_scroll[i], XmNmaximum,&last,XmNvalue, &pos, NULL);
-      if ((redo_list && (sec_now() - last_list_upd > LIST_UPDATE_CYCLE))
-          || (last_h!=list_size_h[i]) || (last_w!=list_size_w[i])
-          || units_last!=english_units)
+      if (list_controller_needs_update(redo_list, last_list_upd, sec_now(),
+                                       LIST_UPDATE_CYCLE,
+                                       (int)last_h, (int)list_size_h[i],
+                                       (int)last_w, (int)list_size_w[i],
+                                       english_units, units_last))
       {
         Station_List_fill(i,pos);     // update list contents
         ok = 1;
