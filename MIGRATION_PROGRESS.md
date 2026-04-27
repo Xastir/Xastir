@@ -18,7 +18,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☑      |
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☑      |
 | 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☑      |
-| 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☐      |
+| 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☑      |
 | 9 | `list_gui.c`          |  2808 |          42 |        18 | ☐      |
 |10 | `messages_gui.c`      |  2872 |          53 |        22 | ☐      |
 |11 | `db_gui.c`            |  4978 |          62 |        21 | ☐      |
@@ -319,11 +319,42 @@ what got moved, what got tested, what got left behind.
     - fcc_rac_lookup() is entirely GUI+FCC-database code; not split.
 ```
 
+```
+#8 wx_gui.c — 2025
+  Controller:  src/wx_controller.{h,c}  (~150 LOC)
+  Tests:       tests/test_wx_controller.c + tests/wx_controller_tests.at
+               32 new tests (388 → 420 passing)
+  Stubs:       none — controller is pure standard C
+  Logic extracted:
+    - wx_controller_format_temp()  — F→C (%03d) or verbatim
+    - wx_controller_format_speed() — mph→km/h (%03d) or verbatim
+    - wx_controller_format_rain()  — hundredths→mm (×0.254) or →inches (÷100)
+    - wx_controller_format_baro()  — hPa verbatim or →inHg (×0.02953)
+    - wx_controller_extract_alert_handle() — copy 13 chars, strip spaces, truncate to 9
+  Globals retired:  none
+  Globals deferred (intentional):
+    - english_units — global from main.c; synced into wc.english_units in
+      fill_wx_data() before each conversion call
+    - wx_dew_point / wx_high_wind / wx_wind_chill / wx_three_hour_baro /
+      wx_hi_temp / wx_low_temp / wx_heat_index — extern char[] from wx.h;
+      passed as raw strings to controller functions
+    - Widget handles and mutexes — stay in wx_gui.c (threading/Motif)
+  Behavior preserved:
+    - fill_wx_data(): all 15 inline unit-conversion blocks replaced with
+      controller calls; logic identical (same arithmetic, same format strings)
+    - wx_alert_double_click_action(): handle extraction replaced with
+      wx_controller_extract_alert_handle(); removes strpbrk/memmove loop
+  Left in wx_gui.c:
+    - wx_alert_finger_output() — POSIX socket / NWS finger-query network code
+    - alert_comp() — calls alert_active() from alert.c; too coupled to extract
+    - All Motif widget construction, callbacks, and extern wx_* globals
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        7 / 13
-- Total LOC reviewed:    6368
+- Files migrated:        8 / 13
+- Total LOC reviewed:    8789
 - Globals retired:       6
-- New unit tests added:  158
+- New unit tests added:  190

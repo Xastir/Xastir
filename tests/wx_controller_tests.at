@@ -1,0 +1,161 @@
+AT_BANNER([wx_controller tests])
+
+AT_SETUP([init: default values])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" init_defaults], [0], [PASS: wx_controller_init: defaults to metric
+])
+AT_CLEANUP
+
+AT_SETUP([init: NULL is safe])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" init_null_safe], [0], [PASS: wx_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: 32F -> 000C (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_metric], [0], [PASS: format_temp: 32F -> 000C (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: 14F -> -10C (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_metric_negative], [0], [PASS: format_temp: 14F -> -10C (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: 72F verbatim (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_imperial], [0], [PASS: format_temp: 72F verbatim (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_empty_returns_zero], [0], [PASS: format_temp: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: NULL raw_f returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_null_raw_returns_zero], [0], [PASS: format_temp: NULL raw_f returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: NULL wc returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_null_wc_returns_zero], [0], [PASS: format_temp: NULL wc returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: NULL buf returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_null_buf_returns_zero], [0], [PASS: format_temp: NULL buf returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_temp: 212F -> 100C (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_temp_boiling_metric], [0], [PASS: format_temp: 212F -> 100C (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: 0 mph -> 000 km/h (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_speed_metric], [0], [PASS: format_speed: 0 mph -> 000 km/h (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: 62 mph -> 099 km/h (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_speed_metric_conversion], [0], [PASS: format_speed: 62 mph -> 099 km/h (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: 55 mph verbatim (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_speed_imperial], [0], [PASS: format_speed: 55 mph verbatim (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_speed_empty_returns_zero], [0], [PASS: format_speed: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_speed: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_speed_null_returns_zero], [0], [PASS: format_speed: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_rain: 100 hundredths -> 25.40 mm (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_rain_metric], [0], [PASS: format_rain: 100 hundredths -> 25.40 mm (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_rain: 100 hundredths -> 1.00 inch (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_rain_imperial], [0], [PASS: format_rain: 100 hundredths -> 1.00 inch (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_rain: 0 hundredths -> 0.00 mm])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_rain_zero_metric], [0], [PASS: format_rain: 0 hundredths -> 0.00 mm
+])
+AT_CLEANUP
+
+AT_SETUP([format_rain: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_rain_empty_returns_zero], [0], [PASS: format_rain: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_rain: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_rain_null_returns_zero], [0], [PASS: format_rain: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_baro: 1013 hPa verbatim (metric)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_baro_metric], [0], [PASS: format_baro: 1013 hPa verbatim (metric)
+])
+AT_CLEANUP
+
+AT_SETUP([format_baro: 1013 hPa -> ~29.91 inHg (imperial)])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_baro_imperial], [0], [PASS: format_baro: 1013 hPa -> ~29.91 inHg (imperial)
+])
+AT_CLEANUP
+
+AT_SETUP([format_baro: empty input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_baro_empty_returns_zero], [0], [PASS: format_baro: empty input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_baro: NULL input returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_baro_null_returns_zero], [0], [PASS: format_baro: NULL input returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([format_baro: NULL wc returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" format_baro_null_wc_returns_zero], [0], [PASS: format_baro: NULL wc returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: basic extraction])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_basic], [0], [PASS: extract_alert_handle: basic extraction
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: short input handled])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_short_input], [0], [PASS: extract_alert_handle: short input handled
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: all-spaces returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_all_spaces_first13], [0], [PASS: extract_alert_handle: all-spaces first13 returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: NULL selection returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_null_selection_returns_zero], [0], [PASS: extract_alert_handle: NULL selection returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: NULL buf returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_null_buf_returns_zero], [0], [PASS: extract_alert_handle: NULL handle_buf returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: short buflen returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_short_buflen_returns_zero], [0], [PASS: extract_alert_handle: short buflen returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([extract_alert_handle: truncated to 9 chars])
+AT_CHECK(["$abs_top_builddir/tests/test_wx_controller" extract_handle_no_spaces], [0], [PASS: extract_alert_handle: truncated to 9 when no spaces
+])
+AT_CLEANUP

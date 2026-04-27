@@ -4,7 +4,7 @@
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at popup_controller_tests.at location_controller_tests.at view_message_controller_tests.at bulletin_controller_tests.at track_controller_tests.at geocoder_controller_tests.at locate_controller_tests.at
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at popup_controller_tests.at location_controller_tests.at view_message_controller_tests.at bulletin_controller_tests.at track_controller_tests.at geocoder_controller_tests.at locate_controller_tests.at wx_controller_tests.at
 
 if HAVE_NOMINATIM
 TESTSUITE_AT += nominatim_tests.at
@@ -13,7 +13,7 @@ endif
 EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
-check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_popup_controller test_location_controller test_view_message_controller test_bulletin_controller test_track_controller test_geocoder_controller test_locate_controller
+check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_popup_controller test_location_controller test_view_message_controller test_bulletin_controller test_track_controller test_geocoder_controller test_locate_controller test_wx_controller
 
 # Conditionally add nominatim test program
 if HAVE_NOMINATIM
@@ -78,6 +78,12 @@ test_geocoder_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/
 # extracted from locate_gui.c. Pure standard C, no stubs needed.
 test_locate_controller_SOURCES = test_locate_controller.c $(top_srcdir)/src/locate_controller.c
 test_locate_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+
+# Presentation/logic-separation migration: wx_controller is the kernel
+# extracted from wx_gui.c. Pure standard C, no stubs needed.
+test_wx_controller_SOURCES = test_wx_controller.c $(top_srcdir)/src/wx_controller.c
+test_wx_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+test_wx_controller_LDADD = -lm
 
 # Nominatim tests (conditional on HAVE_NOMINATIM)
 if HAVE_NOMINATIM

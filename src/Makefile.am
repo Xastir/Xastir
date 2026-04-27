@@ -70,6 +70,7 @@ XASTIR_SRC = \
     track_controller.c track_controller.h \
     geocoder_controller.c geocoder_controller.h \
     locate_controller.c locate_controller.h \
+    wx_controller.c wx_controller.h \
     rac_data.c rac_data.h \
     rotated.c rotated.h \
     rpl_malloc.c rpl_malloc.h \
