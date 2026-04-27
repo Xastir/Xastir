@@ -41,6 +41,7 @@
 #include "db_funcs.h"
 #include "db_gui.h"
 #include "mutex_utils.h"
+#include "locate_controller.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -82,6 +83,8 @@ long match_array_lat[50];
 long match_array_long[50];
 int match_quantity = 0;
 
+static locate_controller_t lc;
+
 
 
 
@@ -97,6 +100,7 @@ void locate_gui_init(void)
   locate_county_name[0] = '\0';
   locate_quad_name[0] = '\0';
   locate_type_name[0] = '\0';
+  locate_controller_init(&lc);
 }
 
 
@@ -279,17 +283,17 @@ void Locate_station_now(Widget UNUSED(w), XtPointer UNUSED(clientData), XtPointe
 
   /* find station and go there */
   temp_ptr = XmTextFieldGetString(locate_station_data);
+  locate_controller_prepare_call(&lc, temp_ptr);
+  XtFree(temp_ptr);
+
+  /* sync to legacy global (used by db.c) */
   xastir_snprintf(locate_station_call,
                   sizeof(locate_station_call),
                   "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
-
-  (void)remove_trailing_spaces(locate_station_call);
-  (void)remove_trailing_dash_zero(locate_station_call);
+                  lc.station_call);
 
   /*fprintf(stderr,"looking for %s\n",locate_station_call);*/
-  if (locate_station(da, locate_station_call, (int)XmToggleButtonGetState(locate_case_data),
+  if (locate_station(da, lc.station_call, (int)XmToggleButtonGetState(locate_case_data),
                      (int)XmToggleButtonGetState(locate_match_data),1) ==0)
   {
     xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), locate_station_call);
@@ -596,8 +600,8 @@ void Locate_place_chooser_select(Widget widget,
 
       // Center the map at the chosen location
       set_map_position(widget,
-                       match_array_lat[index-1],
-                       match_array_long[index-1]);
+                       lc.match_lat[index-1],
+                       lc.match_lon[index-1]);
 
       XtFree(temp);
     }
@@ -731,10 +735,10 @@ void Locate_place_chooser(Widget UNUSED(widget),
     locate_place_list = XmCreateScrolledList(form,"Locate_place_chooser list",al,ac);
 
     nn = 1;
-    for (ii = 0; ii < match_quantity; ii++)
+    for (ii = 0; ii < lc.match_count; ii++)
     {
       XmListAddItem(locate_place_list,
-                    str_ptr = XmStringCreateLtoR(match_array_name[ii],
+                    str_ptr = XmStringCreateLtoR(lc.match_names[ii],
                               XmFONTLIST_DEFAULT_TAG),
                     (int)nn++);
       XmStringFree(str_ptr);
@@ -807,72 +811,69 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData)
 
 
   /* find place and go there */
-  temp_ptr = XmTextFieldGetString(locate_place_data);
-  xastir_snprintf(locate_place_name,
-                  sizeof(locate_place_name),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+  {
+    char raw_place[50], raw_state[50], raw_county[50], raw_quad[50],
+         raw_type[50], raw_gnis[200];
 
-  temp_ptr = XmTextFieldGetString(locate_state_data);
-  xastir_snprintf(locate_state_name,
-                  sizeof(locate_state_name),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+    temp_ptr = XmTextFieldGetString(locate_place_data);
+    xastir_snprintf(raw_place, sizeof(raw_place), "%s", temp_ptr);
+    XtFree(temp_ptr);
 
-  temp_ptr = XmTextFieldGetString(locate_county_data);
-  xastir_snprintf(locate_county_name,
-                  sizeof(locate_county_name),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+    temp_ptr = XmTextFieldGetString(locate_state_data);
+    xastir_snprintf(raw_state, sizeof(raw_state), "%s", temp_ptr);
+    XtFree(temp_ptr);
 
-  temp_ptr = XmTextFieldGetString(locate_quad_data);
-  xastir_snprintf(locate_quad_name,
-                  sizeof(locate_quad_name),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+    temp_ptr = XmTextFieldGetString(locate_county_data);
+    xastir_snprintf(raw_county, sizeof(raw_county), "%s", temp_ptr);
+    XtFree(temp_ptr);
 
-  temp_ptr = XmTextFieldGetString(locate_type_data);
-  xastir_snprintf(locate_type_name,
-                  sizeof(locate_type_name),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+    temp_ptr = XmTextFieldGetString(locate_quad_data);
+    xastir_snprintf(raw_quad, sizeof(raw_quad), "%s", temp_ptr);
+    XtFree(temp_ptr);
 
-  temp_ptr = XmTextFieldGetString(locate_gnis_file_data);
-  xastir_snprintf(locate_gnis_filename,
-                  sizeof(locate_gnis_filename),
-                  "%s",
-                  temp_ptr);
-  XtFree(temp_ptr);
+    temp_ptr = XmTextFieldGetString(locate_type_data);
+    xastir_snprintf(raw_type, sizeof(raw_type), "%s", temp_ptr);
+    XtFree(temp_ptr);
 
-  (void)remove_trailing_spaces(locate_place_name);
-  (void)remove_trailing_spaces(locate_state_name);
-  (void)remove_trailing_spaces(locate_county_name);
-  (void)remove_trailing_spaces(locate_quad_name);
-  (void)remove_trailing_spaces(locate_type_name);
+    temp_ptr = XmTextFieldGetString(locate_gnis_file_data);
+    xastir_snprintf(raw_gnis, sizeof(raw_gnis), "%s", temp_ptr);
+    XtFree(temp_ptr);
+
+    locate_controller_prepare_place_query(&lc, raw_place, raw_state, raw_county,
+                                          raw_quad, raw_type, raw_gnis);
+    lc.place_case_sensitive = (int)XmToggleButtonGetState(locate_place_case_data);
+    lc.place_match_exact    = (int)XmToggleButtonGetState(locate_place_match_data);
+
+    /* sync to legacy globals (used by xa_config.c) */
+    xastir_snprintf(locate_place_name,    sizeof(locate_place_name),    "%s", lc.place_name);
+    xastir_snprintf(locate_state_name,    sizeof(locate_state_name),    "%s", lc.state_name);
+    xastir_snprintf(locate_county_name,   sizeof(locate_county_name),   "%s", lc.county_name);
+    xastir_snprintf(locate_quad_name,     sizeof(locate_quad_name),     "%s", lc.quad_name);
+    xastir_snprintf(locate_type_name,     sizeof(locate_type_name),     "%s", lc.type_name);
+    xastir_snprintf(locate_gnis_filename, sizeof(locate_gnis_filename), "%s", lc.gnis_filename);
+  }
 
   /*fprintf(stderr,"looking for %s\n",locate_place_name);*/
 
-  match_quantity = gnis_locate_place(da, locate_place_name,
-                                     locate_state_name, locate_county_name, locate_quad_name,
-                                     locate_type_name, locate_gnis_filename,
-                                     (int)XmToggleButtonGetState(locate_place_case_data),
-                                     (int)XmToggleButtonGetState(locate_place_match_data),
-                                     match_array_name, match_array_lat, match_array_long);
+  locate_controller_clear_results(&lc);
+  lc.match_count = gnis_locate_place(da, lc.place_name,
+                                     lc.state_name, lc.county_name, lc.quad_name,
+                                     lc.type_name, lc.gnis_filename,
+                                     lc.place_case_sensitive,
+                                     lc.place_match_exact,
+                                     lc.match_names, lc.match_lat, lc.match_lon);
 
-  if (0 == match_quantity) // Try population centers.
-    match_quantity = pop_locate_place(da, locate_place_name,
-                                      locate_state_name, locate_county_name, locate_quad_name,
-                                      locate_type_name, locate_gnis_filename,
-                                      (int)XmToggleButtonGetState(locate_place_case_data),
-                                      (int)XmToggleButtonGetState(locate_place_match_data),
-                                      match_array_name, match_array_lat, match_array_long);
+  if (0 == lc.match_count) // Try population centers.
+    lc.match_count = pop_locate_place(da, lc.place_name,
+                                      lc.state_name, lc.county_name, lc.quad_name,
+                                      lc.type_name, lc.gnis_filename,
+                                      lc.place_case_sensitive,
+                                      lc.place_match_exact,
+                                      lc.match_names, lc.match_lat, lc.match_lon);
 
-  if (match_quantity)
+  match_quantity = lc.match_count;
+
+  if (locate_controller_has_results(&lc))
   {
     // Found some matches!
 
@@ -916,7 +917,7 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData)
   else
   {
     // No matches found.
-    popup_message_always(langcode("POPEM00025"),locate_place_name);
+    popup_message_always(langcode("POPEM00025"), lc.place_name);
   }
 
   Locate_place_destroy_shell(w, clientData, callData);

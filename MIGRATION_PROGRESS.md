@@ -17,7 +17,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☑      |
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☑      |
 | 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☑      |
-| 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☐      |
+| 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☑      |
 | 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☐      |
 | 9 | `list_gui.c`          |  2808 |          42 |        18 | ☐      |
 |10 | `messages_gui.c`      |  2872 |          53 |        22 | ☐      |
@@ -274,11 +274,56 @@ what got moved, what got tested, what got left behind.
       delegates matching to geocoder_controller_label_to_code() — tested.
 ```
 
+```
+#7 locate_gui.c — 2026-04-26
+  Controller:  src/locate_controller.{h,c}
+  Tests:       tests/test_locate_controller.c  (25 cases, all green;
+               full suite: 388/388 ok)
+  Stubs:       none — controller is pure standard C
+  Logic extracted:
+    - locate_controller_prepare_call()         — copy raw callsign → station_call;
+      strip trailing spaces, strip "-0" suffix; return 0 if empty
+    - locate_controller_prepare_place_query()  — copy + trim all six place-search
+      fields (place, state, county, quad, type, gnis_filename); return 0 if
+      place_name empty after trim; NULL optional fields treated as ""
+    - locate_controller_has_results()          — match_count > 0 gate; NULL safe
+    - locate_controller_clear_results()        — reset match_count to 0; NULL safe
+    - locate_controller_init()                 — memset struct to zero; NULL safe
+  Globals retired:
+    - match_array_name[50][200], match_array_lat[50], match_array_long[50],
+      match_quantity  — file-scope globals replaced by lc.match_names /
+      lc.match_lat / lc.match_lon / lc.match_count; Locate_place_chooser and
+      Locate_place_chooser_select updated to use lc directly.
+  Globals deferred (intentional):
+    - locate_station_call[30]    — externally written by db.c; synced from
+      lc.station_call after each locate_controller_prepare_call() call
+    - locate_place_name / locate_state_name / locate_county_name /
+      locate_quad_name / locate_type_name / locate_gnis_filename  — read by
+      xa_config.c (save/restore config); synced from lc fields after each
+      locate_controller_prepare_place_query() call
+    - Widget handles and mutexes  — stay in locate_gui.c (threading/Motif)
+  Behavior preserved:
+    - Locate_station_now(): trim+dash-zero strip now via controller; result
+      synced to legacy locate_station_call for db.c compatibility.
+    - Locate_place_now(): six-field read-from-widget flow preserved; query
+      delegated to controller; gnis_locate_place() / pop_locate_place()
+      called with lc match arrays directly (no extra copy).
+    - Chooser dialog: match_quantity kept in sync with lc.match_count;
+      Chooser reads lc.match_names / lc.match_lat / lc.match_lon.
+  Surprises:
+    - remove_trailing_spaces / remove_trailing_dash_zero inlined as private
+      static helpers (same pattern as track_controller.c).
+    - gnis_locate_place() / pop_locate_place() / locate_station() all require
+      Drawable da as first arg (they draw on the map), so they stay in
+      locate_gui.c — only the field prep and result management moved.
+    - fcc_rac_lookup() is entirely GUI+FCC-database code; not split.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        6 / 13
-- Total LOC reviewed:    5076
-- Globals retired:       2
-- New unit tests added:  133
+- Files migrated:        7 / 13
+- Total LOC reviewed:    6368
+- Globals retired:       6
+- New unit tests added:  158

@@ -1,0 +1,126 @@
+AT_BANNER([locate_controller tests])
+
+AT_SETUP([init: default values are zero/empty])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" init_default_values], [0], [PASS: locate_controller_init: default values
+])
+AT_CLEANUP
+
+AT_SETUP([init: NULL safe])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" init_null_safe], [0], [PASS: locate_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: basic callsign stored])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_basic], [0], [PASS: prepare_call: basic callsign stored
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: trailing spaces stripped])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_trims_trailing_spaces], [0], [PASS: prepare_call: trailing spaces stripped
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: trailing -0 stripped])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_strips_dash_zero], [0], [PASS: prepare_call: -0 suffix stripped
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: spaces then -0 both stripped])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_strips_dash_zero_with_spaces], [0], [PASS: prepare_call: spaces then -0 both stripped
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: -1 suffix preserved])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_preserves_dash_one], [0], [PASS: prepare_call: non-zero SSID preserved
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: empty string returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_empty_string_returns_zero], [0], [PASS: prepare_call: empty string returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: spaces-only returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_spaces_only_returns_zero], [0], [PASS: prepare_call: spaces-only returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: NULL lc returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_null_lc_returns_zero], [0], [PASS: prepare_call: NULL lc is safe
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: NULL call returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_null_call_returns_zero], [0], [PASS: prepare_call: NULL call is safe
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_call: long callsign truncated safely])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_call_truncates_long_call], [0], [PASS: prepare_call: long callsign truncated safely
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: basic place name stored])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_basic], [0], [PASS: prepare_place: basic fields stored
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: trailing spaces stripped from fields])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_trims_trailing_spaces], [0], [PASS: prepare_place: trailing spaces stripped
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: all six fields stored])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_all_fields], [0], [PASS: prepare_place: all six fields stored
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: empty name returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_empty_name_returns_zero], [0], [PASS: prepare_place: empty name returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: spaces-only name returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_spaces_only_name_returns_zero], [0], [PASS: prepare_place: spaces-only name returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: NULL optional fields treated as empty])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_null_fields_treated_as_empty], [0], [PASS: prepare_place: NULL optional fields treated as empty
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: NULL lc returns 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_null_lc_returns_zero], [0], [PASS: prepare_place: NULL lc is safe
+])
+AT_CLEANUP
+
+AT_SETUP([prepare_place: gnis filename stored verbatim])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" prepare_place_gnis_filename_stored], [0], [PASS: prepare_place: gnis filename stored verbatim
+])
+AT_CLEANUP
+
+AT_SETUP([has_results: zero when match_count is 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" has_results_zero], [0], [PASS: has_results: 0 when match_count is 0
+])
+AT_CLEANUP
+
+AT_SETUP([has_results: 1 when match_count > 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" has_results_positive], [0], [PASS: has_results: 1 when match_count > 0
+])
+AT_CLEANUP
+
+AT_SETUP([has_results: NULL safe])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" has_results_null_safe], [0], [PASS: has_results: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([clear_results: resets match_count to 0])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" clear_results], [0], [PASS: clear_results: match_count reset to 0
+])
+AT_CLEANUP
+
+AT_SETUP([clear_results: NULL safe])
+AT_CHECK(["$abs_top_builddir/tests/test_locate_controller" clear_results_null_safe], [0], [PASS: clear_results: NULL is safe
+])
+AT_CLEANUP
