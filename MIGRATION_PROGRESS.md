@@ -16,7 +16,7 @@ Status legend: ☐ todo · ◧ in progress · ☑ done · ⊘ skipped
 | 3 | `view_message_gui.c`  |   830 |          14 |         6 | ☑      |
 | 4 | `bulletin_gui.c`      |   890 |          12 |         3 | ☑      |
 | 5 | `track_gui.c`         |  1088 |          21 |         6 | ☑      |
-| 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☐      |
+| 6 | `geocoder_gui.c`      |  1179 |          32 |        17 | ☑      |
 | 7 | `locate_gui.c`        |  1292 |          32 |         7 | ☐      |
 | 8 | `wx_gui.c`            |  2421 |          54 |         4 | ☐      |
 | 9 | `list_gui.c`          |  2808 |          42 |        18 | ☐      |
@@ -240,11 +240,45 @@ what got moved, what got tested, what got left behind.
       private static helpers in track_controller.c to keep it self-contained.
 ```
 
+```
+#6 geocoder_gui.c — 2026-04-26
+  Controller:  src/geocoder_controller.{h,c}
+  Tests:       tests/test_geocoder_controller.c  (30 cases, all green;
+               full suite: 363/363 ok)
+  Stubs:       none — controller is pure standard C
+  Logic extracted:
+    - country_options[] table (ISO 3166-1 alpha-2 labels+values) moved from
+      private struct in geocoder_gui.c to geocoder_controller.c
+    - geocoder_controller_country_count()      — sentinel-safe entry count
+    - geocoder_controller_country_label(idx)   — 0-based label access
+    - geocoder_controller_country_value(idx)   — 0-based value access
+    - geocoder_controller_find_country_index() — returns 1-based XmList pos
+    - geocoder_controller_label_to_code()      — label→code without Widget;
+      handles "custom" entry by reading custom_text arg; buffer-based API
+      (avoids XtNewString/strdup ownership ambiguity)
+    - geocoder_controller_normalize_server_url() — empty URL → default
+    - geocoder_controller_has_results()        — result_count > 0 gate
+  Globals retired:  struct country_option typedef + country_options[] array
+  Globals deferred:
+    - nominatim_server_url / nominatim_user_email / nominatim_country_default /
+      nominatim_cache_enabled / nominatim_cache_days — owned by nominatim.c,
+      declared in main.h; consumed by xa_config.c; deferred to xa_config pass
+    - current_results (geocode_result_list) — file-scope dialog state;
+      result_count mirrored into geocoder_gc.result_count after each populate
+  Surprises:
+    - The name 'gc' conflicted with extern GC gc (X11 graphics context)
+      declared in xastir.h. Renamed the local instance to geocoder_gc.
+    - populate_country_list() reduced to two controller calls: country_label
+      loop + find_country_index() for default selection.
+    - get_selected_country_code() still owns all Widget interaction but
+      delegates matching to geocoder_controller_label_to_code() — tested.
+```
+
 ## Aggregate counters
 
 Update after each file lands.
 
-- Files migrated:        5 / 13
-- Total LOC reviewed:    3897
-- Globals retired:       1
-- New unit tests added:  103
+- Files migrated:        6 / 13
+- Total LOC reviewed:    5076
+- Globals retired:       2
+- New unit tests added:  133

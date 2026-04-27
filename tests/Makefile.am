@@ -4,7 +4,7 @@
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at popup_controller_tests.at location_controller_tests.at view_message_controller_tests.at bulletin_controller_tests.at track_controller_tests.at
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at popup_controller_tests.at location_controller_tests.at view_message_controller_tests.at bulletin_controller_tests.at track_controller_tests.at geocoder_controller_tests.at
 
 if HAVE_NOMINATIM
 TESTSUITE_AT += nominatim_tests.at
@@ -13,7 +13,7 @@ endif
 EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
-check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_popup_controller test_location_controller test_view_message_controller test_bulletin_controller test_track_controller
+check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_popup_controller test_location_controller test_view_message_controller test_bulletin_controller test_track_controller test_geocoder_controller
 
 # Conditionally add nominatim test program
 if HAVE_NOMINATIM
@@ -68,6 +68,11 @@ test_bulletin_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/
 # extracted from track_gui.c. Needs stubs for valid_object/valid_call/valid_item.
 test_track_controller_SOURCES = test_track_controller.c test_track_controller_stubs.c $(top_srcdir)/src/track_controller.c
 test_track_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+
+# Presentation/logic-separation migration: geocoder_controller is the kernel
+# extracted from geocoder_gui.c. Pure standard C, no stubs needed.
+test_geocoder_controller_SOURCES = test_geocoder_controller.c $(top_srcdir)/src/geocoder_controller.c
+test_geocoder_controller_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
 # Nominatim tests (conditional on HAVE_NOMINATIM)
 if HAVE_NOMINATIM

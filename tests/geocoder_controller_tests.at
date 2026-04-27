@@ -1,0 +1,184 @@
+# Autotest tests for geocoder_controller.c
+# Covers the presentation-free kernel extracted from geocoder_gui.c.
+
+AT_BANNER([Geocoder Controller])
+
+AT_SETUP([geocoder_controller_init: default values])
+AT_KEYWORDS([geocoder geocoder_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" init_default_values], [0], [PASS: geocoder_controller_init: default values
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_init: NULL is safe])
+AT_KEYWORDS([geocoder geocoder_controller init null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" init_null_safe], [0], [PASS: geocoder_controller_init: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_count: positive count])
+AT_KEYWORDS([geocoder geocoder_controller country_count])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_count_positive], [0], [PASS: geocoder_controller_country_count: positive count
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_count: sentinel not counted])
+AT_KEYWORDS([geocoder geocoder_controller country_count])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_count_includes_sentinel], [0], [PASS: geocoder_controller_country_count: sentinel not counted
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_label: first entry])
+AT_KEYWORDS([geocoder geocoder_controller country_label])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_label_first], [0], [PASS: geocoder_controller_country_label: first entry
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_value: first entry (worldwide)])
+AT_KEYWORDS([geocoder geocoder_controller country_value])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_value_first], [0], [PASS: geocoder_controller_country_value: first entry (worldwide)
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_label: 'United States' present])
+AT_KEYWORDS([geocoder geocoder_controller country_label])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_label_known], [0], [PASS: geocoder_controller_country_label: 'United States' present
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_value: United States → 'us'])
+AT_KEYWORDS([geocoder geocoder_controller country_value])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_value_known], [0], [PASS: geocoder_controller_country_value: United States → 'us'
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_label/value: custom entry is last])
+AT_KEYWORDS([geocoder geocoder_controller country_label country_value])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_custom_entry], [0], [PASS: geocoder_controller_country_label/value: custom entry is last
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_label: out-of-range returns NULL])
+AT_KEYWORDS([geocoder geocoder_controller country_label null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_label_out_of_range], [0], [PASS: geocoder_controller_country_label: out-of-range returns NULL
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_country_value: out-of-range returns NULL])
+AT_KEYWORDS([geocoder geocoder_controller country_value null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" country_value_out_of_range], [0], [PASS: geocoder_controller_country_value: out-of-range returns NULL
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_find_country_index: 'us' found])
+AT_KEYWORDS([geocoder geocoder_controller find_country_index])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" find_country_index_known], [0], [PASS: geocoder_controller_find_country_index: 'us' found
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_find_country_index: empty string returns 0])
+AT_KEYWORDS([geocoder geocoder_controller find_country_index])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" find_country_index_worldwide], [0], [PASS: geocoder_controller_find_country_index: empty string returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_find_country_index: unknown returns 0])
+AT_KEYWORDS([geocoder geocoder_controller find_country_index])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" find_country_index_unknown], [0], [PASS: geocoder_controller_find_country_index: unknown returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_find_country_index: NULL returns 0])
+AT_KEYWORDS([geocoder geocoder_controller find_country_index null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" find_country_index_null], [0], [PASS: geocoder_controller_find_country_index: NULL returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_find_country_index: 'custom' found])
+AT_KEYWORDS([geocoder geocoder_controller find_country_index])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" find_country_index_custom], [0], [PASS: geocoder_controller_find_country_index: 'custom' found
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: normal country label])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_normal], [0], [PASS: geocoder_controller_label_to_code: normal country label
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: worldwide returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_worldwide], [0], [PASS: geocoder_controller_label_to_code: worldwide returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: custom with text])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code custom])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_custom_with_text], [0], [PASS: geocoder_controller_label_to_code: custom with text
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: custom without text returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code custom])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_custom_no_text], [0], [PASS: geocoder_controller_label_to_code: custom without text returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: custom with NULL text returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code custom null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_custom_null_text], [0], [PASS: geocoder_controller_label_to_code: custom with NULL text returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: unknown label returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_unknown_label], [0], [PASS: geocoder_controller_label_to_code: unknown label returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: NULL label returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_null_label], [0], [PASS: geocoder_controller_label_to_code: NULL label returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_label_to_code: NULL out buffer returns 0])
+AT_KEYWORDS([geocoder geocoder_controller label_to_code null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" label_to_code_null_out], [0], [PASS: geocoder_controller_label_to_code: NULL out buffer returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_normalize_server_url: empty → default])
+AT_KEYWORDS([geocoder geocoder_controller normalize_url])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" normalize_url_empty], [0], [PASS: geocoder_controller_normalize_server_url: empty → default
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_normalize_server_url: non-empty unchanged])
+AT_KEYWORDS([geocoder geocoder_controller normalize_url])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" normalize_url_non_empty], [0], [PASS: geocoder_controller_normalize_server_url: non-empty unchanged
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_normalize_server_url: NULL is safe])
+AT_KEYWORDS([geocoder geocoder_controller normalize_url null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" normalize_url_null], [0], [PASS: geocoder_controller_normalize_server_url: NULL is safe
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_has_results: 0 count returns 0])
+AT_KEYWORDS([geocoder geocoder_controller has_results])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" has_results_zero], [0], [PASS: geocoder_controller_has_results: 0 count returns 0
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_has_results: positive count returns 1])
+AT_KEYWORDS([geocoder geocoder_controller has_results])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" has_results_positive], [0], [PASS: geocoder_controller_has_results: positive count returns 1
+])
+AT_CLEANUP
+
+AT_SETUP([geocoder_controller_has_results: NULL is safe])
+AT_KEYWORDS([geocoder geocoder_controller has_results null])
+AT_CHECK(["$abs_top_builddir/tests/test_geocoder_controller" has_results_null], [0], [PASS: geocoder_controller_has_results: NULL is safe
+])
+AT_CLEANUP

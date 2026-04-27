@@ -39,6 +39,7 @@
 #include "db_gui.h"
 #include "mutex_utils.h"
 #include "geocoder.h"
+#include "geocoder_controller.h"
 #include "maps.h"
 #include "util.h"
 #include "xa_config.h"
@@ -75,166 +76,15 @@ static xastir_mutex geocoder_dialog_lock;
 static xastir_mutex geocoder_config_lock;
 static struct geocode_result_list current_results;
 
-// Country code mapping (ISO 3166-1 alpha-2)
-struct country_option {
-    const char *label;
-    const char *value;
-};
+// Country code mapping moved to geocoder_controller.c (geocoder_controller_t).
 
-static const struct country_option country_options[] = {
-    {"None (Worldwide)", ""},
-
-    {"Afghanistan", "af"},
-    {"Albania", "al"},
-    {"Algeria", "dz"},
-    {"American Samoa", "as"},
-    {"Andorra", "ad"},
-    {"Angola", "ao"},
-    {"Argentina", "ar"},
-    {"Armenia", "am"},
-    {"Australia", "au"},
-    {"Austria", "at"},
-    {"Azerbaijan", "az"},
-
-    {"Bahamas", "bs"},
-    {"Bahrain", "bh"},
-    {"Bangladesh", "bd"},
-    {"Barbados", "bb"},
-    {"Belarus", "by"},
-    {"Belgium", "be"},
-    {"Belize", "bz"},
-    {"Bolivia", "bo"},
-    {"Bosnia and Herzegovina", "ba"},
-    {"Botswana", "bw"},
-    {"Brazil", "br"},
-    {"Brunei", "bn"},
-    {"Bulgaria", "bg"},
-
-    {"Cambodia", "kh"},
-    {"Cameroon", "cm"},
-    {"Canada", "ca"},
-    {"Chile", "cl"},
-    {"China", "cn"},
-    {"Colombia", "co"},
-    {"Costa Rica", "cr"},
-    {"Croatia", "hr"},
-    {"Cuba", "cu"},
-    {"Cyprus", "cy"},
-    {"Czech Republic", "cz"},
-
-    {"Denmark", "dk"},
-    {"Dominican Republic", "do"},
-
-    {"Ecuador", "ec"},
-    {"Egypt", "eg"},
-    {"El Salvador", "sv"},
-    {"Estonia", "ee"},
-    {"Ethiopia", "et"},
-
-    {"Finland", "fi"},
-    {"France", "fr"},
-
-    {"Georgia", "ge"},
-    {"Germany", "de"},
-    {"Ghana", "gh"},
-    {"Greece", "gr"},
-    {"Greenland", "gl"},
-    {"Guatemala", "gt"},
-
-    {"Haiti", "ht"},
-    {"Honduras", "hn"},
-    {"Hong Kong", "hk"},
-    {"Hungary", "hu"},
-
-    {"Iceland", "is"},
-    {"India", "in"},
-    {"Indonesia", "id"},
-    {"Iran", "ir"},
-    {"Ireland", "ie"},
-    {"Israel", "il"},
-    {"Italy", "it"},
-
-    {"Jamaica", "jm"},
-    {"Japan", "jp"},
-    {"Jordan", "jo"},
-
-    {"Kazakhstan", "kz"},
-    {"Kenya", "ke"},
-    {"Kuwait", "kw"},
-
-    {"Latvia", "lv"},
-    {"Lebanon", "lb"},
-    {"Liechtenstein", "li"},
-    {"Lithuania", "lt"},
-    {"Luxembourg", "lu"},
-
-    {"Malaysia", "my"},
-    {"Malta", "mt"},
-    {"Mexico", "mx"},
-    {"Moldova", "md"},
-    {"Monaco", "mc"},
-    {"Mongolia", "mn"},
-    {"Morocco", "ma"},
-
-    {"Namibia", "na"},
-    {"Netherlands", "nl"},
-    {"New Zealand", "nz"},
-    {"Nigeria", "ng"},
-    {"North Macedonia", "mk"},
-    {"Norway", "no"},
-
-    {"Oman", "om"},
-
-    {"Pakistan", "pk"},
-    {"Panama", "pa"},
-    {"Paraguay", "py"},
-    {"Peru", "pe"},
-    {"Philippines", "ph"},
-    {"Poland", "pl"},
-    {"Portugal", "pt"},
-
-    {"Qatar", "qa"},
-
-    {"Romania", "ro"},
-    {"Russia", "ru"},
-
-    {"Saudi Arabia", "sa"},
-    {"Serbia", "rs"},
-    {"Singapore", "sg"},
-    {"Slovakia", "sk"},
-    {"Slovenia", "si"},
-    {"South Africa", "za"},
-    {"South Korea", "kr"},
-    {"Spain", "es"},
-    {"Sri Lanka", "lk"},
-    {"Sweden", "se"},
-    {"Switzerland", "ch"},
-
-    {"Taiwan", "tw"},
-    {"Thailand", "th"},
-    {"Trinidad and Tobago", "tt"},
-    {"Tunisia", "tn"},
-    {"Turkey", "tr"},
-
-    {"Ukraine", "ua"},
-    {"United Arab Emirates", "ae"},
-    {"United Kingdom", "gb"},
-    {"United States", "us"},
-    {"Uruguay", "uy"},
-
-    {"Venezuela", "ve"},
-    {"Vietnam", "vn"},
-
-    {"Zambia", "zm"},
-    {"Zimbabwe", "zw"},
-
-    {"--- Custom Code ---", "custom"},
-    {NULL, NULL}
-};
+// Controller instance — owns result_count mirror and provides country table access
+static geocoder_controller_t geocoder_gc;
 
 // Initialize the geocoder GUI module
 void geocoder_gui_init(void)
 {
+    geocoder_controller_init(&geocoder_gc);
     init_critical_section(&geocoder_dialog_lock);
     init_critical_section(&geocoder_config_lock);
     current_results.results = NULL;
@@ -243,34 +93,29 @@ void geocoder_gui_init(void)
 }
 
 
-// Helper function to populate a country combo box with the standard list
-// Returns the 1-based index of the default_value if found, or 0 if not found
+// Helper function to populate a country combo box with the standard list.
+// Delegates country table access to geocoder_controller.
+// Returns the 1-based index of the default_value if found, or 0 if not found.
 static int populate_country_list(Widget combo, const char *default_value)
 {
     XmString str;
     int i;
-    int default_index = 0;
+    int count = geocoder_controller_country_count();
 
-    for (i = 0; country_options[i].label != NULL; i++) {
-        str = XmStringCreateLocalized((char *)country_options[i].label);
+    for (i = 0; i < count; i++) {
+        str = XmStringCreateLocalized((char *)geocoder_controller_country_label(i));
         XmListAddItem(combo, str, 0);
         XmStringFree(str);
-
-        // Check if this matches the default value
-        if (default_value && default_value[0] != '\0' &&
-            strcmp(country_options[i].value, default_value) == 0) {
-            default_index = i + 1; // XmList is 1-indexed
-        }
     }
 
-    return default_index;
+    return geocoder_controller_find_country_index(default_value);
 }
 
 
-// Helper function to get the selected country code from a combo box
-// If custom_text_widget is provided and "custom" is selected, reads from that field
-// Returns a newly allocated string that must be freed by caller, or NULL if none selected
-// If return value is non-NULL and *is_custom is non-NULL, sets *is_custom to 1 if custom field was used
+// Helper function to get the selected country code from a combo box.
+// Delegates label→code resolution to geocoder_controller_label_to_code().
+// Returns a newly allocated string (XtNewString) that must be freed by caller,
+// or NULL if no code applies.  Sets *is_custom if custom field was used.
 static char *get_selected_country_code(Widget combo, Widget custom_text_widget, int *is_custom)
 {
     XmString *selected_items;
@@ -291,33 +136,23 @@ static char *get_selected_country_code(Widget combo, Widget custom_text_widget, 
         XmStringGetLtoR(selected_items[0], XmFONTLIST_DEFAULT_TAG, &selected_text);
 
         if (selected_text) {
-            // Find matching option in our array
-            int i;
-            for (i = 0; country_options[i].label != NULL; i++) {
-                if (strcmp(selected_text, country_options[i].label) == 0) {
-                    const char *selected_value = country_options[i].value;
-
-                    if (strcmp(selected_value, "custom") == 0) {
-                        // Use custom text field
-                        if (custom_text_widget) {
-                            char *custom = XmTextFieldGetString(custom_text_widget);
-                            if (custom && custom[0]) {
-                                result = XtNewString(custom);
-                                if (is_custom) {
-                                    *is_custom = 1;
-                                }
-                            }
-                            if (custom) {
-                                XtFree(custom);
-                            }
-                        }
-                    } else if (selected_value[0] != '\0') {
-                        // Non-empty value - use it
-                        result = XtNewString(selected_value);
-                    }
-                    break;
-                }
+            // Read custom text field if provided
+            char *custom_str = NULL;
+            if (custom_text_widget) {
+                custom_str = XmTextFieldGetString(custom_text_widget);
             }
+
+            char code_buf[128] = {0};
+            int local_is_custom = 0;
+            if (geocoder_controller_label_to_code(selected_text,
+                                                   custom_str ? custom_str : "",
+                                                   code_buf, sizeof(code_buf),
+                                                   &local_is_custom)) {
+                result = XtNewString(code_buf);
+                if (is_custom) *is_custom = local_is_custom;
+            }
+
+            if (custom_str) XtFree(custom_str);
             XtFree(selected_text);
         }
     }
@@ -352,6 +187,9 @@ static void populate_results_list(void)
     int i;
     XmString *items;
     char temp[512];
+
+    // Keep controller in sync with the live result list
+    geocoder_gc.result_count = current_results.count;
 
     if (!results_list) return;
 
@@ -907,13 +745,10 @@ static void geocoder_config_save_callback(Widget widget, XtPointer clientData, X
     if (config_server_url_text) {
         server_url = XmTextFieldGetString(config_server_url_text);
         if (server_url) {
-            if (server_url[0] == '\0') {
-                // User cleared the field - restore default
-                xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url),
-                              "https://nominatim.openstreetmap.org");
-            } else {
-                xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url), "%s", server_url);
-            }
+            xastir_snprintf(nominatim_server_url, sizeof(nominatim_server_url), "%s", server_url);
+            // If user cleared the field, restore default via controller
+            geocoder_controller_normalize_server_url(nominatim_server_url,
+                                                      sizeof(nominatim_server_url));
             XtFree(server_url);
         }
     }

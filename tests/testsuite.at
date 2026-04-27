@@ -39,6 +39,9 @@ m4_include([bulletin_controller_tests.at])
 # Include track controller tests (presentation/logic-separation migration)
 m4_include([track_controller_tests.at])
 
+# Include geocoder controller tests (presentation/logic-separation migration)
+m4_include([geocoder_controller_tests.at])
+
 # Include nominatim geocoding tests (conditionally compiled if HAVE_NOMINATIM)
 m4_ifdef([HAVE_NOMINATIM], [
 m4_include([nominatim_tests.at])
