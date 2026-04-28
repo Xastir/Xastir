@@ -473,7 +473,7 @@ Widget map_font_dialog = (Widget)NULL;
 Widget map_font_text[FONT_MAX];
 
 
-Widget map_station_label0,map_station_label1,map_station_label2,map_station_label3;
+Widget map_station_label0,map_station_label1,map_station_label2,map_station_label3,map_station_label4;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
 int letter_style;               /* Station Letter style */
 
@@ -7458,12 +7458,36 @@ void create_appshell( Display *display, char * UNUSED(app_name), int UNUSED(app_
                        MY_FOREGROUND_COLOR,
                        MY_BACKGROUND_COLOR,
                        NULL);
+  map_station_label4 = XtVaCreateManagedWidget(langcode("PULDNMSL05"),
+                       xmPushButtonGadgetClass,
+                       Map_station_label_Pane,
+                       XmNmnemonic,langcode_hotkey("PULDNMSL05"),
+                       XmNfontList, fontlist1,
+                       MY_FOREGROUND_COLOR,
+                       MY_BACKGROUND_COLOR,
+                       NULL);
 
-  sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
+  if (letter_style > 4)
+    letter_style = 0;
+
+  if (letter_style == 4)
+  {
+    XtSetSensitive(map_station_label4, FALSE);
+    XtSetSensitive(map_station_label3, TRUE);
+    XtSetSensitive(map_station_label2, TRUE);
+    XtSetSensitive(map_station_label1, TRUE);
+    XtSetSensitive(map_station_label0, TRUE);
+  }
+  else
+  {
+    XtSetSensitive(map_station_label4, TRUE);
+    sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
+  }
   XtAddCallback(map_station_label0,   XmNactivateCallback,Map_station_label,"0");
   XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
   XtAddCallback(map_station_label2,   XmNactivateCallback,Map_station_label,"2");
   XtAddCallback(map_station_label3,   XmNactivateCallback,Map_station_label,"3");
+  XtAddCallback(map_station_label4,   XmNactivateCallback,Map_station_label,"4");
 
 
   ac = 0;
@@ -16373,7 +16397,19 @@ void Map_station_label( Widget UNUSED(w), XtPointer clientData, XtPointer UNUSED
   if(display_up)
   {
     letter_style = style;
-    sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
+    if (letter_style == 4)
+    {
+      XtSetSensitive(map_station_label4, FALSE);
+      XtSetSensitive(map_station_label3, TRUE);
+      XtSetSensitive(map_station_label2, TRUE);
+      XtSetSensitive(map_station_label1, TRUE);
+      XtSetSensitive(map_station_label0, TRUE);
+    }
+    else
+    {
+      XtSetSensitive(map_station_label4, TRUE);
+      sel4_switch(letter_style,map_station_label3,map_station_label2,map_station_label1,map_station_label0);
+    }
     redraw_symbols(da);
     (void)XCopyArea(XtDisplay(da),
                     pixmap_final,

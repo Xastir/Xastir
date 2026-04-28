@@ -144,6 +144,7 @@ PULDNMSL01|Bordure noire|n|
 PULDNMSL02|Ombré avec toile de fond|O|
 PULDNMSL03|Blanc sur noir|B|
 PULDNMSL04|DropShadow||
+PULDNMSL05|Noir sur blanc||
 #
 # PullDown "Icon Outline Style"
 PULDNMIO01|Pas de contour|N|
