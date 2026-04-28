@@ -2,7 +2,7 @@ HELP-INDEX>LÉEME PRIMERO - Licencia
 
                           LÉEME PRIMERO - Licencia
 
-Para la información más actual, por favor lea el archivo README.md en el
+Para la información más actual, lea el archivo README.md en el
 directorio de Xastir. También vea los archivos LICENSE y COPYING para
 información adicional.
 
@@ -220,7 +220,7 @@ colocarán en algún lugar dentro del rango de la opción que seleccionó. Tenga
 cuenta que esto puede confundir a algunas estaciones que no cumplen con las
 especificaciones. Findu.com no entiende la ambigüedad de posición.
 
-Hacer clic en OK guardará los cambios, Hacer clic en Cancel mantendrá los
+Hacer clic en OK guardará los cambios, Hacer clic en Cancelar mantendrá los
 ajustes anteriores.
 
 HELP-INDEX>Configurar Funcionamiento Predeterminado
@@ -356,7 +356,7 @@ HELP-INDEX>Configurar Alarmas de Audio
 Haga clic en Archivo, luego Configurar, luego Alarmas de Audio.
 
 Para usar esta opción debe tener una tarjeta de sonido y un programa que
-reproduzca archivos wav. El Audio Play Command debe contener el programa que
+reproduzca archivos wav. El comando de reproducción de audio debe contener el programa que
 desea ejecutar para reproducir el archivo de audio (y cualquier opción de
 línea de comandos). Por supuesto, esto no funciona si la única tarjeta de
 sonido en el sistema se usa para un soundmodem...
@@ -375,7 +375,7 @@ Reproducir mensaje al recibir datos de una estación (vía TNC) dentro de la
 Reproducir mensaje al recibir y mostrar una alerta meteorológica nueva.
 
 Hay un conjunto estándar de sonidos disponibles en la mayoría de los lugares
-donde se puede obtener Xastir, por favor vea el archivo INSTALL.md para más
+donde se puede obtener Xastir; consulte el archivo INSTALL.md para más
 información.
 
 HELP-INDEX>Configurar síntesis de voz
@@ -391,20 +391,19 @@ puede experimentar problemas con conexiones rechazadas por el servidor.
 Una vez que tenga festival instalado, Xastir tendrá la capacidad de hablar
 usando las siguientes opciones:
 
-New Station       - Anunciar la indicación de una estación nueva.
-New Message Alert - Anunciar la llegada de un nuevo mensaje.
-New Message Body  - Leer el contenido de un mensaje.
-Proximity Alert   - Anunciar cuando se recibe datos de una estación dentro del
+Nueva estación    - Anunciar la indicación de una estación nueva.
+Alerta de mensaje nuevo - Anunciar la llegada de un nuevo mensaje.
+Cuerpo del mensaje nuevo - Leer el contenido de un mensaje.
+Alerta de proximidad - Anunciar cuando se recibe datos de una estación dentro del
     rango mín./máx. de su configuración de proximidad. Esta opción utiliza la
     configuración de proximidad encontrada en el menú Alarmas de Audio.
-Tracked station Proximity Alert - Anunciar cuando se recibe datos de una
+Alerta de proximidad de estación rastreada - Anunciar cuando se recibe datos de una
     estación dentro del rango mín./máx. de la estación monitoreada. Esta opción
     utiliza la configuración de proximidad encontrada en el menú Alarmas de Audio.
-Band Opening      - Anunciar cuando se recibe datos de una estación (vía TNC)
+Apertura de banda - Anunciar cuando se recibe datos de una estación (vía TNC)
     dentro del rango mín./máx. de su configuración de apertura de banda. Esta
-    opción utiliza la configuración de distancia encontrada en el menú Audio
-    Alarms.
-New Weather Alert - Aún no implementado.
+  opción utiliza la configuración de distancia encontrada en el menú Alarmas de Audio.
+Nueva alerta meteorológica - Aún no implementado.
 
 Información sobre Festival se puede obtener de:
 https://www.cstr.ed.ac.uk/projects/festival/
@@ -596,30 +595,30 @@ Una estación podría colocar varios objetos diferentes en el mapa, con su
 posición transmitida a otras estaciones. Los nombres de los objetos son menos
 restrictivos que los nombres de estaciones normales.
 
-Objects y Items son casi lo mismo, pero su uso podría diferir un poco. Los
-Objects se utilizan generalmente para cosas móviles o variables como
-tormentas, mientras que los Items se utilizan generalmente para cosas más
+Objetos y Artículos son casi lo mismo, pero su uso podría diferir un poco. Los
+Objetos se utilizan generalmente para cosas móviles o variables como
+tormentas, mientras que los Artículos se utilizan generalmente para cosas más
 inanimadas, como estaciones de agua. Debido a que algunos sabores de programas
-APRS(tm) no pueden decodificar Items, los Objects se usan a menudo para cosas
+APRS(tm) no pueden decodificar Artículos, los Objetos se usan a menudo para cosas
 inanimadas también.
 
 Además de los objetos normales con un símbolo en su posición hay algunos
-objetos especiales disponibles. Los Area Objects son útiles para una variedad
+objetos especiales disponibles. Los Objetos de área son útiles para una variedad
 de operaciones en las que desea dibujar o resaltar un área de interés en el
 mapa. También se pueden usar para dibujar senderos/carreteras/límites, cajas
 de vigilancia para clima severo, pistas, perímetro de un área de búsqueda o de
 un evento de servicio público, áreas de daño, áreas para evitar, edificios que
 no están en el mapa, tableros de damas/ajedrez para juegos en APRS(tm). :-)
-Tenga en cuenta que los Area Objects no se implementan en todas las versiones
+Tenga en cuenta que los Objetos de área no se implementan en todas las versiones
 de programas APRS(tm), y algunos de los detalles de cómo se muestran también
 pueden ser diferentes en otros programas.
 Para los otros tres, círculos de probabilidad, señalización y objetos DF,
 vea abajo.
 
-Objects/Items se retransmiten a una tasa decreciente hasta el intervalo máximo
+Los Objetos/Artículos se retransmiten a una tasa decreciente hasta el intervalo máximo
 especificado en Archivo|Configurar|Cronómetro. Los objetos/items "killed" también se
 retransmiten de esta manera hasta que expiren de la cola (actualmente 20
-transmisiones). Objects/Items persisten en sesiones de Xastir y se almacenan
+transmisiones). Los Objetos/Artículos persisten en sesiones de Xastir y se almacenan
 en ~/.xastir/config/object.log. Este archivo puede borrarse seleccionando
 "Limpiar Historia de Objeto/Artículo" desde el menú Estaciones.
 
@@ -633,7 +632,7 @@ información actual del objeto ya está rellenada, y el nombre del objeto y
 algunas de las otras opciones no se pueden cambiar. También podría eliminar el
 objeto con esta opción.
 
-Objects e Items se pueden mover con el ratón si la casilla de verificación
+Los Objetos y Artículos se pueden mover con el ratón si la casilla de verificación
 "Move" en la barra de herramientas está habilitada.
 
 La opción Objetos predefinidos en el menú de clic derecho le permite colocar
@@ -660,16 +659,16 @@ Consulte el archivo predefined_SAR.sys para obtener detalles.
 
 Descripción de las entradas en el diálogo de objetos:
 
-= Signpost =
+= Señalización =
 Esto hace que el objeto sea un objeto de señalización. Estos signos pueden
 contener uno a tres caracteres y actualmente aparecen en Xastir como un signo
 en blanco. Info Estación muestra el valor contenido en el signo.
 
-= Area Object =
+= Objeto de área =
 Esto hace que el objeto sea un Area Object e habilita los controles de Area
 Object descritos a continuación.
 
-= DF Object =
+= Objeto DF =
 Este es un informe de búsqueda de dirección. Habilitarlo le permite elegir
 Omni o Beam report, y le permite poner en los detalles específicos de cada
 uno. Vea:
@@ -677,7 +676,7 @@ uno. Vea:
 para la discusión de Bob Bruninga sobre cómo usar estas técnicas.
 (FIXME: Sección separada sobre técnicas DF'ing?)
 
-= Probability Circles =
+= Círculos de probabilidad =
 Esto le permite definir el radio (en millas) de dos círculos centrados en el
 objeto o item. Min es el radio (en millas) del círculo interior más pequeño, y
 Max es el radio (en millas) del círculo exterior más grande. Estos círculos se
@@ -690,57 +689,57 @@ software de cliente no muestren círculos de probabilidad.
 Este es el nombre del objeto o item. Puede tener hasta 9 caracteres de largo,
 con espacios permitidos dentro del nombre. Al modificar un objeto, esto no se
 puede cambiar. Para cambiar el nombre de un objeto debe eliminar el original y
-luego crear un nuevo objeto. Tenga en cuenta que si selecciona Signpost/Area
-Object/DF Object, este campo y posiblemente otros se borran. Ingrese el nombre
+luego crear un nuevo objeto. Tenga en cuenta que si selecciona Señalización/Objeto de área/
+Objeto DF, este campo y posiblemente otros se borran. Ingrese el nombre
 DESPUÉS de haber seleccionado el tipo de objeto en el que se convertirá.
 
-= Station Symbol =
-Puede seleccionar un símbolo para el objeto. Presione select para elegir
+= Símbolo de la estación =
+Puede seleccionar un símbolo para el objeto. Presione Seleccionar para elegir
 gráficamente, o consulte la sección de ayuda de la tabla de símbolos para
 descripciones de cada símbolo. Tenga en cuenta también que los objetos de
-Area, signpost y DF tienen símbolos fijos especiales y por lo tanto no se
+área, señalización y DF tienen símbolos fijos especiales y por lo tanto no se
 pueden seleccionar aquí. Esos símbolos particulares se asignan automáticamente
 cuando cambia a ese tipo de objeto.
 
-= Location =
-La ubicación del objeto se especifica aquí. Si seleccionó "Create Object/Item"
+= Ubicación =
+La ubicación del objeto se especifica aquí. Si seleccionó "Crear Objeto/Artículo"
 del menú de clic derecho, la ubicación en la que hizo clic se rellenará. Si
 movió un objeto con el ratón, la nueva ubicación estará en estos campos. También
 puede escribir una ubicación, por ejemplo, puede estar colocando un objeto desde
 un informe de voz sobre el aire.
 
-= Generic Options =
+= Opciones generales =
 Puede especificar la velocidad, dirección y altitud de los objetos aquí. Algunos
 tipos de objetos no pueden tener una velocidad o dirección, en cuyo caso los
 campos están atenuados.
 
-= Signpost Text =
+= Texto de señalización =
 Si el objeto es un objeto de señalización, puede especificar aquí el número de
 1 a 3 dígitos que aparece en el signo. Tenga en cuenta que Xastir aún no
 muestra correctamente los objetos de señalización.
 
-= Area Object =
-Los Area Objects se utilizan para resaltar partes específicas de mapas, o para
+= Objeto de área =
+Los Objetos de área se utilizan para resaltar partes específicas de mapas, o para
 dibujar detalles adicionales en mapas. Esto se hará con las siguientes
 entradas:
-  = Bright Color =
+  = Color brillante =
     Use la versión más brillante de los colores permitidos.
-  = Color-Fill =
+  = Relleno de color =
     El área debe ser rellenada, no solo perfilada. Esto puede ser útil para
     excluir un área de una búsqueda u otro evento.
-  = Object Type =
+  = Tipo de objeto =
     Elija entre las formas geométricas permitidas.
-  = Object Color =
+  = Color del objeto =
     Elija el color en el cual se mostrará el objeto. Esto también se ve
-    afectado por la opción "Bright Color" anterior.
-  = Object Offset Up =
+    afectado por la opción "Color brillante" anterior.
+  = Desplazamiento superior del objeto =
     En 1/1500 de un grado de latitud. Un detalle desafortunado de la
     especificación, y difícil de calcular fácilmente. Baste decir que puede
     cambiar el tamaño del objeto una vez que lo coloque.
-  = Object Offset Left except / =
+  = Desplazamiento izquierdo del objeto excepto / =
     En 1/1500 de un grado de longitud. Vea arriba.
-  = Object corridor =
-    Este es el ancho de una línea de Area Object. Útil para pistas, cajas de
+  = Corredor del objeto =
+    Este es el ancho de una línea de Objeto de área. Útil para pistas, cajas de
     vigilancia de clima, describiendo un área de interés o un área de
     exclusión, etc.
 
@@ -765,16 +764,16 @@ Watch boxes y "areas of maximum concern" (AOMC) generadas por el WXSVR
 HELP-INDEX>Objetos CAD
 
                      Objetos CAD
-El soporte de CAD Objects es preliminar en este momento. Las características y
+El soporte de Objetos CAD es preliminar en este momento. Las características y
 la interfaz de usuario están sujetas a cambios.
 
-Los CAD Objects son formas arbitrarias que puede dibujar en mapas en xastir,
+Los Objetos CAD son formas arbitrarias que puede dibujar en mapas en xastir,
 pero no puede transmitir por APRS.
 
-Los CAD Objects actualmente soportados son:
+Los Objetos CAD actualmente soportados son:
 Polygons: Áreas cerradas de al menos tres puntos.
 
-Para crear un CAD Object, primero presione el botón de radio Draw en la barra
+Para crear un Objeto CAD, primero presione el botón de radio Dibujar en la barra
 de herramientas. Esto cambiará el cursor a un lápiz. Comience a dibujar un
 polígono haciendo clic con el botón central del ratón (o ambos botones en un
 ratón de dos botones, para lo cual necesitará tener habilitada la emulación de
@@ -784,16 +783,16 @@ derecho funcionan normalmente) y haga clic en el botón central del ratón
 nuevamente. Esto dibuja una línea entre los dos puntos que ha seleccionado.
 Haga clic central nuevamente para dibujar otro segmento de línea y repita hasta
 que haya dibujado todos excepto el segmento de línea de cierre de su polígono.
-Para cerrar el polígono, seleccione Map/Draw CAD Objects/Close Polygon. Esto
+Para cerrar el polígono, seleccione Mapas/Dibuje Objetos CAD/Cerrar polígono. Esto
 cerrará su polígono y traerá un diálogo que le permitirá ingresar un nombre,
 comentario y probabilidad del polígono.
 
-Cuando haya terminado de dibujar CAD Objects, salga del modo de dibujo CAD
-deseleccionando el botón de radio Draw en la barra de herramientas.
+Cuando haya terminado de dibujar Objetos CAD, salga del modo de dibujo CAD
+deseleccionando el botón de radio Dibujar en la barra de herramientas.
 
-Los CAD Objects se pueden editar desde el menú View/CAD Polygons y desde el
-menú Map/Draw CAD Objects/CAD Polygons. Los CAD Objects se pueden eliminar
-desde el menú Map/Draw CAD Objects/Erase CAD Polygons.
+Los Objetos CAD se pueden editar desde el menú Visualizar/Polígonos CAD y desde el
+menú Mapas/Dibuje Objetos CAD/Polígonos CAD. Los Objetos CAD se pueden eliminar
+desde el menú Mapas/Dibuje Objetos CAD/Borrar polígonos CAD.
 
 HELP-INDEX>Menú Visualizar
 
@@ -806,7 +805,7 @@ Este es el tablero de anuncios APRS(tm), donde se publican anuncios importantes.
 Si está conectado con la interfaz de internet, es una buena idea establecer el
 campo de rango a algunas cientos de millas, para ignorar publicaciones de otras
 partes del mundo. "0" en el campo de rango significa el mundo entero. Haga clic
-en el botón "Change range" para que los cambios en este campo sean efectivos.
+en el botón "Cambiar rango" para que los cambios en este campo sean efectivos.
 Xastir actualmente no admite el envío de boletines. Los boletines entrantes
 abrirán este diálogo automáticamente si selecciona "Mostrar boletines nuevos" en el
 diálogo Configurar|Predefinidos. El botón "Ver boletines de distancia cero" habilita la
@@ -906,10 +905,10 @@ en el botón OK. Puede seleccionar cualquier número de mapas. Hacer clic en
 "Limpiar" no seleccionará mapas, hacer clic en "Vectores" seleccionará solo mapas
 vectoriales. Las tres opciones "topo" seleccionarán automáticamente todas las
 imágenes GeoTIFF del tamaño listado. Hacer clic en el botón OK mostrará los
-mapas seleccionados. Cancel abandonará cualquier cambio.
+mapas seleccionados. Cancelar abandonará cualquier cambio.
 
   Propiedades de la Selección de Mapa
-  Hacer clic en el botón Properties traerá un diálogo donde puede especificar
+  Hacer clic en el botón Propiedades traerá un diálogo donde puede especificar
   la capa en la cual aparecen los mapas, y en qué niveles de zoom aparecen.
   Los números de capas más altos se muestran encima de los números más bajos.
   El rango puede especificarse de -99999 a 99999; se sugiere que espacie ampliamente
@@ -917,7 +916,7 @@ mapas seleccionados. Cancel abandonará cualquier cambio.
   adicionales. Desde este diálogo puede especificar si un mapa vectorial se
   dibuja con rellenos de color. Esta es una configuración por mapa; la opción de
   deshabilitación global en el menú Mapas puede reemplazar esto. La configuración
-  Filled se ignora para mapas raster (imágenes). Una configuración de "auto"
+  La opción de relleno se ignora para mapas raster (imágenes). Una configuración de "automático"
   permite que un archivo dbfawk controle este parámetro directamente (usable solo
   si dbfawk está compilado y el mapa en cuestión es un Shapefile). También puede
   seleccionar si un mapa es considerado por la característica "Activar Auto Mapas" aquí.
@@ -946,8 +945,8 @@ o nombre de un negocio o ubicación. Generará una solicitud de internet a un
 servidor "Nominatim" que consulta datos de OpenStreetMap para encontrar la
 ubicación. Si se encuentran algunos, el diálogo se rellenará con una lista de
 ubicaciones coincidentes. Elija uno haciendo clic en él y luego haga clic en
-"Go To" o "Mark". Cualquiera de las opciones centrará el mapa en la ubicación
-elegida, el botón "Mark" también colocará una gran "X" azul sobre la ubicación.
+"Ir a" o "Marcar". Cualquiera de las opciones centrará el mapa en la ubicación
+elegida, el botón "Marcar" también colocará una gran "X" azul sobre la ubicación.
 
 Calculadora de coordenadas
 Esta opción abre una calculadora simple que puede convertir entre sistemas de
@@ -966,7 +965,7 @@ Menú Configurar:
   Esto controla el brillo de cualquier gráfico utilizado como mapas. Esta
   opción solo aparece si ha compilado con soporte GeoTIFF.
 
-  Adjust Gamma Correction
+  Ajustar corrección gamma
   Esto le permite aplicar corrección gamma a todos los gráficos de mapas
   cargados. Los mapas se pueden ajustar individualmente en sus archivos .geo,
   consulte la sección sobre .geos en "Archivos de mapas y condados WX". Esta opción
@@ -991,7 +990,7 @@ en cada redibujado. Tenga en cuenta que esta opción no se guarda entre sesiones
 
 Activar Auto Mapas
 
-NOTA: ¡"Activar Auto Mapas" es una característica deprecated que es mejor dejarla
+NOTA: ¡"Activar Auto Mapas" es una característica obsoleta que es mejor dejarla
 desactivada!
 
 Cuando está habilitado, cualquier mapa encontrado en el directorio de mapas
@@ -1017,11 +1016,11 @@ fina. El espaciado de la cuadrícula de latitud y longitud se puede ajustar
 manualmente con las teclas "+" y "-".
 
 Activar borde del mapa
-Cuando tanto Enable Map Grid como Enable Map Border están habilitados, se dibuja
+Cuando tanto la cuadrícula del mapa como el borde del mapa están habilitados, se dibuja
 un borde blanco estrecho alrededor del mapa y las líneas de cuadrícula se
-etiquetan usando el sistema de coordenadas seleccionado (File/Configure/
-Coordinate System), y la fuente de borde seleccionada (Map/Configure/Map Labels
-font/Border Font). Si se seleccionan los sistemas de coordenadas UTM o MGRS, las
+etiquetan usando el sistema de coordenadas seleccionado (Archivo/Configurar/
+Sistema de coordenadas), y la fuente de borde seleccionada en la configuración
+de etiquetas del mapa. Si se seleccionan los sistemas de coordenadas UTM o MGRS, las
 líneas de cuadrícula se etiquetarán solo con valores de este y norte en niveles
 de zoom más pequeños que aproximadamente 2048.
 
@@ -1814,7 +1813,7 @@ FCC y RAC deben colocarse en el directorio /usr/local/share/xastir/fcc, ¡y la
 mayúsculas/minúsculas es importante! Presionar este botón agrega el nombre y
 dirección de la estación al cuadro de Información de la Estación. Las
 instrucciones para instalar estas bases de datos se encuentran en la página
-"Helper Scripts" en el wiki,
+"Scripts auxiliares" en el wiki,
 https://github.com/Xastir/Xastir/wiki/Helper-Scripts
 
 Xastir creará archivos de índice para cada archivo de base de datos al
@@ -1948,34 +1947,34 @@ tenga visibles. Esto puede ahorrar bastante tinta.
 HELP-INDEX>Crear Instantáneas
 
                      Crear Instantáneas Automáticas
-Xastir tiene la capacidad de crear snapshots automáticos de la pantalla del mapa
+Xastir tiene la capacidad de crear instantáneas automáticas de la pantalla del mapa
 en forma recurrente. El período de tiempo predeterminado es una vez cada cinco
 minutos. Si tiene "convert" de las herramientas GraphicsMagick instaladas,
 Xastir creará un archivo en formato XPM en ~/.xastir/tmp/, luego lo convertirá
 al archivo PNG ~/.xastir/tmp/snapshot.png. Este archivo es útil para
 incrustar en páginas web para mostrar una imagen "en vivo" de lo que hay en su
-pantalla de Xastir. Activa esta característica mediante el botón de alternancia
+pantalla de Xastir. Active esta característica mediante el botón de alternancia
 "Archivo->Activa PNG Instantánea". La frecuencia es una vez cada cinco minutos (configurable
 desde el diálogo Configurar Cronómetro desde "Archivo->Configurar->Cronómetro"), o cada vez
 que el botón se alterna de apagado a encendido. Se crea un archivo .geo para que
-pueda usar el snapshot como mapa. También se escribe un archivo .kml para que
-pueda usar el snapshot como una superposición gráfica en terreno en
+pueda usar la instantánea como mapa. También se escribe un archivo .kml para que
+pueda usar la instantánea como una superposición gráfica en terreno en
 aplicaciones capaces de leer kml. Ver kml_snapshot_to_web.sh y
 kml_snapshot_feed.kml en el directorio scripts para más información sobre cómo
 usar los archivos snapshot.png y snapshot.kml para producir una fuente kml
-usando los snapshots.
+usando las instantáneas.
 
-                    Crear Snapshots KML Automáticos
+                    Crear Instantáneas KML Automáticas
 
 Xastir es capaz de escribir todas las estaciones actuales y pistas a un archivo
-kml en forma recurrente. Activa esta característica mediante el botón de
+kml en forma recurrente. Active esta característica mediante el botón de
 alternancia "Archivo->Instantáneas KML". La frecuencia a la que se generan estos
-snapshots es la misma que la de los snapshots PNG, configurada desde
-"Archivo->Configurar->Cronómetro" estableciendo el intervalo de tiempo de snapshot.
-Cada snapshot se escribe a un archivo .kml en ~/.xastir/tracklogs, con un nombre
-de archivo basado en la fecha y hora del snapshot, ej. 20080206-000720.kml. Este
-comportamiento puede cambiar para que los snapshots KML se escriban a un único
-archivo como los snapshots PNG.
+archivos es la misma que la de las instantáneas PNG, configurada desde
+"Archivo->Configurar->Cronómetro" estableciendo el intervalo de tiempo de instantánea.
+Cada instantánea se escribe a un archivo .kml en ~/.xastir/tracklogs, con un nombre
+de archivo basado en la fecha y hora de la instantánea, ej. 20080206-000720.kml. Este
+comportamiento puede cambiar para que las instantáneas KML se escriban en un único
+archivo como las instantáneas PNG.
 
 
 HELP-INDEX>Scripts Incluidos
@@ -1986,7 +1985,7 @@ Xastir incluye varios scripts Perl y un script de shell que pueden ser útiles:
 
 get-fcc-rac.pl
 Este script de shell automatiza la recuperación e instalación de las bases de
-datos de callsign FCC y RAC. ¡Ten en cuenta que estas bases de datos son muy
+datos de indicativos FCC y RAC. Tenga en cuenta que estas bases de datos son muy
 grandes!
 
 icontable.pl
@@ -2076,9 +2075,9 @@ Serial Multi-Port KISS TNC
 SQL Databases (Experimental)
 
 Para agregar un dispositivo, haga clic en el botón Agregar. Aparecerá un cuadro
-"Choose Interface Type". Haga clic en el tipo de dispositivo que desee agregar.
-Luego haga clic en el botón Agregar en el cuadro "Choose Interface Type". Las
-propiedades de ese dispositivo aparecerán. Completa la información solicitada y
+"Seleccionar tipo de interfaz". Haga clic en el tipo de dispositivo que desee agregar.
+Luego haga clic en el botón Agregar en el cuadro "Seleccionar tipo de interfaz". Las
+propiedades de ese dispositivo aparecerán. Complete la información solicitada y
 haga clic en Aceptar.
 
 Para eliminar el dispositivo, haga clic en el dispositivo que desee eliminar y
@@ -2165,7 +2164,7 @@ HELP-INDEX>Configurar Serial TNC con GPS en Cable HSP o Puerto AUX
                 Configurar Serial TNC con GPS en Cable HSP o Puerto AUX
 
 Estos tipos de interfaz híbridos implementan las opciones tanto de TNCs en
-Serie como de GPSs en Serie. Por favor consulta la ayuda de configuración tanto
+Serie como de GPSs en Serie. Por favor, consulte la ayuda de configuración tanto
 para Serial TNCs como para Serial Gpsd para más información sobre la
 configuración de estos dispositivos.
 
@@ -2215,7 +2214,7 @@ recomienda para estaciones base en regiones donde hay pocos otros digipeaters de
 relleno en el área. Consulte con un grupo local sobre la mejor configuración
 para su región. Puede editar manualmente el archivo de configuración de Xastir
 cuando Xastir no está en ejecución para cambiar esta cadena para que coincida
-con tus recomendaciones locales. En EE.UU., "WIDE1-1" es la configuración
+con sus recomendaciones locales. En EE.UU., "WIDE1-1" es la configuración
 recomendada.
 
 El Puerto TNC es el dispositivo serial Unix al que está conectado el TNC.
@@ -2281,7 +2280,7 @@ relleno en el área. Consulte con un grupo local sobre la mejor configuración
 para su región. Esto solo es necesario si no está usando ningún otro software
 que realice esta función, como aprsdigi o DIGI_NED. Puede editar manualmente el
 archivo de configuración de Xastir cuando Xastir no está en ejecución para
-cambiar esta cadena para que coincida con tus recomendaciones locales. En
+cambiar esta cadena para que coincida con sus recomendaciones locales. En
 EE.UU., "WIDE1-1" es la configuración recomendada.
 
 Ingrese el nombre del Dispositivo AX.25 que especificó en el archivo axports
@@ -2382,7 +2381,7 @@ de Internet que desea contactar.
 Ingrese un código de acceso válido para validar su conexión; esto le permitirá
 que sus datos se transmitan a través de un IGate. Si no tiene un código de
 acceso, use el programa "callpass" incluido para generar uno. Tenga en cuenta que
-los códigos de acceso dependen de los callsigns. Desde el directorio src,
+los códigos de acceso dependen de los indicativos. Desde el directorio src,
 "make callpass" debería crear el ejecutable si no está ya compilado.
 
 Ingrese cualquier parámetro de filtro. Esto causa que se envíe un mensaje
@@ -2458,7 +2457,7 @@ HELP-INDEX>Configurar una Conexión AGWPE
 Xastir puede usar una interfaz de red AGWPE que se ejecuta en una caja Windows
 como una interfaz TNC. También puede usar la seguridad de inicio de sesión/
 contraseña que tiene AGWPE integrada, pero debe configurar la cuenta en la
-aplicación AGWPE con su callsign como nombre de usuario, todo en letras
+aplicación AGWPE con su indicativo como nombre de usuario, todo en letras
 mayúsculas. Por ejemplo: "AB7CD".
 
 Las otras opciones se describen en las secciones para Serial TNC e interfaces
@@ -2475,11 +2474,11 @@ sección "OPTIONAL: Experimental. Add GIS database support." en el archivo
 INSTALL para más información. Los datos de estaciones y objetos se almacenan
 como datos espaciales, y pueden recuperarse desde otras aplicaciones GIS; por
 ejemplo, Xastir puede escribir ubicaciones de estaciones en una base de datos
-Postgis desde las cuales también pueden verse usando QGIS. Las conexiones SQL
-database también permiten la persistencia de datos entre sesiones de Xastir.
+Postgis desde las cuales también pueden verse usando QGIS. Las conexiones de
+bases de datos SQL también permiten la persistencia de datos entre sesiones de Xastir.
 Todos los aspectos del soporte de base de datos espacial, incluyendo estructuras
 de base de datos, son actualmente experimentales y pueden cambiar en cualquier
-momento. Puede configurar múltiples conexiones SQL database, pero solo debería
+momento. Puede configurar múltiples conexiones de bases de datos SQL, pero solo debería
 tener una activa a la vez.
 
 Antes de crear una conexión de base de datos en Xastir, necesitará crear una
@@ -2489,7 +2488,7 @@ usuario con una contraseña y derechos para acceder a la base de datos. Para
 bases de datos postgis también puede necesitar configurar apropiadamente el
 usuario en pg_hba.conf
 
-Las opciones de configuración en el diálogo SQL database incluyen:
+Las opciones de configuración en el diálogo de bases de datos SQL incluyen:
 Base de datos: MySQL (lat/long) para bases de datos MySQL muy antiguas,
           Postgis para postgresql + postgis, y
           MySQL (Spatial) para bases de datos MySQL actuales.
@@ -2505,30 +2504,30 @@ Password: Único para su base de datos.
 Schema name: El nombre de su base de datos. ej. xastir
 MySQL Socket: revisa my.cnf, o mysql --help | grep socket
           Deja en blanco para bases de datos postgis.
-Reconnect on Net Failure: [Aún no implementado]
+Reconectar ante fallos de red: [Aún no implementado]
 Los valores predeterminados de MySQL y los valores predeterminados de Postgis
 proporcionados por los botones pueden o pueden no ser correctos para su base de
 datos.
 
-Tres opciones controlan el comportamiento de la interfaz SQL Database:
-Activate on Startup: Intenta conectar a esta base de datos y comienza a
+Tres opciones controlan el comportamiento de la interfaz de base de datos SQL:
+Activar al iniciar: Intenta conectar a esta base de datos y comienza a
 almacenar datos de estaciones escuchadas tan pronto como Xastir se inicia (si
-store incoming data también está seleccionado).
+Almacenar datos entrantes también está seleccionado).
 
-Store incoming data: Almacena cada reporte de estación (incluyendo objetos e
+Almacenar datos entrantes: Almacena cada reporte de estación (incluyendo objetos e
 items) como un registro en la base de datos. Todas las estaciones escuchadas en
 todas las interfaces serán almacenadas en la base de datos - si está conectado
 a fuentes de internet y deja xastir ejecutándose esto fácilmente puede ser un
 millón de registros por día.
 
-Load data on startup: Recupera todos los datos de estaciones desde la base de
+Cargar datos al iniciar: Recupera todos los datos de estaciones desde la base de
 datos cuando reinicia Xastir. Actualmente la única forma de recuperar datos
 persistentes desde una base de datos. Intentará conectar a la base de datos y
-recuperar datos independiente de la configuración de activate on startup o
-store incoming data. Debido a errores de redondeo y conversión, las estaciones
+recuperar datos independientemente de la configuración de Activar al iniciar o
+Almacenar datos entrantes. Debido a errores de redondeo y conversión, las estaciones
 no móviles pueden moverse ligeramente.
 
-El cuadro "Most Recent Error" puede o puede no contener un mensaje de error para
+El cuadro "Error más reciente" puede o puede no contener un mensaje de error para
 ayudar a identificar problemas de conexión. Cuando Xastir falla en conectar a
 una base de datos, la interfaz mostrará ERROR en la lista de interfaces, y el
 error más reciente puede mostrarse aquí. Ejecutar xastir desde la consola y
@@ -2536,7 +2535,7 @@ observar los mensajes de error allí, o ejecutar xastir desde la consola con
 xastir -v1 puede ayudar a identificar la causa de los problemas de conexión, como
 puede la examinación de los registros de error de la base de datos.
 
-Solo serás capaz de configurar una interfaz SQL Database si has compilado Xastir
+Solo será capaz de configurar una interfaz de base de datos SQL si ha compilado Xastir
 con soporte para ese DBMS (--with-mysql o --with-postgis).
 
 HELP-INDEX>Tabla de Símbolos
