@@ -77,12 +77,12 @@ PULDNMP007|Alerta Mapa WX||
 PULDNMP005|Color de fondo|C|
 PULDNMP006|Estilo de texto de estación|E|
 PULDNMP026|Estilo del contorno del icono|O|
-PULDNMP011|Menú Indicador del Ratón|R|
+PULDNMP011|Menú Contextual del Ratón|R|
 PULDNMP008|Intensidad del Mapa|I|
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
-PULDNMP022|Indexar mapas al inicio||
+PULDNMP022|Crear índice de mapas al inicio||
 PULDNMP023|Índice: agregar mapas nuevos|A|
-PULDNMP024|Índice: reindexar TODOS los mapas|T|
+PULDNMP024|Índice: reconstruir TODOS los mapas|T|
 PULDNMP025|Fuentes||
 PULDNMP015|Xfontsel||
 PULDNMP027|Volver a descargar mapas (sin caché)||
@@ -351,7 +351,7 @@ BBARSTA035|Esperando por datos del GPS vía AUX..||
 BBARSTA036|Limpiando el AUX datos obtenido del TNC..||
 BBARSTA037|Datos GPS decodificados||
 BBARSTA038|Coloque el cambio en mi estación||
-BBARSTA039|Indexando %s||
+BBARSTA039|Creando índice de %s||
 BBARSTA040|Estación APRS(tm) de radioaficionado %s||
 BBARSTA041|Esperando datos GPS..||
 BBARSTA042|Transmitiendo objetos/articulos||
