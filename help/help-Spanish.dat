@@ -244,7 +244,7 @@ debe crear un archivo ~/.xastir/data/nws-stations.txt que enumere cada
 indicativo o estación NWS (como "PHISVR") que desee transmitir por RF. Esta
 función también funciona para enrutar indicativos específicos a RF.
 
-"Comprimir datos objeto/artículo cuando transmita?", si está seleccionado,
+"¿Comprimir datos objeto/artículo cuando transmita?", si está seleccionado,
 transmitirá objetos y artículos en el formato comprimido más nuevo. La
 precisión máxima de la posición transmitida es mayor, y la transmisión es
 más corta, pero algunos programas más antiguos no decodifican este formato.
@@ -263,7 +263,7 @@ o Bloqueo de mayúsculas está activado. Algunos usuarios reportan que la
 pantalla se oscurece y problemas similares cuando intentan usar Xastir con
 una de estas teclas de modificador activada.
 
-También puede seleccionar "Activar Red Alternada?" y elegir un indicativo
+También puede seleccionar "¿Activar Red Alternada?" y elegir un indicativo
 altnet de este diálogo. Altnet le permite tener una red APRS(tm) privada
 entre las estaciones que también tienen altnet configurado y tienen el mismo
 altnet ingresado.
@@ -304,13 +304,14 @@ HELP-INDEX>Configurar Temporización
 
 Haga clic en Archivo, luego Configurar, luego Cronómetro.
 
-"TX Posición Intérvalo (minutos)" especifica con qué frecuencia se transmitirá
-la posición de su estación. Para estaciones fijas, una buena recomendación es
+"Intervalo TX de posición (min)" especifica con qué frecuencia se
+transmitirá la posición de su estación. Para estaciones fijas, una buena
+recomendación es
 cada 30 minutos, y definitivamente no menos de 10 minutos. Las estaciones
 móviles pueden desear usar una velocidad más rápida. Tenga en cuenta que si
 está usando Baliza Inteligente, este control deslizante se ignora.
 
-"Objeto/Artículo TX Max Intérvalo (minutos)" es el intervalo máximo usado
+"Intervalo TX máx de Objeto/Artículo (min)" es el intervalo máximo usado
 para enviar objetos y artículos. Intente mantener estos intervalos
 razonables, ya que transmitir a una ruta larga cada 5 minutos realmente
 consumirá mucho tiempo de aire. Se activa un algoritmo de intervalo
@@ -318,16 +319,18 @@ decreciente cada vez que se crea, modifica o elimina un objeto. El intervalo
 de transmisión aumentará hasta que alcance el intervalo máximo indicado por
 el control deslizante.
 
-"Chequeo Intérvalo del GPS (segundos)" establecerá el intervalo de tiempo
-para verificar el GPS en busca de nuevos datos. Esto está disponible para
+"Intervalo de comprobación del GPS (seg)" establecerá el intervalo de
+tiempo para verificar el GPS en busca de nuevos datos. Esto está
+disponible para
 estaciones que utilizan un HSP o cable compartido con su TNC.
 
-"Descanso Conteo-Muerto (minutos)" ajusta cuánto tiempo se supone que una
-posición es válida para el propósito de estimar su posición actual.
+"Tiempo de espera de navegación estimada (minutos)" ajusta cuánto tiempo se
+supone que una posición es válida para el propósito de estimar su posición
+actual.
 
-"Nuevo Tiempo Rastro (min)" ajusta cuántos minutos deben transcurrir antes
-de que se inicie un nuevo rastro separado. Precaución: establecer este
-valor en 0 desactivará la visualización de todos los rastros.
+"Tiempo para nuevo rastro (min)" ajusta cuántos minutos deben transcurrir
+antes de que se inicie un nuevo rastro separado. Precaución: establecer
+este valor en 0 desactivará la visualización de todos los rastros.
 
 "Intervalo RINO -> Objetos (min), 0 = desactivado" ajusta la frecuencia con
 la que se descargan los puntos de referencia de una unidad de radio/GPS
@@ -335,24 +338,24 @@ Garmin RINO conectada. Se crean Objetos APRS(tm) a partir de cualquier punto
 de referencia que comience con "APRS". El prefijo "APRS" se elimina al crear
 los nombres de los Objetos.
 
-"Desvanecimiento de la Estación (minutos)" especifica el intervalo de
-desvanecimiento. Las estaciones que no se han escuchado en el período dado
-aparecerán desvanecidas en la pantalla.
+"Desvanecer estación luego de (minutos)" especifica el intervalo de
+desvanecimiento. Las estaciones que no se han escuchado en el período
+dado aparecerán desvanecidas en la pantalla.
 
-"Limpiar Tiempo de la Estación (horas)" especifica cuándo se eliminará una
+"Limpiar estación luego de (horas)" especifica cuándo se eliminará una
 estación de la pantalla.
 
-"Borrar Tiempo de la Estación (días)" especifica el número de días completos
+"Borrar estación luego de (días)" especifica el número de días completos
 antes de que los datos de una estación se eliminen completamente de la base
 de datos de Xastir.
 
 "Retardo serial entre caracteres (ms)" especifica un tiempo de espera en
 milisegundos entre cada carácter enviado a un TNC conectado.
 
-"Nuevo Interval Rastro (grados)" especifica la distancia en grados de
-lat/long en la cual se inicia un nuevo segmento de rastro. Precaución:
-establecer este valor a 0 grados desactivará la visualización de todos los
-rastros.
+"Intervalo para nuevo rastro (grados)" especifica la distancia en grados
+de lat/long en la cual se inicia un nuevo segmento de rastro. Precaución:
+establecer este valor a 0 grados desactivará la visualización de todos
+los rastros.
 
 "Intervalo de instantáneas (min)" especifica con qué frecuencia se escribirán
 archivos de instantánea si se selecciona Archivo->Activa PNG Instantánea o
@@ -1002,7 +1005,7 @@ Menú Configurar:
   Esto le permite especificar un esquema que rodea los iconos de estación. Esto
   ayuda a mejorar la visibilidad en varios fondos.
 
-Desactive todos los Mapas
+Desactivar todos los Mapas
 Esta opción deshabilita la carga de cualquier mapa. Es más útil cuando se hace
 zoom rápido o desplazamiento, porque ahorra la necesidad de cargar los mapas
 en cada redibujado. Tenga en cuenta que esta opción no se guarda entre sesiones.
@@ -1505,7 +1508,7 @@ Este submenú permite el filtrado de los datos mostrados:
   Mostrar atributos DF: cuando está habilitado, se mostrarán todos los
   círculos/líneas de DF en la pantalla.
 
-  Activar Conteo-Muerto: cuando está habilitado, las posiciones de las
+  Activar navegación estimada: cuando está habilitado, las posiciones de las
   estaciones se estiman en función del curso y la velocidad pasados. La
   velocidad de recálculo debería ser razonable, pero se puede ajustar en el
   archivo de configuración.
@@ -1643,17 +1646,17 @@ blanco a los indicativos originales, eliminando así la asignación):
 Anular todos los mensajes salientes
 Esto borrará todos los mensajes sin reconocer que ha enviado.
 
-Pregunta General a Estaciones
+Consulta general de estaciones
 Esto envía un paquete ?APRS?, que debería hacer que todas las estaciones
 locales reporten su posición y/o estado. La mayoría del software ignora
 esta consulta, porque responder a ella causaría masivas inundaciones de
 datos.
 
-Pregunta a Estaciones I-Gate
+Consulta de estaciones I-Gate
 Esto envía un paquete ?IGATE?, que debería hacer que todos los I-Gates
 locales respondan con sus capacidades.
 
-Pregunta a Estaciones WX
+Consulta de estaciones WX
 Esto envía un paquete ?WX?, que debería hacer que todas las estaciones
 meteorológicas locales reporten su posición y meteorología.
 
@@ -1723,7 +1726,7 @@ remoto usando la bandera -identify:
 
  xastir_udp_client localhost 2023 <callsign> <passcode> -identify
 
-Transmitir Ahora..!
+¡Transmitir Ahora..!
 Hace que todas las interfaces que tengan habilitada la transmisión (vea
 Interfaces|Control de interfaces) transmitan un paquete de posición. Se
 desactivará si está seleccionada la opción "Desactivar Transmitir: TODOS".
@@ -1933,7 +1936,7 @@ y el nivel de zoom que desea utilizar. Ingrese un nombre único en el área
 "Nombre de Nueva Localización:", luego haga clic en "Agregar". Su entrada
 se agregará a la lista (en orden alfabético). Puede agregar tantos
 marcadores del mapa como desee. Para usar uno de los marcadores, marque
-su nombre y haga clic en "IR!". El mapa principal mostrará el área
+su nombre y haga clic en "¡IR!". El mapa principal mostrará el área
 almacenada y el nivel de zoom. Puede eliminar un marcador de manera
 similar haciendo clic en el nombre del marcador y luego en el botón
 "Anular".
@@ -2144,11 +2147,11 @@ de comunicación. Generalmente 4800 bps, 8 bits de datos, sin paridad y 1 bit de
 parada.
 
 Opciones del Puerto TNC:
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
-Seleccionar "Permitir Transmisión?" le dirá a Xastir que cualquier dato de
+Seleccionar "¿Permitir Transmisión?" le dirá a Xastir que cualquier dato de
 RF saliente puede ser enviado a este dispositivo para difusión.
 
 Seleccionar "Añadir retardo" le dirá a Xastir que inserte un retraso de un
@@ -2239,11 +2242,11 @@ puramente KISS, como el descrito en el número de noviembre de 2000 de QST, sin 
 programa separado o módulo del kernel.
 
 Opciones
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
-Seleccionar "Permitir Transmisión?" le dirá a Xastir que cualquier dato de
+Seleccionar "¿Permitir Transmisión?" le dirá a Xastir que cualquier dato de
 RF saliente puede ser enviado a este dispositivo para difusión.
 
 Seleccionar "¿Digipeat?" le dirá a Xastir que repita el tráfico de
@@ -2309,11 +2312,11 @@ dispositivos como un Baycom o un módem de sonido pueden usarse como TNC.
 Estos dispositivos deben estar configurados y en funcionamiento antes de
 que Xastir pueda usarlos.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
-Seleccionar "Permitir Transmisión?" le dirá a Xastir que cualquier dato de
+Seleccionar "¿Permitir Transmisión?" le dirá a Xastir que cualquier dato de
 RF saliente puede ser enviado a este dispositivo para difusión.
 
 Seleccionar "¿Digipeat?" le dirá a Xastir que repita el tráfico de
@@ -2373,7 +2376,7 @@ valores comunes de /dev/ttyS0 (COM1) o /dev/ttyS1 (COM2).
 El comentario le permitirá establecer un nombre amigable o comentario
 para el puerto.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
@@ -2403,11 +2406,11 @@ el host gpsd en su red.
 El comentario le permitirá establecer un nombre amigable o comentario
 para el puerto.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
-Seleccionar "Reconectar en fallo?" le dirá a Xastir que intente reconectar
+Seleccionar "¿Reconectar en fallo?" le dirá a Xastir que intente reconectar
 cuando el flujo de datos ha fallado.
 
 Seleccionar "Fije el tiempo del sistema del GPS" le dirá a Xastir que
@@ -2422,11 +2425,11 @@ HELP-INDEX>Configurar el Servidor de Internet
 Los Servidores de Internet le permiten enviar y recibir datos para todo
 el mundo.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
-Seleccionar "Permitir Transmisión?" le dirá a Xastir que cualquier dato
+Seleccionar "¿Permitir Transmisión?" le dirá a Xastir que cualquier dato
 saliente de Internet puede ser enviado a este dispositivo.
 
 Ingrese el nombre de host (o dirección IP) y el número de puerto del
@@ -2460,7 +2463,7 @@ valores comunes de /dev/ttyS0 (COM1) o /dev/ttyS1 (COM2).
 El comentario le permitirá establecer un nombre amigable o comentario
 para el puerto.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
@@ -2494,7 +2497,7 @@ servidor de datos WX que desea contactar.
 El comentario le permitirá establecer un nombre amigable o comentario
 para el puerto.
 
-Seleccionar "Activar en Inicio?" le dirá a Xastir que busque este
+Seleccionar "¿Activar en Inicio?" le dirá a Xastir que busque este
 dispositivo y configure las comunicaciones con él cuando el programa
 primero se inicia.
 
