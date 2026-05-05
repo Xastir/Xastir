@@ -727,7 +727,8 @@ static void draw_OSM_image(
   ExceptionInfo *except_ptr,
   tiepoint *tpNW,
   tiepoint *tpSE,
-  int osm_zl)
+  int osm_zl,
+  XImage *ext_ximg)   // optional external XImage; if non-NULL, skip alloc and XPutImage
 {
   int l;
   XColor my_colors[256];
@@ -745,6 +746,9 @@ static void draw_OSM_image(
   long scr_x,  scr_y;             // screen pixel plot positions
   long scr_xp, scr_yp;            // previous screen plot positions
   int  scr_dx, scr_dy;            // increments in screen plot positions
+  XImage *ximg = ext_ximg;        // use external buffer when provided
+  int own_ximg = 0;               // whether we own ximg (must free it)
+  unsigned long fill_pixel = 0;   // pixel value accumulated before writing
 
   //if (debug_level & 512)
   //    fprintf(stderr,"Color depth is %i \n", (int)image->depth);
@@ -874,6 +878,31 @@ static void draw_OSM_image(
   scr_dx = 1;
   scr_dy = 1;
 
+  // Build a client-side XImage buffer so we can transfer all pixels in one
+  // XPutImage call instead of one XSetForeground+XFillRectangle per pixel.
+  // This avoids millions of X11 round-trips, which is the bottleneck on
+  // slow hardware (Raspberry Pi) and remote/forwarded displays.
+  if (!ximg)
+  {
+    ximg = XCreateImage(XtDisplay(w),
+                        DefaultVisualOfScreen(XtScreen(w)),
+                        DefaultDepthOfScreen(XtScreen(w)), ZPixmap, 0, NULL,
+                        (unsigned)screen_width, (unsigned)screen_height, 32, 0);
+    if (ximg)
+    {
+      ximg->data = calloc(ximg->bytes_per_line * screen_height, 1);
+      if (!ximg->data)
+      {
+        XDestroyImage(ximg);
+        ximg = NULL;
+      }
+      else
+      {
+        own_ximg = 1;
+      }
+    }
+  }
+
   // calculate map pixel range in y direction that falls into screen area
   map_y_min = map_y_max = 0l;
   for (map_image_row = 0; map_image_row < (long)image->rows; map_image_row++)
@@ -930,6 +959,13 @@ static void draw_OSM_image(
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
     {
+      if (ximg && own_ximg)
+      {
+        XPutImage(XtDisplay(w), pixmap, gc, ximg, 0, 0, 0, 0,
+                  (unsigned)screen_width, (unsigned)screen_height);
+        XDestroyImage(ximg);
+        ximg = NULL;
+      }
       // Update to screen
       (void)XCopyArea(XtDisplay(da),
                       pixmap,
@@ -997,7 +1033,7 @@ static void draw_OSM_image(
               {
                 continue;
               }
-              XSetForeground(XtDisplay(w), gc, my_colors[(int)index_pack[l]].pixel);
+              fill_pixel = my_colors[(int)index_pack[l]].pixel;
             }
             else
             {
@@ -1032,12 +1068,31 @@ static void draw_OSM_image(
                               my_colors[0].green * raster_map_intensity,
                               my_colors[0].blue * raster_map_intensity,
                               &my_colors[0].pixel);
-              XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+              fill_pixel = my_colors[0].pixel;
             }
-            // write the pixel from the map image to the
-            // screen. Stretch to a rectangle as needed
-            // specified by scr_dx and scr_dy.
-            (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+            // Write pixel(s) to the screen. Use XImage bulk transfer when
+            // available to avoid per-pixel X11 round-trips (major bottleneck
+            // on Raspberry Pi and slow/remote displays).
+            if (ximg)
+            {
+              int ix, iy;
+              for (iy = (int)scr_y; iy < (int)scr_y + scr_dy && iy < screen_height; iy++)
+              {
+                for (ix = (int)scr_x; ix < (int)scr_x + scr_dx && ix < screen_width; ix++)
+                {
+                  if (ix >= 0 && iy >= 0)
+                  {
+                    XPutPixel(ximg, ix, iy, fill_pixel);
+                  }
+                }
+              }
+            }
+            else
+            {
+              // Fallback: per-pixel X11 calls (slow but always available)
+              XSetForeground(XtDisplay(w), gc, fill_pixel);
+              (void)XFillRectangle(XtDisplay(w), pixmap, gc, scr_x, scr_y, scr_dx, scr_dy);
+            }
           } // check map boundaries in y direction
         }  // don't do a screen pixel twice (in the same row)
       } // loop over map pixel columns
@@ -1049,6 +1104,14 @@ static void draw_OSM_image(
       (void)map_done; // map_done is never used, but this takes away the compile warning.
     } // don't do a screen row twice.
   } // loop over map pixel rows
+
+  // Flush accumulated pixels to pixmap (only if we own the XImage)
+  if (ximg && own_ximg)
+  {
+    XPutImage(XtDisplay(w), pixmap, gc, ximg, 0, 0, 0, 0,
+              (unsigned)screen_width, (unsigned)screen_height);
+    XDestroyImage(ximg);
+  }
 }  // end draw_OSM_image()
 
 
@@ -1274,134 +1337,100 @@ void draw_OSM_tiles (Widget w,
     /*
      * Create a canvas upon which the tiles will be composited.
     */
-    canvas_info=CloneImageInfo((ImageInfo *)NULL);
-
-    // Set canvas dimensions in pixels
-    xastir_snprintf(tmpString, sizeof(tmpString), "%lix%li",
-                    ((tiles.endx + 1) - tiles.startx) * 256,
-                    ((tiles.endy + 1) - tiles.starty) * 256);
-    (void)CloneString(&canvas_info->size, tmpString);
-
-    /*
-     * A file name based on a color creates an image filled
-     * with that color. The matte color will be treated as
-     * transparent when the completed OSM map gets copied to the X
-     * display.
-     */
-    xastir_snprintf(canvas_info->filename, sizeof(canvas_info->filename),
-                    "%s", MATTE_COLOR_STRING);
-    canvas = ReadImage(canvas_info, &exception);
-    if (exception.severity != UndefinedException)
-    {
-      CatchException(&exception);
-      fprintf(stderr, "Could not allocate canvas to hold tiles.\n");
-
-      if (canvas_info != NULL)
-      {
-        DestroyImageInfo(canvas_info);
-      }
-      return;
-    }
-    // Make sure that the canvas is an image type that uses the
-    // opacity channel for compositing.
-    SetImageType(canvas, PaletteMatteType);
-
-    // Fill the image with an opaque color. Ultimately pixels that
-    // are this color will be skipped when the image is written to
-    // the screen.
-    canvas->background_color.red = MATTE_RED;
-    canvas->background_color.green = MATTE_GREEN;
-    canvas->background_color.blue = MATTE_BLUE;
-    canvas->background_color.opacity = MATTE_OPACITY;
-#if defined(HAVE_GRAPHICSMAGICK)
-    SetImage(canvas, MATTE_OPACITY);
-#else
-    SetImageBackgroundColor(canvas);
-    SetImageOpacity(canvas, MATTE_OPACITY);
-#endif
-
     xastir_snprintf(map_it, sizeof(map_it), "%s",
                     langcode ("BBARSTA049")); // Reading tiles...
     statusline(map_it,0);
     XmUpdateDisplay(text);
 
-    tile_info = CloneImageInfo((ImageInfo *)NULL);
-
-    // Read the tile and composite them onto the canvas
-    for (col = tiles.starty, offset_y = 0;
-         col <= tiles.endy;
-         col++, offset_y += 256)
+    // Allocate a single client-side XImage for the whole screen.
+    // Each tile is decoded and written directly into this buffer,
+    // eliminating the intermediate ImageMagick canvas and all
+    // CompositeImage() calls (the main remaining bottleneck).
     {
-      for (row = tiles.startx, offset_x = 0;
-           row <= tiles.endx;
-           row++, offset_x += 256)
+      XImage *shared_ximg = XCreateImage(XtDisplay(w),
+                                         DefaultVisualOfScreen(XtScreen(w)),
+                                         DefaultDepthOfScreen(XtScreen(w)),
+                                         ZPixmap, 0, NULL,
+                                         (unsigned)screen_width,
+                                         (unsigned)screen_height, 32, 0);
+      if (shared_ximg)
       {
-
-        xastir_snprintf(tmpString, sizeof(tmpString),
-                        "%s/%d/%d/%d.%s", tileRootDir, osm_zl, row, col,
-                        tileExt[0] != '\0' ? tileExt : "png");
-        strncpy(tile_info->filename, tmpString, MaxTextExtent);
-
-        tile = ReadImage(tile_info,&exception);
-
-        if (exception.severity != UndefinedException)
+        shared_ximg->data = calloc(shared_ximg->bytes_per_line * screen_height, 1);
+        if (!shared_ximg->data)
         {
-          //fprintf(stderr,"Exception severity:%d\n", exception.severity);
-          if (exception.severity==FileOpenError)
+          XDestroyImage(shared_ximg);
+          shared_ximg = NULL;
+        }
+      }
+
+      tile_info = CloneImageInfo((ImageInfo *)NULL);
+
+      // Decode each tile and render it directly into the shared XImage
+      // using per-tile tiepoints. No canvas or CompositeImage needed.
+      for (col = tiles.starty; col <= tiles.endy; col++)
+      {
+        for (row = tiles.startx; row <= tiles.endx; row++)
+        {
+          tiepoint tpTileNW, tpTileSE;
+
+          // Per-tile tiepoints: OSM pixel coordinates of this tile
+          tpTileNW.img_x = 0;
+          tpTileNW.img_y = 0;
+          tpTileNW.x_long = row * 256;
+          tpTileNW.y_lat  = col * 256;
+          tpTileSE.img_x  = 255;
+          tpTileSE.img_y  = 255;
+          tpTileSE.x_long = (row + 1) * 256;
+          tpTileSE.y_lat  = (col + 1) * 256;
+
+          xastir_snprintf(tmpString, sizeof(tmpString),
+                          "%s/%d/%lu/%lu.%s", tileRootDir, osm_zl, row, col,
+                          tileExt[0] != '\0' ? tileExt : "png");
+          strncpy(tile_info->filename, tmpString, MaxTextExtent);
+
+          tile = ReadImage(tile_info, &exception);
+
+          if (exception.severity != UndefinedException)
           {
-            //fprintf(stderr, "%s NOT available\n", tile_info->filename);
-#if !defined(HAVE_GRAPHICSMAGICK)
-            ClearMagickException(&exception);
-#endif
-          }
-          else
-          {
-            xastir_snprintf(tmpString, sizeof(tmpString), "%s/%d/%d/%d.%s",
-                            tileRootDir, osm_zl, row, col,
-                            tileExt[0] != '\0' ? tileExt : "png");
-            if (debug_level & 512)
+            if (exception.severity == FileOpenError)
             {
-              fprintf(stderr, "%s NOT removed.\n", tmpString);
+#if !defined(HAVE_GRAPHICSMAGICK)
+              ClearMagickException(&exception);
+#endif
             }
             else
             {
-              fprintf(stderr, "Removing %s\n", tmpString);
-              unlink(tmpString);
+              if (debug_level & 512)
+              {
+                fprintf(stderr, "%s NOT removed.\n", tmpString);
+              }
+              else
+              {
+                fprintf(stderr, "Removing %s\n", tmpString);
+                unlink(tmpString);
+              }
+              CatchException(&exception);
             }
-            CatchException(&exception);
+            GetExceptionInfo(&exception);
           }
-          // clear exception so next iteration doesn't fail
-          GetExceptionInfo(&exception);
 
-          // replace the missing tile with a place holder
-          //(void)strcpy(tile_info->filename, "xc:red");
-          //tile = ReadImage(tile_info, &exception);
-        }
-        if (tile)
-        {
-          (void)CompositeImage(canvas, OverCompositeOp,
-                               tile, offset_x, offset_y);
-          DestroyImage(tile);
+          if (tile)
+          {
+            draw_OSM_image(w, tile, &exception, &tpTileNW, &tpTileSE, osm_zl,
+                           shared_ximg);
+            DestroyImage(tile);
+          }
         }
       }
-    }
 
-    // Set the matte color for use in transparentency testing
-    canvas->matte_color.red = MATTE_RED;
-    canvas->matte_color.green = MATTE_GREEN;
-    canvas->matte_color.blue = MATTE_BLUE;
-
-    if (debug_level & 512)
-    {
-#if defined(HAVE_GRAPHICSMAGICK)
-      DescribeImage(canvas, stderr, 0);
-#else
-      IdentifyImage(canvas, stderr, 0);
-#endif
-      WriteImages(canvas_info, canvas, "/tmp/xastirOSMTiledMap.png", &exception);
-    }
-
-    draw_OSM_image(w, canvas, &exception, &NWcorner, &SEcorner, osm_zl);
+      // Single bulk transfer of all tiles to the pixmap
+      if (shared_ximg)
+      {
+        XPutImage(XtDisplay(w), pixmap, gc, shared_ximg, 0, 0, 0, 0,
+                  (unsigned)screen_width, (unsigned)screen_height);
+        XDestroyImage(shared_ximg);
+      }
+    } // end shared_ximg block
 
     // Display the OpenStreetMap attribution
     // Just reuse the tile structure rather than creating another.
@@ -1442,14 +1471,6 @@ void draw_OSM_tiles (Widget w,
   if (tile_info != NULL)
   {
     DestroyImageInfo(tile_info);
-  }
-  if (canvas_info != NULL)
-  {
-    DestroyImageInfo(canvas_info);
-  }
-  if (canvas != NULL)
-  {
-    DestroyImage(canvas);
   }
   DestroyExceptionInfo(&exception);
   return;
@@ -1778,7 +1799,7 @@ void draw_OSM_map (Widget w,
     fprintf(stderr,"image matte is %i\n", image->matte);
   } // debug_level & 512
 
-  draw_OSM_image(w, image, &exception, &(tp[0]), &(tp[1]), osm_zl);
+  draw_OSM_image(w, image, &exception, &(tp[0]), &(tp[1]), osm_zl, NULL);
   DestroyImage(image);
 
   // Display the OpenStreetMap attribution
