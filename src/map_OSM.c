@@ -1383,7 +1383,7 @@ void draw_OSM_tiles (Widget w,
           tpTileSE.y_lat  = (col + 1) * 256;
 
           xastir_snprintf(tmpString, sizeof(tmpString),
-                          "%s/%d/%lu/%lu.%s", tileRootDir, osm_zl, row, col,
+                          "%s/%d/%u/%u.%s", tileRootDir, osm_zl, row, col,
                           tileExt[0] != '\0' ? tileExt : "png");
           strncpy(tile_info->filename, tmpString, MaxTextExtent);
 
@@ -1801,9 +1801,8 @@ void draw_OSM_map (Widget w,
   DestroyImage(image);
 
   // Display the OpenStreetMap attribution
-  xastir_snprintf(OSMtmp, sizeof(OSMtmp),
+  xastir_snprintf(image_info->filename, MaxTextExtent,
                   "%s/CC_OpenStreetMap.png", get_data_base_dir("maps"));
-  strncpy(image_info->filename, OSMtmp, MaxTextExtent);
 
   image = ReadImage(image_info,&exception);
   if (exception.severity != UndefinedException)
