@@ -1167,7 +1167,6 @@ void draw_shapefile_map (Widget w,
                               object->dfXMax) )     // Right
     {
 
-      const char *temp;
       int jj;
       int x0 = 0; // Used for computing label rotation
       int x1 = 0;
@@ -1188,7 +1187,7 @@ void draw_shapefile_map (Widget w,
         {
           if (fieldcount >= (jj + 1) )
           {
-            temp = DBFReadStringAttribute( hDBF, structure, jj );
+            const char * temp = DBFReadStringAttribute( hDBF, structure, jj );
             if (temp != NULL)
             {
               fprintf(stderr,"%s, ", temp);
@@ -1290,7 +1289,7 @@ void draw_shapefile_map (Widget w,
 
           if (!skip_it)
           {
-            const char *temp = NULL;
+            char *temp = NULL;
             int ok = 1;
 
             if (map_labels)
@@ -1406,7 +1405,7 @@ void draw_shapefile_map (Widget w,
                                CoordModeOrigin);
 
               // draw a label
-              temp = (gps_flag)?gps_label:name;
+              char * temp = (gps_flag)?gps_label:name;
               if ( (temp != NULL)
                    && (strlen(temp) != 0)
                    && map_labels
