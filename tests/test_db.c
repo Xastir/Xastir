@@ -562,7 +562,7 @@ int test_extract_signpost_after_altitude_string(void)
     TEST_ASSERT_STR_EQ("XY", signpost, "Signpost text should be extracted");
     TEST_ASSERT_STR_EQ("/A=000100", info, "Only signpost token should be removed");
 
-    TEST_PASS("extract_signpost with altitude prefix (issue #259 regression)");
+    TEST_PASS("extract_signpost with altitude prefix (issue 259 regression)");
 }
 
 int test_extract_signpost_not_at_start(void)

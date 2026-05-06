@@ -215,9 +215,9 @@ AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_digits], [0], [PASS
 ])
 AT_CLEANUP
 
-AT_SETUP([extract_signpost: altitude precedes signpost (issue #259 regression)])
+AT_SETUP([extract_signpost: altitude precedes signpost (issue 259 regression)])
 AT_KEYWORDS([db extract_signpost])
-AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_after_altitude_string], [0], [PASS: extract_signpost with altitude prefix (issue #259 regression)
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_after_altitude_string], [0], [PASS: extract_signpost with altitude prefix (issue 259 regression)
 ])
 AT_CLEANUP
 
