@@ -7634,53 +7634,56 @@ int extract_omnidf(char *info, char *phgd)
 
 
 /*
- *  Extract signpost data from APRS info field: "{123}", an APRS data extension
+ *  Extract signpost data from APRS info field: "{123}"
  *  Format can be {1}, {12}, or {123}.  Letters or digits are ok.
+ *  Scans the entire string so altitude (/A=xxxxxx) or other comment
+ *  data may precede the signpost text without causing a parse failure.
  */
 int extract_signpost(char *info, char *signpost)
 {
-  int i,found,len,done;
+  int i, ofs, found, len, end;
 
-  //0123456
-  //{1}
-  //{12}
-  //{121}
+  found = 0;
+  len   = (int)strlen(info);
 
-  found=0;
-  len = (int)strlen(info);
-  if ( (len > 2)
-       && (info[0] == '{')
-       && ( (info[2] == '}' ) || (info[3] == '}' ) || (info[4] == '}' ) ) )
+  /* Scan for '{' followed by 1-3 chars and a closing '}' */
+  for (ofs = 0; !found && ofs < len - 2; ofs++)
   {
-
-    i = 1;
-    done = 0;
-    while (!done)                   // Snag up to three digits
+    if (info[ofs] == '{')
     {
-      if (info[i] == '}')         // We're done
+      if (   (ofs + 2 < len && info[ofs + 2] == '}')
+          || (ofs + 3 < len && info[ofs + 3] == '}')
+          || (ofs + 4 < len && info[ofs + 4] == '}') )
       {
-        found = i;              // found = position of '}' character
-        done++;
-      }
-      else
-      {
-        signpost[i-1] = info[i];
-      }
-
-      i++;
-
-      if ( (i > 4) && !done)      // Something is wrong, we should be done by now
-      {
-        done++;
-        signpost[0] = '\0';
-        return(0);
+        found = 1;
       }
     }
-    substr(signpost,info+1,found-1);
-    found++;
-    for (i=0; i<=len-found; i++)    // delete omnidf from data extension field
+  }
+
+  if (found)
+  {
+    ofs--;                    /* back up: loop incremented one past the match */
+
+    /* find closing '}' (1-3 chars after '{') */
+    end = ofs + 2;
+    while (end < len && info[end] != '}')
     {
-      info[i] = info[i+found];
+      end++;
+    }
+
+    if (end >= len || (end - ofs - 1) < 1 || (end - ofs - 1) > 3)
+    {
+      signpost[0] = '\0';
+      return(0);
+    }
+
+    substr(signpost, info + ofs + 1, end - ofs - 1);
+
+    /* delete "{xxx}" from the info buffer */
+    int match_len = end - ofs + 1;   /* length including '{' and '}' */
+    for (i = ofs; i <= len - match_len; i++)
+    {
+      info[i] = info[i + match_len];
     }
     return(1);
   }
@@ -8256,15 +8259,6 @@ void process_data_extension(DataRow *p_station, char *data, int UNUSED(type) )
       }
     }
 
-    if (extract_signpost(data, temp2))
-    {
-      //fprintf(stderr,"extracted signpost data\n");
-      xastir_snprintf(p_station->signpost,
-                      sizeof(p_station->signpost),
-                      "%s",
-                      temp2);
-    }
-
     if (extract_probability_min(data, temp3, sizeof(temp3)))
     {
       if (strncasecmp(temp3, "0.0", sizeof(temp3)) == 0)
@@ -8330,6 +8324,26 @@ void process_info_field(DataRow *p_station, char *info, int UNUSED(type) )
     xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%.2f",atof(temp_data)*0.3048);
     //fprintf(stderr,"%.2f\n",atof(temp_data)*0.3048);
   }
+
+  /* Signpost text ({xxx}) is a comment field item, not a data extension.
+   * It is only valid for the signpost symbol (\m) and must be parsed here
+   * so that altitude (/A=xxxxxx), which may precede it in the comment,
+   * has already been stripped by extract_altitude() above.
+   * Area-object corridor strings ({xxx} for symbol \l) are handled
+   * separately in process_data_extension() via extract_area(). */
+  if (   p_station->aprs_symbol.aprs_type   == '\\'
+      && p_station->aprs_symbol.aprs_symbol == 'm')
+  {
+    char temp_signpost[3+1];
+    if (extract_signpost(info, temp_signpost))
+    {
+      xastir_snprintf(p_station->signpost,
+                      sizeof(p_station->signpost),
+                      "%s",
+                      temp_signpost);
+    }
+  }
+
   // do other things...
 }
 
