@@ -79,14 +79,11 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
 
   double utmNorthing;
   double utmEasting;
-  //char utmZone[10];
   int start;
   int my_east, my_north;
-  //unsigned int int_utmEasting, int_utmNorthing;
   int UPS = 0;
   int North_UPS = 0;
   int coordinate_system_save = coordinate_system;
-  //char space_string[4] = "   ";    // Three spaces
 
   // Set for correct zones
   coordinate_system = USE_MGRS;
@@ -102,13 +99,6 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
 
   // Restore it
   coordinate_system = coordinate_system_save;
-
-
-  //fprintf(stderr,"%s %07.0f %07.0f\n", utmZone, utmEasting,
-  //utmNorthing );
-  //xastir_snprintf(str, str_len, "%s %07.0f %07.0f",
-  //    utmZone, utmEasting, utmNorthing );
-
 
   // Convert the northing and easting values to the digraph letter
   // format.  Letters 'I' and 'O' are skipped for both eastings
@@ -203,15 +193,6 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
       my_north = (int)(utmNorthing / 100000.0);
       my_north = my_north - 13;
 
-      /*xastir_snprintf(str,
-          str_len,
-          "%s %c%c %05d %s%05d",
-          utmZone,
-          UPS_N_Easting[my_east],
-          UPS_N_Northing[my_north],
-          int_utmEasting,
-          space_string,
-          int_utmNorthing ); */
       xastir_snprintf(EastingL,EastingL_len,
                       "%c", UPS_N_Easting[my_east]);
       xastir_snprintf(NorthingL,NorthingL_len,
@@ -228,15 +209,6 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
       my_north = (int)(utmNorthing / 100000.0);
       my_north = my_north - 8;
 
-      /* xastir_snprintf(str,
-          str_len,
-          "%s %c%c %05d %s%05d",
-          utmZone,
-          UPS_S_Easting[my_east],
-          UPS_S_Northing[my_north],
-          int_utmEasting,
-          space_string,
-          int_utmNorthing ); */
       xastir_snprintf(EastingL,EastingL_len,
                       "%c", UPS_S_Easting[my_east]);
       xastir_snprintf(NorthingL,NorthingL_len,
@@ -268,10 +240,6 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
     my_east = (int)(utmEasting / 100000.0) - 1;
     my_east = my_east + start;
     my_east = my_east % 24;
-//        fprintf(stderr, "Start: %c   East (guess): %c   ",
-//            E_W[start],
-//            E_W[my_east]);
-
 
     start = atoi(utmZone);
     start = start % 2;
@@ -286,19 +254,6 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
     my_north = (int)(utmNorthing / 100000.0);
     my_north = my_north + start;
     my_north = my_north % 20;
-//        fprintf(stderr, "Start: %c   North (guess): %c\n",
-//            N_S[start],
-//            N_S[my_north]);
-
-    /* xastir_snprintf(str,
-        str_len,
-        "%s %c%c %05d %s%05d",
-        utmZone,
-        E_W[my_east],
-        N_S[my_north],
-        int_utmEasting,
-        space_string,
-        int_utmNorthing ); */
     xastir_snprintf(EastingL, EastingL_len,
                     "%c", E_W[my_east]);
     xastir_snprintf(NorthingL, NorthingL_len,
