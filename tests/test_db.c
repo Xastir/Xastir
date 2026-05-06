@@ -37,6 +37,7 @@
 /* Forward declarations of functions under test */
 void pad_callsign(char *callsignout, char *callsignin);
 int extract_speed_course(char *info, char *speed, char *course);
+int extract_signpost(char *info, char *signpost);
 
 /* Local implementation of substr helper function */
 static void substr(char *dest, char *src, int size)
@@ -483,6 +484,161 @@ int test_extract_speed_course_course_001(void)
     TEST_PASS("extract_speed_course with course=001 (minimum valid)");
 }
 
+/* Test cases for extract_signpost() */
+
+int test_extract_signpost_1char(void)
+{
+    char info[100] = "{A}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should return 1 for 1-char signpost");
+    TEST_ASSERT_STR_EQ("A", signpost, "1-char signpost should be extracted");
+    TEST_ASSERT_STR_EQ("", info, "Signpost token should be removed from info");
+
+    TEST_PASS("extract_signpost with 1-char text");
+}
+
+int test_extract_signpost_2char(void)
+{
+    char info[100] = "{AB}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should return 1 for 2-char signpost");
+    TEST_ASSERT_STR_EQ("AB", signpost, "2-char signpost should be extracted");
+    TEST_ASSERT_STR_EQ("", info, "Signpost token should be removed from info");
+
+    TEST_PASS("extract_signpost with 2-char text");
+}
+
+int test_extract_signpost_3char(void)
+{
+    char info[100] = "{ABC}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should return 1 for 3-char signpost");
+    TEST_ASSERT_STR_EQ("ABC", signpost, "3-char signpost should be extracted");
+    TEST_ASSERT_STR_EQ("", info, "Signpost token should be removed from info");
+
+    TEST_PASS("extract_signpost with 3-char text");
+}
+
+int test_extract_signpost_digits(void)
+{
+    char info[100] = "{123}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should return 1 for numeric signpost");
+    TEST_ASSERT_STR_EQ("123", signpost, "Numeric signpost should be extracted");
+    TEST_ASSERT_STR_EQ("", info, "Signpost token should be removed from info");
+
+    TEST_PASS("extract_signpost with numeric text");
+}
+
+/* This is the regression test for issue #259: altitude precedes signpost text */
+int test_extract_signpost_after_altitude_string(void)
+{
+    /* After extract_altitude() strips /A=000100, the remaining comment is "{XY}".
+     * But we also verify the new implementation handles the full string directly,
+     * i.e. {xxx} does not have to be at position 0. */
+    char info[100] = "/A=000100{XY}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should find signpost even when altitude precedes it");
+    TEST_ASSERT_STR_EQ("XY", signpost, "Signpost text should be extracted");
+    TEST_ASSERT_STR_EQ("/A=000100", info, "Only signpost token should be removed");
+
+    TEST_PASS("extract_signpost with altitude prefix (issue 259 regression)");
+}
+
+int test_extract_signpost_not_at_start(void)
+{
+    char info[100] = "some comment {Z}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 1, "Should find signpost not at start of string");
+    TEST_ASSERT_STR_EQ("Z", signpost, "Signpost text should be extracted");
+    TEST_ASSERT_STR_EQ("some comment ", info, "Prefix should remain, token removed");
+
+    TEST_PASS("extract_signpost with signpost not at start");
+}
+
+int test_extract_signpost_empty_string(void)
+{
+    char info[100] = "";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 0, "Should return 0 for empty string");
+    TEST_ASSERT_STR_EQ("", signpost, "Signpost should be empty");
+    TEST_ASSERT_STR_EQ("", info, "Info should be unchanged");
+
+    TEST_PASS("extract_signpost with empty string");
+}
+
+int test_extract_signpost_no_signpost(void)
+{
+    char info[100] = "just a plain comment";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 0, "Should return 0 when no signpost present");
+    TEST_ASSERT_STR_EQ("", signpost, "Signpost should be empty");
+    TEST_ASSERT_STR_EQ("just a plain comment", info, "Info should be unchanged");
+
+    TEST_PASS("extract_signpost with no signpost token");
+}
+
+int test_extract_signpost_too_long(void)
+{
+    char info[100] = "{ABCD}";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 0, "Should return 0 for 4-char signpost (max is 3)");
+    TEST_ASSERT_STR_EQ("", signpost, "Signpost should be empty");
+
+    TEST_PASS("extract_signpost with too-long token (4 chars)");
+}
+
+int test_extract_signpost_no_close_brace(void)
+{
+    char info[100] = "{ABC";
+    char signpost[10];
+    int result;
+
+    result = extract_signpost(info, signpost);
+
+    TEST_ASSERT(result == 0, "Should return 0 when closing brace is missing");
+    TEST_ASSERT_STR_EQ("", signpost, "Signpost should be empty");
+    TEST_ASSERT_STR_EQ("{ABC", info, "Info should be unchanged");
+
+    TEST_PASS("extract_signpost with missing closing brace");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -524,6 +680,17 @@ int main(int argc, char *argv[])
         {"extract_speed_course_partial_match", test_extract_speed_course_partial_match},
         {"extract_speed_course_long_string", test_extract_speed_course_long_string},
         {"extract_speed_course_course_001", test_extract_speed_course_course_001},
+        /* extract_signpost tests */
+        {"extract_signpost_1char", test_extract_signpost_1char},
+        {"extract_signpost_2char", test_extract_signpost_2char},
+        {"extract_signpost_3char", test_extract_signpost_3char},
+        {"extract_signpost_digits", test_extract_signpost_digits},
+        {"extract_signpost_after_altitude_string", test_extract_signpost_after_altitude_string},
+        {"extract_signpost_not_at_start", test_extract_signpost_not_at_start},
+        {"extract_signpost_empty_string", test_extract_signpost_empty_string},
+        {"extract_signpost_no_signpost", test_extract_signpost_no_signpost},
+        {"extract_signpost_too_long", test_extract_signpost_too_long},
+        {"extract_signpost_no_close_brace", test_extract_signpost_no_close_brace},
         {NULL, NULL}
     };
 
