@@ -865,6 +865,7 @@ AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
     help/Makefile \
+  online-maps/Makefile \
     scripts/Makefile \
     src/Makefile \
     src/rtree/Makefile \

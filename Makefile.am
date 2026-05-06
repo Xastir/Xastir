@@ -8,7 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 D=      `date +%G%m%d.%H%M%S`
 
-SUBDIRS = src config help scripts symbols callpass tests
+SUBDIRS = src config help scripts online-maps symbols callpass tests
 
 # DISTCLEANFILES =
 
@@ -40,20 +40,7 @@ map_DATA=worldhi.map CC_OpenStreetMap_logo.png CC_OpenStreetMap_txt.png
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=OSM_tiled_cycle.geo OSM_tiled_mapnik.geo \
-        OSM_tiled_fosm.geo USTigermap.geo USTigermapBorders.geo
-
-nationalmapdir=${pkgdatadir}/maps/Online/nationalmap.gov
-nationalmap_DATA=WMS_USGS_Hydrography.geo WMS_USGS_ImageryOnly.geo \
-        WMS_USGS_ImageryTopo.geo WMS_USGS_ShadedReliefOnly.geo \
-        WMS_USGS_Topo.geo
-
-nwsradarmapdir=${pkgdatadir}/maps/Online/NWS
-nwsradarmap_DATA=NWSRadar_Alaska_CompositeRef.geo \
-                 NWSRadar_Hawaii_CompositeRef.geo \
-                 NWSRadar_CONUS_CompositeRef.geo
-
-geogratismapdir=${pkgdatadir}/maps/Online/geogratis.gc.ca
-geogratismap_DATA=National.geo Regional.geo Sub_national.geo Sub_regional.geo
+        OSM_tiled_fosm.geo
 
 naturalearthmapdir=${pkgdatadir}/maps/NaturalEarth
 naturalearthmap_DATA=NaturalEarthVector/LICENSE.md NaturalEarthVector/README NaturalEarthVector/ne_50m_admin_0_countries_lakes.README.html NaturalEarthVector/ne_50m_admin_0_countries_lakes.VERSION.txt NaturalEarthVector/ne_50m_admin_0_countries_lakes.cpg NaturalEarthVector/ne_50m_admin_0_countries_lakes.dbf NaturalEarthVector/ne_50m_admin_0_countries_lakes.dbfawk NaturalEarthVector/ne_50m_admin_0_countries_lakes.prj NaturalEarthVector/ne_50m_admin_0_countries_lakes.shp NaturalEarthVector/ne_50m_admin_0_countries_lakes.shx NaturalEarthVector/ne_50m_coastline.README.html NaturalEarthVector/ne_50m_coastline.VERSION.txt NaturalEarthVector/ne_50m_coastline.cpg NaturalEarthVector/ne_50m_coastline.dbf NaturalEarthVector/ne_50m_coastline.dbfawk NaturalEarthVector/ne_50m_coastline.prj NaturalEarthVector/ne_50m_coastline.shp NaturalEarthVector/ne_50m_coastline.shx NaturalEarthVector/ne_50m_lakes.README.html NaturalEarthVector/ne_50m_lakes.VERSION.txt NaturalEarthVector/ne_50m_lakes.cpg NaturalEarthVector/ne_50m_lakes.dbf NaturalEarthVector/ne_50m_lakes.dbfawk NaturalEarthVector/ne_50m_lakes.prj NaturalEarthVector/ne_50m_lakes.shp NaturalEarthVector/ne_50m_lakes.shx NaturalEarthVector/ne_50m_rivers_lake_centerlines.README.html NaturalEarthVector/ne_50m_rivers_lake_centerlines.VERSION.txt NaturalEarthVector/ne_50m_rivers_lake_centerlines.cpg NaturalEarthVector/ne_50m_rivers_lake_centerlines.dbf NaturalEarthVector/ne_50m_rivers_lake_centerlines.dbfawk NaturalEarthVector/ne_50m_rivers_lake_centerlines.prj NaturalEarthVector/ne_50m_rivers_lake_centerlines.shp NaturalEarthVector/ne_50m_rivers_lake_centerlines.shx
