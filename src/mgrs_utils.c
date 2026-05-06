@@ -69,7 +69,7 @@
                     allign more cleanly with UTM strings.
    space_string_len length of the space_string char[]
 */
-void convert_xastir_to_MGRS_str_components(char *utmZone, int UNUSED(utmZone_len),
+void convert_xastir_to_MGRS_str_components(char *utmZone, int utmZone_len,
     char *EastingL, int EastingL_len,
     char *NorthingL, int NorthingL_len,
     unsigned int *int_utmEasting, unsigned int *int_utmNorthing,
@@ -97,8 +97,8 @@ void convert_xastir_to_MGRS_str_components(char *utmZone, int UNUSED(utmZone_len
                 &utmNorthing,
                 &utmEasting,
                 utmZone,
-                sizeof(utmZone) );
-  utmZone[9] = '\0';
+                utmZone_len );
+  utmZone[utmZone_len-1] = '\0';
 
   // Restore it
   coordinate_system = coordinate_system_save;
@@ -329,7 +329,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
   char EastingL[3] = "  ";
   char NorthingL[3] = "  ";
   char utmZone[10];
-  convert_xastir_to_MGRS_str_components(utmZone, strlen(utmZone),
+  convert_xastir_to_MGRS_str_components(utmZone, sizeof(utmZone),
                                         EastingL, sizeof(EastingL),
                                         NorthingL, sizeof(NorthingL),
                                         &intEasting, &intNorthing,
