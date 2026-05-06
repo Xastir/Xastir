@@ -188,3 +188,65 @@ AT_KEYWORDS([db extract_speed_course])
 AT_CHECK(["$abs_top_builddir/tests/test_db" extract_speed_course_course_001], [0], [PASS: extract_speed_course with course=001 (minimum valid)
 ])
 AT_CLEANUP
+
+AT_BANNER([extract_signpost() Function Tests])
+
+AT_SETUP([extract_signpost: 1-char text])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_1char], [0], [PASS: extract_signpost with 1-char text
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: 2-char text])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_2char], [0], [PASS: extract_signpost with 2-char text
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: 3-char text])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_3char], [0], [PASS: extract_signpost with 3-char text
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: numeric text])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_digits], [0], [PASS: extract_signpost with numeric text
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: altitude precedes signpost (issue #259 regression)])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_after_altitude_string], [0], [PASS: extract_signpost with altitude prefix (issue #259 regression)
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: signpost not at start of string])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_not_at_start], [0], [PASS: extract_signpost with signpost not at start
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: empty string])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_empty_string], [0], [PASS: extract_signpost with empty string
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: no signpost token])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_no_signpost], [0], [PASS: extract_signpost with no signpost token
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: token too long (4 chars)])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_too_long], [0], [PASS: extract_signpost with too-long token (4 chars)
+])
+AT_CLEANUP
+
+AT_SETUP([extract_signpost: missing closing brace])
+AT_KEYWORDS([db extract_signpost])
+AT_CHECK(["$abs_top_builddir/tests/test_db" extract_signpost_no_close_brace], [0], [PASS: extract_signpost with missing closing brace
+])
+AT_CLEANUP
