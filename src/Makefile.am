@@ -63,6 +63,7 @@ XASTIR_SRC = \
     objects_gui.c objects_gui.h \
     object_utils.h object_utils.c \
     popup.h \
+    popup_controller.c popup_controller.h \
     popup_gui.c \
     rac_data.c rac_data.h \
     rotated.c rotated.h \

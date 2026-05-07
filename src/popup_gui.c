@@ -34,6 +34,7 @@
 #include "xastir.h"
 #include "main.h"
 #include "popup.h"
+#include "popup_controller.h"
 #include "main.h"
 #include "lang.h"
 #include "rotated.h"
@@ -44,10 +45,18 @@
 #include "leak_detection.h"
 
 
+/* Sanity: popup.h's MAX_POPUPS must agree with the controller's slot count. */
+#if MAX_POPUPS != POPUP_MAX_SLOTS
+#  error "MAX_POPUPS (popup.h) and POPUP_MAX_SLOTS (popup_controller.h) disagree"
+#endif
+
+
 extern XmFontList fontlist1;    // Menu/System fontlist
 
 static Popup_Window pw[MAX_POPUPS];
 static Popup_Window pwb;
+
+static popup_controller_t popup_ctrl;
 
 static xastir_mutex popup_message_dialog_lock;
 
@@ -58,6 +67,7 @@ static xastir_mutex popup_message_dialog_lock;
 void popup_gui_init(void)
 {
   init_critical_section( &popup_message_dialog_lock );
+  popup_controller_init(&popup_ctrl);
 }
 
 
@@ -77,6 +87,8 @@ void clear_popup_message_windows(void)
     pw[i].popup_message_dialog=(Widget)NULL;
     pw[i].popup_message_data=(Widget)NULL;
   }
+
+  popup_controller_clear(&popup_ctrl);
 
   end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
 
@@ -102,6 +114,7 @@ static void popup_message_destroy_shell(Widget UNUSED(w),
   XtDestroyWidget(pw[i].popup_message_dialog);
   pw[i].popup_message_dialog = (Widget)NULL;
   pw[i].popup_message_data = (Widget)NULL;
+  popup_controller_close_slot(&popup_ctrl, i);
 
   end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_destroy_shell" );
 
@@ -111,36 +124,33 @@ static void popup_message_destroy_shell(Widget UNUSED(w),
 
 
 
-time_t popup_time_out_check_last = (time_t)0l;
-
 void popup_time_out_check(int curr_sec)
 {
   int i;
+  time_t now = (time_t)curr_sec;
 
   // Check only every two minutes or so
-  if (popup_time_out_check_last + 120 < curr_sec)
+  if (!popup_controller_should_run_timeout_check(&popup_ctrl, now))
   {
-    popup_time_out_check_last = curr_sec;
+    return;
+  }
+  popup_controller_mark_timeout_check(&popup_ctrl, now);
 
-    for (i=0; i<MAX_POPUPS; i++)
+  for (i=0; i<MAX_POPUPS; i++)
+  {
+    if (pw[i].popup_message_dialog != NULL
+        && popup_controller_slot_expired(&popup_ctrl, i, now))
     {
-      if (pw[i].popup_message_dialog!=NULL)
-      {
-        if ((sec_now()-pw[i].sec_opened)>MAX_POPUPS_TIME)
-        {
-          XtPopdown(pw[i].popup_message_dialog);
+      XtPopdown(pw[i].popup_message_dialog);
 
-          begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
+      begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
 
-          XtDestroyWidget(pw[i].popup_message_dialog);
-          pw[i].popup_message_dialog = (Widget)NULL;
-          pw[i].popup_message_data = (Widget)NULL;
+      XtDestroyWidget(pw[i].popup_message_dialog);
+      pw[i].popup_message_dialog = (Widget)NULL;
+      pw[i].popup_message_data = (Widget)NULL;
+      popup_controller_close_slot(&popup_ctrl, i);
 
-          end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
-
-        }
-
-      }
+      end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
     }
   }
 }
@@ -152,7 +162,7 @@ void popup_time_out_check(int curr_sec)
 void popup_message_always(char *banner, char *message)
 {
   XmString msg_str;
-  int j,i;
+  int i;
   Atom delw;
 
 
@@ -161,110 +171,106 @@ void popup_message_always(char *banner, char *message)
     return;
   }
 
-  if (banner == NULL || message == NULL)
+  if (!popup_controller_message_valid(banner, message))
   {
     return;
   }
 
-  i=0;
-  for (j=0; j<MAX_POPUPS; j++)
+  i = popup_controller_find_free_slot(&popup_ctrl);
+  if (i < 0)
   {
-    if (!pw[j].popup_message_dialog)
-    {
-      i=j;
-      j=MAX_POPUPS+1;
-    }
+    // No free slot — fall back to slot 0 to preserve legacy behavior
+    // (the original code defaulted to i=0 if MAX_POPUPS was full and
+    // then bailed out at the !pw[0].popup_message_dialog check below).
+    i = 0;
   }
 
   if(!pw[i].popup_message_dialog)
   {
-    if (banner!=NULL && message!=NULL)
-    {
+    begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
-      begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
-
-      pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,
-                                   xmDialogShellWidgetClass, appshell,
-                                   XmNdeleteResponse, XmDESTROY,
-                                   XmNdefaultPosition, FALSE,
-                                   XmNtitleString,banner,
+    pw[i].popup_message_dialog = XtVaCreatePopupShell(banner,
+                                 xmDialogShellWidgetClass, appshell,
+                                 XmNdeleteResponse, XmDESTROY,
+                                 XmNdefaultPosition, FALSE,
+                                 XmNtitleString,banner,
 // An half-hearted attempt at fixing the problem where a popup
 // comes up extremely small.  Setting a minimum size for the popup.
-                                   XmNminWidth, 220,
-                                   XmNminHeight, 80,
-                                   XmNfontList, fontlist1,
-                                   NULL);
-
-      pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
-
-      pw[i].scrollwindow = XtVaCreateManagedWidget("scrollwindow",
-                                                   xmScrolledWindowWidgetClass,
-                                                   pw[i].pane,
-                                                   XmNscrollingPolicy, XmAUTOMATIC,
-                                                   NULL);
-
-      pw[i].form =  XtVaCreateWidget("popup_message form",
-                                     xmFormWidgetClass,
-                                     pw[i].scrollwindow,
-                                     XmNfractionBase, 5,
-                                     XmNbackground, colors[0xff],
-                                     XmNautoUnmanage, FALSE,
-                                     XmNshadowThickness, 1,
-                                     NULL);
-
-      pw[i].popup_message_data = XtVaCreateManagedWidget("popup_message message",xmLabelWidgetClass, pw[i].form,
-                                 XmNtopAttachment, XmATTACH_FORM,
-                                 XmNtopOffset, 10,
-                                 XmNbottomAttachment, XmATTACH_NONE,
-                                 XmNleftAttachment, XmATTACH_FORM,
-                                 XmNleftOffset, 10,
-                                 XmNrightAttachment, XmATTACH_FORM,
-                                 XmNrightOffset, 10,
-                                 XmNbackground, colors[0xff],
+                                 XmNminWidth, 220,
+                                 XmNminHeight, 80,
                                  XmNfontList, fontlist1,
                                  NULL);
 
-      pw[i].button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, pw[i].form,
-                           XmNtopAttachment, XmATTACH_WIDGET,
-                           XmNtopWidget, pw[i].popup_message_data,
-                           XmNtopOffset, 10,
-                           XmNbottomAttachment, XmATTACH_FORM,
-                           XmNbottomOffset, 5,
-                           XmNleftAttachment, XmATTACH_POSITION,
-                           XmNleftPosition, 2,
-                           XmNrightAttachment, XmATTACH_POSITION,
-                           XmNrightPosition, 3,
-                           XmNbackground, colors[0xff],
-                           XmNfontList, fontlist1,
-                           NULL);
+    pw[i].pane = XtVaCreateWidget("popup_message pane",xmPanedWindowWidgetClass, pw[i].popup_message_dialog,
+                                  XmNbackground, colors[0xff],
+                                  NULL);
 
-      xastir_snprintf(pw[i].name,10,"%9d",i%1000);
+    pw[i].scrollwindow = XtVaCreateManagedWidget("scrollwindow",
+                                                 xmScrolledWindowWidgetClass,
+                                                 pw[i].pane,
+                                                 XmNscrollingPolicy, XmAUTOMATIC,
+                                                 NULL);
 
-      msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
-      XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
-      XmStringFree(msg_str);
+    pw[i].form =  XtVaCreateWidget("popup_message form",
+                                   xmFormWidgetClass,
+                                   pw[i].scrollwindow,
+                                   XmNfractionBase, 5,
+                                   XmNbackground, colors[0xff],
+                                   XmNautoUnmanage, FALSE,
+                                   XmNshadowThickness, 1,
+                                   NULL);
 
-      XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
+    pw[i].popup_message_data = XtVaCreateManagedWidget("popup_message message",xmLabelWidgetClass, pw[i].form,
+                               XmNtopAttachment, XmATTACH_FORM,
+                               XmNtopOffset, 10,
+                               XmNbottomAttachment, XmATTACH_NONE,
+                               XmNleftAttachment, XmATTACH_FORM,
+                               XmNleftOffset, 10,
+                               XmNrightAttachment, XmATTACH_FORM,
+                               XmNrightOffset, 10,
+                               XmNbackground, colors[0xff],
+                               XmNfontList, fontlist1,
+                               NULL);
 
-      delw = XmInternAtom(XtDisplay(pw[i].popup_message_dialog),"WM_DELETE_WINDOW", FALSE);
+    pw[i].button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, pw[i].form,
+                         XmNtopAttachment, XmATTACH_WIDGET,
+                         XmNtopWidget, pw[i].popup_message_data,
+                         XmNtopOffset, 10,
+                         XmNbottomAttachment, XmATTACH_FORM,
+                         XmNbottomOffset, 5,
+                         XmNleftAttachment, XmATTACH_POSITION,
+                         XmNleftPosition, 2,
+                         XmNrightAttachment, XmATTACH_POSITION,
+                         XmNrightPosition, 3,
+                         XmNbackground, colors[0xff],
+                         XmNfontList, fontlist1,
+                         NULL);
 
-      XmAddWMProtocolCallback(pw[i].popup_message_dialog, delw, popup_message_destroy_shell, (XtPointer)pw[i].name);
+    popup_controller_format_slot_name(i, pw[i].name, sizeof(pw[i].name));
 
-      pos_dialog(pw[i].popup_message_dialog);
+    msg_str=XmStringCreateLtoR(message,XmFONTLIST_DEFAULT_TAG);
+    XtVaSetValues(pw[i].popup_message_data,XmNlabelString,msg_str,NULL);
+    XmStringFree(msg_str);
 
-      XtManageChild(pw[i].form);
-      XtManageChild(pw[i].pane);
+    XtAddCallback(pw[i].button_close, XmNactivateCallback, popup_message_destroy_shell,(XtPointer)pw[i].name);
 
-      resize_dialog(pw[i].form, pw[i].popup_message_dialog);
+    delw = XmInternAtom(XtDisplay(pw[i].popup_message_dialog),"WM_DELETE_WINDOW", FALSE);
 
-      end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
+    XmAddWMProtocolCallback(pw[i].popup_message_dialog, delw, popup_message_destroy_shell, (XtPointer)pw[i].name);
 
-      XtPopup(pw[i].popup_message_dialog,XtGrabNone);
+    pos_dialog(pw[i].popup_message_dialog);
 
-      pw[i].sec_opened=sec_now();
-    }
+    XtManageChild(pw[i].form);
+    XtManageChild(pw[i].pane);
+
+    resize_dialog(pw[i].form, pw[i].popup_message_dialog);
+
+    end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
+
+    XtPopup(pw[i].popup_message_dialog,XtGrabNone);
+
+    pw[i].sec_opened = sec_now();
+    popup_controller_open_slot(&popup_ctrl, i, pw[i].sec_opened);
   }
 }
 
@@ -288,7 +294,7 @@ void popup_message(char *banner, char *message)
     return;
   }
 
-  if (banner == NULL || message == NULL)
+  if (!popup_controller_message_valid(banner, message))
   {
     return;
   }
