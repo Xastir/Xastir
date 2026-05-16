@@ -1036,6 +1036,7 @@ void save_data(void)
     store_int (fout, "LOG_WX", log_wx);
     store_int (fout, "LOG_MESSAGE", log_message_data);
     store_int (fout, "LOG_WX_ALERT", log_wx_alert_data);
+    store_int (fout, "TRAFFIC_UTF8", traffic_utf8_enabled);
     store_string (fout, "LOGFILE_IGATE", LOGFILE_IGATE);
     store_string (fout, "LOGFILE_NET", LOGFILE_NET);
     store_string (fout, "LOGFILE_WX", LOGFILE_WX);
@@ -2397,6 +2398,8 @@ void load_data_or_default(void)
                     sizeof(LOGFILE_WX_ALERT),
                     "%s",
                     "logs/wx_alert.log");
+
+  traffic_utf8_enabled = get_int ("TRAFFIC_UTF8", 0,1,1);
 
   // SNAPSHOTS
   snapshots_enabled = get_int ("SNAPSHOTS_ENABLED", 0,1,0);

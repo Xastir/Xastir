@@ -54,6 +54,7 @@
 #include "util.h"
 #include "interface.h"
 #include "xa_config.h"
+#include "encoding.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -708,6 +709,8 @@ void output_message(char *from, char *to, char *message, char *path)
 {
   int ok,i,j;
   char message_out[MAX_MESSAGE_OUTPUT_LENGTH+1+5+1]; // +'{' +msg_id +terminator
+  char message_utf8[(MAX_MESSAGE_LENGTH*2)+1];
+  const char *message_bytes;
   int last_space, message_ptr, space_loc;
   int wait_on_first_ack;
   int error;
@@ -715,6 +718,21 @@ void output_message(char *from, char *to, char *message, char *path)
 
 
 //fprintf(stderr,"output_message:%s\n", message);
+
+  if (message == NULL)
+  {
+    return;
+  }
+
+  if (traffic_utf8_enabled)
+  {
+    latin1_to_utf8(message, message_utf8, sizeof(message_utf8));
+    message_bytes = message_utf8;
+  }
+  else
+  {
+    message_bytes = message;
+  }
 
   message_ptr=0;
   last_space=0;
@@ -730,7 +748,7 @@ void output_message(char *from, char *to, char *message, char *path)
   // a chunk at a time, size of chunk to correspond to max APRS
   // message line length.
   //
-  while (!error && (message_ptr < (int)strlen(message)))
+  while (!error && (message_ptr < (int)strlen(message_bytes)))
   {
     ok=0;
     space_loc=0;
@@ -742,10 +760,10 @@ void output_message(char *from, char *to, char *message, char *path)
     for (j=0; j<MAX_MESSAGE_OUTPUT_LENGTH; j++)
     {
 
-      if(message[j+message_ptr] != '\0')
+      if(message_bytes[j+message_ptr] != '\0')
       {
 
-        if(message[j+message_ptr]==' ')
+        if(message_bytes[j+message_ptr]==' ')
         {
           last_space=j+message_ptr+1;
           space_loc=j;
@@ -753,7 +771,7 @@ void output_message(char *from, char *to, char *message, char *path)
 
         if (j!=MAX_MESSAGE_OUTPUT_LENGTH)
         {
-          message_out[j]=message[j+message_ptr];
+          message_out[j]=message_bytes[j+message_ptr];
           message_out[j+1] = '\0';
         }
         else
@@ -772,7 +790,7 @@ void output_message(char *from, char *to, char *message, char *path)
       else
       {
         j=MAX_MESSAGE_OUTPUT_LENGTH+1;
-        last_space=strlen(message)+1;
+        last_space=strlen(message_bytes)+1;
       }
     }
 

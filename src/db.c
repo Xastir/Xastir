@@ -75,6 +75,7 @@
 #include "track_gui.h"
 #include "xa_config.h"
 #include "x_spider.h"
+#include "encoding.h"
 #include "db_gis.h"
 #include "db_gui.h"
 #include "db_funcs.h"
@@ -1281,6 +1282,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
                     char *seq, char type, char from, long *record_out)
 {
   Message m_fill;
+  char normalized_data[MAX_MESSAGE_LENGTH+1];
   long record;
   char time_data[MAX_TIME];
   int do_msg_update = 0;
@@ -1334,6 +1336,19 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
   (void)remove_trailing_spaces(m_fill.seq);
   (void)remove_leading_spaces(m_fill.seq);
 
+  if (data != NULL)
+  {
+    substr(normalized_data, data, MAX_MESSAGE_LENGTH);
+    if (traffic_utf8_enabled)
+    {
+      utf8_to_latin1_inplace(normalized_data);
+    }
+  }
+  else
+  {
+    normalized_data[0] = '\0';
+  }
+
   // If the sequence number is blank, then it may have been a query,
   // directed query, or group message.  Assume it is a new message in
   // each case and add it.
@@ -1366,7 +1381,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // send message window and update the sec_heard field.  The
     // remote station must have restarted and is re-using the
     // sequence numbers.  What a pain!
-    if (strcmp(m_fill.message_line,data) != 0)
+    if (strcmp(m_fill.message_line,normalized_data) != 0)
     {
       m_fill.sec_heard = sec_now();
       last_ack_sent = (time_t)0;
@@ -1449,7 +1464,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
   (void)remove_trailing_asterisk(m_fill.from_call_sign);
 
   // Update the message field
-  substr(m_fill.message_line,data,MAX_MESSAGE_LENGTH);
+  substr(m_fill.message_line,normalized_data,MAX_MESSAGE_LENGTH);
 
   substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
   (void)remove_trailing_spaces(m_fill.seq);
@@ -1887,7 +1902,19 @@ void update_messages(int force)
                   interval_str[0] = '\0';
                 }
 
-                xastir_snprintf(temp2, sizeof(temp2),
+                {
+                  char display_message[MAX_MESSAGE_LENGTH+1];
+
+                  xastir_snprintf(display_message,
+                                  sizeof(display_message),
+                                  "%s",
+                                  msg_data[msg_index[j]].message_line);
+                  if (traffic_utf8_enabled)
+                  {
+                    utf8_to_latin1_inplace(display_message);
+                  }
+
+                  xastir_snprintf(temp2, sizeof(temp2),
                                 "%s %-9s%s>%s%s\n",
                                 // Debug code.  Trying to find sorting error
                                 //"%ld  %s  %-9s>%s\n",
@@ -1896,7 +1923,8 @@ void update_messages(int force)
                                 msg_data[msg_index[j]].from_call_sign,
                                 interval_str,
                                 prefix,
-                                msg_data[msg_index[j]].message_line);
+                                display_message);
+                }
 
                 //fprintf(stderr,"message: %s\n", msg_data[msg_index[j]].message_line);
                 //fprintf(stderr,"update_messages: %s|%s", temp1, temp2);

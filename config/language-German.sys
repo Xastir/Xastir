@@ -427,6 +427,7 @@ WPUPCFD030|Position Dubletten-Prüfung aus||
 WPUPCFD031|Vordefinierte Objekte aus Datei laden||
 WPUPCFD032|Meine Spuren in einer Farbe||
 WPUPCFD033|ALTNET:||
+WPUPCFD034|Verkehr als UTF-8 interpretieren|U|
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||

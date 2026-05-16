@@ -276,6 +276,7 @@ extern int log_net_data;
 extern int log_message_data;
 extern int log_wx_alert_data;
 extern int log_wx;
+extern int traffic_utf8_enabled;
 extern int snapshots_enabled;
 extern int kmlsnapshots_enabled;
 extern char user_dir[];
