@@ -13618,51 +13618,6 @@ int tactical_data_add(char *call, char *message, char UNUSED(from) )
 //
 
 
-/*
- * Returns 1 if the message text is a valid APRS REJ packet per the
- * APRS 1.0.1 spec (ch 14).
- *
- * A valid REJ has the form: rej<msgnum>
- *   - Starts with lowercase "rej" (case-sensitive per spec)
- *   - Followed by 1-5 alphanumeric characters (the message number)
- *   - Nothing else
- *
- * This strict check prevents legitimate messages beginning with "rej"
- * (e.g. "rejected", "reject incoming call") from being misidentified
- * as REJ packets.
- */
-int is_aprs_rej_packet(const char *message)
-{
-  int i;
-  int msg_num_len;
-
-  if (message == NULL)
-    return 0;
-
-  /* Must start with lowercase "rej" */
-  if (strncmp(message, "rej", 3) != 0)
-    return 0;
-
-  /* Scan 1-5 alphanumeric chars for the message number */
-  i = 3;
-  msg_num_len = 0;
-  while (message[i] != '\0' && msg_num_len < 5)
-  {
-    if (!isalnum((unsigned char)message[i]))
-      return 0;
-    i++;
-    msg_num_len++;
-  }
-
-  /* Must have at least 1 char in message number */
-  if (msg_num_len == 0)
-    return 0;
-
-  /* Valid REJ only if we consumed the entire string */
-  return (message[i] == '\0') ? 1 : 0;
-}
-
-
 //
 // Returns 1 if successful
 //         0 if not successful
@@ -13971,7 +13926,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     fprintf(stderr,"2\n");
   }
   //--------------------------------------------------------------------------
-  if (!done && is_aprs_rej_packet(message))                              // REJ
+  if (!done && strncmp(message,"rej",3)==0)                              // REJ
   {
 
     substr(msg_id,message+3,5);

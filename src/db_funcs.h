@@ -58,7 +58,6 @@ extern void check_message_remove(time_t curr_sec);
 void mscan_file(char msg_type, void (*function)(Message *fill));
 extern void mdisplay_file(char msg_type);
 extern void pad_callsign(char *callsignout, char *callsignin);
-extern int  is_aprs_rej_packet(const char *message);
 extern void clear_sort_file(char *filename);
 extern long sort_input_database(char *filename, char *fill, int size);
 int is_altnet(DataRow *p_station);
