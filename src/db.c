@@ -68,12 +68,14 @@
 #include "interface.h"
 #include "maps.h"
 #include "wx.h"
+#include "lang.h"
 #include "igate.h"
 #include "list_gui.h"
 #include "objects.h"
 #include "objects_gui.h"
 #include "track_gui.h"
 #include "xa_config.h"
+#include "lang.h"
 #include "x_spider.h"
 #include "db_gis.h"
 #include "db_gui.h"
@@ -216,6 +218,51 @@ void db_init(void)
 
 
 ///////////////////////////////////  Utilities  ////////////////////////////////////////////////////
+
+/*
+ * Local UTF-8 -> Latin-1 conversion helper used by db.c paths.
+ * Kept local so unit tests that link db.c without lang.c still build.
+ */
+static void db_utf8_to_latin1_inplace(char *buf)
+{
+  unsigned char *in  = (unsigned char *)buf;
+  unsigned char *out = (unsigned char *)buf;
+
+  while (*in)
+  {
+    if (*in < 0x80)
+    {
+      *out++ = *in++;
+    }
+    else if ((*in & 0xE0) == 0xC0 && (in[1] & 0xC0) == 0x80)
+    {
+      unsigned int cp = (unsigned int)((*in & 0x1F) << 6) | (in[1] & 0x3F);
+      *out++ = (cp <= 0xFF) ? (unsigned char)cp : (unsigned char)'?';
+      in += 2;
+    }
+    else if ((*in & 0xF0) == 0xE0
+             && (in[1] & 0xC0) == 0x80
+             && (in[2] & 0xC0) == 0x80)
+    {
+      *out++ = '?';
+      in += 3;
+    }
+    else if ((*in & 0xF8) == 0xF0
+             && (in[1] & 0xC0) == 0x80
+             && (in[2] & 0xC0) == 0x80
+             && (in[3] & 0xC0) == 0x80)
+    {
+      *out++ = '?';
+      in += 4;
+    }
+    else
+    {
+      *out++ = *in++;
+    }
+  }
+
+  *out = '\0';
+}
 
 
 
@@ -1281,6 +1328,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
                     char *seq, char type, char from, long *record_out)
 {
   Message m_fill;
+  char normalized_data[MAX_MESSAGE_LENGTH+1];
   long record;
   char time_data[MAX_TIME];
   int do_msg_update = 0;
@@ -1334,6 +1382,19 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
   (void)remove_trailing_spaces(m_fill.seq);
   (void)remove_leading_spaces(m_fill.seq);
 
+  if (data != NULL)
+  {
+    substr(normalized_data, data, MAX_MESSAGE_LENGTH);
+    if (traffic_utf8_enabled)
+    {
+      db_utf8_to_latin1_inplace(normalized_data);
+    }
+  }
+  else
+  {
+    normalized_data[0] = '\0';
+  }
+
   // If the sequence number is blank, then it may have been a query,
   // directed query, or group message.  Assume it is a new message in
   // each case and add it.
@@ -1366,7 +1427,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // send message window and update the sec_heard field.  The
     // remote station must have restarted and is re-using the
     // sequence numbers.  What a pain!
-    if (strcmp(m_fill.message_line,data) != 0)
+    if (strcmp(m_fill.message_line, normalized_data) != 0)
     {
       m_fill.sec_heard = sec_now();
       last_ack_sent = (time_t)0;
@@ -1449,7 +1510,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
   (void)remove_trailing_asterisk(m_fill.from_call_sign);
 
   // Update the message field
-  substr(m_fill.message_line,data,MAX_MESSAGE_LENGTH);
+  substr(m_fill.message_line, normalized_data, MAX_MESSAGE_LENGTH);
 
   substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
   (void)remove_trailing_spaces(m_fill.seq);
@@ -1887,7 +1948,19 @@ void update_messages(int force)
                   interval_str[0] = '\0';
                 }
 
-                xastir_snprintf(temp2, sizeof(temp2),
+                {
+                  char display_message[MAX_MESSAGE_LENGTH+1];
+
+                  xastir_snprintf(display_message,
+                                  sizeof(display_message),
+                                  "%s",
+                                  msg_data[msg_index[j]].message_line);
+                  if (traffic_utf8_enabled)
+                  {
+                    db_utf8_to_latin1_inplace(display_message);
+                  }
+
+                  xastir_snprintf(temp2, sizeof(temp2),
                                 "%s %-9s%s>%s%s\n",
                                 // Debug code.  Trying to find sorting error
                                 //"%ld  %s  %-9s>%s\n",
@@ -1896,7 +1969,8 @@ void update_messages(int force)
                                 msg_data[msg_index[j]].from_call_sign,
                                 interval_str,
                                 prefix,
-                                msg_data[msg_index[j]].message_line);
+                                display_message);
+                }
 
                 //fprintf(stderr,"message: %s\n", msg_data[msg_index[j]].message_line);
                 //fprintf(stderr,"update_messages: %s|%s", temp1, temp2);
@@ -13542,6 +13616,117 @@ int tactical_data_add(char *call, char *message, char UNUSED(from) )
 //
 //  Messages, Bulletins and Announcements         [APRS Reference, chapter 14]
 //
+
+
+/*
+ * Returns 1 if the message text is a valid APRS ACK packet per the
+ * APRS 1.0.1 spec (ch 14) and the Reply-Ack protocol addendum.
+ *
+ * A valid ACK has the form: ack<msgnum>[}<reply_msgnum>]
+ *   - Starts with lowercase "ack" (case-sensitive per spec)
+ *   - Followed by 1-5 alphanumeric characters (the message number)
+ *   - Optionally followed by "}" and 0-5 alphanumeric chars (Reply-Ack)
+ *   - Nothing else
+ *
+ * This strict check prevents legitimate messages that begin with "ack"
+ * (e.g. "acknowledged", "ack I received your message") from being
+ * misidentified as ACK packets and silently discarded.
+ *
+ * Note: the 'message' argument here is the text field AFTER the
+ * leading ack/rej sequence-number suffix (e.g. "{NNNNN") has already
+ * been stripped by decode_message().
+ */
+int is_aprs_ack_packet(const char *message)
+{
+  int i;
+  int msg_num_len;
+
+  if (message == NULL)
+    return 0;
+
+  /* Must start with lowercase "ack" */
+  if (strncmp(message, "ack", 3) != 0)
+    return 0;
+
+  /* Scan 1-5 alphanumeric chars for the message number */
+  i = 3;
+  msg_num_len = 0;
+  while (message[i] != '\0' && message[i] != '}' && msg_num_len < 5)
+  {
+    if (!isalnum((unsigned char)message[i]))
+      return 0;
+    i++;
+    msg_num_len++;
+  }
+
+  /* Must have at least 1 char in message number */
+  if (msg_num_len == 0)
+    return 0;
+
+  /* If there is a '}', handle the Reply-Ack portion */
+  if (message[i] == '}')
+  {
+    int reply_len = 0;
+    i++; /* skip '}' */
+    while (message[i] != '\0' && reply_len < 5)
+    {
+      if (!isalnum((unsigned char)message[i]))
+        return 0;
+      i++;
+      reply_len++;
+    }
+  }
+
+  /* Valid ACK only if we consumed the entire string */
+  return (message[i] == '\0') ? 1 : 0;
+}
+
+
+/*
+ * Returns 1 if the message text is a valid APRS REJ packet per the
+ * APRS 1.0.1 spec (ch 14).
+ *
+ * A valid REJ has the form: rej<msgnum>
+ *   - Starts with lowercase "rej" (case-sensitive per spec)
+ *   - Followed by 1-5 alphanumeric characters (the message number)
+ *   - Nothing else
+ *
+ * This strict check prevents legitimate messages beginning with "rej"
+ * (e.g. "rejected", "reject incoming call") from being misidentified
+ * as REJ packets.
+ */
+int is_aprs_rej_packet(const char *message)
+{
+  int i;
+  int msg_num_len;
+
+  if (message == NULL)
+    return 0;
+
+  /* Must start with lowercase "rej" */
+  if (strncmp(message, "rej", 3) != 0)
+    return 0;
+
+  /* Scan 1-5 alphanumeric chars for the message number */
+  i = 3;
+  msg_num_len = 0;
+  while (message[i] != '\0' && msg_num_len < 5)
+  {
+    if (!isalnum((unsigned char)message[i]))
+      return 0;
+    i++;
+    msg_num_len++;
+  }
+
+  /* Must have at least 1 char in message number */
+  if (msg_num_len == 0)
+    return 0;
+
+  /* Valid REJ only if we consumed the entire string */
+  return (message[i] == '\0') ? 1 : 0;
+}
+
+
 //
 // Returns 1 if successful
 //         0 if not successful
@@ -13758,7 +13943,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
   }
   len = (int)strlen(message);
   //--------------------------------------------------------------------------
-  if (!done && len > 3 && strncmp(message,"ack",3) == 0)                // ACK
+  if (!done && is_aprs_ack_packet(message))                              // ACK
   {
 
     // Received an ACK packet.  Note that these can carry the
@@ -13850,7 +14035,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     fprintf(stderr,"2\n");
   }
   //--------------------------------------------------------------------------
-  if (!done && len > 3 && strncmp(message,"rej",3) == 0)                // REJ
+  if (!done && is_aprs_rej_packet(message))                              // REJ
   {
 
     substr(msg_id,message+3,5);

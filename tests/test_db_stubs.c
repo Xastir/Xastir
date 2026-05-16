@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "tests/test_framework.h"
 
 #define MAX_CALLSIGN 9       // Objects are up to 9 chars
@@ -48,6 +49,7 @@ int track_station_on = 0;
 char tracking_station_call[100] = "";
 int trail_segment_distance = 0;
 int trail_segment_time = 0;
+int traffic_utf8_enabled = 1;
 int transmit_disable = 0;
 int transmit_now = 0;
 int wait_to_redraw = 0;
@@ -56,7 +58,13 @@ int wait_to_redraw = 0;
 STUB_IMPL(alert_build_list)
 STUB_IMPL(alert_match)
 STUB_IMPL(alert_on_alert_list)
-STUB_IMPL(all_messages)
+void all_messages(char from, char *call_sign, char *from_call, char *message)
+{
+    (void)from;
+    (void)call_sign;
+    (void)from_call;
+    (void)message;
+}
 STUB_IMPL(bulletin_message_check)
 STUB_IMPL(draw_area)
 STUB_IMPL(draw_labeled_area)
@@ -90,7 +98,13 @@ STUB_IMPL(decode_U2000_L)
 STUB_IMPL(decode_U2000_P)
 STUB_IMPL(disown_object_item)
 STUB_IMPL(display_station)
-STUB_IMPL(distance_from_my_station)
+double distance_from_my_station(char *call_sign, char *course_deg, int english_units)
+{
+    (void)call_sign;
+    (void)course_deg;
+    (void)english_units;
+    return 0.0;
+}
 STUB_IMPL(draw_trail)
 STUB_IMPL(end_critical_section)
 STUB_IMPL(filecreate)
@@ -98,7 +112,13 @@ STUB_IMPL(fill_in_new_alert_entries)
 STUB_IMPL(get_iso_datetime)
 STUB_IMPL(get_send_message_path)
 STUB_IMPL(get_tactical_from_hash)
-STUB_IMPL(get_time)
+char *get_time(char *time_here)
+{
+    if (time_here != NULL) {
+        strcpy(time_here, "00/00/00 00:00");
+    }
+    return time_here;
+}
 STUB_IMPL(get_timestamp)
 STUB_IMPL(get_user_base_dir)
 STUB_IMPL(get_w3cdtf_datetime)
@@ -119,12 +139,59 @@ STUB_IMPL(popup_message)
 STUB_IMPL(popup_message_always)
 STUB_IMPL(port_write_string)
 STUB_IMPL(position_defined)
-STUB_IMPL(remove_leading_spaces)
-STUB_IMPL(remove_trailing_asterisk)
-STUB_IMPL(remove_trailing_spaces)
+void remove_leading_spaces(char *data)
+{
+    char *src = data;
+    char *dest = data;
+
+    if (data == NULL) {
+        return;
+    }
+
+    while (*src == ' ') {
+        src++;
+    }
+
+    while (*src != '\0') {
+        *dest++ = *src++;
+    }
+
+    *dest = '\0';
+}
+
+void remove_trailing_asterisk(char *data)
+{
+    size_t len;
+
+    if (data == NULL) {
+        return;
+    }
+
+    len = strlen(data);
+    if (len > 0 && data[len - 1] == '*') {
+        data[len - 1] = '\0';
+    }
+}
+
+void remove_trailing_spaces(char *data)
+{
+    size_t len;
+
+    if (data == NULL) {
+        return;
+    }
+
+    len = strlen(data);
+    while (len > 0 && data[len - 1] == ' ') {
+        data[--len] = '\0';
+    }
+}
 STUB_IMPL(SayText)
 STUB_IMPL(spell_it_out)
-STUB_IMPL(sec_now)
+time_t sec_now(void)
+{
+    return (time_t)1000;
+}
 STUB_IMPL(send_agwpe_packet)
 STUB_IMPL(send_ax25_frame)
 STUB_IMPL(stations_types)

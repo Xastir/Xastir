@@ -1112,6 +1112,7 @@ int log_igate;                  /* toggle to allow igate logging */
 int log_wx;                     /* toggle to allow wx logging */
 int log_message_data;           /* toggle to allow message logging */
 int log_wx_alert_data;          /* toggle to allow wx alert logging */
+int traffic_utf8_enabled = 1;   /* toggle UTF-8 parse/send for APRS messages */
 
 
 int snapshots_enabled = 0;      // toggle to allow creating .png snapshots on a regular basis

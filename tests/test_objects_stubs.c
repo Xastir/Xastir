@@ -59,6 +59,7 @@ int track_station_on = 0;
 char tracking_station_call[100] = "";
 int trail_segment_distance = 0;
 int trail_segment_time = 0;
+int traffic_utf8_enabled = 1;
 int transmit_now = 0;
 int wait_to_redraw = 0;
 void *da=NULL;
