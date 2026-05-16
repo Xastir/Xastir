@@ -417,6 +417,7 @@ WPUPCFD030|Desactivar comprobación de duplicados de posición||
 WPUPCFD031|Cargar objetos predefinidos desde archivo||
 WPUPCFD032|Mis rastros en un color||
 WPUPCFD033|ALTNET:||
+WPUPCFD034|Interpretar tráfico como UTF-8|U|
 #
 # Menu "Configurar - Cronómetro"
 WPUPCFTM01|Configurar Cronómetro||

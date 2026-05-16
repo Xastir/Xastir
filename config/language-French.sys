@@ -423,6 +423,7 @@ WPUPCFD030|Désactiver identif. de duplic. posit.||
 WPUPCFD031|Charger des objets prédéfinis à partir d'un fichier||
 WPUPCFD032|Mon parcour en une seule couleur||
 WPUPCFD033|ALTNET:||
+WPUPCFD034|Analyser le trafic en UTF-8|U|
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configurer temporisation||

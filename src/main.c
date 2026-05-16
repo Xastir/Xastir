@@ -801,6 +801,7 @@ Widget new_bulletin_popup_enable;
 Widget zero_bulletin_popup_enable;
 Widget warn_about_mouse_modifiers_enable;
 Widget my_trail_diff_color_enable;
+Widget traffic_utf8_enable;
 Widget load_predefined_objects_menu_from_file_enable;
 #ifdef USE_COMBO_BOX
   Widget load_predefined_objects_menu_from_file; // combo box widget
@@ -24658,6 +24659,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
   pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
   view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_popup_enable);
+  traffic_utf8_enabled = (int)XmToggleButtonGetState(traffic_utf8_enable);
 
   // user interface refers to all my trails in one color
   // my trail diff color as 0 means my trails in one color, so select
@@ -25134,6 +25136,22 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
                                  XmNfontList, fontlist1,
                                  NULL);
 
+    // Parse and send APRS message traffic as UTF-8
+    traffic_utf8_enable = XtVaCreateManagedWidget(langcode("WPUPCFD034"),
+                          xmToggleButtonWidgetClass,
+                          my_form,
+                          XmNtopAttachment, XmATTACH_WIDGET,
+                          XmNtopWidget, my_trail_diff_color_enable,
+                          XmNbottomAttachment, XmATTACH_NONE,
+                          XmNleftAttachment, XmATTACH_FORM,
+                          XmNleftOffset, 10,
+                          XmNrightAttachment, XmATTACH_NONE,
+                          XmNnavigationType, XmTAB_GROUP,
+                          MY_FOREGROUND_COLOR,
+                          MY_BACKGROUND_COLOR,
+                          XmNfontList, fontlist1,
+                          NULL);
+
 
     // Check box to load predefined (SAR/Event) objects menu from a file or not.
     xastir_snprintf(loadfrom,
@@ -25150,7 +25168,7 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
         xmToggleButtonWidgetClass,
         my_form,
         XmNtopAttachment, XmATTACH_WIDGET,
-        XmNtopWidget, zero_bulletin_popup_enable,
+        XmNtopWidget, traffic_utf8_enable,
         XmNtopOffset,5,
         XmNbottomAttachment, XmATTACH_NONE,
         XmNleftAttachment, XmATTACH_FORM,
@@ -25176,7 +25194,7 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
         xmComboBoxWidgetClass,
         my_form,
         XmNtopAttachment, XmATTACH_WIDGET,
-        XmNtopWidget, zero_bulletin_popup_enable,
+        XmNtopWidget, traffic_utf8_enable,
         XmNtopOffset, 5,
         XmNbottomAttachment, XmATTACH_NONE,
         XmNleftAttachment, XmATTACH_WIDGET,
@@ -25230,7 +25248,7 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
     ++ac;
     XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET);
     ++ac;
-    XtSetArg(al[ac], XmNtopWidget, zero_bulletin_popup_enable);
+    XtSetArg(al[ac], XmNtopWidget, traffic_utf8_enable);
     ++ac;
     XtSetArg(al[ac], XmNmarginWidth, 0);
     ++ac;
@@ -25466,6 +25484,10 @@ void Configure_defaults( Widget UNUSED(w), XtPointer UNUSED(clientData), XtPoint
     {
       XmToggleButtonSetState(zero_bulletin_popup_enable,FALSE,FALSE);
     }
+
+    XmToggleButtonSetState(traffic_utf8_enable,
+                           traffic_utf8_enabled ? TRUE : FALSE,
+                           FALSE);
 
     if(warn_about_mouse_modifiers)
     {

@@ -418,6 +418,7 @@ WPUPCFD030|Disattiva Posit Dupe-Checks||
 WPUPCFD031|Load predefined objects from file||
 WPUPCFD032|My trails in one color||
 WPUPCFD033|ALTNET:||
+WPUPCFD034|Interpreta il traffico come UTF-8|U|
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
