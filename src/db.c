@@ -75,6 +75,7 @@
 #include "track_gui.h"
 #include "xa_config.h"
 #include "x_spider.h"
+#include "encoding.h"
 #include "db_gis.h"
 #include "db_gui.h"
 #include "db_funcs.h"
@@ -216,51 +217,6 @@ void db_init(void)
 
 
 ///////////////////////////////////  Utilities  ////////////////////////////////////////////////////
-
-/*
- * Local UTF-8 -> Latin-1 conversion helper used by db.c paths.
- * Kept local so unit tests that link db.c without lang.c still build.
- */
-static void db_utf8_to_latin1_inplace(char *buf)
-{
-  unsigned char *in  = (unsigned char *)buf;
-  unsigned char *out = (unsigned char *)buf;
-
-  while (*in)
-  {
-    if (*in < 0x80)
-    {
-      *out++ = *in++;
-    }
-    else if ((*in & 0xE0) == 0xC0 && (in[1] & 0xC0) == 0x80)
-    {
-      unsigned int cp = (unsigned int)((*in & 0x1F) << 6) | (in[1] & 0x3F);
-      *out++ = (cp <= 0xFF) ? (unsigned char)cp : (unsigned char)'?';
-      in += 2;
-    }
-    else if ((*in & 0xF0) == 0xE0
-             && (in[1] & 0xC0) == 0x80
-             && (in[2] & 0xC0) == 0x80)
-    {
-      *out++ = '?';
-      in += 3;
-    }
-    else if ((*in & 0xF8) == 0xF0
-             && (in[1] & 0xC0) == 0x80
-             && (in[2] & 0xC0) == 0x80
-             && (in[3] & 0xC0) == 0x80)
-    {
-      *out++ = '?';
-      in += 4;
-    }
-    else
-    {
-      *out++ = *in++;
-    }
-  }
-
-  *out = '\0';
-}
 
 
 
@@ -1385,7 +1341,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     substr(normalized_data, data, MAX_MESSAGE_LENGTH);
     if (traffic_utf8_enabled)
     {
-      db_utf8_to_latin1_inplace(normalized_data);
+      utf8_to_latin1_inplace(normalized_data);
     }
   }
   else
@@ -1955,7 +1911,7 @@ void update_messages(int force)
                                   msg_data[msg_index[j]].message_line);
                   if (traffic_utf8_enabled)
                   {
-                    db_utf8_to_latin1_inplace(display_message);
+                    utf8_to_latin1_inplace(display_message);
                   }
 
                   xastir_snprintf(temp2, sizeof(temp2),

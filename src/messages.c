@@ -54,6 +54,7 @@
 #include "util.h"
 #include "interface.h"
 #include "xa_config.h"
+#include "encoding.h"
 
 // Must be last include file
 #include "leak_detection.h"
@@ -73,40 +74,6 @@ char auto_reply_message[100];
 Message_Window mw[MAX_MESSAGE_WINDOWS+1];   // Send Message widgets
 
 Message_transmit message_pool[MAX_OUTGOING_MESSAGES+1]; // Transmit message queue
-
-
-static void latin1_to_utf8(const char *src, char *dst, size_t dst_size)
-{
-  size_t src_i = 0;
-  size_t dst_i = 0;
-
-  if (dst_size == 0)
-  {
-    return;
-  }
-
-  while (src[src_i] != '\0' && dst_i + 1 < dst_size)
-  {
-    unsigned char ch = (unsigned char)src[src_i++];
-
-    if (ch < 0x80)
-    {
-      dst[dst_i++] = (char)ch;
-    }
-    else
-    {
-      if (dst_i + 2 >= dst_size)
-      {
-        break;
-      }
-
-      dst[dst_i++] = (char)(0xC0 | (ch >> 6));
-      dst[dst_i++] = (char)(0x80 | (ch & 0x3F));
-    }
-  }
-
-  dst[dst_i] = '\0';
-}
 
 
 

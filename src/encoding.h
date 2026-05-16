@@ -1,7 +1,6 @@
 /*
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
- * Copyright (C) 1999,2000  Frank Giannandrea
  * Copyright (C) 2000-2026 The Xastir Group
  *
  * This program is free software; you can redistribute it and/or
@@ -21,20 +20,12 @@
  * Look at the README for more information on the program.
  */
 
-#ifndef XASTIR_LANG_H
-#define XASTIR_LANG_H
+#ifndef XASTIR_ENCODING_H
+#define XASTIR_ENCODING_H
 
-#include "encoding.h"
+#include <stddef.h>
 
-#define MAX_LANG_LINE_SIZE 800
-#define MAX_LANG_CODE 10
-#define MAX_LANG_ENTRIES 3000
-#define MAX_LANG_BUFFER 30000
+extern void utf8_to_latin1_inplace(char *buf);
+extern void latin1_to_utf8(const char *src, char *dst, size_t dst_size);
 
-extern int load_language_file(char *filename);
-extern char *langcode(char *code);
-extern char langcode_hotkey(char *code);
-
-
-
-#endif  /* XASTIR_LANG_H */
+#endif  /* XASTIR_ENCODING_H */
