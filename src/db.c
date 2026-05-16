@@ -13619,70 +13619,6 @@ int tactical_data_add(char *call, char *message, char UNUSED(from) )
 
 
 /*
- * Returns 1 if the message text is a valid APRS ACK packet per the
- * APRS 1.0.1 spec (ch 14) and the Reply-Ack protocol addendum.
- *
- * A valid ACK has the form: ack<msgnum>[}<reply_msgnum>]
- *   - Starts with lowercase "ack" (case-sensitive per spec)
- *   - Followed by 1-5 alphanumeric characters (the message number)
- *   - Optionally followed by "}" and 0-5 alphanumeric chars (Reply-Ack)
- *   - Nothing else
- *
- * This strict check prevents legitimate messages that begin with "ack"
- * (e.g. "acknowledged", "ack I received your message") from being
- * misidentified as ACK packets and silently discarded.
- *
- * Note: the 'message' argument here is the text field AFTER the
- * leading ack/rej sequence-number suffix (e.g. "{NNNNN") has already
- * been stripped by decode_message().
- */
-int is_aprs_ack_packet(const char *message)
-{
-  int i;
-  int msg_num_len;
-
-  if (message == NULL)
-    return 0;
-
-  /* Must start with lowercase "ack" */
-  if (strncmp(message, "ack", 3) != 0)
-    return 0;
-
-  /* Scan 1-5 alphanumeric chars for the message number */
-  i = 3;
-  msg_num_len = 0;
-  while (message[i] != '\0' && message[i] != '}' && msg_num_len < 5)
-  {
-    if (!isalnum((unsigned char)message[i]))
-      return 0;
-    i++;
-    msg_num_len++;
-  }
-
-  /* Must have at least 1 char in message number */
-  if (msg_num_len == 0)
-    return 0;
-
-  /* If there is a '}', handle the Reply-Ack portion */
-  if (message[i] == '}')
-  {
-    int reply_len = 0;
-    i++; /* skip '}' */
-    while (message[i] != '\0' && reply_len < 5)
-    {
-      if (!isalnum((unsigned char)message[i]))
-        return 0;
-      i++;
-      reply_len++;
-    }
-  }
-
-  /* Valid ACK only if we consumed the entire string */
-  return (message[i] == '\0') ? 1 : 0;
-}
-
-
-/*
  * Returns 1 if the message text is a valid APRS REJ packet per the
  * APRS 1.0.1 spec (ch 14).
  *
@@ -13943,7 +13879,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
   }
   len = (int)strlen(message);
   //--------------------------------------------------------------------------
-  if (!done && is_aprs_ack_packet(message))                              // ACK
+  if (!done && strncmp(message,"ack",3)==0)                              // ACK
   {
 
     // Received an ACK packet.  Note that these can carry the
