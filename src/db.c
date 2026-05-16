@@ -68,14 +68,12 @@
 #include "interface.h"
 #include "maps.h"
 #include "wx.h"
-#include "lang.h"
 #include "igate.h"
 #include "list_gui.h"
 #include "objects.h"
 #include "objects_gui.h"
 #include "track_gui.h"
 #include "xa_config.h"
-#include "lang.h"
 #include "x_spider.h"
 #include "db_gis.h"
 #include "db_gui.h"
@@ -1427,7 +1425,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // send message window and update the sec_heard field.  The
     // remote station must have restarted and is re-using the
     // sequence numbers.  What a pain!
-    if (strcmp(m_fill.message_line, normalized_data) != 0)
+    if (strcmp(m_fill.message_line,normalized_data) != 0)
     {
       m_fill.sec_heard = sec_now();
       last_ack_sent = (time_t)0;
@@ -1510,7 +1508,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
   (void)remove_trailing_asterisk(m_fill.from_call_sign);
 
   // Update the message field
-  substr(m_fill.message_line, normalized_data, MAX_MESSAGE_LENGTH);
+  substr(m_fill.message_line,normalized_data,MAX_MESSAGE_LENGTH);
 
   substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
   (void)remove_trailing_spaces(m_fill.seq);
@@ -13616,8 +13614,6 @@ int tactical_data_add(char *call, char *message, char UNUSED(from) )
 //
 //  Messages, Bulletins and Announcements         [APRS Reference, chapter 14]
 //
-
-
 //
 // Returns 1 if successful
 //         0 if not successful
@@ -13834,7 +13830,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
   }
   len = (int)strlen(message);
   //--------------------------------------------------------------------------
-  if (!done && strncmp(message,"ack",3)==0)                              // ACK
+  if (!done && len > 3 && strncmp(message,"ack",3) == 0)                // ACK
   {
 
     // Received an ACK packet.  Note that these can carry the
@@ -13926,7 +13922,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     fprintf(stderr,"2\n");
   }
   //--------------------------------------------------------------------------
-  if (!done && strncmp(message,"rej",3)==0)                              // REJ
+  if (!done && len > 3 && strncmp(message,"rej",3) == 0)                // REJ
   {
 
     substr(msg_id,message+3,5);
