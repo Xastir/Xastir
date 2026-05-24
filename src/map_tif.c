@@ -96,15 +96,19 @@ extern int mag;
  *
  * Used to search for .fgd in ../metadata subdir, as it is
  * laid out on a USGS CDROM.
+ *
+ * This function simply replaces the parent directory of
+ * the file in "fullpath" with "metadata"
  **********************************************************/
 void get_alt_fgd_path(char *fullpath, int fullpath_length)
 {
   int len;
-  int i, j = 0;
+  int i = 0;
   char *dir = fullpath;
   char fname[MAX_FILENAME];
 
   // Split up into directory and filename
+  // locate the last "/" in the path
   len = (int)strlen (fullpath);
   for (i = len; i >= 0; i--)
   {
@@ -114,21 +118,18 @@ void get_alt_fgd_path(char *fullpath, int fullpath_length)
       break;
     }
   }
-  for (++i; i <= len; i++)
-  {
-    fname[j++] = fullpath[i];   // Grab the filename
-    if (fullpath[i] == '\0')
-    {
-      break;
-    }
-  }
+
+  // Pull out the last component of the path, the file name
+  strncpy(fname,&fullpath[i+1],sizeof(fname)-1);
 
   // We have the filename now.  dir now points to
-  // the '/' at the end of the path.
+  // the '/' at the end of the path right before the final file name.
 
-  // Now do it again to knock off the "data" subdirectory
-  // from the end.
+  // Now back up to find the parent directory
   dir[0] = '\0';  // Terminate the current string, wiping out the '/' character
+                  // now fullpath only contains the directory in which
+                  // fname lives.
+
   len = (int)strlen (fullpath);   // Length of the new shortened string
   for (i = len; i >= 0; i--)
   {
@@ -138,58 +139,20 @@ void get_alt_fgd_path(char *fullpath, int fullpath_length)
       break;
     }
   }
-  for (++i; i <= len; i++)
-  {
-    if (fullpath[i] == '\0')
-    {
-      break;
-    }
-  }
 
-  // Add "metadata/" into the path
-  xastir_snprintf(dir, fullpath_length, "metadata/%s", fname);
-  //fprintf(stderr,"FGD Directory: %s\n", fullpath);
+  // dir now points to the first character of the parent directory in fullpath
+  // fullpath is everything except the filename
+  // fname is just the filename
+
+  // now overwrite the parent directory name with "metadata/"
+  // The maximum number of characters allowed must take into account
+  // the contents of the buffer.
+  xastir_snprintf(dir, fullpath_length-(strlen(fullpath)-strlen(dir))-1,
+                  "metadata/%s", fname);
+
 }
 
 
-
-
-
-/**********************************************************
- * get_alt_fgd_path2()
- *
- * Used to search for .fgd in Metadata subdir.  This function
- * is no longer used.
- **********************************************************/
-void get_alt_fgd_path2(char *fullpath, int fullpath_length)
-{
-  int len;
-  int i, j = 0;
-  char *dir = fullpath;
-  char fname[MAX_FILENAME];
-
-  // Split up into directory and filename
-  len = (int)strlen (fullpath);
-  for (i = len; i >= 0; i--)
-  {
-    if (fullpath[i] == '/')
-    {
-      dir = &fullpath[i + 1];
-      break;
-    }
-  }
-  for (++i; i <= len; i++)
-  {
-    fname[j++] = fullpath[i];
-    if (fullpath[i] == '\0')
-    {
-      break;
-    }
-  }
-
-  // Add "Metadata/" into the path
-  xastir_snprintf(dir, fullpath_length, "Metadata/%s", fname);
-}
 
 
 
