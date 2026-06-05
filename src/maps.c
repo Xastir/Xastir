@@ -8417,8 +8417,6 @@ void index_restore_from_file(void)
   get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
 
 
-//fprintf(stderr,"\nRestoring map index from file\n");
-
   if (map_index_head != NULL)
   {
     fprintf(stderr,"Warning: index_restore_from_file(): map_index_head was non-null!\n");
@@ -8450,8 +8448,6 @@ void index_restore_from_file(void)
         int processed;
         int i, jj;
 
-//fprintf(stderr,"%s\n",in_string);
-
         // Tweaked the string below so that it will track
         // along with MAX_FILENAME-1.  We're constructing
         // the string "%lu,%lu,%lu,%lu,%d,%d,%2000c", where
@@ -8462,7 +8458,6 @@ void index_restore_from_file(void)
                         "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d,%",
                         MAX_FILENAME,
                         "c");
-        //fprintf(stderr,"%s\n",scanf_format);
 
         // index predates addition of usgs_drg flag (26 Jul 2005)
         xastir_snprintf(old_scanf_format,
@@ -8568,9 +8563,6 @@ void index_restore_from_file(void)
 
         // Do some reasonableness checking on the parameters
         // we just parsed.
-//WE7U: First comparison here is always false
-//                if ( (temp_record->bottom < 0l)
-//                        || (temp_record->bottom > 64800000l) ) {
         if (temp_record->bottom > 64800000l)
         {
 
@@ -8581,9 +8573,6 @@ void index_restore_from_file(void)
         }
 
 
-//WE7U: First comparison here is always false
-//               if ( (temp_record->top < 0l)
-//                        || (temp_record->top > 64800000l) ) {
         if (temp_record->top > 64800000l)
         {
 
@@ -8593,9 +8582,6 @@ void index_restore_from_file(void)
                   temp_record->filename);
         }
 
-//WE7U: First comparison here is always false
-//                if ( (temp_record->left < 0l)
-//                        || (temp_record->left > 129600000l) ) {
         if (temp_record->left > 129600000l)
         {
 
@@ -8605,9 +8591,6 @@ void index_restore_from_file(void)
                   temp_record->filename);
         }
 
-//WE7U: First comparison here is always false
-//                if ( (temp_record->right < 0l)
-//                        || (temp_record->right > 129600000l) ) {
         if (temp_record->right > 129600000l)
         {
 
@@ -8620,22 +8603,13 @@ void index_restore_from_file(void)
         if ( (temp_record->max_zoom < 0)
              || (temp_record->max_zoom > 99999) )
         {
-//                    processed = 0;  // Reject this record
-//                    fprintf(stderr,"\nindex_restore_from_file: max_zoom field incorrect %d in map name:\n%s\n",
-//                            temp_record->max_zoom,
-//                            temp_record->filename);
           // Assign a reasonable value
           temp_record->max_zoom = 0;
-          //fprintf(stderr,"Assigning max_zoom of 0\n");
         }
 
         if ( (temp_record->min_zoom < 0)
              || (temp_record->min_zoom > 99999) )
         {
-//                    processed = 0;  // Reject this record
-//                    fprintf(stderr,"\nindex_restore_from_file: min_zoom field incorrect %d in map name:\n%s\n",
-//                            temp_record->min_zoom,
-//                            temp_record->filename);
           // Assign a reasonable value
           temp_record->min_zoom = 0;
           //fprintf(stderr,"Assigning min_zoom of 0\n");
@@ -8719,8 +8693,6 @@ void index_restore_from_file(void)
         if (processed == 11 || processed == 10 || processed == 8)
         {
 
-          //fprintf(stderr,"Restored: %s\n",temp_record->filename);
-
           // Insert the new record into the in-memory map
           // list in sorted order.
           // --slow for large lists
@@ -8746,14 +8718,14 @@ void index_restore_from_file(void)
           // try to do anything else with the memory.
           temp_record = NULL;
         }
-        else    // sscanf didn't parse the proper number of
+        else
         {
+          // sscanf didn't parse the proper number of
           // items.  Delete the record.
 
-// Remember to free the XmString pointer if necessary.
+          // Remember to free the XmString pointer if necessary.
 
           free(temp_record);
-//                    fprintf(stderr,"index_restore_from_file:sscanf parsing error\n");
         }
       }
     }
