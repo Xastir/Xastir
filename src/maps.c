@@ -8411,7 +8411,6 @@ void index_restore_from_file(void)
   map_index_record *temp_record;
   map_index_record *last_record;
   char in_string[MAX_FILENAME*2];
-  int doing_migration = 0;
   char map_index_path[MAX_VALUE];
 
   get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
@@ -8443,8 +8442,6 @@ void index_restore_from_file(void)
         // Try to process the
         // line.
         char scanf_format[50];
-        char old_scanf_format[50];
-        char older_scanf_format[50];
         int processed;
         int i, jj;
 
@@ -8456,22 +8453,6 @@ void index_restore_from_file(void)
                         sizeof(scanf_format),
                         "%s%d%s",
                         "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
-
-        // index predates addition of usgs_drg flag (26 Jul 2005)
-        xastir_snprintf(old_scanf_format,
-                        sizeof(old_scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
-
-        // index predates addition of min/max zoom (29 Oct 2003)
-        xastir_snprintf(older_scanf_format,
-                        sizeof(older_scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%",
                         MAX_FILENAME,
                         "c");
 
@@ -8510,53 +8491,7 @@ void index_restore_from_file(void)
 
         if (processed < 11)
         {
-          // We're upgrading from an old format index file
-          // that doesn't have usgs_drg.  Try the
-          // old_scanf_format string instead.
-
-          doing_migration = 1;
-
-          processed = sscanf(in_string,
-                             old_scanf_format,
-                             &temp_record->bottom,
-                             &temp_record->top,
-                             &temp_record->left,
-                             &temp_record->right,
-                             &temp_record->map_layer,
-                             &temp_record->draw_filled,
-                             &temp_record->auto_maps,
-                             &temp_record->max_zoom,
-                             &temp_record->min_zoom,
-                             temp_record->filename);
-          if (processed < 10)
-          {
-            // It's really old, doesn't have min/max zoom either
-            temp_record->max_zoom = -1;     // Too low
-            temp_record->min_zoom = -1;     // Too low
-
-            processed = sscanf(in_string,
-                               older_scanf_format,
-                               &temp_record->bottom,
-                               &temp_record->top,
-                               &temp_record->left,
-                               &temp_record->right,
-                               &temp_record->map_layer,
-                               &temp_record->draw_filled,
-                               &temp_record->auto_maps,
-                               temp_record->filename);
-          }
-          // either way, it doesn't have usgs_drg, so add one
-          // defaulting to Auto if it's a tif file, no if not
-          if (       strstr(temp_record->filename,".tif")
-                     || strstr(temp_record->filename,".TIF")
-                     || strstr(temp_record->filename,".Tif") )
-          {
-            temp_record->usgs_drg = 2; // Auto
-          }
-          else
-          {
-            temp_record->usgs_drg = 0; // No
-          }
+          fprintf(stderr,"Malformed line '%s' in map index\n", in_string);
         }
 
         temp_record->XmStringPtr = NULL;
@@ -8688,9 +8623,8 @@ void index_restore_from_file(void)
 
         temp_record->filename[MAX_FILENAME-1] = '\0';
 
-        // If correct number of parameters for either old or
-        // new format
-        if (processed == 11 || processed == 10 || processed == 8)
+        // If correct number of parameters...
+        if (processed == 11)
         {
 
           // Insert the new record into the in-memory map
@@ -8734,13 +8668,6 @@ void index_restore_from_file(void)
   // now that we have read the whole file, make sure it is sorted
   index_sort();  // probably should check for dup records
 
-  if (doing_migration)
-  {
-    // Save in new file format if we just did a migration from
-    // old format to new.
-    fprintf(stderr,"Migrating from old map_index.sys format to new format.\n");
-    index_save_to_file();
-  }
 }
 
 
