@@ -4630,3 +4630,29 @@ void short_filename_for_status(char *filename, char *short_filename,
                     filename);
   }
 }
+
+
+
+
+// find the last occurance of a character in a longer string
+// Returns the pointer to that last occurance if there is one
+// Returns NULL if no instance of that character is found
+char *find_last_of(char * instring, char theChar)
+{
+  size_t instring_len = strlen(instring);
+  size_t i;
+  char *retptr= NULL;
+  for (i = instring_len-1; i > 0 && instring[i] != theChar; --i)
+    {
+      // do nothing
+    }
+  if (i == 0)
+    {
+      fprintf(stderr,"Did not find character %c in '%s'\n", theChar, instring);
+    }
+  else
+    {
+      retptr = &(instring[i]);
+    }
+  return retptr;
+}

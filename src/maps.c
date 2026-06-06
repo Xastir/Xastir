@@ -8397,6 +8397,49 @@ static void index_sort(void)
 
 
 
+// Given one line of a map index file, split it out into components
+int parse_map_index_line(char *instring, char *filename, size_t filename_size,
+                         unsigned long *bottom, unsigned long *top,
+                         unsigned long *left, unsigned long *right,
+                         int *map_layer, int *draw_filled, int *usgs_drg,
+                         int *auto_maps, int *max_zoom, int *min_zoom)
+{
+
+  char *fname_ptr;
+  int retval = 1;
+
+  // find the last comma in instring
+  fname_ptr = find_last_of(instring,',');
+  if (fname_ptr == NULL)
+    {
+      fprintf(stderr,"Malformed line '%s' has no commas!\n", instring);
+      retval = 0;
+    }
+  else
+    {
+      int num_processed;
+
+      *(fname_ptr++) = '\0'; // clobber comma, point to next char
+      strncpy(filename, fname_ptr, filename_size);
+      num_processed =
+        sscanf(instring,"%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d",
+               bottom, top, left, right,
+               map_layer, draw_filled, usgs_drg, auto_maps,
+               max_zoom, min_zoom);
+      if (num_processed != 10)
+        {
+          fprintf(stderr, "Could not extract 10 items from '%s'\n", instring);
+          // put the comma back for error reporting later
+          *(--fname_ptr) = ',';
+          retval = 0;
+        }
+    }
+  return retval;
+}
+
+
+
+
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
@@ -8439,22 +8482,9 @@ void index_restore_from_file(void)
 
       if (strlen(in_string) >= 15)     // We have some data.
       {
-        // Try to process the
-        // line.
-        char scanf_format[50];
-        int processed;
+        // Try to process the line.
+        int good_parse;
         int i, jj;
-
-        // Tweaked the string below so that it will track
-        // along with MAX_FILENAME-1.  We're constructing
-        // the string "%lu,%lu,%lu,%lu,%d,%d,%2000c", where
-        // the 2000 example number is from MAX_FILENAME.
-        xastir_snprintf(scanf_format,
-                        sizeof(scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
 
         // Malloc an index record.  We'll add it to the list
         // only if the data looks reasonable.
@@ -8475,21 +8505,20 @@ void index_restore_from_file(void)
         temp_record->min_zoom = -1;     // Too low
         temp_record->filename[0] = '\0';// Empty
 
-        processed = sscanf(in_string,
-                           scanf_format,
-                           &temp_record->bottom,
-                           &temp_record->top,
-                           &temp_record->left,
-                           &temp_record->right,
-                           &temp_record->map_layer,
-                           &temp_record->draw_filled,
-                           &temp_record->usgs_drg,
-                           &temp_record->auto_maps,
-                           &temp_record->max_zoom,
-                           &temp_record->min_zoom,
-                           temp_record->filename);
+        good_parse = parse_map_index_line(in_string, temp_record->filename,
+                                          sizeof(temp_record->filename),
+                                          &temp_record->bottom,
+                                          &temp_record->top,
+                                          &temp_record->left,
+                                          &temp_record->right,
+                                          &temp_record->map_layer,
+                                          &temp_record->draw_filled,
+                                          &temp_record->usgs_drg,
+                                          &temp_record->auto_maps,
+                                          &temp_record->max_zoom,
+                                          &temp_record->min_zoom);
 
-        if (processed < 11)
+        if (!good_parse)
         {
           fprintf(stderr,"Malformed line '%s' in map index\n", in_string);
         }
@@ -8501,7 +8530,7 @@ void index_restore_from_file(void)
         if (temp_record->bottom > 64800000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: bottom extent incorrect %lu in map name:\n%s\n",
                   temp_record->bottom,
                   temp_record->filename);
@@ -8511,7 +8540,7 @@ void index_restore_from_file(void)
         if (temp_record->top > 64800000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: top extent incorrect %lu in map name:\n%s\n",
                   temp_record->top,
                   temp_record->filename);
@@ -8520,7 +8549,7 @@ void index_restore_from_file(void)
         if (temp_record->left > 129600000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: left extent incorrect %lu in map name:\n%s\n",
                   temp_record->left,
                   temp_record->filename);
@@ -8529,7 +8558,7 @@ void index_restore_from_file(void)
         if (temp_record->right > 129600000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: right extent incorrect %lu in map name:\n%s\n",
                   temp_record->right,
                   temp_record->filename);
@@ -8553,7 +8582,7 @@ void index_restore_from_file(void)
         if ( (temp_record->map_layer < -99999)
              || (temp_record->map_layer > 99999) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: map_layer field incorrect %d in map name:\n%s\n",
                   temp_record->map_layer,
                   temp_record->filename);
@@ -8562,7 +8591,7 @@ void index_restore_from_file(void)
         if ( (temp_record->draw_filled < 0)
              || (temp_record->draw_filled > 2) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: draw_filled field incorrect %d in map name:\n%s\n",
                   temp_record->draw_filled,
                   temp_record->filename);
@@ -8571,7 +8600,7 @@ void index_restore_from_file(void)
         if ( (temp_record->usgs_drg < 0)
              || (temp_record->usgs_drg > 2) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: usgs_drg field incorrect %d in map name:\n%s\n",
                   temp_record->usgs_drg,
                   temp_record->filename);
@@ -8580,7 +8609,7 @@ void index_restore_from_file(void)
         if ( (temp_record->auto_maps < 0)
              || (temp_record->auto_maps > 1) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: auto_maps field incorrect %d in map name:\n%s\n",
                   temp_record->auto_maps,
                   temp_record->filename);
@@ -8589,7 +8618,7 @@ void index_restore_from_file(void)
         // Check whether the filename is empty
         if (strlen(temp_record->filename) == 0)
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
         }
 
         // Check for control characters in the filename.
@@ -8600,7 +8629,7 @@ void index_restore_from_file(void)
           if (temp_record->filename[i] < 0x20)
           {
 
-            processed = 0;  // Reject this record
+            good_parse = 0;  // Reject this record
             fprintf(stderr,"\nindex_restore_from_file: Found control char 0x%02x in map name:\n%s\n",
                     temp_record->filename[i],
                     temp_record->filename);
@@ -8624,7 +8653,7 @@ void index_restore_from_file(void)
         temp_record->filename[MAX_FILENAME-1] = '\0';
 
         // If correct number of parameters...
-        if (processed == 11)
+        if (good_parse)
         {
 
           // Insert the new record into the in-memory map
@@ -8644,10 +8673,6 @@ void index_restore_from_file(void)
           }
           last_record = temp_record;
 
-
-          // Remember that we may just have attached the
-          // record to our in-memory map list, or we may
-          // have free'ed it in the above function call.
           // Set the pointer to NULL to make sure we don't
           // try to do anything else with the memory.
           temp_record = NULL;
