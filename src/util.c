@@ -4646,7 +4646,7 @@ char *find_last_of(char * instring, char theChar)
     {
       // do nothing
     }
-  if (i == 0)
+  if (i < 0)
     {
       fprintf(stderr,"Did not find character %c in '%s'\n", theChar, instring);
     }
