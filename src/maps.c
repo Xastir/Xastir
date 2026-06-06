@@ -8333,178 +8333,6 @@ void index_save_to_file(void)
 
 
 
-// This function is currently not used.
-//
-// Function used to add map directories/files to the in-memory map
-// index.  Causes an update of the index list in memory.  Input
-// records are inserted in alphanumerical order.  This function is
-// called from the index_restore_from_file() function below.  When
-// this function is called the new record has all of the needed
-// information in it.
-//
-/*
-static void index_insert_sorted(map_index_record *new_record) {
-
-    map_index_record *current = map_index_head;
-    map_index_record *previous = map_index_head;
-    int done = 0;
-    int i;
-
-
-    //fprintf(stderr,"index_insert_sorted: %s\n", new_record->filename );
-
-    // Check for bad input.
-    if (new_record == NULL) {
-        fprintf(stderr,"index_insert_sorted: Bad input.\n");
-        return;
-    }
-    // Make sure there aren't any weird characters in the filename
-    // that might cause problems later.  Look for any control
-    // characters and convert them to string-end characters.
-    for ( i = 0; i < (int)strlen(new_record->filename); i++ ) {
-        if (new_record->filename[i] < 0x20) {
-
-            fprintf(stderr,"\nindex_insert_sorted: Found control char 0x%02x in map name:\n%s\n",
-                new_record->filename[i],
-                new_record->filename);
-
-            new_record->filename[i] = '\0';    // Terminate it here
-        }
-    }
-    // Check if the string is _now_ bogus
-    if (new_record->filename[0] == '\0') {
-        fprintf(stderr,"index_insert_sorted: Bad input.\n");
-        return;
-    }
-
-    //if (map_index_head == NULL)
-    //    fprintf(stderr,"Empty list\n");
-
-    // Search for a matching filename in the linked list
-    while ((current != NULL) && !done) {
-        int test;
-
-        //fprintf(stderr,"Comparing %s to\n          %s\n",
-        //    current->filename, new_record->filename);
-
-        test = strcmp(current->filename, new_record->filename);
-
-        if (test == 0) {    // Found a match!
-            int selected;
-
-//fprintf(stderr,"Found a match: Updating entry for %s\n",new_record->filename);
-
-            // Save this away temporarily.
-            selected = current->selected;
-
-            // Copy the fields across and then free new_record.  We
-            // overwrite the contents of the existing record.
-            xastir_snprintf(current->filename,
-                MAX_FILENAME,
-                "%s",
-                new_record->filename);
-            current->bottom = new_record->bottom;
-            current->top = new_record->top;
-            current->left = new_record->left;
-            current->right = new_record->right;
-            current->accessed = 1;
-            current->max_zoom = new_record->max_zoom;
-            current->min_zoom = new_record->min_zoom;
-            current->map_layer = new_record->map_layer;
-            current->draw_filled = new_record->draw_filled;
-            current->usgs_drg = new_record->usgs_drg;
-            current->selected = selected;   // Restore it
-            current->auto_maps = new_record->auto_maps;
-
-// Remember to free the XmStringPtr if we use this bit of code
-// again.
-
-            free(new_record);   // Don't need it anymore
-
-            done++; // Exit loop, "current" points to found record
-        }
-        else if (test > 0) {    // Found a string past us in the
-                                // alphabet.  Insert ahead of this
-                                // last record.
-
-//fprintf(stderr,"Not Found, inserting: %s\n", new_record->filename);
-//fprintf(stderr,"       Before record: %s\n", current->filename);
-
-            if (current == map_index_head) {  // Start of list!
-                // Insert new record at head of list
-                new_record->next = map_index_head;
-                map_index_head = new_record;
-                //fprintf(stderr,"Inserting at head of list\n");
-            }
-            else {  // Insert between "previous" and "current"
-                // Insert new record before "current"
-                previous->next = new_record;
-                new_record->next = current;
-                //fprintf(stderr,"Inserting before current\n");
-            }
-
-            //fprintf(stderr,"Adding:%d:%s\n",strlen(filename),filename);
-
-            // Fill in some default values for the new record that
-            // don't exist in the map_index.sys file.
-            new_record->selected = 0;
-
-            if (       strstr(new_record->filename,".geo")
-                    || strstr(new_record->filename,".GEO")
-                    || strstr(new_record->filename,".Geo") ) {
-                new_record->auto_maps = 0;
-            }
-            else {
-                new_record->auto_maps = 1;
-            }
-
-            //current = current->next;
-            done++;
-        }
-        else {  // Haven't gotten to the correct insertion point yet
-            previous = current; // Save ptr to last record
-            current = current->next;
-        }
-    }
-
-    if (!done) {    // Matching record not found, add the record to
-        // the end of the list.  "previous" points to the last
-        // record in the list or NULL (empty list).
-
-//fprintf(stderr,"Not Found: Adding to end: %s\n",new_record->filename);
-
-        new_record->next = NULL;
-
-        if (previous == NULL) { // Empty list
-            map_index_head = new_record;
-            //fprintf(stderr,"First record in new list\n");
-        }
-        else {  // Else at end of list
-            previous->next = new_record;
-            //fprintf(stderr,"Adding to end of list: %s\n",new_record->filename);
-        }
-
-        //fprintf(stderr,"Adding:%d:%s\n",strlen(new_record->filename),new_record->filename);
-
-        // Fill in some default values for the new record.
-        new_record->selected = 0;
-
-        if (       strstr(new_record->filename,".geo")
-                || strstr(new_record->filename,".GEO")
-                || strstr(new_record->filename,".Geo") ) {
-            new_record->auto_maps = 0;
-        }
-        else {
-            new_record->auto_maps = 1;
-        }
-    }
-}
-*/
-
-
-
-
-
 // sort map index
 // simple bubble sort, since we should be sorted already
 //
@@ -8569,6 +8397,49 @@ static void index_sort(void)
 
 
 
+// Given one line of a map index file, split it out into components
+int parse_map_index_line(char *instring, char *filename, size_t filename_size,
+                         unsigned long *bottom, unsigned long *top,
+                         unsigned long *left, unsigned long *right,
+                         int *map_layer, int *draw_filled, int *usgs_drg,
+                         int *auto_maps, int *max_zoom, int *min_zoom)
+{
+
+  char *fname_ptr;
+  int retval = 1;
+
+  // find the last comma in instring
+  fname_ptr = find_last_of(instring,',');
+  if (fname_ptr == NULL)
+    {
+      fprintf(stderr,"Malformed line '%s' has no commas!\n", instring);
+      retval = 0;
+    }
+  else
+    {
+      int num_processed;
+
+      *(fname_ptr++) = '\0'; // clobber comma, point to next char
+      strncpy(filename, fname_ptr, filename_size);
+      num_processed =
+        sscanf(instring,"%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d",
+               bottom, top, left, right,
+               map_layer, draw_filled, usgs_drg, auto_maps,
+               max_zoom, min_zoom);
+      if (num_processed != 10)
+        {
+          fprintf(stderr, "Could not extract 10 items from '%s'\n", instring);
+          // put the comma back for error reporting later
+          *(--fname_ptr) = ',';
+          retval = 0;
+        }
+    }
+  return retval;
+}
+
+
+
+
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
@@ -8583,13 +8454,10 @@ void index_restore_from_file(void)
   map_index_record *temp_record;
   map_index_record *last_record;
   char in_string[MAX_FILENAME*2];
-  int doing_migration = 0;
   char map_index_path[MAX_VALUE];
 
   get_user_base_dir(MAP_INDEX_DATA, map_index_path, sizeof(map_index_path));
 
-
-//fprintf(stderr,"\nRestoring map index from file\n");
 
   if (map_index_head != NULL)
   {
@@ -8614,43 +8482,9 @@ void index_restore_from_file(void)
 
       if (strlen(in_string) >= 15)     // We have some data.
       {
-        // Try to process the
-        // line.
-        char scanf_format[50];
-        char old_scanf_format[50];
-        char older_scanf_format[50];
-        int processed;
+        // Try to process the line.
+        int good_parse;
         int i, jj;
-
-//fprintf(stderr,"%s\n",in_string);
-
-        // Tweaked the string below so that it will track
-        // along with MAX_FILENAME-1.  We're constructing
-        // the string "%lu,%lu,%lu,%lu,%d,%d,%2000c", where
-        // the 2000 example number is from MAX_FILENAME.
-        xastir_snprintf(scanf_format,
-                        sizeof(scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
-        //fprintf(stderr,"%s\n",scanf_format);
-
-        // index predates addition of usgs_drg flag (26 Jul 2005)
-        xastir_snprintf(old_scanf_format,
-                        sizeof(old_scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
-
-        // index predates addition of min/max zoom (29 Oct 2003)
-        xastir_snprintf(older_scanf_format,
-                        sizeof(older_scanf_format),
-                        "%s%d%s",
-                        "%lu,%lu,%lu,%lu,%d,%d,%d,%",
-                        MAX_FILENAME,
-                        "c");
 
         // Malloc an index record.  We'll add it to the list
         // only if the data looks reasonable.
@@ -8671,119 +8505,60 @@ void index_restore_from_file(void)
         temp_record->min_zoom = -1;     // Too low
         temp_record->filename[0] = '\0';// Empty
 
-        processed = sscanf(in_string,
-                           scanf_format,
-                           &temp_record->bottom,
-                           &temp_record->top,
-                           &temp_record->left,
-                           &temp_record->right,
-                           &temp_record->map_layer,
-                           &temp_record->draw_filled,
-                           &temp_record->usgs_drg,
-                           &temp_record->auto_maps,
-                           &temp_record->max_zoom,
-                           &temp_record->min_zoom,
-                           temp_record->filename);
+        good_parse = parse_map_index_line(in_string, temp_record->filename,
+                                          sizeof(temp_record->filename),
+                                          &temp_record->bottom,
+                                          &temp_record->top,
+                                          &temp_record->left,
+                                          &temp_record->right,
+                                          &temp_record->map_layer,
+                                          &temp_record->draw_filled,
+                                          &temp_record->usgs_drg,
+                                          &temp_record->auto_maps,
+                                          &temp_record->max_zoom,
+                                          &temp_record->min_zoom);
 
-        if (processed < 11)
+        if (!good_parse)
         {
-          // We're upgrading from an old format index file
-          // that doesn't have usgs_drg.  Try the
-          // old_scanf_format string instead.
-
-          doing_migration = 1;
-
-          processed = sscanf(in_string,
-                             old_scanf_format,
-                             &temp_record->bottom,
-                             &temp_record->top,
-                             &temp_record->left,
-                             &temp_record->right,
-                             &temp_record->map_layer,
-                             &temp_record->draw_filled,
-                             &temp_record->auto_maps,
-                             &temp_record->max_zoom,
-                             &temp_record->min_zoom,
-                             temp_record->filename);
-          if (processed < 10)
-          {
-            // It's really old, doesn't have min/max zoom either
-            temp_record->max_zoom = -1;     // Too low
-            temp_record->min_zoom = -1;     // Too low
-
-            processed = sscanf(in_string,
-                               older_scanf_format,
-                               &temp_record->bottom,
-                               &temp_record->top,
-                               &temp_record->left,
-                               &temp_record->right,
-                               &temp_record->map_layer,
-                               &temp_record->draw_filled,
-                               &temp_record->auto_maps,
-                               temp_record->filename);
-          }
-          // either way, it doesn't have usgs_drg, so add one
-          // defaulting to Auto if it's a tif file, no if not
-          if (       strstr(temp_record->filename,".tif")
-                     || strstr(temp_record->filename,".TIF")
-                     || strstr(temp_record->filename,".Tif") )
-          {
-            temp_record->usgs_drg = 2; // Auto
-          }
-          else
-          {
-            temp_record->usgs_drg = 0; // No
-          }
+          fprintf(stderr,"Malformed line '%s' in map index\n", in_string);
         }
 
         temp_record->XmStringPtr = NULL;
 
         // Do some reasonableness checking on the parameters
         // we just parsed.
-//WE7U: First comparison here is always false
-//                if ( (temp_record->bottom < 0l)
-//                        || (temp_record->bottom > 64800000l) ) {
         if (temp_record->bottom > 64800000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: bottom extent incorrect %lu in map name:\n%s\n",
                   temp_record->bottom,
                   temp_record->filename);
         }
 
 
-//WE7U: First comparison here is always false
-//               if ( (temp_record->top < 0l)
-//                        || (temp_record->top > 64800000l) ) {
         if (temp_record->top > 64800000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: top extent incorrect %lu in map name:\n%s\n",
                   temp_record->top,
                   temp_record->filename);
         }
 
-//WE7U: First comparison here is always false
-//                if ( (temp_record->left < 0l)
-//                        || (temp_record->left > 129600000l) ) {
         if (temp_record->left > 129600000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: left extent incorrect %lu in map name:\n%s\n",
                   temp_record->left,
                   temp_record->filename);
         }
 
-//WE7U: First comparison here is always false
-//                if ( (temp_record->right < 0l)
-//                        || (temp_record->right > 129600000l) ) {
         if (temp_record->right > 129600000l)
         {
 
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: right extent incorrect %lu in map name:\n%s\n",
                   temp_record->right,
                   temp_record->filename);
@@ -8792,22 +8567,13 @@ void index_restore_from_file(void)
         if ( (temp_record->max_zoom < 0)
              || (temp_record->max_zoom > 99999) )
         {
-//                    processed = 0;  // Reject this record
-//                    fprintf(stderr,"\nindex_restore_from_file: max_zoom field incorrect %d in map name:\n%s\n",
-//                            temp_record->max_zoom,
-//                            temp_record->filename);
           // Assign a reasonable value
           temp_record->max_zoom = 0;
-          //fprintf(stderr,"Assigning max_zoom of 0\n");
         }
 
         if ( (temp_record->min_zoom < 0)
              || (temp_record->min_zoom > 99999) )
         {
-//                    processed = 0;  // Reject this record
-//                    fprintf(stderr,"\nindex_restore_from_file: min_zoom field incorrect %d in map name:\n%s\n",
-//                            temp_record->min_zoom,
-//                            temp_record->filename);
           // Assign a reasonable value
           temp_record->min_zoom = 0;
           //fprintf(stderr,"Assigning min_zoom of 0\n");
@@ -8816,7 +8582,7 @@ void index_restore_from_file(void)
         if ( (temp_record->map_layer < -99999)
              || (temp_record->map_layer > 99999) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: map_layer field incorrect %d in map name:\n%s\n",
                   temp_record->map_layer,
                   temp_record->filename);
@@ -8825,7 +8591,7 @@ void index_restore_from_file(void)
         if ( (temp_record->draw_filled < 0)
              || (temp_record->draw_filled > 2) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: draw_filled field incorrect %d in map name:\n%s\n",
                   temp_record->draw_filled,
                   temp_record->filename);
@@ -8834,7 +8600,7 @@ void index_restore_from_file(void)
         if ( (temp_record->usgs_drg < 0)
              || (temp_record->usgs_drg > 2) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: usgs_drg field incorrect %d in map name:\n%s\n",
                   temp_record->usgs_drg,
                   temp_record->filename);
@@ -8843,7 +8609,7 @@ void index_restore_from_file(void)
         if ( (temp_record->auto_maps < 0)
              || (temp_record->auto_maps > 1) )
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
           fprintf(stderr,"\nindex_restore_from_file: auto_maps field incorrect %d in map name:\n%s\n",
                   temp_record->auto_maps,
                   temp_record->filename);
@@ -8852,7 +8618,7 @@ void index_restore_from_file(void)
         // Check whether the filename is empty
         if (strlen(temp_record->filename) == 0)
         {
-          processed = 0;  // Reject this record
+          good_parse = 0;  // Reject this record
         }
 
         // Check for control characters in the filename.
@@ -8863,7 +8629,7 @@ void index_restore_from_file(void)
           if (temp_record->filename[i] < 0x20)
           {
 
-            processed = 0;  // Reject this record
+            good_parse = 0;  // Reject this record
             fprintf(stderr,"\nindex_restore_from_file: Found control char 0x%02x in map name:\n%s\n",
                     temp_record->filename[i],
                     temp_record->filename);
@@ -8886,12 +8652,9 @@ void index_restore_from_file(void)
 
         temp_record->filename[MAX_FILENAME-1] = '\0';
 
-        // If correct number of parameters for either old or
-        // new format
-        if (processed == 11 || processed == 10 || processed == 8)
+        // If correct number of parameters...
+        if (good_parse)
         {
-
-          //fprintf(stderr,"Restored: %s\n",temp_record->filename);
 
           // Insert the new record into the in-memory map
           // list in sorted order.
@@ -8910,22 +8673,18 @@ void index_restore_from_file(void)
           }
           last_record = temp_record;
 
-
-          // Remember that we may just have attached the
-          // record to our in-memory map list, or we may
-          // have free'ed it in the above function call.
           // Set the pointer to NULL to make sure we don't
           // try to do anything else with the memory.
           temp_record = NULL;
         }
-        else    // sscanf didn't parse the proper number of
+        else
         {
+          // sscanf didn't parse the proper number of
           // items.  Delete the record.
 
-// Remember to free the XmString pointer if necessary.
+          // Remember to free the XmString pointer if necessary.
 
           free(temp_record);
-//                    fprintf(stderr,"index_restore_from_file:sscanf parsing error\n");
         }
       }
     }
@@ -8934,13 +8693,6 @@ void index_restore_from_file(void)
   // now that we have read the whole file, make sure it is sorted
   index_sort();  // probably should check for dup records
 
-  if (doing_migration)
-  {
-    // Save in new file format if we just did a migration from
-    // old format to new.
-    fprintf(stderr,"Migrating from old map_index.sys format to new format.\n");
-    index_save_to_file();
-  }
 }
 
 
