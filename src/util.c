@@ -4642,7 +4642,7 @@ char *find_last_of(char * instring, char theChar)
   size_t instring_len = strlen(instring);
   size_t i;
   char *retptr= NULL;
-  for (i = instring_len-1; i > 0 && instring[i] != theChar; --i)
+  for (i = instring_len-1; i >= 0 && instring[i] != theChar; --i)
     {
       // do nothing
     }
