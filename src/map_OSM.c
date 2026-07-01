@@ -1082,6 +1082,7 @@ static void draw_OSM_image(
   tiepoint *tpSE,
   int osm_zl)
 {
+  int free_image_data=0;
   // Seed XImage from current pixmap so missing-tile areas show the
   // previously-rendered content (e.g. lower-zoom fallback tiles).
   XImage *ximg = XGetImage(XtDisplay(w), pixmap, 0, 0,
@@ -1097,6 +1098,7 @@ static void draw_OSM_image(
     if (ximg)
     {
       ximg->data = calloc(ximg->bytes_per_line * screen_height, 1);
+      free_image_data=1;
       if (!ximg->data) { XDestroyImage(ximg); ximg = NULL; }
     }
   }
@@ -1107,6 +1109,11 @@ static void draw_OSM_image(
   {
     XPutImage(XtDisplay(w), pixmap, gc, ximg, 0, 0, 0, 0,
               (unsigned)screen_width, (unsigned)screen_height);
+    if (free_image_data)
+    {
+      free(ximg->data);
+      ximg->data=NULL;
+    }
     XDestroyImage(ximg);
   }
 }  // end draw_OSM_image()
@@ -1148,6 +1155,7 @@ void draw_OSM_tiles (Widget w,
   char tmpString[MAX_TMPSTRING];
 
   char temp_file_path[MAX_VALUE];
+  int free_image_data=0;
 
   // Check whether we're indexing or drawing the map
   if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -1358,6 +1366,7 @@ void draw_OSM_tiles (Widget w,
       if (shared_ximg)
       {
         shared_ximg->data = calloc(shared_ximg->bytes_per_line * screen_height, 1);
+        free_image_data=1;
         if (!shared_ximg->data) { XDestroyImage(shared_ximg); shared_ximg = NULL; }
       }
     }
@@ -1427,6 +1436,11 @@ void draw_OSM_tiles (Widget w,
     {
       XPutImage(XtDisplay(w), pixmap, gc, shared_ximg, 0, 0, 0, 0,
                 (unsigned)screen_width, (unsigned)screen_height);
+      if (free_image_data)
+      {
+        free(shared_ximg->data);
+        shared_ximg->data = NULL;
+      }
       XDestroyImage(shared_ximg);
     }
 
