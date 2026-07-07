@@ -4640,7 +4640,7 @@ void short_filename_for_status(char *filename, char *short_filename,
 char *find_last_of(char * instring, char theChar)
 {
   size_t instring_len = strlen(instring);
-  size_t i;
+  int i;
   char *retptr= NULL;
   for (i = instring_len-1; i >= 0 && instring[i] != theChar; --i)
     {
