@@ -1327,7 +1327,7 @@ void alert_build_list(Message *fill)
     // alerts with up to five alerts per message.  This doesn't
     // handle filling in the title for compressed alerts though.
     ret = sscanf(fill->message_line,
-                 "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+                 "%20[^,],%30[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
                  entry.activity,      // 191700z
                  entry.alert_tag,     // WIND
                  &title[0][0],        // CA_Z007
@@ -1343,7 +1343,7 @@ void alert_build_list(Message *fill)
     }
     // Force a termination for each
     entry.activity[20]  = '\0';
-    entry.alert_tag[20] = '\0';
+    entry.alert_tag[30] = '\0';
     title[0][TITLE_SIZE]        = '\0';
     title[1][TITLE_SIZE]        = '\0';
     title[2][TITLE_SIZE]        = '\0';
@@ -1386,7 +1386,7 @@ void alert_build_list(Message *fill)
       // a really long new message and add it to the queue,
       // in which case we'd exit from this routine as soon as
       // it was submitted.
-      ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
+      ret = sscanf(fill->message_line, "%20[^,],%30[^,],%255[^, ]",
                    entry.activity,
                    entry.alert_tag,
                    compressed_wx);     // Stick the long string in here
@@ -1769,7 +1769,7 @@ void alert_build_list(Message *fill)
       // a really long new message and add it to the queue,
       // in which case we'd exit from this routine as soon as
       // it was submitted.
-      ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
+      ret = sscanf(fill->message_line, "%20[^,],%30[^,],%255[^, ]",
                    entry.activity,
                    entry.alert_tag,
                    compressed_wx);     // Stick the long string in here
@@ -2135,7 +2135,7 @@ void alert_build_list(Message *fill)
     }
 
     // Terminate the strings
-    entry.activity[20] = entry.alert_tag[20] = '\0';
+    entry.activity[20] = entry.alert_tag[30] = '\0';
 
     // If the expire time is missing, shift fields to the right
     // by one field.  Evidently we can have an alert come across
@@ -2170,7 +2170,7 @@ void alert_build_list(Message *fill)
                       sizeof(entry.alert_tag),
                       "%s",
                       entry.activity);
-      entry.alert_tag[20] = '\0';
+      entry.alert_tag[30] = '\0';
 
       // Shouldn't we clear out entry.activity in this
       // case???  We've determined it's not a date/time value.
