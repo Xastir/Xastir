@@ -59,6 +59,8 @@ cd ${prefix}/share/xastir/Counties || exit 1
 #
 rm -f *.zip 2>&1 >/dev/null
 
+exitcode=0
+badfetch=""
 
 # Fetch new copies, unzip into place, delete archive.
 #
@@ -72,8 +74,14 @@ for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6; do
     cut=`echo $d|cut -c1-2 -`
     rm -f $cut*.shx $cut*.shp $cut*.dbf $cut*.prj $cut*.zip 2>&1 >/dev/null
     wget https://www.weather.gov/source/gis/Shapefiles/$DIR/$d.zip
-    unzip $d.zip
-    rm -f *.zip
+    if [ $? -ne 0 ]
+    then
+        exitcode=1
+        badfetch="$d.zip $badfetch"
+    else
+        unzip $d.zip
+        rm -f *.zip
+    fi
   fi
 done
 
@@ -108,7 +116,7 @@ done
 ####################
 #
 
-exitcode=0
+baddbfawk=""
 
 for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6 $FILE7; do
 
@@ -122,6 +130,7 @@ for d in $FILE1 $FILE2 $FILE3 $FILE4 $FILE5 $FILE6 $FILE7; do
     echo $result
     if [ "$result" = "No matching dbfawk signature found" ]; then
         echo "Fix dbfawk for $e!"
+        baddbfawk="$e $baddbfawk"
         exitcode=1
     fi
   fi
@@ -129,7 +138,8 @@ done
 echo
 
 if [ $exitcode -eq 1 ] ; then
-    echo "One or more dbfawk files is out of date.  Fix the problem."
+    echo "Out-of-date dbfawks: $baddbfawk ."
+    echo "Failed downloads: $badfetch ."
 fi
 
 exit $exitcode
