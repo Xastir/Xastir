@@ -55,7 +55,7 @@ jobs:
     - name: Install XQuartz
       run: brew install xquartz --cask
     - name: Install Packages
-      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre proj shapelib cjson cairo
+      run: brew install autoconf automake libtool berkeley-db graphicsmagick libgeotiff openmotif pcre2 proj shapelib cjson cairo
     - name: Bootstrap
       run: ./bootstrap.sh
     - name: configure
