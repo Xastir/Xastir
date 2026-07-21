@@ -16328,14 +16328,17 @@ void relay_digipeat(char *call, char *path, char *info, int port)
                   Substring[1]);
 
   ii = 2;
-  while ( (Substring[ii] != NULL)
-          && (ii < MAX_RELAY_SUBSTRINGS) )
+  // Test the array index before dereferencing Substring[ii] so we
+  // never read one element past the end of the array (Substring[] has
+  // MAX_RELAY_SUBSTRINGS entries, valid indices 0..MAX_RELAY_SUBSTRINGS-1).
+  while ( (ii < MAX_RELAY_SUBSTRINGS)
+          && (Substring[ii] != NULL) )
   {
     strncat(new_path,
             Substring[ii],
             sizeof(new_path) - 1 - strlen(new_path));
     ii++;
-    if (Substring[ii] != NULL)  // Add a comma if more to come
+    if ((ii < MAX_RELAY_SUBSTRINGS) && Substring[ii] != NULL) // Add a comma if more to come
       strncat(new_path,
               ",",
               sizeof(new_path) - 1 - strlen(new_path));
