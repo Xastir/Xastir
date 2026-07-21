@@ -545,6 +545,20 @@ void save_data(void)
   get_user_base_dir(CONFIG_FILE_TMP, config_file_tmp,
                     sizeof(config_file_tmp));
 
+  // Fill in the config and backup file paths up front.  These must be
+  // initialized before the fopen() below so that the error/recovery
+  // path (the "else" branch when fopen() fails) doesn't reference
+  // uninitialized buffers when logging and renaming files.
+  get_user_base_dir(CONFIG_FILE, config_file, sizeof(config_file));
+  get_user_base_dir(CONFIG_FILE_BAK1, config_file_bak1,
+                    sizeof(config_file_bak1));
+  get_user_base_dir(CONFIG_FILE_BAK2, config_file_bak2,
+                    sizeof(config_file_bak2));
+  get_user_base_dir(CONFIG_FILE_BAK3, config_file_bak3,
+                    sizeof(config_file_bak3));
+  get_user_base_dir(CONFIG_FILE_BAK4, config_file_bak4,
+                    sizeof(config_file_bak4));
+
   // Save to the new config file
   fout = fopen (config_file_tmp, "a");
   if (fout != NULL)
@@ -1205,21 +1219,6 @@ void save_data(void)
 
     // Close the config_file_tmp file, we're done writing it.
     (void)fclose (fout);
-
-
-    get_user_base_dir(CONFIG_FILE, config_file, sizeof(config_file));
-
-    get_user_base_dir(CONFIG_FILE_BAK1, config_file_bak1,
-                      sizeof(config_file_bak1));
-
-    get_user_base_dir(CONFIG_FILE_BAK2, config_file_bak2,
-                      sizeof(config_file_bak2));
-
-    get_user_base_dir(CONFIG_FILE_BAK3, config_file_bak3,
-                      sizeof(config_file_bak3));
-
-    get_user_base_dir(CONFIG_FILE_BAK4,config_file_bak4,
-                      sizeof(config_file_bak4));
 
 
     //
