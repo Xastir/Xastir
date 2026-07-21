@@ -1660,7 +1660,7 @@ process:
             // Would be good to take another look at this later.
           }
 
-          if (label_text_color < '1' && label_text_color > '9')
+          if (label_text_color < '1' || label_text_color > '9')
           {
             label_text_color = '0';  // Default to black
           }
