@@ -545,10 +545,6 @@ void save_data(void)
   get_user_base_dir(CONFIG_FILE_TMP, config_file_tmp,
                     sizeof(config_file_tmp));
 
-  // Fill in the config and backup file paths up front.  These must be
-  // initialized before the fopen() below so that the error/recovery
-  // path (the "else" branch when fopen() fails) doesn't reference
-  // uninitialized buffers when logging and renaming files.
   get_user_base_dir(CONFIG_FILE, config_file, sizeof(config_file));
   get_user_base_dir(CONFIG_FILE_BAK1, config_file_bak1,
                     sizeof(config_file_bak1));

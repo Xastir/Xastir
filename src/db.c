@@ -16328,9 +16328,6 @@ void relay_digipeat(char *call, char *path, char *info, int port)
                   Substring[1]);
 
   ii = 2;
-  // Test the array index before dereferencing Substring[ii] so we
-  // never read one element past the end of the array (Substring[] has
-  // MAX_RELAY_SUBSTRINGS entries, valid indices 0..MAX_RELAY_SUBSTRINGS-1).
   while ( (ii < MAX_RELAY_SUBSTRINGS)
           && (Substring[ii] != NULL) )
   {
