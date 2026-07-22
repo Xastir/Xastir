@@ -718,7 +718,7 @@ void draw_geo_image_map (Widget w,
       (void)get_line (f, line, MAX_FILENAME);
       if (strncasecmp (line, "FILENAME", 8) == 0)
       {
-        if (1 != sscanf (line + 9, "%s", fileimg))
+        if (1 != sscanf (line + 9, "%2000s", fileimg))
         {
           fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
         }
@@ -740,7 +740,7 @@ void draw_geo_image_map (Widget w,
         }
       }
       if (strncasecmp (line, "URL", 3) == 0)
-        if (1 != sscanf (line + 4, "%s", fileimg))
+        if (1 != sscanf (line + 4, "%2000s", fileimg))
         {
           fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
         }
@@ -814,7 +814,7 @@ void draw_geo_image_map (Widget w,
         OSMserver_flag = 1;
         if (strlen(line) > 13)
         {
-          if (1 != sscanf (line + 13, "%s", OSMstyle))
+          if (1 != sscanf (line + 13, "%999s", OSMstyle))
           {
             fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n");
           }
@@ -826,7 +826,7 @@ void draw_geo_image_map (Widget w,
         OSMserver_flag = 2;
         if (strlen(line) > 14)
         {
-          if (1 != sscanf (line + 14, "%s", OSMstyle))
+          if (1 != sscanf (line + 14, "%999s", OSMstyle))
           {
             fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n");
           }
@@ -877,7 +877,7 @@ void draw_geo_image_map (Widget w,
         {
           if (strlen(line) > 9)
           {
-            if (1 != sscanf (line + 9, "%s", tileCache))
+            if (1 != sscanf (line + 9, "%2000s", tileCache))
             {
               fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_DIR\n");
             }
@@ -888,7 +888,7 @@ void draw_geo_image_map (Widget w,
         {
           if (strlen(line) > 9)
           {
-            if (1 != sscanf (line + 9, "%s", OSMtileExt))
+            if (1 != sscanf (line + 9, "%9s", OSMtileExt))
             {
               fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_EXT\n");
             }
