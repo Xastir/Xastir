@@ -718,9 +718,9 @@ void draw_geo_image_map (Widget w,
       (void)get_line (f, line, MAX_FILENAME);
       if (strncasecmp (line, "FILENAME", 8) == 0)
       {
-        if (1 != sscanf (line + 9, "%s", fileimg))
+        if (0 == copy_token(fileimg, sizeof(fileimg), line + 9))
         {
-          fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+          fprintf(stderr,"draw_geo_image_map:parsing error\n");
         }
         if (fileimg[0] != '/' )   // not absolute path
         {
@@ -740,9 +740,9 @@ void draw_geo_image_map (Widget w,
         }
       }
       if (strncasecmp (line, "URL", 3) == 0)
-        if (1 != sscanf (line + 4, "%s", fileimg))
+        if (0 == copy_token(fileimg, sizeof(fileimg), line + 4))
         {
-          fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+          fprintf(stderr,"draw_geo_image_map:parsing error\n");
         }
 
       if (n_tp < 2)       // Only take the first two tiepoints
@@ -771,16 +771,16 @@ void draw_geo_image_map (Widget w,
         }
 
       if (strncasecmp (line, "DATUM", 5) == 0)
-        if (1 != sscanf (line + 6, "%8s",geo_datum))
+        if (0 == copy_token(geo_datum, sizeof(geo_datum), line + 6))
         {
-          fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+          fprintf(stderr,"draw_geo_image_map:parsing error\n");
         }
 
       if (strncasecmp (line, "PROJECTION", 10) == 0)
         // Ignores leading and trailing space (nice!)
-        if (1 != sscanf (line + 11, "%256s",geo_projection))
+        if (0 == copy_token(geo_projection, sizeof(geo_projection), line + 11))
         {
-          fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+          fprintf(stderr,"draw_geo_image_map:parsing error\n");
         }
 
       if (strncasecmp (line, "TERRASERVER-URBAN", 17) == 0)
@@ -814,9 +814,9 @@ void draw_geo_image_map (Widget w,
         OSMserver_flag = 1;
         if (strlen(line) > 13)
         {
-          if (1 != sscanf (line + 13, "%s", OSMstyle))
+          if (0 == copy_token(OSMstyle, sizeof(OSMstyle), line + 13))
           {
-            fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n");
+            fprintf(stderr,"draw_geo_image_map:parsing error for OSM style.\n");
           }
         }
       }
@@ -826,9 +826,9 @@ void draw_geo_image_map (Widget w,
         OSMserver_flag = 2;
         if (strlen(line) > 14)
         {
-          if (1 != sscanf (line + 14, "%s", OSMstyle))
+          if (0 == copy_token(OSMstyle, sizeof(OSMstyle), line + 14))
           {
-            fprintf(stderr,"draw_geo_image_map:sscanf parsing error for OSM style.\n");
+            fprintf(stderr,"draw_geo_image_map:parsing error for OSM style.\n");
           }
         }
       }
@@ -877,9 +877,9 @@ void draw_geo_image_map (Widget w,
         {
           if (strlen(line) > 9)
           {
-            if (1 != sscanf (line + 9, "%s", tileCache))
+            if (0 == copy_token(tileCache, sizeof(tileCache), line + 9))
             {
-              fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_DIR\n");
+              fprintf(stderr,"draw_geo_image_map:parsing error for TILE_DIR\n");
             }
           }
         }
@@ -888,9 +888,9 @@ void draw_geo_image_map (Widget w,
         {
           if (strlen(line) > 9)
           {
-            if (1 != sscanf (line + 9, "%s", OSMtileExt))
+            if (0 == copy_token(OSMtileExt, sizeof(OSMtileExt), line + 9))
             {
-              fprintf(stderr,"draw_geo_image_map:sscanf parsing error for TILE_EXT\n");
+              fprintf(stderr,"draw_geo_image_map:parsing error for TILE_EXT\n");
             }
           }
         }
