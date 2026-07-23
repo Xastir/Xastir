@@ -104,3 +104,52 @@ AT_KEYWORDS([util short_filename_for_status])
 AT_CHECK(["$abs_top_builddir/tests/test_util" short_filename_for_status_trunc], [0], [PASS: short_filename_for_status
 ])
 AT_CLEANUP
+
+AT_BANNER([tests of whitespace-delimited token copy])
+AT_SETUP([copy_token: plain token copied unchanged])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_plain], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: leading whitespace skipped])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_leading_space], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: copy stops at trailing whitespace])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_stops_at_space], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: token exactly filling the buffer])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_exact_fit], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: oversized token truncated and reported])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_truncates], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: empty input])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_empty], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: whitespace-only input])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_whitespace_only], [0], [PASS: copy_token
+])
+AT_CLEANUP
+
+AT_SETUP([copy_token: NULL and zero-size arguments])
+AT_KEYWORDS([util copy_token])
+AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_null_source], [0], [PASS: copy_token
+])
+AT_CLEANUP

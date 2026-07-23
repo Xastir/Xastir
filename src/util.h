@@ -74,6 +74,7 @@ extern char *remove_leading_spaces(char *data);
 extern char *remove_trailing_spaces(char *data);
 extern char *remove_trailing_asterisk(char *data);
 extern char *remove_trailing_dash_zero(char *data);
+extern int copy_token(char *dest, size_t dest_size, const char *src);
 extern void get_timestamp(char *timestring);
 extern int get_iso_datetime(time_t aTime, char *timestring, int nowIfNotSet, int nowIfInvalid);
 extern int get_w3cdtf_datetime(time_t aTime, char *timestring,int nowIfNotSet, int nowIfInvalid);

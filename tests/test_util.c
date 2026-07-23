@@ -326,6 +326,107 @@ int test_short_filename_for_status_trunc(void)
   TEST_PASS("short_filename_for_status");
 }
 
+int test_copy_token_plain(void)
+{
+  char dest[16];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), "png");
+
+  TEST_ASSERT_STR_EQ("png", dest, "Plain token copied unchanged");
+  TEST_ASSERT(len == 3, "Return value is the token length");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_leading_space(void)
+{
+  char dest[16];
+
+  copy_token(dest, sizeof(dest), "    png");
+
+  TEST_ASSERT_STR_EQ("png", dest, "Leading whitespace is skipped");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_stops_at_space(void)
+{
+  char dest[16];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), "  png   and more");
+
+  TEST_ASSERT_STR_EQ("png", dest, "Copy stops at the first trailing whitespace");
+  TEST_ASSERT(len == 3, "Return value covers only the first token");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_exact_fit(void)
+{
+  char dest[4];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), "png");
+
+  TEST_ASSERT_STR_EQ("png", dest, "Token that exactly fills the buffer is not truncated");
+  TEST_ASSERT(len < (int)sizeof(dest), "Exact fit is not reported as truncation");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_truncates(void)
+{
+  char dest[4];
+  char canary[8];
+  int len;
+
+  memset(canary, 'x', sizeof(canary));
+
+  len = copy_token(dest, sizeof(dest), "abcdefghij");
+
+  TEST_ASSERT_STR_EQ("abc", dest, "Oversized token is truncated to fit the buffer");
+  TEST_ASSERT(len == 10, "Return value is the full length the token would have needed");
+  TEST_ASSERT(len >= (int)sizeof(dest), "Truncation is detectable from the return value");
+  TEST_ASSERT(canary[0] == 'x', "Neighbouring storage is untouched");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_empty(void)
+{
+  char dest[16];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), "");
+
+  TEST_ASSERT_STR_EQ("", dest, "Empty input yields an empty string");
+  TEST_ASSERT(len == 0, "Empty input reports no token");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_whitespace_only(void)
+{
+  char dest[16];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), "     ");
+
+  TEST_ASSERT_STR_EQ("", dest, "Whitespace-only input yields an empty string");
+  TEST_ASSERT(len == 0, "Whitespace-only input reports no token");
+  TEST_PASS("copy_token");
+}
+
+int test_copy_token_null_source(void)
+{
+  char dest[16];
+  int len;
+
+  len = copy_token(dest, sizeof(dest), NULL);
+
+  TEST_ASSERT_STR_EQ("", dest, "NULL source yields an empty string");
+  TEST_ASSERT(len == 0, "NULL source reports no token");
+  TEST_ASSERT(copy_token(NULL, sizeof(dest), "png") == 0, "NULL destination is rejected");
+  TEST_ASSERT(copy_token(dest, 0, "png") == 0, "Zero destination size is rejected");
+  TEST_PASS("copy_token");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -351,6 +452,14 @@ int main(int argc, char *argv[])
     {"convert_xastir_to_screen_coordinates", test_convert_xastir_to_screen_coordinates},
     {"short_filename_for_status_notrunc",test_short_filename_for_status_notrunc},
     {"short_filename_for_status_trunc",test_short_filename_for_status_trunc},
+    {"copy_token_plain",test_copy_token_plain},
+    {"copy_token_leading_space",test_copy_token_leading_space},
+    {"copy_token_stops_at_space",test_copy_token_stops_at_space},
+    {"copy_token_exact_fit",test_copy_token_exact_fit},
+    {"copy_token_truncates",test_copy_token_truncates},
+    {"copy_token_empty",test_copy_token_empty},
+    {"copy_token_whitespace_only",test_copy_token_whitespace_only},
+    {"copy_token_null_source",test_copy_token_null_source},
     {NULL,NULL}
   };
 

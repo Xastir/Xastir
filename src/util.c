@@ -315,6 +315,66 @@ char *remove_trailing_spaces(char *data)
 
 
 
+// copy_token()
+//
+// Copies the first whitespace-delimited token of src into dest,
+// skipping any leading whitespace and stopping at the first trailing
+// whitespace character or at the end of the string.  This matches what
+// sscanf() does for a "%s" conversion, but the destination size is
+// passed in rather than being written into a format string.
+//
+// dest is always NUL terminated when dest_size is non-zero, and never
+// more than dest_size bytes are written.
+//
+// Returns the length of the token that was found, which is the length
+// that would have been needed to hold it in full.  A return value of 0
+// means no token was found.  A return value of dest_size or greater
+// means the token was truncated to fit.
+//
+int copy_token(char *dest, size_t dest_size, const char *src)
+{
+  const char *start;
+  size_t length;
+
+  if ( (dest == NULL) || (dest_size == 0) )
+  {
+    return(0);
+  }
+
+  dest[0] = '\0';
+
+  if (src == NULL)
+  {
+    return(0);
+  }
+
+  start = src;
+  while (isspace((int)(unsigned char)*start))
+  {
+    start++;
+  }
+
+  length = 0;
+  while ( (start[length] != '\0')
+          && !isspace((int)(unsigned char)start[length]) )
+  {
+    length++;
+  }
+
+  if (length == 0)
+  {
+    return(0);
+  }
+
+  xastir_snprintf(dest, dest_size, "%.*s", (int)length, start);
+
+  return((int)length);
+}
+
+
+
+
+
 char *remove_trailing_asterisk(char *data)
 {
   int datalen;
