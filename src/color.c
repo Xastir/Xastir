@@ -41,7 +41,7 @@
 
 static color_load color_choice[MAX_COLORS];
 static int colors_loaded;
-static int rm, gm, bm; // rgb masks
+static unsigned int rm, gm, bm; // rgb masks
 static int rs, gs, bs; // rgb shifts
 int visual_depth;
 
@@ -226,7 +226,7 @@ void setup_visual_info(Display* dpy, int scr)
             bm = vp->blue_mask;
             for (j = 31; j >= 0; j--)
             {
-              if (rm >= (1 << j))
+              if (rm >= (1U << j))
               {
                 rs = j - 15;
                 break;
@@ -234,7 +234,7 @@ void setup_visual_info(Display* dpy, int scr)
             }
             for (j = 31; j >= 0; j--)
             {
-              if (gm >= (1 << j))
+              if (gm >= (1U << j))
               {
                 gs = j - 15;
                 break;
@@ -242,7 +242,7 @@ void setup_visual_info(Display* dpy, int scr)
             }
             for (j = 31; j >= 0; j--)
             {
-              if (bm >= (1 << j))
+              if (bm >= (1U << j))
               {
                 bs = j - 15;
                 break;
