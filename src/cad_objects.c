@@ -408,6 +408,15 @@ void CAD_object_delete(CADRow *object)
 #ifdef CAD_DEBUG
   fprintf(stderr,"Deleting CAD object %s\n",object->label);
 #endif
+
+  if (object == CAD_list_head
+      && polygon_last_x != -1
+      && polygon_last_y != -1)
+  {
+    polygon_last_x = -1;
+    polygon_last_y = -1;
+  }
+
   // check to see if the object we were given was the first object
   if (object==all_objects_ptr)
   {

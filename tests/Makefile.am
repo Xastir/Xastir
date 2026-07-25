@@ -4,7 +4,7 @@
 TESTSUITE = $(srcdir)/testsuite
 AUTOTEST = $(AUTOM4TE) --language=autotest
 
-TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at log_utils_tests.at
+TESTSUITE_AT = testsuite.at interface_helpers.at db_tests.at object_utils_tests.at output_my_aprs_data_tests.at util_tests.at objects_tests.at log_utils_tests.at cad_objects_tests.at
 
 if HAVE_NOMINATIM
 TESTSUITE_AT += nominatim_tests.at
@@ -13,7 +13,7 @@ endif
 EXTRA_DIST = $(TESTSUITE_AT) $(TESTSUITE) package.m4 atlocal.in nominatim_tests.at
 
 # Test programs
-check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_log_utils
+check_PROGRAMS = test_interface_helpers test_db test_object_utils test_output_my_aprs_data test_util test_objects test_log_utils test_cad_objects
 
 # Conditionally add nominatim test program
 if HAVE_NOMINATIM
@@ -45,6 +45,9 @@ test_objects_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_
 
 test_log_utils_SOURCES = test_log_utils.c test_log_utils_stubs.c $(top_srcdir)/src/log_utils.c $(top_srcdir)/src/util.c
 test_log_utils_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
+
+test_cad_objects_SOURCES = test_cad_objects.c test_cad_objects_stubs.c $(top_srcdir)/src/cad_objects.c $(top_srcdir)/src/util.c
+test_cad_objects_CPPFLAGS = $(CPPFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_builddir)
 
 # Nominatim tests (conditional on HAVE_NOMINATIM)
 if HAVE_NOMINATIM
