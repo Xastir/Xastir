@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/types.h>
 #include "globals.h"
 #include "tests/test_framework.h"
 
@@ -68,3 +69,6 @@ long SE_corner_longitude, SE_corner_latitude;
 char dangerous_operation[200];
 char my_long[MAX_LONG], my_lat[MAX_LAT];
 long screen_height, screen_width;
+char LOGFILE_WX_ALERT[400];
+uid_t euid;
+gid_t egid;
