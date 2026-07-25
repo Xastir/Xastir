@@ -1,0 +1,70 @@
+# Autotest tests for popup_controller.c
+# Covers the presentation-free kernel extracted from popup_gui.c.
+
+AT_BANNER([Popup Controller])
+
+AT_SETUP([popup_controller_init: zeroes state])
+AT_KEYWORDS([popup popup_controller init])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" init_zeroes_state], [0], [PASS: popup_controller_init: zeroes state
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_find_free_slot: empty/partial/full])
+AT_KEYWORDS([popup popup_controller find_free_slot])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" find_free_slot_empty_partial_full], [0], [PASS: popup_controller_find_free_slot: empty/partial/full
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_open_slot: marks slot active])
+AT_KEYWORDS([popup popup_controller open_slot])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" open_slot_marks_active], [0], [PASS: popup_controller_open_slot: marks slot active
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_close_slot: clears state])
+AT_KEYWORDS([popup popup_controller close_slot])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" close_slot_clears_state], [0], [PASS: popup_controller_close_slot: clears state
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_clear: resets all slots])
+AT_KEYWORDS([popup popup_controller clear])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" clear_resets_all_slots], [0], [PASS: popup_controller_clear: resets all slots
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_should_run_timeout_check: within interval])
+AT_KEYWORDS([popup popup_controller timeout])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" timeout_check_within_interval], [0], [PASS: popup_controller_should_run_timeout_check: within interval -> 0
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_should_run_timeout_check: after interval])
+AT_KEYWORDS([popup popup_controller timeout])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" timeout_check_after_interval], [0], [PASS: popup_controller_should_run_timeout_check: after interval -> 1
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_slot_expired: decisions correct])
+AT_KEYWORDS([popup popup_controller slot_expired])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" slot_expired_decision], [0], [PASS: popup_controller_slot_expired: decisions correct
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_message_valid: NULL handling])
+AT_KEYWORDS([popup popup_controller message_valid])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" message_valid_combinations], [0], [PASS: popup_controller_message_valid: NULL handling correct
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller_format_slot_name: format and wrap])
+AT_KEYWORDS([popup popup_controller format_slot_name])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" format_slot_name_basic_and_wrap], [0], [PASS: popup_controller_format_slot_name: format and wrap correct
+])
+AT_CLEANUP
+
+AT_SETUP([popup_controller: defensive checks don't crash])
+AT_KEYWORDS([popup popup_controller defensive])
+AT_CHECK(["$abs_top_builddir/tests/test_popup_controller" defensive_null_and_oob], [0], [PASS: popup_controller: defensive checks don't crash
+])
+AT_CLEANUP
