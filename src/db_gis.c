@@ -629,10 +629,8 @@ int initAConnection(Connection *connection, int x)
   connection->interface_number = x;  // so we can reference port_data[] from a connection
   // without knowing the connection's position in
   // connections[]
-  // malloc for the PGconn will cause segfault on trying to
-  // open the connection
 #ifdef HAVE_POSTGIS
-  connection->phandle = (PGconn*)malloc(sizeof(PGconn*));
+  connection->phandle = NULL;
 #endif /* HAVE_POSTGIS */
 #ifdef HAVE_MYSQL
   //connection->mhandle = (MYSQL)malloc(sizeof(MYSQL));
