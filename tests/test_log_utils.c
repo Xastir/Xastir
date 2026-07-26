@@ -109,7 +109,7 @@ int test_prune_stale_entry_removed_fresh_entry_kept(void)
 
   test_path(path, sizeof(path), "mixed");
   snprintf(content, sizeof(content),
-           "# %ld\nOLDPACKET\n# %ld\nFRESHPACKET\n",
+           "# %ld\nOLDCALL>APRS::NWS-WARN :old alert\n# %ld\nCRPFLS>APRS::NWS-WARN :261030z,FLOOD,TXC283{P00AA\n",
            (long)(now - (20 * ONE_DAY)),
            (long)(now - 3600));
   write_file(path, content);
@@ -117,8 +117,9 @@ int test_prune_stale_entry_removed_fresh_entry_kept(void)
   load_wx_alerts_from_log_working_sub(now, path);
 
   TEST_ASSERT(file_exists(path), "log file with a current entry should remain");
-  TEST_ASSERT(!file_contains(path, "OLDPACKET"), "expired entry should be pruned");
-  TEST_ASSERT(file_contains(path, "FRESHPACKET"), "current entry should be kept");
+  TEST_ASSERT(!file_contains(path, "OLDCALL"), "expired entry should be pruned");
+  TEST_ASSERT(file_contains(path, "CRPFLS>APRS::NWS-WARN :261030z,FLOOD,TXC283{P00AA"),
+              "current entry should be kept intact, not truncated");
 
   unlink(path);
   TEST_PASS("load_wx_alerts_from_log_working_sub: prunes stale entries, keeps fresh ones");
@@ -132,7 +133,7 @@ int test_prune_keeps_all_fresh_entries(void)
 
   test_path(path, sizeof(path), "allfresh");
   snprintf(content, sizeof(content),
-           "# %ld\nPACKETONE\n# %ld\nPACKETTWO\n",
+           "# %ld\nCRPFLS>APRS::NWS-WARN :first alert\n# %ld\nLBFSVR>APRS::NWS-WARN :second alert\n",
            (long)(now - 3600),
            (long)(now - 7200));
   write_file(path, content);
@@ -140,11 +141,38 @@ int test_prune_keeps_all_fresh_entries(void)
   load_wx_alerts_from_log_working_sub(now, path);
 
   TEST_ASSERT(file_exists(path), "log file should remain");
-  TEST_ASSERT(file_contains(path, "PACKETONE"), "current entry one should be kept");
-  TEST_ASSERT(file_contains(path, "PACKETTWO"), "current entry two should be kept");
+  TEST_ASSERT(file_contains(path, "CRPFLS>APRS::NWS-WARN :first alert"), "current entry one should be kept intact");
+  TEST_ASSERT(file_contains(path, "LBFSVR>APRS::NWS-WARN :second alert"), "current entry two should be kept intact");
 
   unlink(path);
   TEST_PASS("load_wx_alerts_from_log_working_sub: keeps all current entries");
+}
+
+// decode_ax25_line() tokenizes its argument in place with strtok(),
+// truncating the buffer at the first '>'.  Regression test for a
+// bug where the pruned file was written from that same,
+// now-truncated buffer instead of a pristine copy of the line.
+int test_prune_preserves_full_packet_content(void)
+{
+  char path[256];
+  char content[512];
+  time_t now = time(NULL);
+
+  test_path(path, sizeof(path), "fullcontent");
+  snprintf(content, sizeof(content),
+           "# %ld\nCRPFLS>APRS::NWS-WARN :261030z,FLOOD,TXC283{P00AA\n",
+           (long)(now - 3600));
+  write_file(path, content);
+
+  load_wx_alerts_from_log_working_sub(now, path);
+
+  TEST_ASSERT(!file_contains(path, "\n\nCRPFLS\n"),
+              "packet line must not be truncated down to just the callsign");
+  TEST_ASSERT(file_contains(path, "CRPFLS>APRS::NWS-WARN :261030z,FLOOD,TXC283{P00AA"),
+              "full packet content must survive pruning");
+
+  unlink(path);
+  TEST_PASS("load_wx_alerts_from_log_working_sub: preserves full packet content across pruning");
 }
 
 int test_prune_missing_file_is_a_noop(void)
@@ -173,6 +201,7 @@ int main(int argc, char *argv[])
     {"prune_whole_file_removed_when_too_old", test_prune_whole_file_removed_when_too_old},
     {"prune_stale_entry_removed_fresh_entry_kept", test_prune_stale_entry_removed_fresh_entry_kept},
     {"prune_keeps_all_fresh_entries", test_prune_keeps_all_fresh_entries},
+    {"prune_preserves_full_packet_content", test_prune_preserves_full_packet_content},
     {"prune_missing_file_is_a_noop", test_prune_missing_file_is_a_noop},
     {NULL, NULL}
   };

@@ -68,7 +68,7 @@ char *fetch_file_line(FILE *f, char *line)
 
       if (pos < MAX_LINE_SIZE)
       {
-        if (cin != (char)13)    // CR
+        if (cin != (char)13 && cin != (char)10)    // CR or LF
         {
           line[pos++] = cin;
         }
@@ -76,7 +76,7 @@ char *fetch_file_line(FILE *f, char *line)
 
       if (cin == (char)10)   // Found LF as EOL char
       {
-        line[pos++] = '\0'; // Always add a terminating zero after last char
+        line[pos] = '\0'; // Always add a terminating zero after last char
         pos = 0;          // start next line
         return(line);
       }
@@ -272,12 +272,16 @@ restart_sync:
 
         if (line[0] != '#')   // It's a packet, not a timestamp line
         {
+          char packet_line[MAX_LINE_SIZE+1];
+
+          xastir_snprintf(packet_line, sizeof(packet_line), "%s", line);
+
 //fprintf(stderr,"%s\n",line);
-          decode_ax25_line(line,'F',-1, 1);   // Decode the packet
+          decode_ax25_line(line,'F',-1, 1);   // Decode the packet, mutates line
 
           if (ftmp)
           {
-            fprintf(ftmp, "%s\n%s\n", timestamp_line, line);
+            fprintf(ftmp, "%s\n%s\n", timestamp_line, packet_line);
           }
         }
         else

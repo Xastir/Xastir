@@ -21,6 +21,12 @@ AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_keeps_all_fresh_entries
 ])
 AT_CLEANUP
 
+AT_SETUP([load_wx_alerts_from_log_working_sub: preserves full packet content across pruning])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_preserves_full_packet_content], [0], [PASS: load_wx_alerts_from_log_working_sub: preserves full packet content across pruning
+])
+AT_CLEANUP
+
 AT_SETUP([load_wx_alerts_from_log_working_sub: missing file handled gracefully])
 AT_KEYWORDS([log_utils wx_alert])
 AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_missing_file_is_a_noop], [0], [PASS: load_wx_alerts_from_log_working_sub: missing file handled gracefully

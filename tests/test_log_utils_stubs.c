@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <sys/types.h>
 #include "globals.h"
@@ -41,12 +42,16 @@ STUB_IMPL(utm_ups_to_ll);
 STUB_IMPL(search_station_name);
 STUB_IMPL(fill_in_new_alert_entries);
 
+// The real decode_ax25_line() tokenizes its "line" argument in
+// place with strtok(), truncating it at the first '>'. Mimic that
+// destructive behavior here so tests catch callers who read "line"
+// again afterward expecting it to still be intact.
 int decode_ax25_line(char *line, char from, int port, int dbadd)
 {
-  (void)line;
   (void)from;
   (void)port;
   (void)dbadd;
+  (void)strtok(line, ">");
   return(1);
 }
 
