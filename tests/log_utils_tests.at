@@ -1,0 +1,34 @@
+# Autotest tests for log_utils.c Functions
+# Tests for the wx alert log cache pruning
+
+AT_BANNER([wx alert log pruning])
+
+AT_SETUP([load_wx_alerts_from_log_working_sub: whole file removed when too old])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_whole_file_removed_when_too_old], [0], [PASS: load_wx_alerts_from_log_working_sub: whole-file expiration
+], [ignore])
+AT_CLEANUP
+
+AT_SETUP([load_wx_alerts_from_log_working_sub: stale entry pruned, fresh entry kept])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_stale_entry_removed_fresh_entry_kept], [0], [PASS: load_wx_alerts_from_log_working_sub: prunes stale entries, keeps fresh ones
+])
+AT_CLEANUP
+
+AT_SETUP([load_wx_alerts_from_log_working_sub: all current entries kept])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_keeps_all_fresh_entries], [0], [PASS: load_wx_alerts_from_log_working_sub: keeps all current entries
+])
+AT_CLEANUP
+
+AT_SETUP([load_wx_alerts_from_log_working_sub: preserves full packet content across pruning])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_preserves_full_packet_content], [0], [PASS: load_wx_alerts_from_log_working_sub: preserves full packet content across pruning
+])
+AT_CLEANUP
+
+AT_SETUP([load_wx_alerts_from_log_working_sub: missing file handled gracefully])
+AT_KEYWORDS([log_utils wx_alert])
+AT_CHECK(["$abs_top_builddir/tests/test_log_utils" prune_missing_file_is_a_noop], [0], [PASS: load_wx_alerts_from_log_working_sub: missing file handled gracefully
+])
+AT_CLEANUP

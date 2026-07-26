@@ -68,7 +68,7 @@ char *fetch_file_line(FILE *f, char *line)
 
       if (pos < MAX_LINE_SIZE)
       {
-        if (cin != (char)13)    // CR
+        if (cin != (char)13 && cin != (char)10)    // CR or LF
         {
           line[pos++] = cin;
         }
@@ -76,7 +76,7 @@ char *fetch_file_line(FILE *f, char *line)
 
       if (cin == (char)10)   // Found LF as EOL char
       {
-        line[pos++] = '\0'; // Always add a terminating zero after last char
+        line[pos] = '\0'; // Always add a terminating zero after last char
         pos = 0;          // start next line
         return(line);
       }
@@ -176,7 +176,9 @@ void load_wx_alerts_from_log_working_sub(time_t time_now, char *filename)
   int file_age;
   int expire_limit;   // In seconds
   char line[MAX_LINE_SIZE+1];
+  char tmp_filename[MAX_FILENAME];
   FILE *f;
+  FILE *ftmp;
 
 
   expire_limit = 60 * 60 * 24 * 15;   // 15 days
@@ -194,7 +196,8 @@ void load_wx_alerts_from_log_working_sub(time_t time_now, char *filename)
 
   if ( file_age > expire_limit)
   {
-//        fprintf(stderr,"Old file: %s, skipping...\n", filename);
+    fprintf(stderr,"Old wx alert log file, removing: %s\n", filename);
+    (void)remove(filename);
     return;
   }
 
@@ -225,6 +228,13 @@ void load_wx_alerts_from_log_working_sub(time_t time_now, char *filename)
     return;
   }
 
+  xastir_snprintf(tmp_filename, sizeof(tmp_filename), "%s.tmp", filename);
+  ftmp = fopen(tmp_filename, "w");
+  if (!ftmp)
+  {
+    fprintf(stderr,"Couldn't create %s, wx alert log won't be pruned\n", tmp_filename);
+  }
+
   while (!feof(f))    // Read until end of file
   {
 
@@ -241,6 +251,7 @@ restart_sync:
     {
       time_t line_stamp;
       int line_age;
+      char timestamp_line[MAX_LINE_SIZE+1];
 
       if (strlen(line) < 3)   // Line is too short, skip
       {
@@ -255,12 +266,23 @@ restart_sync:
       {
         // Age is good, read next line and process it
 
+        xastir_snprintf(timestamp_line, sizeof(timestamp_line), "%s", line);
+
         (void)fetch_file_line(f, line);
 
         if (line[0] != '#')   // It's a packet, not a timestamp line
         {
+          char packet_line[MAX_LINE_SIZE+1];
+
+          xastir_snprintf(packet_line, sizeof(packet_line), "%s", line);
+
 //fprintf(stderr,"%s\n",line);
-          decode_ax25_line(line,'F',-1, 1);   // Decode the packet
+          decode_ax25_line(line,'F',-1, 1);   // Decode the packet, mutates line
+
+          if (ftmp)
+          {
+            fprintf(ftmp, "%s\n%s\n", timestamp_line, packet_line);
+          }
         }
         else
         {
@@ -272,6 +294,16 @@ restart_sync:
   if (feof(f))   // Close file if at the end
   {
     (void)fclose(f);
+  }
+
+  if (ftmp)
+  {
+    (void)fclose(ftmp);
+    if (rename(tmp_filename, filename) != 0)
+    {
+      fprintf(stderr,"Couldn't replace %s with pruned copy\n", filename);
+      (void)remove(tmp_filename);
+    }
   }
 }
 
