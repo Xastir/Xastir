@@ -1,0 +1,22 @@
+# Autotest tests for cad_objects.c Functions
+# Tests for CAD object deletion / draw-state interaction
+
+AT_BANNER([CAD object deletion])
+
+AT_SETUP([CAD_object_delete: deleting in-progress polygon resets draw state])
+AT_KEYWORDS([cad_objects CAD_object_delete])
+AT_CHECK(["$abs_top_builddir/tests/test_cad_objects" delete_in_progress_polygon_resets_draw_state], [0], [PASS: CAD_object_delete: deleting the in-progress polygon resets draw state
+])
+AT_CLEANUP
+
+AT_SETUP([CAD_object_delete: deleting unrelated object leaves draw state alone])
+AT_KEYWORDS([cad_objects CAD_object_delete])
+AT_CHECK(["$abs_top_builddir/tests/test_cad_objects" delete_other_object_does_not_reset_draw_state], [0], [PASS: CAD_object_delete: deleting an unrelated object leaves draw state alone
+])
+AT_CLEANUP
+
+AT_SETUP([CAD_object_delete: deleting a closed polygon while idle is a no-op])
+AT_KEYWORDS([cad_objects CAD_object_delete])
+AT_CHECK(["$abs_top_builddir/tests/test_cad_objects" delete_closed_polygon_while_idle], [0], [PASS: CAD_object_delete: deleting a closed polygon while idle is a no-op on draw state
+])
+AT_CLEANUP
