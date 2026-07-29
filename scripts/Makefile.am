@@ -22,18 +22,14 @@ dist_scripts_DATA = \
     langOldeEnglish.pl \
     langPigLatin.pl \
     langPirateEnglish.pl \
-    mapblast2geo.pl \
     mapfgd.pl \
     object2shp.pl \
     overlay.pl \
     ozi2geo.pl \
     permutations.pl \
     pos2shp.pl \
-    ridge_radar.pl \
     slideshow.pl \
     test_coord.pl \
-    toporama50k.pl \
-    toporama250k.pl\
     track-get.pl \
     update_langfile.pl \
     waypoint-get.pl \
