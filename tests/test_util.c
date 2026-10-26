@@ -31,6 +31,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "tests/test_framework.h"
 
@@ -427,6 +428,100 @@ int test_copy_token_null_source(void)
   TEST_PASS("copy_token");
 }
 
+/* calc_distance_course() tests.  Positions are given in decimal
+ * degrees (north and east positive) and converted to Xastir
+ * coordinates, hundredths of seconds from 90N and 180W. */
+static long course_lat(double lat)
+{
+  return lround((90.0 - lat) * 360000.0);
+}
+
+static long course_lon(double lon)
+{
+  return lround((180.0 + lon) * 360000.0);
+}
+
+static double course_between(double lat1, double lon1, double lat2, double lon2, char *course, int course_len)
+{
+  calc_distance_course(course_lat(lat1), course_lon(lon1),
+                       course_lat(lat2), course_lon(lon2),
+                       course, course_len);
+  return atof(course);
+}
+
+/* Difference between two courses in degrees, taking 0/360 wrap into account */
+static double course_diff(double a, double b)
+{
+  double d = fabs(a - b);
+  return (d > 180.0) ? 360.0 - d : d;
+}
+
+int test_calc_distance_course_nsew(void)
+{
+  char course[20];
+
+  TEST_ASSERT(course_diff(course_between(48.1, 11.5, 48.11, 11.5, course, sizeof(course)), 0.0) <= 0.1,
+              "Course to a station due north is 0");
+  TEST_ASSERT(course_diff(course_between(48.1, 11.5, 48.1, 11.51, course, sizeof(course)), 90.0) <= 0.1,
+              "Course to a station due east is 90");
+  TEST_ASSERT(course_diff(course_between(48.1, 11.5, 48.09, 11.5, course, sizeof(course)), 180.0) <= 0.1,
+              "Course to a station due south is 180");
+  TEST_ASSERT(course_diff(course_between(48.1, 11.5, 48.1, 11.49, course, sizeof(course)), 270.0) <= 0.1,
+              "Course to a station due west is 270");
+  TEST_PASS("calc_distance_course: N/E/S/W");
+}
+
+int test_calc_distance_course_same_point(void)
+{
+  char course[20];
+  double dist;
+
+  dist = calc_distance_course(course_lat(48.1), course_lon(11.5),
+                              course_lat(48.1), course_lon(11.5),
+                              course, sizeof(course));
+  TEST_ASSERT(dist == 0.0, "Distance to the same position is 0");
+  TEST_ASSERT_STR_EQ("0.0", course, "Course to the same position is 0.0");
+  TEST_PASS("calc_distance_course: same point");
+}
+
+int test_calc_distance_course_dateline(void)
+{
+  char course[20];
+
+  TEST_ASSERT(course_diff(course_between(-17.0, 179.9, -17.0, -179.9, course, sizeof(course)), 90.0) <= 0.1,
+              "Course east across the dateline is 90");
+  TEST_ASSERT(course_diff(course_between(-17.0, -179.9, -17.0, 179.9, course, sizeof(course)), 270.0) <= 0.1,
+              "Course west across the dateline is 270");
+  TEST_PASS("calc_distance_course: dateline");
+}
+
+int test_calc_distance_course_no_nan(void)
+{
+  char course[20];
+  double lat, lon, d;
+
+  /* Stations sharing a longitude, or a position, are common with
+   * APRS position resolution.  None of these may give a "nan" course. */
+  for (lat = -60.0; lat <= 60.0; lat += 1.7)
+  {
+    for (lon = -179.0; lon <= 179.0; lon += 13.3)
+    {
+      for (d = 0.001; d <= 0.05; d += 0.007)
+      {
+        course_between(lat, lon, lat + d, lon, course, sizeof(course));
+        TEST_ASSERT(strstr(course, "nan") == NULL, "Course due north is not nan");
+        TEST_ASSERT(course_diff(atof(course), 0.0) <= 0.1, "Course due north is 0");
+        course_between(lat, lon, lat - d, lon, course, sizeof(course));
+        TEST_ASSERT(strstr(course, "nan") == NULL, "Course due south is not nan");
+        TEST_ASSERT(course_diff(atof(course), 180.0) <= 0.1, "Course due south is 180");
+      }
+      course_between(lat, lon, lat, lon, course, sizeof(course));
+      TEST_ASSERT(strstr(course, "nan") == NULL, "Course to the same position is not nan");
+    }
+  }
+  TEST_PASS("calc_distance_course: no nan");
+}
+
 /* Test runner */
 typedef struct {
     const char *name;
@@ -460,6 +555,10 @@ int main(int argc, char *argv[])
     {"copy_token_empty",test_copy_token_empty},
     {"copy_token_whitespace_only",test_copy_token_whitespace_only},
     {"copy_token_null_source",test_copy_token_null_source},
+    {"calc_distance_course_nsew",test_calc_distance_course_nsew},
+    {"calc_distance_course_same_point",test_calc_distance_course_same_point},
+    {"calc_distance_course_dateline",test_calc_distance_course_dateline},
+    {"calc_distance_course_no_nan",test_calc_distance_course_no_nan},
     {NULL,NULL}
   };
 
