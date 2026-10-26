@@ -2729,17 +2729,24 @@ double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *co
       r_c=0.0;
     }
   }
+  else if (r_d == 0.0)
+  {
+    // Same position, no course
+    r_c=0.0;
+  }
   else
   {
-    if (sin((r_lon2-r_lon1))<0.0)
-    {
-      r_c = acos((sin(r_lat2)-sin(r_lat1)*cos(r_d))/(sin(r_d)*cos(r_lat1)));
-    }
-    else
-    {
-      r_c = (2*M_PI) - acos((sin(r_lat2)-sin(r_lat1)*cos(r_d))/(sin(r_d)*cos(r_lat1)));
-    }
+    // atan2 form of the initial bearing.  Unlike the acos form it
+    // has no domain error when the target is due north or south.
+    // Xastir radians are west-positive, so flip the longitude
+    // difference to get it east-positive.
+    double dlon_east = -(r_lon2-r_lon1);
 
+    r_c = atan2(sin(dlon_east)*cos(r_lat2),
+                cos(r_lat1)*sin(r_lat2) - sin(r_lat1)*cos(r_lat2)*cos(dlon_east));
+    // Map (-pi, pi] to [0, 2*pi).  fmod also turns -0.0 (due north)
+    // into 0.0 so we don't print "-0.0".
+    r_c = fmod(r_c + 2*M_PI, 2*M_PI);
   }
 
   // Return the course

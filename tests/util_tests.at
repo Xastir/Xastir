@@ -153,3 +153,28 @@ AT_KEYWORDS([util copy_token])
 AT_CHECK(["$abs_top_builddir/tests/test_util" copy_token_null_source], [0], [PASS: copy_token
 ])
 AT_CLEANUP
+
+AT_BANNER([tests of distance and course calculation])
+AT_SETUP([calc_distance_course: course to N/E/S/W])
+AT_KEYWORDS([util calc_distance_course])
+AT_CHECK(["$abs_top_builddir/tests/test_util" calc_distance_course_nsew], [0], [PASS: calc_distance_course: N/E/S/W
+])
+AT_CLEANUP
+
+AT_SETUP([calc_distance_course: same position])
+AT_KEYWORDS([util calc_distance_course])
+AT_CHECK(["$abs_top_builddir/tests/test_util" calc_distance_course_same_point], [0], [PASS: calc_distance_course: same point
+])
+AT_CLEANUP
+
+AT_SETUP([calc_distance_course: dateline crossing])
+AT_KEYWORDS([util calc_distance_course])
+AT_CHECK(["$abs_top_builddir/tests/test_util" calc_distance_course_dateline], [0], [PASS: calc_distance_course: dateline
+])
+AT_CLEANUP
+
+AT_SETUP([calc_distance_course: no nan course due north/south])
+AT_KEYWORDS([util calc_distance_course])
+AT_CHECK(["$abs_top_builddir/tests/test_util" calc_distance_course_no_nan], [0], [PASS: calc_distance_course: no nan
+])
+AT_CLEANUP
