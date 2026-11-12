@@ -801,6 +801,12 @@ else
   ILIBS="$ILIBS          "
 fi
 
+if test "${use_cairo}" = "yes"; then
+  ILIBS="$ILIBS cairo"
+else
+  ILIBS="$ILIBS      "
+fi
+
 # Write out the library information to "summary.log".  Here we want
 # the spaces for the undefined pieces, so REGRESSION_TESTS formats
 # nicely.
