@@ -1954,6 +1954,27 @@ void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x,
 
 
 
+// Minutes can be as large as 59.9994, which some formats round to 60.
+static void carry_rounded_minutes(float *min, int precision, int *degrees)
+{
+  char rounded[8];
+
+  // Use the same formatter to detect a carry at the requested precision.
+  if (*min < 59.9 ||
+      xastir_snprintf(rounded, sizeof(rounded), "%.*f", precision, *min) < 2 ||
+      rounded[0] != '6' || rounded[1] != '0')
+  {
+    return;
+  }
+
+  *min = 0.0;
+  ++*degrees;
+}
+
+
+
+
+
 // convert latitude from long to string
 // Input is in Xastir coordinate system
 //
@@ -2003,6 +2024,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
   {
 
     case(CONVERT_LP_NOSP): /* do low P w/no space */
+      carry_rounded_minutes(&min, 2, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d%05.2f%c",
@@ -2013,6 +2035,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
       break;
 
     case(CONVERT_LP_NORMAL): /* do low P normal */
+      carry_rounded_minutes(&min, 2, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d %05.2f%c",
@@ -2023,6 +2046,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
       break;
 
     case(CONVERT_HP_NOSP): /* do HP w/no space */
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d%06.3f%c",
@@ -2033,6 +2057,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
       break;
 
     case(CONVERT_VHP_NOSP): /* do Very HP w/no space */
+      carry_rounded_minutes(&min, 4, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d%07.4f%c",
@@ -2043,6 +2068,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
       break;
 
     case(CONVERT_UP_TRK): /* for tracklog files */
+      carry_rounded_minutes(&min, 4, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%c%02d %07.4f",
@@ -2085,6 +2111,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
       break;
 
     case(CONVERT_HP_NORMAL_FORMATED):
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d%c%06.3f%c",
@@ -2097,6 +2124,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type)
 
     case(CONVERT_HP_NORMAL):
     default: /* do HP normal */
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%02d %06.3f%c",
@@ -2159,6 +2187,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
   {
 
     case(CONVERT_LP_NOSP): /* do low P w/nospacel */
+      carry_rounded_minutes(&min, 2, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d%05.2f%c",
@@ -2169,6 +2198,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
       break;
 
     case(CONVERT_LP_NORMAL): /* do low P normal */
+      carry_rounded_minutes(&min, 2, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d %05.2f%c",
@@ -2179,6 +2209,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
       break;
 
     case(CONVERT_HP_NOSP): /* do HP w/nospace */
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d%06.3f%c",
@@ -2189,6 +2220,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
       break;
 
     case(CONVERT_VHP_NOSP): /* do Very HP w/nospace */
+      carry_rounded_minutes(&min, 4, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d%07.4f%c",
@@ -2199,6 +2231,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
       break;
 
     case(CONVERT_UP_TRK): /* for tracklog files */
+      carry_rounded_minutes(&min, 4, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%c%03d %07.4f",
@@ -2241,6 +2274,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
       break;
 
     case(CONVERT_HP_NORMAL_FORMATED):
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d%c%06.3f%c",
@@ -2253,6 +2287,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type)
 
     case(CONVERT_HP_NORMAL):
     default: /* do HP normal */
+      carry_rounded_minutes(&min, 3, &ideg);
       xastir_snprintf(str,
                       str_len,
                       "%03d %06.3f%c",
