@@ -255,7 +255,6 @@ int test_convert_screen_to_xastir_coordinates(void)
   // the "long" coords are in centi-seconds (1/100 second)
   // scale_x and scale_y are centi-seconds per pixel
   long lon_xa, lat_xa;
-  long screen_x, screen_y;
 
   screen_width=1900;
   screen_height=712;
