@@ -23,6 +23,8 @@ jobs:
       run: ./configure CPPFLAGS="-I/usr/include/geotiff"
     - name: make
       run: make
+    - name: make check
+      run: make check
     - name: make install
       run: sudo make install
 
