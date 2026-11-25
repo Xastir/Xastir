@@ -2570,12 +2570,18 @@ double calc_distance_haversine_radian(double lat1, double lon1, double lat2, dou
   double R = EARTH_RADIUS_METERS;
 #define square(x) (x)*(x)
 
-
-  dlon = lon2 - lon1;
-  dlat = lat2 - lat1;
-  a = square((sin(dlat/2.0))) + cos(lat1) * cos(lat2) * square((sin(dlon/2.0)));
-  c = 2.0 * atan2(sqrt(a), sqrt(1.0-a));
-  d = R * c;
+  if ((lat1 == lat2) && (lon1 == lon2))
+  {
+    d = 0.0;
+  }
+  else
+  {
+    dlon = lon2 - lon1;
+    dlat = lat2 - lat1;
+    a = square((sin(dlat/2.0))) + cos(lat1) * cos(lat2) * square((sin(dlon/2.0)));
+    c = 2.0 * atan2(sqrt(a), sqrt(1.0-a));
+    d = R * c;
+  }
 
   return(d);
 }
