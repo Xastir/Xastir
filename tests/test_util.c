@@ -479,6 +479,14 @@ int test_calc_distance_course_same_point(void)
   dist = calc_distance_course(course_lat(48.1), course_lon(11.5),
                               course_lat(48.1), course_lon(11.5),
                               course, sizeof(course));
+  if (dist == 0.0)
+  {
+    fprintf(stderr,"PASS: Distance is zero\n");
+  }
+  else
+  {
+    fprintf(stderr,"FAIL:  Distance is %lg\n",dist);
+  }
   TEST_ASSERT(dist == 0.0, "Distance to the same position is 0");
   TEST_ASSERT_STR_EQ("0.0", course, "Course to the same position is 0.0");
   TEST_PASS("calc_distance_course: same point");

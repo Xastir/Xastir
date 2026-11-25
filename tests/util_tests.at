@@ -164,6 +164,7 @@ AT_CLEANUP
 AT_SETUP([calc_distance_course: same position])
 AT_KEYWORDS([util calc_distance_course])
 AT_CHECK(["$abs_top_builddir/tests/test_util" calc_distance_course_same_point], [0], [PASS: calc_distance_course: same point
+], [PASS: Distance is zero
 ])
 AT_CLEANUP
 
