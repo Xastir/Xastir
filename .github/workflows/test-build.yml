@@ -45,6 +45,9 @@ jobs:
       run: make
     - name: make check
       run: make check
+    - name: checks failed
+      if: ${{ failure() }}
+      run: cat tests/testsuite.log
     - name: make install
       run: sudo make install
     - name: get NWS data
