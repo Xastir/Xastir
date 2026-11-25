@@ -40,6 +40,12 @@ AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lon_l2s_lp], [0], [PASS: c
 ])
 AT_CLEANUP
 
+AT_SETUP([convert_lat/lon_l2s: formats and minute carry])
+AT_KEYWORDS([util convert_lat_l2s convert_lon_l2s])
+AT_CHECK(["$abs_top_builddir/tests/test_util" convert_l2s_formats], [0], [PASS: convert_lat/lon_l2s: format and carry correct
+])
+AT_CLEANUP
+
 AT_SETUP([convert_lat_l2s: convert Xastir lat from high-prec string])
 AT_KEYWORDS([util convert_lat_s2l])
 AT_CHECK(["$abs_top_builddir/tests/test_util" convert_lat_s2l_basic], [0], [PASS: convert_lat_s2l: correct

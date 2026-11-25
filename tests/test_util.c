@@ -111,6 +111,60 @@ int test_convert_lon_l2s_lp(void)
   TEST_ASSERT_STR_EQ("10612.38W",lon_str,"xastir x value correctly converted to string");
   TEST_PASS("convert_lon_l2s: correct");
 }
+
+int test_convert_l2s_formats(void)
+{
+  // Normal position at 5 degrees 22 minutes 30 seconds, and 0.02 seconds
+  // short of 50 degrees, in Xastir units.
+  const long normal = 5 * 360000L + 22 * 6000L + 30 * 100L;
+  const long boundary = 50 * 360000L - 2;
+  const struct
+  {
+    int type;
+    const char *lat_normal;
+    const char *lon_normal;
+    const char *lat_boundary;
+    const char *lon_boundary;
+  } cases[] = {
+    {CONVERT_LP_NOSP, "0522.50N", "00522.50W", "5000.00N", "05000.00W"},
+    {CONVERT_LP_NORMAL, "05 22.50N", "005 22.50W", "50 00.00N", "050 00.00W"},
+    {CONVERT_HP_NOSP, "0522.500N", "00522.500W", "4959.999N", "04959.999W"},
+    {CONVERT_HP_NORMAL, "05 22.500N", "005 22.500W", "49 59.999N", "049 59.999W"},
+    {CONVERT_HP_NORMAL_FORMATED, "05\xb0" "22.500N", "005\xb0" "22.500W",
+     "49\xb0" "59.999N", "049\xb0" "59.999W"},
+    {CONVERT_VHP_NOSP, "0522.5000N", "00522.5000W", "4959.9994N", "04959.9994W"},
+    {CONVERT_UP_TRK, "N05 22.5000", "W005 22.5000", "N49 59.9994", "W049 59.9994"},
+    {CONVERT_DEC_DEG, "05.37500N", "005.37500W", "49.99999N", "049.99999W"},
+    {CONVERT_DMS_NORMAL, "05 22 30.0N", "005 22 30.0W", "49 59 59.9N", "049 59 59.9W"},
+    {CONVERT_DMS_NORMAL_FORMATED, "05\xb0" "22'30.0N", "005\xb0" "22'30.0W",
+     "49\xb0" "59'59.9N", "049\xb0" "59'59.9W"}
+  };
+  char str[20];
+
+  for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++)
+  {
+    convert_lat_l2s(32400000L - normal, str, sizeof(str), cases[i].type);
+    TEST_ASSERT_STR_EQ(cases[i].lat_normal, str, "normal latitude");
+    convert_lon_l2s(64800000L - normal, str, sizeof(str), cases[i].type);
+    TEST_ASSERT_STR_EQ(cases[i].lon_normal, str, "normal longitude");
+    convert_lat_l2s(32400000L - boundary, str, sizeof(str), cases[i].type);
+    TEST_ASSERT_STR_EQ(cases[i].lat_boundary, str, "latitude near a degree boundary");
+    convert_lon_l2s(64800000L - boundary, str, sizeof(str), cases[i].type);
+    TEST_ASSERT_STR_EQ(cases[i].lon_boundary, str, "longitude near a degree boundary");
+  }
+
+  convert_lat_l2s(32400000L + boundary, str, sizeof(str), CONVERT_LP_NOSP);
+  TEST_ASSERT_STR_EQ("5000.00S", str, "carry for southern latitude");
+  convert_lon_l2s(64800000L + boundary, str, sizeof(str), CONVERT_LP_NOSP);
+  TEST_ASSERT_STR_EQ("05000.00E", str, "carry for eastern longitude");
+  convert_lat_l2s(32400000L + boundary, str, sizeof(str), CONVERT_LP_NORMAL);
+  TEST_ASSERT_STR_EQ("50 00.00S", str, "carry for southern latitude with spacing");
+  convert_lon_l2s(64800000L + boundary, str, sizeof(str), CONVERT_LP_NORMAL);
+  TEST_ASSERT_STR_EQ("050 00.00E", str, "carry for eastern longitude with spacing");
+
+  TEST_PASS("convert_lat/lon_l2s: format and carry correct");
+}
+
 int test_convert_lat_s2l_basic(void)
 {
   long lat;
@@ -545,6 +599,7 @@ int main(int argc, char *argv[])
     {"convert_lon_l2s_basic_e",test_convert_lon_l2s_basic_e},
     {"convert_lat_l2s_lp",test_convert_lat_l2s_lp},
     {"convert_lon_l2s_lp",test_convert_lon_l2s_lp},
+    {"convert_l2s_formats",test_convert_l2s_formats},
     {"convert_lat_s2l_basic",test_convert_lat_s2l_basic},
     {"convert_lon_s2l_basic",test_convert_lon_s2l_basic},
     {"convert_lat_s2l_basic_s",test_convert_lat_s2l_basic_s},
